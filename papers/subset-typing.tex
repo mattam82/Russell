@@ -70,6 +70,7 @@
 \newcommand{\ifml}{~\textbf{if}~}
 \newcommand{\thenml}{~\textbf{then}~}
 \newcommand{\elseml}{~\textbf{else}~}
+\newcommand{\funml}{~\textbf{fun}~}
 
 \newcommand{\eqbi}{`=_{\beta\iota}}
 
@@ -132,10 +133,22 @@
     {$s1, s2 `: \text{{\sc Sort}}$} \DisplayProof
     
     \vspace{\infvspace}
+    \BAX{Sum}{$`G \seq t : T$}
+    {$`G \seq u : U[t/x]$}
+    {$`G \seq (t, u) : \Sigma x : T.U$}
+    {} \DisplayProof
+
+    \vspace{\infvspace}
+    \BAX{Sigma}{$`G \seq T : s1$}
+    {$`G, x : T \seq U : s2$}
+    {$`G \seq \Sigma x : T.U : s2$}
+    {$s1, s2 `: \text{{\sc Sort}}$} \DisplayProof
+
+    \vspace{\infvspace}
     \TAX{Subset}{$`G \seq f : \Pi x : U. Prop$}
     {$`G \seq x : U$}{$`G \seq p : P~x$}
-    {$`G \seq \elt{U}{f}{x}{p} : \{ x : U `| P~x \}$}{$$} \DisplayProof
-    
+    {$`G \seq x : \{ x : U `| P~x \}$}{$$} \DisplayProof
+    %\elt{U}{f}{x}{p}
     \vspace{\infvspace}
     \TAX{App}
     {$`G \seq u : U$}
@@ -316,7 +329,7 @@ des \emph{predicate sets} \cite{hurd2001a}. Technique adaptable à Coq ?
 Le \ps{} dans HOL n'est pas correct, il peut être subverti aisément à
 cause d'une sorte de covariance des domaines de fonctions et de la
 fonction de suppression des predicats (similaire à $\mu$):
-$inv : `R^{\neq 0} "->" `R `: `R "->" `R$. Le dévellopement dans \HOL{}
+$inv : `R^{\neq 0} "->" `R `: `R "->" `R$. Le développement dans \HOL{}
 est fait directement dans le language, et il est argué qu'il n'est pas
 possible de le faire correctement à cause de l'exemple
 précédent. L'algorithme de sous-typage est simplement une génération de
@@ -329,6 +342,62 @@ $\ifml 1 / i > 0 \thenml i \neq 0 \elseml `_$, qui génère une obligation de
 preuve $i \neq 0$ dans \PVS{}. Evidemment on ne risque pas de pouvoir
 typer ce code en \Coq{} lorsque $`/ : `Z "->" \{ x : `Z `| x \neq 0 \} "->" `Z$ mais
 certaines idées peuvent être intéressantes. 
+
+
+\subsection*{11 mars}
+Typage de la division euclidienne:
+$\matht{div} : `A a : `N, `A b : \{ x : `N `| x \neq 0 \}, `S q : `N, `S r : \{ n : `N
+`| n < b \}, a = bq + r := \funml a~b "=>" \ifml a < b \thenml (0, a) \elseml \letml (q, r) =
+\matht{div}~(a - b)~b \inml (q + 1, r)$.
+
+Soit $`t_{div} = `A a : `N, `A b : \{ x : `N `| x \neq 0 \}, `E q : `N, `E r : \{ n : `N
+`| n < b \}, a = bq + r$ et $`G = \matht{div} : `t_{div}$:
+
+
+
+\AXC{$1$}
+\AXC{$2$}
+\BIC{$`G, a : `N, b : `N^{*} \seq \ifml a < b \thenml (0, a) \elseml \letml (q, r) =
+  \matht{div}~(a - b)~b \inml (q + 1, r) : `E q \dots$}
+\doubleLine
+\UIC{$`G \seq \funml a~b "=>" \ifml a < b \thenml (0, a) \elseml \letml (q, r) =
+  \matht{div}~(a - b)~b \inml (q + 1, r) : `t_{div}$}
+\DisplayProof
+
+Soit $`G_{if} = `G, a : `N, b : `N^{*}, a ``/< b$.
+\begin{prooftree}
+  \AXC{$`G_{if} \seq b : `N^{*}$}
+  \RightLabel{$`b = `N^{*}$}
+  \UIC{$`G_{if} \seq b : `b$}
+
+  \AXC{$`G_{if} \seq b : `g$}
+  \AXC{$`G_{if} \seq (- a) : `g "->" `b''$}
+  \AXC{$`G_{if} \judgetype $}
+  \TIC{$`G_{if} \seq (- a) b : `b''$}
+  \AXC{$`G_{if} \seq \matht{div} : `b''' "->" `b' "->" `a$}
+  \AXC{$`G_{if} \judgesub a - b : `b'' ``<= `b''' "~>" t$}
+  \UIC{$`G_{if} \seq \matht{div}~(a - b) "~>" \matht{div}~t : `b' "->" `a$}
+
+  \TIC{$`G_{if} \seq \matht{div}~(a - b) : `b' "->" `a$}
+
+  \AXC{$`G_{if} \judgesub b : `b ``<= `b' "~>" p $}
+  \TIC{$`G_{if} \seq \matht{div}~(a - b)~b "~>" \matht{div}~(a - b)~p : `a$}
+  
+  
+  \AXC{$`G_{if}, (q, r) : `a \seq (q + 1, r) : `E q \dots$}
+  \RightLabel{1}
+  \BIC{$`G_{if} \seq \letml (q, r) = \matht{div}~(a - b)~b \inml (q + 1, r) : `E q \dots$}
+\end{prooftree}  
+
+\RightLabel{2}
+\AXC{$`G, a : `N, b : `N^{*}, a < b \seq (0, a) : `E q \dots$}
+\DisplayProof
+
+
+\subsection*{14 mars}
+Règles d'introduction et d'élimination pour $\Pi$, $\Sigma$, sous-types
+prédicats.
+
 
 
 \bibliography{subset-typing,../bib/bib-joehurd}
