@@ -1,0 +1,8 @@
+Combining programs with proofs - Chiyan Chen, Hongwei Xi.
+
+  o Argues p. 19 that restricting props so that they don't contains
+  types gives partial functions, in contrast with Coq. (?)
+
+  o Simple erasure.
+
+  o Static/dynamic distinction.
