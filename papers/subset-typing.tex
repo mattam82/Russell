@@ -12,10 +12,13 @@
 \usepackage{amsfonts}
 \usepackage{array}
 \usepackage{myabbrevs}
-\usepackage{url}
 \usepackage{bnf}
 \usepackage{bussproofs}
-\usepackage{pslatex}
+\usepackage{hyperref}
+%\usepackage{concmath}
+\usepackage{cmbright}
+\usepackage{fancyhdr}
+
 
 \def\infvspace{3em}
 % This is the "centered" symbol
@@ -33,7 +36,7 @@
 %\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
 \newcommand{\Prop}{\ensuremath{\text{\texttt{Prop}}}}
 
-\newcommand{\rname}[1]{{\bf #1}}
+\newcommand{\rname}[1]{{\sc #1}}
 \newcommand{\rulelabel}[1]{{\bf {\sc (#1)}}}
 \newcommand{\UR}[2]{\RightLabel{\rulelabel{#1}}\UIC{#2}}
 \newcommand{\URL}[2]{\LeftLabel{\rulelabel{#1}}\UIC{#2}}
@@ -52,19 +55,7 @@
 \newcommand{\letml}{\textbf{let}~}
 \newcommand{\inml}{~\textbf{in}~}
 
-
-\title{Sous-typage par predicats en Coq} 
-
-\author{Matthieu Sozeau}
-
-\date{\today}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-  blabla
-\end{abstract}
+\newcommand{\eqbi}{`=_{\beta\iota}}
 
 \def\judgewf{~{\mbox{$\vdash_{wf}$}}~}
 \def\judgetype{~{\mbox{$\vdash$}}~}
@@ -73,6 +64,36 @@
 \newcommand{\elt}[4]{\text{elt}~#1~#2~#3~#4}
 \renewcommand{\subset}[3]{\{ #1 : #2 `| #3~#1 \}}
 
+\def\thetitle{Sous-typage par prédicats en Coq}
+
+\pagestyle{fancy}
+\fancyhead[RO,LE]{\thetitle}
+\fancyfoot[C]{\thepage}
+%\renewcommand{\headrulewidth}{0pt}
+
+\title{\thetitle}
+
+\author{Matthieu Sozeau}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  blabla 
+\end{abstract}
+
+\def\WfAtomRule{\rname{Wf-Atom}}
+\def\WfVarRule{\rname{Wf-Var}}
+\def\PropSetRule{\rname{PropSet}}
+\def\AbsRule{\rname{Abs}}
+\def\VarRule{\rname{Var}}
+\def\ProdRule{\rname{Prod}}
+\def\SubsetRule{\rname{Subset}}
+\def\AppRule{\rname{App}}
+  
 \begin{figure}[h]
   \begin{center}
     \def\fCenter{\judgewf}
@@ -93,84 +114,75 @@
     \BAX{Prod}{$`G \seq T : s1$}{$`G, x : T \seq U : s2$}
     {$`G \seq \Pi x : T.U : s2$}
     {$s1, s2 `: \text{{\sc Sort}}$} \DisplayProof
-    \vspace{\infvspace}
-    \BAX{App}{$`G \seq u : U$}{$`G \seq f : \Pi x : U. V$}
-    {$`G \seq (f x) : V [ u / x ]$}{$$} \DisplayProof
-
+    
     \vspace{\infvspace}
     \TAX{Subset}{$`G \seq f : \Pi x : U. Prop$}
     {$`G \seq x : U$}{$`G \seq p : P~x$}
     {$`G \seq \elt{U}{f}{x}{p} : \{ x : U `| P~x \}$}{$$} \DisplayProof
-  
+    
     \vspace{\infvspace}
-    \AXC{$`G \seq u : \subset{x}{U}{P}$}
-    \noLine
-    \UIC{$`G \seq f : \Pi x : \subset{y}{V}{Q}. W$}
-    \AXC{$`G \judgesub u : \subset{x}{U}{P} ``<= \subset{y}{V}{Q} "~>" q$}
-    \BIC{$`G \seq (f u) "~>" f q : W [ q / x ]$}
-    \DisplayProof
+
+    \TAX{App}
+    {$`G \seq u : U$}
+    {$`G \seq f : \Pi x : V. W$}
+    {$`G \judgesub u : U ``<= V "~>" p$}
+    {$`G \seq (f u) "~>" (f p) : W [ p / x ]$}
+    {$$} \DisplayProof
 
   \end{center}
   \label{typing-rules}
   \caption{Typage du Calcul des Constructions avec sous-types prédicats}
 \end{figure}
 
+\def\SubConvRule{\rname{Sub-Conv}}
+\def\SubProdRule{\rname{Sub-Prod}}
+\def\SubSigmaRule{\rname{Sub-Sigma}}
+\def\SubLeftRule{\rname{Sub-Left}}
+\def\SubRightRule{\rname{Sub-Right}}
+
 \begin{figure}[h]
   \begin{center}
     \def\fCenter{\judgesub}
-
+    
     \BAX{Sub-Conv}
     {$`G \judgetype x : T$}
-    {$T `= U$}
+    {$T \eqbi U$}
     {$`G \seq x : T ``<= U "~>" x$}
     {} 
     \DisplayProof
     \vspace{\infvspace}
 
     \BAX{Sub-Prod}
-    {$`G \seq y : U ``<= T "~>" p$}
-    {$`G, y : T \seq z : V ``<= W "~>" q$}
-    {$`G \seq \lambda y. z : \Pi T.V ``<= \Pi U.W "~>" 
-      \lambda y : U. q[y/p]$}
-    {$U = T$ si invariance sur les domaines}
+    {$`G \seq x : U "<|-|>" T "~>" p$}
+    {$`G, x : T \seq v : V ``<= W[x/y] "~>" q$}
+    {$`G \seq \lambda x : T. v : \Pi x : T.V ``<= \Pi y : U.W "~>" 
+      \lambda y : U. q[p/y]$}
+    {}
     \DisplayProof
-
+    
     \vspace{\infvspace}
-
     \BAX{Sub-Sigma}
-    {$`G \seq y : T `= U "~>" p$}
-    {$`G, x : T \seq z : V ``<= W[x/y] "~>" q$}
-    {$`G \seq (y, z) : \Sigma x : T, V ``<= \Sigma y : U, W "~>"
+    {$`G \seq x : T ``<= U "~>" p$}
+    {$`G \seq v : V ``<= W[p/y] "~>" q$}
+    {$`G \seq (x, v) : \Sigma x : T. V ``<= \Sigma y : U. W "~>"
       (p, q)$}
     {}
     \DisplayProof
-    
-    \vspace{\infvspace}
-    \BAX{Sub-Subset}
-    {$`G \seq u : U ``<= V "~>" p$}
-    {$`G \judgetype p : \pi(U)(u) `^ P~u "->" \pi(V)(u) `^ Q~u$}
-    {$`G \seq u : \subset{x}{U}{P} ``<= \subset{y}{V}{Q} "~>" p$}
-    {}
-    \DisplayProof
-
-    ou
 
     \vspace{\infvspace}
-    \UAX{Sub-Left}
+    \BAX{Sub-Left}
+    {$`G \judgetype q : P~p$}
     {$`G, q : P~p \seq p : U ``<= V "~>" t$}
-    {$`G \seq p : \subset{x}{U}{P} ``<= V "~>" 
-      \letml (\_, h) = p \inml t[h/q]$}
+    {$`G \seq p : \subset{x}{U}{P} ``<= V "~>" t$}
     {}
     \DisplayProof
-    
-    puis
 
     \vspace{\infvspace}
     \BAX{Sub-Right}
     {$`G \seq p : A ``<= U "~>" p'$}
     {$`G \judgetype h : P~p'$}
     {$`G \seq p : A ``<= \subset{x}{U}{P} "~>" \elt{U}{P}{p'}{h}$}
-    {$A$ atome}
+    {$A$ atomique}
     \DisplayProof
     
   \end{center}
@@ -184,14 +196,13 @@
       atom & $"=>"$ & atom \\
       $\subset{x}{`t}{P}$ & $"=>"$ & $\mu~`t$ \\
       $\Pi x : `t. `t'$ & $"=>"$ & $\Pi x : `t. \mu~`t'$ \\
-      $\Sigma x : `t, `t'$ & $"=>"$ & $\Sigma x : \mu~`t, (\mu~`t') `/
+      $\Sigma x : `t. `t'$ & $"=>"$ & $\Sigma x : \mu~`t. (\mu~`t') `/
       ((\pi~`t) x)$ 
     \end{tabular}    
   \end{center}
-  \label{pi-def}
-  \caption{$\mu$: supertypes maximaux}
+  \label{mu-def}
+  \caption{$\mu$: Supertypes maximaux}
 \end{figure}
-
 
 \begin{figure}[h]
   \begin{center}
@@ -207,7 +218,53 @@
     \end{tabular}
   \end{center}
   \label{pi-def}
-  \caption{$\pi$: collection des contraintes}
+  \caption{$\pi$: Collection des contraintes}
 \end{figure}
+
+\clearpage
+
+\begin{lemma}[Préservation de l'équivalence par $\mu$]
+  \label{mu-equiv-preserve}
+  Si $U \eqbi V$ alors $\mu~U \eqbi \mu~V$.
+\end{lemma}
+
+\begin{proof}
+  Par induction sur $(U, V)$ : si $U `= \subset{x}{A}{P}$, 
+  par hypothèse, $V \eqbi \subset{x}{A'}{P'}$ avec $A \eqbi A'$ et $P
+  \eqbi P'$. Par induction $A \eqbi A' "=>" \mu~A \eqbi \mu~A'$. Sinon,
+  $U = \mu~U$ et $V = \mu~V$.
+\end{proof}
+
+\begin{prop}[Equivalence des supertypes maximaux]
+  Si $U ``<= V$ alors $\pi~U~u \mu~U "->" \mu~V$.
+\end{prop}
+\begin{proof}
+  Par induction sur la dérivation de typage:
+
+  \begin{description}
+  \item[\SubConvRule:] $U \eqbi V$, donc par le lemme
+    \ref{mu-equiv-preserve}, $\mu~U \eqbi \mu~V$.
+    
+  \item[\SubProdRule:]
+    
+  \item[\SubSigmaRule:] Par induction, $\mu~T \eqbi \mu~U$ et     
+    $\mu~V \eqbi \mu~W[p/y]$. Donc 
+    \begin{eqnarray*}
+      \mu~\Sigma x : T.V & = & \Sigma x : \mu~T. \mu~V `/ ((\pi T) x) \\
+      & \eqbi & \Sigma x : \mu~U. \mu~W[p/y] `/ ((\pi T) x) \\
+      & = & \mu~\Sigma x : U. W[p/y]
+    \end{eqnarray*}
+    
+  \item[\SubLeftRule:]
+    
+  \item[\SubRightRule:]    
+  \end{description}
+  
+\end{proof}
+
+
+\renewcommand{\thefootnote}{}
+\footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
+  \texttt{Concrete Math}}
 
 \end{document}
