@@ -19,9 +19,9 @@ Formalisation des trois jugements:
 \begin{description}
 \item[$\typed$] Typage déclaratif, système indécidable, représentant
   exactement ce qu'on veut ajouter comme fonctionnalité.
-\item[$\typei$] Version algorithmique, utilisant le dernier jugement
+\item[$\typea$] Version algorithmique, utilisant le dernier jugement
   pour réaliser l'adéquation avec la présentation déclarative.
-\item[$\judgesubi$] ``Sous-typage'', sans obligations de preuves,
+\item[$\judgesuba$] ``Sous-typage'', sans obligations de preuves,
   décidable et à peu près déterministe.
 \end{description}
 
@@ -30,8 +30,8 @@ jugements réecrivant les dérivations.
 
 Propriétés à montrer:
 \begin{itemize}
-\item $`G \typed t : T "=>" `E U, `G \typei t : U `^ `G \judgesubi t : U \sub T$
-\item $`G \typei t : T "=>" `G \typed t : T$
+\item $`G \typed t : T "=>" `E U, `G \typea t : U `^ `G \judgesuba t : U \sub T$
+\item $`G \typea t : T "=>" `G \typed t : T$
 \end{itemize}
 
 %%% Local Variables: 

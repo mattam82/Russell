@@ -62,7 +62,7 @@
   \BAX{LetIn}
   {$`G \seq t : T $}
   {$`G, x : T \seq v : V $}
-  {$`G \seq \letml x = t \inml v : V$}
+  {$`G \seq \letml x = t \inml v : V[t / x]$}
   {}
 }
 
@@ -108,6 +108,7 @@
 
 \def\Subsum{
   \BAX{Subsumption}
+  {$`G \seq T : s$}
   {$`G \seq t : U$}
   {$`G \subt U \sub T$}
   {$`G \seq t : T$}
@@ -116,9 +117,9 @@
 
 \def\Conv{
   \TAX{Conv}
-  {$`G \seq U : s$}
+  {$`G \seq T : s$}
   {$`G \seq t : U$}      
-  {$`G \seq U \eqbi T$}
+  {$U \eqbi T$}
   {$`G \seq t : T$}
   {}
 }

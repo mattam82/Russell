@@ -8,15 +8,33 @@
 {}
 }
 
+\def\SumInf{
+  \TAX{SumInf}
+  {$`G \seq t : T $}
+  {$`G \seq u : U $}
+  {$`G \seq \Sigma T.U : s$}
+  {$`G \seq (t, u) : \Sigma T.U$}
+  {}
+}
+
+\def\SumDep{
+  \TAX{SumDep}
+  {$`G \seq t : T $}
+  {$`G \seq u : V[t/x] $}
+  {$`G \seq \Sigma x : T.V : s$}
+  {$`G \seq (t, u : V) : \Sigma x : T.V$}
+  {}
+}
+
 \begin{figure}[h]
   \begin{center}
     \def\fCenter{\wf}
-    \def\type{\typei}
+    \def\type{\typea}
     
     \WfAtom\DP    
     \WfVar\DP
     
-    \def\fCenter{\typei}
+    \def\fCenter{\typea}
     \vspace{\infvspace}
     \PropSet\DP
     
@@ -39,7 +57,10 @@
     \SigmaR\DP
 
     \vspace{\infvspace}
-    \Sum\DP
+    \SumInf\DP
+
+    \vspace{\infvspace}
+    \SumDep\DP
     
     \vspace{\infvspace}
     \LetSum\DP

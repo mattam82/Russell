@@ -1,6 +1,6 @@
 \def\SubConv{
 \UAX{Sub-Conv}
-                                %{$`G \judgetypei x : T$}
+                                %{$`G \judgetypea x : T$}
 {$T \eqbi U$}
 {$`G \seq x : T \sub U$}
 {} 
@@ -8,7 +8,7 @@
 
 \def\SubProd{
   \BAX{SubProd}
-  {$`G \seq x : U \sub T$} %"<|-|>"
+  {$`G, x : U \seq x : U \sub T$} %"<|-|>"
   {$`G, x : U \seq v : V \sub W$}
   {$`G \seq \lambda x : T. v : \Pi x : T.V 
     \sub \Pi x : U.W$}
@@ -27,7 +27,7 @@
 \def\SubLeft{
   \BAX{Sub-Left}
   {$`G \seq p : U \sub V$}
-  {$`G \typei P : \Pi x : U. \Prop$}
+  {$`G \type P : \Pi x : U. \Prop$}
   {$`G \seq p : \subset{x}{U}{P} \sub V$}
   {}
 }
@@ -42,8 +42,10 @@
 
 \begin{figure}[h]
   \begin{center}
-    \def\fCenter{\subti}
-    
+    \def\fCenter{\subta}
+    \def\type{\typea}
+    \def\sub{\suba}
+
     \SubConv\DP
     \vspace{\infvspace}
 

@@ -96,16 +96,23 @@
 
 \def\judgewf{\vdash_{wf}}
 \def\judgetyped{\vdash}
-\def\judgetypei{\vdash_{\bullet}}
+\def\judgetypea{\vdash_{\bullet}}
+\def\judgetypei{\vdash_{\box}}
 \def\typed{\judgetyped}
-\def\typei{\judgetypei}
+\def\typea{\judgetypea}
+%\def\typei{\judgetypei}
 \def\type{\typed}
 \def\judgesubd{\vdash}
-\def\judgesubi{\vdash_{\bullet}}
+\def\judgesuba{\vdash_{\bullet}}
+\def\judgesubi{\vdash_{\box}}
 \def\subtd{\judgesubd}
-\def\subti{\judgesubi}
+\def\subta{\judgesuba}
+%\def\subti{\judgesubi}
 \def\subt{\subtd}
-\def\sub{\rightslice}
+\def\subd{\rightslice}
+\def\suba{\rightslice_{\bullet}}
+\def\subi{\rightslice_{\box}}
+\def\sub{\subd}
 
 \def\judgerw{~{\mbox{$"~>"$}}~}
 \def\wf{\judgewf}
@@ -157,11 +164,15 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\LetInRule{\rname{LetIn}}
 \def\SigmaRule{\rname{Sigma}}
 \def\SumRule{\rname{Sum}}
+\def\SumInfRule{\rname{SumInf}}
+\def\SumDepRule{\rname{SumDep}}
 \def\LetSumRule{\rname{LetSum}}
 \def\SubsetRule{\rname{Subset}}
 \def\LetSubRule{\rname{LetSub}}
 \def\SubsumRule{\rname{Subsumption}}
 \def\ConvRule{\rname{Conv}}
+
+
  
 \def\SubConvRule{\rname{Sub-Conv}}
 \def\SubProdRule{\rname{Sub-Prod}}

@@ -1,52 +1,51 @@
 \def\SubRefl{
 \UAX{SubRefl}
 {}
-{$`G \seq S \sub S$}
+{$S \seq S$}
 {}
 }
 
 \def\SubTrans{
 \BAX{SubTrans}
-{$`G \seq S \sub T$}
-{$`G \seq T \sub U$}
-{$`G \seq S \sub U$}
+{$S \seq T$}
+{$T \seq U$}
+{$S \seq U$}
 {}
 } 
 
 \def\SubProd{
 \BAX{SubProd}
-{$`G \seq U \sub T$} %"<|-|>"
-{$`G, x : U \seq V \sub W$}
-{$`G \seq \Pi x : T.V \sub \Pi x : U.W$}
+{$U \seq T$} %"<|-|>"
+{$V \seq W$}
+{$\Pi x : T.V \seq \Pi x : U.W$}
 {}
 }
 
 \def\SubSigma{
   \BAX{Sub-Sigma}
-  {$`G \seq T \sub U$}
-  {$`G \seq V[t/x] \sub W[t/y]$}
-  {$`G \seq \Sigma x : T. V
-    \sub \Sigma y : U. W$}
+  {$T \seq U$}
+  {$V \seq W$}
+  {$\Sigma x : T. V \seq \Sigma y : U. W$}
   {}
 }
 
 \def\SubProof{
   \UAX{Sub-Proof}
-  {$`G \seq U \sub V$}
-  {$`G \seq U \sub \subset{x}{V}{P}$}
+  {$U \seq V$}
+  {$U \seq \subset{x}{V}{P}$}
   {}
 }
 
 \def\SubSub{
   \UAX{Sub-Subset}
-  {$`G \seq U \sub V$}
-  {$`G \seq \subset{x}{U}{P} \sub V$}
+  {$U \seq V$}
+  {$\subset{x}{U}{P} \seq V$}
   {}
 }
 
 \begin{figure}[h]
   \begin{center}
-    \def\fCenter{\subtd}
+    \def\fCenter{\subd}
     
     \vspace{\infvspace}
     \SubRefl\DP
