@@ -88,11 +88,17 @@
 \def\judgewf{\vdash_{wf}}
 \def\judgetyped{\vdash}
 \def\judgetypei{\vdash_{\bullet}}
-\def\judgesub{\vdash_{\impsub}}
-\def\judgerw{~{\mbox{$"~>"$}}~}
 \def\typed{\judgetyped}
-\def\type{\typed}
 \def\typei{\judgetypei}
+\def\type{\typed}
+\def\judgesubd{\vdash}
+\def\judgesubi{\vdash_{\bullet}}
+\def\subtd{\judgesubd}
+\def\subti{\judgesubi}
+\def\subt{\subtd}
+\def\sub{\rightslice}
+
+\def\judgerw{~{\mbox{$"~>"$}}~}
 \def\wf{\judgewf}
 
 \newcommand{\elt}[4]{\text{elt}~#1~#2~#3~#4}
@@ -154,6 +160,7 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\SubRightRule{\rname{Sub-Right}}
 
 \input{typing-decl}
+\input{subtyping-decl}
 \input{typing-algo}
 \input{subtyping-algo}
 \input{typing-proofs}

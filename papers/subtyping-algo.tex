@@ -2,46 +2,47 @@
 \UAX{Sub-Conv}
                                 %{$`G \judgetypei x : T$}
 {$T \eqbi U$}
-{$`G \seq x : T \impsub U$}
+{$`G \seq x : T \sub U$}
 {} 
 }
 
 \def\SubProd{
   \BAX{SubProd}
-  {$`G \seq x : U \impsub T$} %"<|-|>"
-  {$`G, x : U \seq v : V \impsub W$}
+  {$`G \seq x : U \sub T$} %"<|-|>"
+  {$`G, x : U \seq v : V \sub W$}
   {$`G \seq \lambda x : T. v : \Pi x : T.V 
-    \impsub \Pi x : U.W$}
+    \sub \Pi x : U.W$}
   {}
 }
+
 \def\SubSigma{
   \BAX{Sub-Sigma}
-  {$`G \seq t : T \impsub U$}
-  {$`G \seq v : V[t/x] \impsub W[t/y]$}
+  {$`G \seq t : T \sub U$}
+  {$`G \seq v : V[t/x] \sub W[t/y]$}
   {$`G \seq (t, v) : \Sigma x : T. V
-    \impsub \Sigma y : U. W$}
+    \sub \Sigma y : U. W$}
   {}
 }
 
 \def\SubLeft{
   \BAX{Sub-Left}
-  {$`G \seq p : U \impsub V$}
+  {$`G \seq p : U \sub V$}
   {$`G \typei P : \Pi x : U. \Prop$}
-  {$`G \seq p : \subset{x}{U}{P} \impsub V$}
+  {$`G \seq p : \subset{x}{U}{P} \sub V$}
   {}
 }
     
 \def\SubRight{
   \UAX{Sub-Right}
-  {$`G \seq p : T \impsub U$}
+  {$`G \seq p : T \sub U$}
                                 %{$`G \judgetype h : P~p$}
-  {$`G \seq p : T \impsub \subset{x}{U}{P}$}
+  {$`G \seq p : T \sub \subset{x}{U}{P}$}
   {}
 }
 
 \begin{figure}[h]
   \begin{center}
-    \def\fCenter{\judgesub}
+    \def\fCenter{\subti}
     
     \SubConv\DP
     \vspace{\infvspace}
@@ -59,7 +60,7 @@
     
   \end{center}
   \label{subtyping-algo-rules}
-  \caption{Sous-typage}
+  \caption{Sous-typage algorithmique}
 \end{figure}
 
 %%% Local Variables: 

@@ -21,7 +21,7 @@ Formalisation des trois jugements:
   exactement ce qu'on veut ajouter comme fonctionnalité.
 \item[$\typei$] Version algorithmique, utilisant le dernier jugement
   pour réaliser l'adéquation avec la présentation déclarative.
-\item[$\judgesub$] ``Sous-typage'', sans obligations de preuves,
+\item[$\judgesubi$] ``Sous-typage'', sans obligations de preuves,
   décidable et à peu près déterministe.
 \end{description}
 
@@ -30,7 +30,7 @@ jugements réecrivant les dérivations.
 
 Propriétés à montrer:
 \begin{itemize}
-\item $`G \typed t : T "=>" `E U, `G \typei t : U `^ `G \judgesub t : U \impsub T$
+\item $`G \typed t : T "=>" `E U, `G \typei t : U `^ `G \judgesubi t : U \sub T$
 \item $`G \typei t : T "=>" `G \typed t : T$
 \end{itemize}
 

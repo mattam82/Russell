@@ -100,6 +100,14 @@
   {}
 }
 
+\def\Subsum{
+  \BAX{Subsumption}
+  {$`G \seq t : U$}
+  {$`G \subt t : U \sub T$}
+  {$`G \seq t : T$}
+  {}
+}
+
 \def\Conv{
   \TAX{Conv}
   {$`G \seq U : s$}
@@ -143,11 +151,14 @@
     \vspace{\infvspace}
     \LetSum\DP
 
-    \vspace{\infvspace}
-    \Subset\DP
+%%     \vspace{\infvspace}
+%%     \Subset\DP
+
+%%     \vspace{\infvspace}
+%%     \LetSub\DP
 
     \vspace{\infvspace}
-    \LetSub\DP
+    \Subsum\DP
 
     \vspace{\infvspace}
     \Conv\DP
