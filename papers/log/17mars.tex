@@ -1,0 +1,189 @@
+\subsection*{17 mars}
+
+\begin{lemma}[Substitutivité du sous-typage]
+  \label{substitutive-subtyping}
+  $`G \judgesub t : T \impsub U "=>" `G \typed t : T[u/x] \impsub U[u/x]$
+\end{lemma}
+\begin{proof}
+  Par induction sur la dérivation de sous-typage:
+
+  \begin{itemize}
+  \item[\SubConvRule:] On a $T \eqbi U$ et l'on suppose 
+    $x \typed T$. On a donc bien $`G \typed x : U$.
+    
+  \item[\SubProdRule:] On a
+    \begin{prooftree}
+      \SubProd
+    \end{prooftree}
+    
+    Par induction, $`G \typed x : U$, $`G \typed x : T$, 
+    $`G, x : U \typed v : V$ et $`G, x : U \typed v : W$.
+    Par \AbsRule, $`G \typed \lambda x : U.v : \Pi x : U.W$.
+    
+  \item[\SubSigmaRule:] On a 
+    \begin{prooftree}
+      \SubSigma
+    \end{prooftree}
+    
+    Par hypothèse d'induction, $`G \typed t : T, U$, $`G \typed v : V[t/x], W[t/y]$.
+    Par \SumRule, $(t, v) : \Sigma y : U, W$.
+
+  \item[\SubLeftRule:] On a
+    \begin{prooftree}
+      \SubLeft
+    \end{prooftree}
+    
+    Par induction, $`G \typed p : V$.
+
+  \item[\SubRightRule:] On a
+    \begin{prooftree}
+      \SubRight
+    \end{prooftree}
+    
+    Par induction, $`G \typed p : U$. Par \SubsetRule, $`G \typed p :
+    \subset{x}{U}{P}$.
+    
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}[Inversion du sous-typage]
+  \label{inversion-subtyping}
+\end{lemma}
+
+\begin{lemma}[Dérivabilité de la réflexivité, transitivité du sous-typage]
+  \label{refl-trans-subtyping}
+\end{lemma}
+
+\begin{lemma}[Correction du sous-typage]
+  \label{correct-subtyping}
+  Si $`G \judgesub t : U \impsub V$ alors $`G \typed t : U "=>" `G
+  \typed t : V$.
+\end{lemma}
+
+\setboolean{displayLabels}{false}
+
+\begin{proof}
+  Par induction sur la dérivation de sous-typage:
+
+  \begin{itemize}
+  \item[\SubConvRule:] On a $T \eqbi U$ et l'on suppose 
+    $x \typed T$. On a donc bien $`G \typed x : U$.
+    
+  \item[\SubProdRule:] On a
+    \begin{prooftree}
+      \SubProd
+    \end{prooftree}
+    
+    Par induction, $`G \typed x : U$, $`G \typed x : T$, 
+    $`G, x : U \typed v : V$ et $`G, x : U \typed v : W$.
+    Par \AbsRule, $`G \typed \lambda x : U.v : \Pi x : U.W$.
+    
+  \item[\SubSigmaRule:] On a 
+    \begin{prooftree}
+      \SubSigma
+    \end{prooftree}
+    
+    Par hypothèse d'induction, $`G \typed t : T, U$, $`G \typed v : V[t/x], W[t/y]$.
+    Par \SumRule, $(t, v) : \Sigma y : U, W$.
+
+  \item[\SubLeftRule:] On a
+    \begin{prooftree}
+      \SubLeft
+    \end{prooftree}
+    
+    Par induction, $`G \typed p : V$.
+
+  \item[\SubRightRule:] On a
+    \begin{prooftree}
+      \SubRight
+    \end{prooftree}
+    
+    Par induction, $`G \typed p : U$. Par \SubsetRule, $`G \typed p :
+    \subset{x}{U}{P}$.
+    
+  \end{itemize}
+  
+\end{proof}
+
+
+\begin{lemma}[Inversion du typage]
+\label{inversion-typing}
+\end{lemma}
+
+\begin{lemma}[Correction du typage]
+  \label{correct-typing}
+  $`G \typei t : T "=>" `G \typed t : T$
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation dans le système algorithmique:
+
+  \begin{description}
+  \item[\WfAtomRule,\WfVarRule,\PropSetRule,\VarRule,\ProdRule,\AbsRule,
+    \LetInRule, \SigmaRule, \SumRule, \LetSumRule:] règles inchangées.
+
+  \item[\AppRule:] On a
+    \def\fCenter{\typei}
+    \begin{prooftree}
+      \AppI
+    \end{prooftree}
+    
+    Par induction, $`G \typed f : \Pi x : V. W $.
+    Par le lemme \ref{correct-sub}, et l'hypothèse $`G \typed u : U$, 
+    $`G \typed u : V$. Donc, par \AppRule, on a bien $`G \typed f u :
+    W[u/x]$.
+  \end{description}
+  
+\end{proof}
+
+\begin{lemma}[Complétude du typage]
+  \label{complete-typing}
+  $`G \typed t : T "=>" `E U, `G \typei t : U `^ `G \judgesub t : U \impsub T$
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation dans le système déclaratif:
+
+  \begin{description}
+  \item[\WfAtomRule,\WfVarRule,\PropSetRule,\VarRule,\ProdRule,\AbsRule,
+    \LetInRule, \SigmaRule, \SumRule, \LetSumRule:] règles inchangées.
+    
+  \item[\AppRule:] On a 
+    \begin{prooftree}
+      \App
+    \end{prooftree}
+    
+    Par induction, $`E X, Y, `G \typei f : \Pi x : X. Y `^ 
+    `G \judgesub f : \Pi x : X. Y \impsub \Pi x : V. W$ et
+    $`E U, `G \typei u : U `^ `G \judgesub u : U \impsub V$.
+    
+    Si $`G \judgesub f : \Pi X.Y \impsub \Pi x : V.W$, alors 
+    $`G \judgesub x : V \impsub X$ (lemme \ref{inversion-subtyping}). 
+    Par transitivité du sous-typage \ref{refl-trans-subtyping}, 
+    $`G \judgesub U \impsub X$. On peut donc appliquer \AppRule{} pour
+    obtenir $`G \typei f u : Y[u/x]$. Par la covariance du
+    produit en son codomaine et la substitivité du sous-typage,
+    on a $`G \judgesub f u : Y[u/x] \impsub W[u/x]$, la propriété est
+    donc bien vérifiée.
+    
+  \item[\SubsetRule:] On a
+    \begin{prooftree}
+      \Subset
+    \end{prooftree}
+    
+    Par induction, $`E T, `G \typei x : T `^ `G \judgesub x : T \impsub U$.
+    
+
+  \item[\LetSubRule:]
+    
+  \item[\ConvRule:]
+
+  \end{description}
+  
+\end{proof}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "~/research/coq/papers/subset-typing"
+%%% End: 

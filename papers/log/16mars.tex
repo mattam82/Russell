@@ -13,7 +13,26 @@ Les deux phases:
   $`G \type \pi_{1}~n : `N$.
 \end{description}
 
+\subsubsection*{Soir!}
 
+Formalisation des trois jugements:
+\begin{description}
+\item[$\typed$] Typage déclaratif, système indécidable, représentant
+  exactement ce qu'on veut ajouter comme fonctionnalité.
+\item[$\typei$] Version algorithmique, utilisant le dernier jugement
+  pour réaliser l'adéquation avec la présentation déclarative.
+\item[$\judgesub$] ``Sous-typage'', sans obligations de preuves,
+  décidable et à peu près déterministe.
+\end{description}
+
+Il faudra ensuite faire la traduction dans \Coq, avec de nouveaux
+jugements réecrivant les dérivations.
+
+Propriétés à montrer:
+\begin{itemize}
+\item $`G \typed t : T "=>" `E U, `G \typei t : U `^ `G \judgesub t : U \impsub T$
+\item $`G \typei t : T "=>" `G \typed t : T$
+\end{itemize}
 
 %%% Local Variables: 
 %%% mode: latex

@@ -19,10 +19,11 @@
 %\usepackage{concmath}
 \usepackage{cmbright}
 \usepackage{fancyhdr}
+\usepackage{ifthen}
 
 \def\infvspace{2em}
 % This is the "centered" symbol
-\def\fCenter{~{\mbox{$\vdash$}}}
+\def\fCenter{\vdash}
 \def\seq{\fCenter}
 % Optional to turn on the short abbreviations
 \EnableBpAbbreviations
@@ -36,12 +37,15 @@
 %\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
 \newcommand{\Prop}{\ensuremath{\text{\texttt{Prop}}}}
 
-\newcommand{\rname}[1]{{\sc #1}}
-\newcommand{\rulelabel}[1]{{\bf {\sc (#1)}}}
+\newcommand{\rname}[1]{{\bf #1}}
+\newcommand{\rulelabel}[1]{{\bf (#1)}}
 \newcommand{\UR}[2]{\RightLabel{\rulelabel{#1}}\UIC{#2}}
 \newcommand{\URL}[2]{\LeftLabel{\rulelabel{#1}}\UIC{#2}}
 
 \def\impsub{\rightslice}
+
+\newboolean{displayLabels}
+\setboolean{displayLabels}{true}
 
 \def\HOL{{\tt HOL}}
 \def\Coq{{\tt Coq}}
@@ -49,18 +53,22 @@
 
 \makeatletter
 
+\newcommand{\LeftRuleLabel}[1]{
+  \@ifnotmtarg{#1}{\ifthenelse{\boolean{displayLabels}}{\LeftLabel{\rulelabel{#1}}}{}}
+}
+
 \newcommand{\UAX}[4]{\AXC{#2}
-  \@ifnotmtarg{#1}{\LeftLabel{\rulelabel{#1}}}
+  \LeftRuleLabel{#1}
   \@ifnotmtarg{#4}{\RightLabel{#4}}
   \UIC{#3}}
 
 \newcommand{\BAX}[5]{\AXC{#2}\AXC{#3}
-  \@ifnotmtarg{#1}{\LeftLabel{\rulelabel{#1}}}
+  \LeftRuleLabel{#1}
   \@ifnotmtarg{#5}{\RightLabel{#5}}
   \BIC{#4}}
 
 \newcommand{\TAX}[6]{\AXC{#2}\AXC{#3}\AXC{#4}
-  \@ifnotmtarg{#1}{\LeftLabel{\rulelabel{#1}}}
+  \LeftRuleLabel{#1}
   \@ifnotmtarg{#6}{\RightLabel{#6}}
   \TIC{#5}}
 \makeatother
@@ -77,10 +85,15 @@
 
 \newcommand{\eqbi}{`=_{\beta\iota}}
 
-\def\judgewf{~{\mbox{$\vdash_{wf}$}}~}
-\def\judgetype{~{\mbox{$\vdash$}}~}
-\def\judgesub{~{\mbox{$\vdash_{\impsub}$}}~}
+\def\judgewf{\vdash_{wf}}
+\def\judgetyped{\vdash}
+\def\judgetypei{\vdash_{\bullet}}
+\def\judgesub{\vdash_{\impsub}}
 \def\judgerw{~{\mbox{$"~>"$}}~}
+\def\typed{\judgetyped}
+\def\type{\typed}
+\def\typei{\judgetypei}
+\def\wf{\judgewf}
 
 \newcommand{\elt}[4]{\text{elt}~#1~#2~#3~#4}
 \renewcommand{\subset}[3]{\{ #1 : #2 `| #3~#1 \}}
@@ -96,9 +109,10 @@
 
 \def\even{\matht{even}}
 \def\odd{\matht{odd}}
-
+\def\Set{\matht{Set}}
+\def\Prop{\matht{Prop}}
+\def\Type{\matht{Type}}
 \def\ps{\emph{predicate subtyping}}
-
 
 \title{\thetitle}
 
@@ -114,274 +128,36 @@
   blabla 
 \end{abstract}
 
+\section*{Introduction}
+Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
+
+
 \def\WfAtomRule{\rname{Wf-Atom}}
 \def\WfVarRule{\rname{Wf-Var}}
 \def\PropSetRule{\rname{PropSet}}
-\def\AbsRule{\rname{Abs}}
 \def\VarRule{\rname{Var}}
 \def\ProdRule{\rname{Prod}}
-\def\SubsetRule{\rname{Subset}}
+\def\AbsRule{\rname{Abs}}
 \def\AppRule{\rname{App}}
-\def\type{\judgetype}
-\def\wf{\judgewf}
+\def\LetInRule{\rname{LetIn}}
+\def\SigmaRule{\rname{Sigma}}
+\def\SumRule{\rname{Sum}}
+\def\LetSumRule{\rname{LetSum}}
+\def\SubsetRule{\rname{Subset}}
+\def\LetSubRule{\rname{LetSub}}
+\def\ConvRule{\rname{Conv}}
 
-\begin{figure}[h]
-  \begin{center}
-    \def\fCenter{\judgerw}
-    \UAX{Wf-Atom}{}{$\wf [] "~>" \wf []$}{} \DisplayProof
-    
-    \vspace{\infvspace}
-    \UAX{Wf-Var}
-    {$`G \type A : s \seq `G' \type A' : s$}
-    {$\wf `G, x : A \seq \wf `G', x : A'$}
-    {$s `: \{ \matht{Set}, \matht{Prop}, \matht{Type(i)} \}$} \DisplayProof
+\input{typing-decl}
+\input{typing-algo}
+\input{subtyping-algo}
 
-    \vspace{\infvspace}
-    \UAX{PropSet}
-    {$\wf `G \seq \wf `G'$}
-    {$`G \type s : Type \seq `G' \type s : \matht{Type}$}
-    {$s `: \{ \matht{Prop}, \matht{Set} \}$} 
-    \DisplayProof
-    
-    \vspace{\infvspace}
-    \BAX{Var}{$\wf `G \seq \wf `G'$}
-    {$x : A `: `G \seq x : A' `: `G'$}
-    {$`G \type x : A "~>" `G' \type x : A'$}{} \DisplayProof
-    
-    \vspace{\infvspace}
-    \BAX{Prod}
-    {$`G \type T : s1 \seq `G' \type T' : s1$}
-    {$`G, x : T \type U : s2 \seq `G, x' : T' \type U' : s2$}
-    {$`G \type \Pi x : T.U : s2 \seq `G' \type \Pi x' : T'.U' : s2$}
-    {$s1, s2 `: \text{{\sc Sort}}$}
-    \DisplayProof
-    
-    \vspace{\infvspace}
-    \TAX{Abs}
-    {$`G \type T : s1 \seq `G' \type T' : s1$}
-    {$`G, x : T \type U : s2 \seq `G', x : T' \type U' : s2$}
-    {$`G, x : T \type M : U \seq `G', x : T' \type M' : U'$}
-    {$`G \type \lambda x : T. M : \Pi x : T.U
-      \seq `G' \type \lambda x : T'. M' : \Pi x : T'.U'
-      $}
-    {$s1, s2 `: \matht{Sort}$} \DisplayProof
-
-    \vspace{\infvspace}
-    \BAX{App}
-    {$`G \type f : \Pi x : V. W \seq `G' \type f' : \Pi x : V'. W'$}
-    {$`G \type u : V \seq `G' \type u' : V'$}
-    {$`G \type (f u) : W [ u / x ] \seq
-      `G' \type (f u') : W' [ u' / x ]$}
-    {$$} \DisplayProof
-    
-    \vspace{\infvspace}
-    \BAX{Sigma}
-    {$`G \type T : s1 \seq `G' \type T' : s1$}
-    {$`G, x : T \type U : s2 \seq `G', x : T' \type U' : s2$}
-    {$`G \type \Sigma x : T.U : s2 \seq `G' \type \Sigma x : T'.U' : s2$}
-    {$s1, s2 `: \matht{Sort}$} \DisplayProof
-
-    \vspace{\infvspace}
-    \BAX{Sum}
-    {$`G \type t : T \seq `G' \type t' : T'$}
-    {$`G \type u : U[t/x] \seq `G' \type u' : U'[t'/x]$}
-    {$`G \type (t, u) : \Sigma x : T.U \seq 
-      `G' \type (t', u') : \Sigma x : T'.U'$}
-    {} \DisplayProof
-    
-    \vspace{\infvspace}
-    \BAX{LetSum}
-    {$`G \type t : `S x : T. U \seq `G' \type t' : `S x : T'. U'$}
-    {$`G, x : T, u : U \type v : V \seq `G', x : T', u : U' \type v' : V'$}
-    {$`G \type \letml (x, u) = t \inml v : V \seq 
-      `G' \type \letml (x, u) = t' \inml v' : V'$}
-    {} \DP
-
-    \vspace{\infvspace}
-    \TAX{Subset}
-    {$`G \type P : \Pi x : U. Prop \seq `G' \type P' : \Pi x : U'. Prop$}
-    {$`G \type x : U \seq `G' \type x : U'$}
-    {$`G \type p : P~x \seq `G' \type p' : P'~x$}
-    {$`G \type x : \{ x : U `| P~x \} \seq 
-      `G' \type \elt{U'}{P'}{x}{p'} : \subset{x}{U'}{P'}$}
-    {$$} \DisplayProof
-
-%%     \vspace{\infvspace}
-%%     \BAX{LetSub}
-%%     {$`G \type t : \subset{x}{T}{P} \seq `G' \type t' : \subset{x}{T'}{P'}$}
-%%     {$`G, x : T, p : P~x \type v : V \seq `G', x : T', p : P'~x \type v' : V'$}
-%%     {$`G \type \letml x = t \inml v : V \seq 
-%%       `G' \type \letml (x, p) = t' \inml v' : V'$}
-%%     {} \DP
-
-    %\elt{U}{f}{x}{p}
-%%     \vspace{\infvspace}
-%%     \TAX{App}
-%%     {$`G \type u : U$}
-%%     {$`G \type f : \Pi x : V. W$}
-%%     {$`G \judgesub u : U \impsub V "~>" p$}
-%%     {$`G \type (f u) "~>" (f p) : W [ p / x ]$}
-%%     {$$} \DisplayProof
-
-  \end{center}
-  \label{typing-rules}
-  \caption{Typage du Calcul des Constructions avec sous-types prédicats}
-\end{figure}
-
-\UAX{[]}
-{$`G \type t : T \seq `G' \type t' : T'$}
-{$`G'$}
-{}
-\DP
-\begin{lemma}[Substitutivité de la traduction]
-  Pour tout $U : s$, $t : T$,
-  $U[t/x] "~>" Q$ ssi $U "~>" P$ et $P[[t]_{T'}/x] = Q$.
-\end{lemma}
-
-\begin{proof}
-  Par induction sur $U$:
-
-  \begin{description}
-  \item[\VarRule:]  $U = x : T$, donc $Q = t'$ et $P = x : T'$ donc 
-    $P[[t]_{T'}/x] = [t]_{T'}$.
-    
-  \item[\:]
-    
-  \end{description}
-  
-\end{proof}
-
+\clearpage
+ 
 \def\SubConvRule{\rname{Sub-Conv}}
 \def\SubProdRule{\rname{Sub-Prod}}
 \def\SubSigmaRule{\rname{Sub-Sigma}}
 \def\SubLeftRule{\rname{Sub-Left}}
 \def\SubRightRule{\rname{Sub-Right}}
-
-\begin{figure}[h]
-  \begin{center}
-    \def\fCenter{\judgesub}
-    
-    \BAX{Sub-Conv}
-    {$`G \judgetype x : T$}
-    {$T \eqbi U$}
-    {$`G \seq x : T \impsub U "~>" x$}
-    {} 
-    \DisplayProof
-    \vspace{\infvspace}
-
-    \BAX{Sub-Prod}
-    {$`G \seq x : U \impsub T "~>" p$} %"<|-|>"
-    {$`G, x : U \seq v[p/x] : V[p/x] \impsub W "~>" q$}
-    {$`G \seq \lambda x : T. v : \Pi x : T.V \impsub \Pi x : U.W "~>" 
-      \lambda x : U. q$}
-    {}
-    \DisplayProof
-    
-    \vspace{\infvspace}
-    \BAX{Sub-Sigma}
-    {$`G \seq x : T \impsub U "~>" p$}
-    {$`G \seq v : V \impsub W[p/y] "~>" q$}
-    {$`G \seq (x, v) : \Sigma x : T. V \impsub \Sigma y : U. W "~>"
-      (p, q)$}
-    {}
-    \DisplayProof
-
-    \vspace{\infvspace}
-    \BAX{Sub-Left}
-    {$`G \judgetype q : P~p$}
-    {$`G, q : P~p \seq p : U \impsub V "~>" t$}
-    {$`G \seq p : \subset{x}{U}{P} \impsub V "~>" t$}
-    {}
-    \DisplayProof
-
-    \vspace{\infvspace}
-    \BAX{Sub-Right}
-    {$`G \seq p : A \impsub U "~>" p'$}
-    {$`G \judgetype h : P~p'$}
-    {$`G \seq p : A \impsub \subset{x}{U}{P} "~>" \elt{U}{P}{p'}{h}$}
-    {$A$ atomique}
-    \DisplayProof
-    
-  \end{center}
-  \label{subtyping-rules}
-  \caption{Sur-typage}
-\end{figure}
-
-\begin{figure}[h]
-  \begin{center}
-    \begin{tabular}{ccc}
-      atom & $"=>"$ & atom \\
-      $\subset{x}{`t}{P}$ & $"=>"$ & $\mu~`t$ \\
-      $\Pi x : `t. `t'$ & $"=>"$ & $\Pi x : `t. \mu~`t'$ \\
-      $\Sigma x : `t. `t'$ & $"=>"$ & $\Sigma x : \mu~`t. (\mu~`t') `/
-      ((\pi~`t) x)$ 
-    \end{tabular}    
-  \end{center}
-  \label{mu-def}
-  \caption{$\mu$: Supertypes maximaux}
-\end{figure}
-
-\begin{figure}[h]
-  \begin{center}
-    \begin{tabular}{ccc}
-      $s `: \text{atom}$ & $"=>"$ & $\lambda x : s. True$ \\
-      $\subset{x}{`t}{P}$ & $"=>"$ & $\lambda x : \mu~`t. ((\pi~`t) x)
-      `^ P[x/y]$ \\
-      $\Pi x : `t. `t'$ & $"=>"$ & $\lambda x : (\Pi x : `t. \mu~`t'). 
-      `A y : A, ((\pi~`t') (x~y))$ \\
-      $\Sigma x : `t, `t'$ & $"=>"$ & $\lambda x : 
-      (\Sigma x : \mu~`t, (\mu~`t') `/ ((\pi~`t) x)). 
-      \letml (a, b) = x \inml ((\pi~`t) a) `^ ((\pi~`t') b)[a/y]$ 
-    \end{tabular}
-  \end{center}
-  \label{pi-def}
-  \caption{$\pi$: Collection des contraintes}
-\end{figure}
-
-\clearpage
-
-\begin{lemma}[Préservation de l'équivalence par $\mu$]
-  \label{mu-equiv-preserve}
-  Si $U \eqbi V$ alors $\mu~U \eqbi \mu~V$.
-\end{lemma}
-
-\begin{proof}
-  Par induction sur $(U, V)$ : si $U `= \subset{x}{A}{P}$, 
-  par hypothèse, $V \eqbi \subset{x}{A'}{P'}$ avec $A \eqbi A'$ et $P
-  \eqbi P'$. Par induction $A \eqbi A' "=>" \mu~A \eqbi \mu~A'$. Sinon,
-  $U = \mu~U$ et $V = \mu~V$.
-\end{proof}
-
-\begin{prop}[Equivalence des supertypes maximaux]
-  Si $`G \judgesub U \impsub V$ alors 
-  $`G \judgetype \mu~U \eqbi \mu~V$ et 
-  $`G \judgetype (\pi~U)~(\mu~U) "->" (\pi~V)~(\mu~V)$.
-\end{prop}
-\begin{proof}
-  Par induction sur la dérivation de typage:
-  
-  \begin{description}
-  \item[\SubConvRule:] $U \eqbi V$, donc par le lemme
-    \ref{mu-equiv-preserve}, $\mu~U \eqbi \mu~V$.
-    
-  \item[\SubProdRule:]
-    
-  \item[\SubSigmaRule:] Par induction, $\mu~T \eqbi \mu~U$ et     
-    $\mu~V \eqbi \mu~W[p/y]$. Donc 
-    \begin{eqnarray*}
-      \mu~\Sigma x : T.V & = & \Sigma x : \mu~T. \mu~V `/ ((\pi T) x) \\
-      & \eqbi & \Sigma x : \mu~U. \mu~W[p/y] `/ ((\pi T) x) \\
-      & & \{ p : T "->" U, \pi~T "->" \pi~U \} \\
-      & = & \mu~\Sigma x : U. W[p/y]
-    \end{eqnarray*}
-    
-  \item[\SubLeftRule:]
-    
-  \item[\SubRightRule:]    
-  \end{description}
-  
-\end{proof}
-
 
 \section*{Journal}
 
@@ -391,8 +167,9 @@
 \input{log/14mars}
 \input{log/15mars}
 \input{log/16mars}
+\input{log/17mars}
 
-\bibliography{subset-typing,../bib/bib-joehurd}
+\bibliography{subset-typing,../bib/bib-joehurd,../bib/pvs-bib}
 \bibliographystyle{plain}
 
 \renewcommand{\thefootnote}{}
