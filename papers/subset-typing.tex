@@ -13,16 +13,47 @@
 \usepackage{array}
 \usepackage{myabbrevs}
 \usepackage{url}
+\usepackage{bnf}
+\usepackage{bussproofs}
+\usepackage{pslatex}
+
+\def\infvspace{3em}
+% This is the "centered" symbol
+\def\fCenter{~{\mbox{$\vdash$}}}
+\def\seq{\fCenter}
+% Optional to turn on the short abbreviations
+\EnableBpAbbreviations
+
 \newtheorem{lemma}{Lemme}[section]
 \newtheorem{theo}[lemma]{Théorême}
 \newtheorem{prop}[lemma]{Proposition}
 
 \newcommand{\src}[1]{\texttt{#1}}
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
-\newcommand{\Pprop}{\ensuremath{\text{\texttt{Pprop}}}}
+%\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
 \newcommand{\Prop}{\ensuremath{\text{\texttt{Prop}}}}
 
-\title{Predicate subtyping in Coq} 
+\newcommand{\rname}[1]{{\bf #1}}
+\newcommand{\rulelabel}[1]{{\bf {\sc (#1)}}}
+\newcommand{\UR}[2]{\RightLabel{\rulelabel{#1}}\UIC{#2}}
+\newcommand{\URL}[2]{\LeftLabel{\rulelabel{#1}}\UIC{#2}}
+
+\newcommand{\UAX}[4]{\AXC{#2}\LeftLabel{\rulelabel{#1}}\RightLabel{#4}\UIC{#3}}
+
+\newcommand{\BAX}[5]{\AXC{#2}\AXC{#3}
+  \LeftLabel{\rulelabel{#1}}\RightLabel{#5}\BIC{#4}}
+
+\newcommand{\TAX}[6]{\AXC{#2}\AXC{#3}\AXC{#4}
+  \LeftLabel{\rulelabel{#1}}\RightLabel{#6}\TIC{#5}}
+
+\newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
+\newcommand{\BRL}[2]{\LeftLabel{\rulelabel{#1}}\BIC{#2}}
+
+\newcommand{\letml}{\textbf{let}~}
+\newcommand{\inml}{~\textbf{in}~}
+
+
+\title{Sous-typage par predicats en Coq} 
 
 \author{Matthieu Sozeau}
 
@@ -35,7 +66,148 @@
   blabla
 \end{abstract}
 
+\def\judgewf{~{\mbox{$\vdash_{wf}$}}~}
+\def\judgetype{~{\mbox{$\vdash$}}~}
+\def\judgesub{~{\mbox{$\vdash_{``<=}$}}~}
+
+\newcommand{\elt}[4]{\text{elt}~#1~#2~#3~#4}
+\renewcommand{\subset}[3]{\{ #1 : #2 `| #3~#1 \}}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\judgewf}
+    \UAX{Wf-Atom}{}{$\seq []$}{} \DisplayProof
+    \UAX{Wf-Var}{$`G \judgetype A : s$}{$\seq `G, x : A$}
+    {$s `: \{ Set, Prop, Type \}$} \DisplayProof
+    \vspace{\infvspace}
+    \def\fCenter{\judgetype}
+    \UAX{PropSet}{$\judgewf `G$}{$`G \seq s : Type$}
+    {$s `: \{ Prop, Set \}$} \DisplayProof
+    \BAX{Var}{$\judgewf `G$}{$x : A `: `G$}{$`G \seq x : A$}{} \DisplayProof
+    \vspace{\infvspace}
+    \TAX{Abs}{$`G \seq T : s1$}{$`G, x : T \seq M : U$}
+    {$`G, x : T \seq U : s2$}
+    {$`G \seq \lambda x : T. M : \Pi x : T.U$}
+    {$s1, s2 `: \text{{\sc Sort}}$} \DisplayProof
+    \vspace{\infvspace}
+    \BAX{Prod}{$`G \seq T : s1$}{$`G, x : T \seq U : s2$}
+    {$`G \seq \Pi x : T.U : s2$}
+    {$s1, s2 `: \text{{\sc Sort}}$} \DisplayProof
+    \vspace{\infvspace}
+    \BAX{App}{$`G \seq u : U$}{$`G \seq f : \Pi x : U. V$}
+    {$`G \seq (f x) : V [ u / x ]$}{$$} \DisplayProof
+
+    \vspace{\infvspace}
+    \TAX{Subset}{$`G \seq f : \Pi x : U. Prop$}
+    {$`G \seq x : U$}{$`G \seq p : P~x$}
+    {$`G \seq \elt{U}{f}{x}{p} : \{ x : U `| P~x \}$}{$$} \DisplayProof
+  
+    \vspace{\infvspace}
+    \AXC{$`G \seq u : \subset{x}{U}{P}$}
+    \noLine
+    \UIC{$`G \seq f : \Pi x : \subset{y}{V}{Q}. W$}
+    \AXC{$`G \judgesub u : \subset{x}{U}{P} ``<= \subset{y}{V}{Q} "~>" q$}
+    \BIC{$`G \seq (f u) "~>" f q : W [ q / x ]$}
+    \DisplayProof
+
+  \end{center}
+  \label{typing-rules}
+  \caption{Typage du Calcul des Constructions avec sous-types prédicats}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\judgesub}
+
+    \BAX{Sub-Conv}
+    {$`G \judgetype x : T$}
+    {$T `= U$}
+    {$`G \seq x : T ``<= U "~>" x$}
+    {} 
+    \DisplayProof
+    \vspace{\infvspace}
+
+    \BAX{Sub-Prod}
+    {$`G \seq y : U ``<= T "~>" p$}
+    {$`G, y : T \seq z : V ``<= W "~>" q$}
+    {$`G \seq \lambda y. z : \Pi T.V ``<= \Pi U.W "~>" 
+      \lambda y : U. q[y/p]$}
+    {$U = T$ si invariance sur les domaines}
+    \DisplayProof
+
+    \vspace{\infvspace}
+
+    \BAX{Sub-Sigma}
+    {$`G \seq y : T `= U "~>" p$}
+    {$`G, x : T \seq z : V ``<= W[x/y] "~>" q$}
+    {$`G \seq (y, z) : \Sigma x : T, V ``<= \Sigma y : U, W "~>"
+      (p, q)$}
+    {}
+    \DisplayProof
+    
+    \vspace{\infvspace}
+    \BAX{Sub-Subset}
+    {$`G \seq u : U ``<= V "~>" p$}
+    {$`G \judgetype p : \pi(U)(u) `^ P~u "->" \pi(V)(u) `^ Q~u$}
+    {$`G \seq u : \subset{x}{U}{P} ``<= \subset{y}{V}{Q} "~>" p$}
+    {}
+    \DisplayProof
+
+    ou
+
+    \vspace{\infvspace}
+    \UAX{Sub-Left}
+    {$`G, q : P~p \seq p : U ``<= V "~>" t$}
+    {$`G \seq p : \subset{x}{U}{P} ``<= V "~>" 
+      \letml (\_, h) = p \inml t[h/q]$}
+    {}
+    \DisplayProof
+    
+    puis
+
+    \vspace{\infvspace}
+    \BAX{Sub-Right}
+    {$`G \seq p : A ``<= U "~>" p'$}
+    {$`G \judgetype h : P~p'$}
+    {$`G \seq p : A ``<= \subset{x}{U}{P} "~>" \elt{U}{P}{p'}{h}$}
+    {$A$ atome}
+    \DisplayProof
+    
+  \end{center}
+  \label{subtyping-rules}
+  \caption{Sous-typage}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tabular}{ccc}
+      atom & $"=>"$ & atom \\
+      $\subset{x}{`t}{P}$ & $"=>"$ & $\mu~`t$ \\
+      $\Pi x : `t. `t'$ & $"=>"$ & $\Pi x : `t. \mu~`t'$ \\
+      $\Sigma x : `t, `t'$ & $"=>"$ & $\Sigma x : \mu~`t, (\mu~`t') `/
+      ((\pi~`t) x)$ 
+    \end{tabular}    
+  \end{center}
+  \label{pi-def}
+  \caption{$\mu$: supertypes maximaux}
+\end{figure}
 
 
+\begin{figure}[h]
+  \begin{center}
+    \begin{tabular}{ccc}
+      $s `: \text{atom}$ & $"=>"$ & $\lambda x : s. True$ \\
+      $\subset{x}{`t}{P}$ & $"=>"$ & $\lambda x : \mu~`t. ((\pi~`t) x)
+      `^ P[x/y]$ \\
+      $\Pi x : `t. `t'$ & $"=>"$ & $\lambda x : (\Pi x : `t. \mu~`t'). 
+      `A y : A, ((\pi~`t') (x~y))$ \\
+      $\Sigma x : `t, `t'$ & $"=>"$ & $\lambda x : 
+      (\Sigma x : \mu~`t, (\mu~`t') `/ ((\pi~`t) x)). 
+      \letml (a, b) = x \inml ((\pi~`t) a) `^ ((\pi~`t') b)[a/y]$ 
+    \end{tabular}
+  \end{center}
+  \label{pi-def}
+  \caption{$\pi$: collection des contraintes}
+\end{figure}
 
 \end{document}
