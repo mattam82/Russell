@@ -1,48 +1,44 @@
 \def\SubConvI{
 \UAX{Sub-Conv}
 {$T \eqbi U$}
-{$\subimpl{`G}{T}{U}{`O}{(\lambda x. x)}{T'}{U'}$}
+{$\subimpl{`G}{(\lambda x. x)}{T}{U}$}
 {} 
 }
 
 \def\SubProdI{
   \BAX{Sub-Prod}
-  {$\subimpl{`G}{U}{T}{`G'}{c_1}{U'}{T'}$} %"<|-|>"
-  {$\subimpl{`G}{V}{W}{`G'}{c_2}{V'}{W'}$}
-  {$\subimpl{`G}{\Pi x : T.V}{\Pi x : U.W}{`G'}
-    {\lambda f. c_2 `o f `o c_1}
-    {\Pi x : T'.V'}{\Pi x : U'.W'}$}
+  {$\subimpl{`G}{c_1}{U}{T}$}
+  {$\subimpl{`G, x : U}{c_2}{V[c_1~x/x]}{W}$}
+  {$\subimpl{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
   {}
 }
 
 \def\SubSigmaI{
   \BAX{Sub-Sigma}
-  {$\subimpl{`G}{T}{U}{`G'}{c_1}{T'}{U'}$}
-  {$\subimpl{`G}{V}{W}{`G'}{c_2}{V'}{W'}$}
-  {$\subimpl{`G}{\Sigma x : T. V}{\Sigma x : U. W}{`G'}
+  {$\subimpl{`G}{c_1}{T}{U}$}
+  {$\subimpl{`G}{c_2}{V}{W}$}
+  {$\subimpl{`G}
     {\lambda (x, y). (c_1~x, c_2~y)}
-    {\Sigma x : T'. V'}{\Sigma x : U'. W'}
-    $}
+    {\Sigma x : T. V}{\Sigma x : U. W}$}
   {}
 }
 
 \def\SubLeftI{
   \BAX{Sub-Left}
-  {$\subimpl{`G}{U}{V}{`G'}{c}{U'}{V'}$}
-  {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop}$}
-  {$\subimpl{`G}{\subset{x}{U}{P}}{V}{`G'}
-    {c `o \pi_1}
-    {\subset{x}{U'}{P'}}{V'}$}
+  {$`G, x : U \typec P : \Prop$}
+  {$\subimpl{`G}{c}{U}{V}$}
+  {$\subimpl{`G}{c `o \pi_1}
+    {\subset{x}{U}{P}}{V}$}
   {}
 }
     
 \def\SubRightI{
   \BAX{Sub-Right}
-  {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop}$}
-  {$\subimpl{`G}{T}{U}{`G'}{c}{T'}{U'}$}
-  {$\subimpl{`G}{T}{\subset{x}{U}{P}}
-    {`G'}{\lambda t : T'. \elt{U'}{P'}{(c~t)}{?(P'[c~t/x])}}
-    {T'}{\subset{x}{U'}{P'}}$}
+  {$`G, x : U \typec P : \Prop$}
+  {$\subimpl{`G}{c}{T}{U}$}
+  {$\subimpl{`G}
+    {\lambda t : T'. \elt{U}{(\lambda x : U.P)}{(c~t)}{?(p : P[c~t/x])}}
+    {T}{\subset{x}{U}{P}}$}
   {}
 }
 
