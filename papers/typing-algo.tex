@@ -1,6 +1,6 @@
 \def\AppI{
 \QAX{App}
-{$`G \subtd f : T$}
+{$`G \seq f : T$}
 {$\mu~T `= \Pi x : V. W$}
 {$`G \seq u : U$}
 {$`G \subt u : U \sub V $}
@@ -47,6 +47,15 @@
   \end{center}
   \label{typing-algo-rules}
   \caption{Calcul des constructions avec sous-typage (version algorithmique)}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{eqnarray*}
+    \subset{x}{U}{P} & "=>" & \mu~U \\
+    x                & "=>" & x
+  \end{eqnarray*}
+  \label{mu-definition}
+  \caption{Définition de $\mu$}
 \end{figure}
 
 %%% Local Variables: 

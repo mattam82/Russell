@@ -15,8 +15,15 @@
 \def\PropSet{
   \UAX{PropSet}
   {$\wf `G$}
-  {$`G \seq s : Type$}
+  {$`G \seq s : \Type(0)$}
   {$s `: \{ \Prop, \Set \}$} 
+}
+
+\def\TypeType{
+  \UAX{Type}
+  {$\wf `G$}
+  {$`G \seq \Type(i) : \Type(i + 1)$}
+  {}
 }
 
 \def\Var
@@ -32,7 +39,7 @@
   {$`G \seq T : s1$}
   {$`G, x : T \seq U : s2$}
   {$`G \seq \Pi x : T.U : s2$}
-  {$s1, s2 `: \text{{\sc Sort}}$}
+  {$(s1, s2) `: \text{{\sc Sort}}$}
 }
 
 \def\Abs{
@@ -64,7 +71,7 @@
   {$`G \seq T : s1 $}
   {$`G, x : T \seq U : s2 $}
   {$`G \seq \Sigma x : T.U : s2 $}
-  {$s1, s2 `: \matht{Sort}$} 
+  {$(s1, s2) `: \matht{Sort}$} 
 }
 
 \def\Sum{
@@ -86,10 +93,9 @@
 
 \def\Subset{
   \BAX{Subset}
+  {$`G \seq U : \Type$}
   {$`G \seq P : \Pi x : U. \Prop $}
-  {$`G \seq x : U $}
-                                %    {$`G \seq p : P~x $}
-  {$`G \seq x : \{ x : U `| P~x \}$}
+  {$`G \seq \{ x : U `| P~x \} : \Type$}
   {$$}
 }
 
@@ -128,6 +134,9 @@
     \PropSet\DP
 
     \vspace{\infvspace}
+    \TypeType\DP
+
+    \vspace{\infvspace}
     \Var\DP
     
     \vspace{\infvspace}
@@ -151,8 +160,8 @@
     \vspace{\infvspace}
     \LetSum\DP
 
-%%     \vspace{\infvspace}
-%%     \Subset\DP
+    \vspace{\infvspace}
+    \Subset\DP
 
 %%     \vspace{\infvspace}
 %%     \LetSub\DP
