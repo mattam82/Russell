@@ -1,0 +1,68 @@
+\def\SubConv{
+\UAX{Sub-Conv}
+                                %{$`G \judgetypei x : T$}
+{$T \eqbi U$}
+{$`G \seq x : T \impsub U$}
+{} 
+}
+
+\def\SubProd{
+  \BAX{SubProd}
+  {$`G \seq x : U \impsub T$} %"<|-|>"
+  {$`G, x : U \seq v : V \impsub W$}
+  {$`G \seq \lambda x : T. v : \Pi x : T.V 
+    \impsub \Pi x : U.W$}
+  {}
+}
+\def\SubSigma{
+  \BAX{Sub-Sigma}
+  {$`G \seq t : T \impsub U$}
+  {$`G \seq v : V[t/x] \impsub W[t/y]$}
+  {$`G \seq (t, v) : \Sigma x : T. V
+    \impsub \Sigma y : U. W$}
+  {}
+}
+
+\def\SubLeft{
+  \BAX{Sub-Left}
+  {$`G \seq p : U \impsub V$}
+  {$`G \typei P : \Pi x : U. \Prop$}
+  {$`G \seq p : \subset{x}{U}{P} \impsub V$}
+  {}
+}
+    
+\def\SubRight{
+  \UAX{Sub-Right}
+  {$`G \seq p : T \impsub U$}
+                                %{$`G \judgetype h : P~p$}
+  {$`G \seq p : T \impsub \subset{x}{U}{P}$}
+  {}
+}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\judgesub}
+    
+    \SubConv\DP
+    \vspace{\infvspace}
+
+    \SubProd\DP
+
+    \vspace{\infvspace}
+    \SubSigma\DP
+    
+    \vspace{\infvspace}
+    \SubLeft\DP
+    
+    \vspace{\infvspace}
+    \SubRight\DP
+    
+  \end{center}
+  \label{subtyping-algo-rules}
+  \caption{Sous-typage}
+\end{figure}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 

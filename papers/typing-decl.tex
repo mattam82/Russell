@@ -1,0 +1,163 @@
+\def\WfAtom{
+  \UAX{Wf-Atom}
+  {}
+  {$\seq []$}
+  {}
+}  
+  
+\def\WfVar{
+  \UAX{Wf-Var}
+  {$`G \type A : s$}
+  {$\seq `G, x : A$}
+  {$s `: \{ \Set, \Prop, \Type(i) \}$}
+}
+
+\def\PropSet{
+  \UAX{PropSet}
+  {$\wf `G$}
+  {$`G \seq s : Type$}
+  {$s `: \{ \Prop, \Set \}$} 
+}
+
+\def\Var
+{\BAX{Var}
+  {$\wf `G$}
+  {$x : A `: `G$}
+  {$`G \seq x : A$}
+  {}
+}
+
+\def\Prod{
+  \BAX{Prod}
+  {$`G \seq T : s1$}
+  {$`G, x : T \seq U : s2$}
+  {$`G \seq \Pi x : T.U : s2$}
+  {$s1, s2 `: \text{{\sc Sort}}$}
+}
+
+\def\Abs{
+  \TAX{Abs}
+  {$`G \seq T : s1 $}
+  {$`G, x : T \seq U : s2 $}
+  {$`G, x : T \seq M : U $}
+  {$`G \seq \lambda x : T. M : \Pi x : T.U$}
+  {$s1, s2 `: \matht{Sort}$}
+}
+
+\def\App{
+  \BAX{App}
+  {$`G \seq f : \Pi x : V. W $}
+  {$`G \seq u : V $}
+  {$`G \seq (f u) : W [ u / x ]$}
+  {$$}
+}
+
+\def\LetIn{
+  \BAX{LetIn}
+  {$`G \seq t : T $}
+  {$`G, x : T \seq v : V $}
+  {$`G \seq \letml x = t \inml v : V$}
+  {}
+}
+
+\def\SigmaR{
+  \BAX{Sigma}
+  {$`G \seq T : s1 $}
+  {$`G, x : T \seq U : s2 $}
+  {$`G \seq \Sigma x : T.U : s2 $}
+  {$s1, s2 `: \matht{Sort}$} 
+}
+
+\def\Sum{
+  \BAX{Sum}
+  {$`G \seq t : T $}
+  {$`G \seq u : U[t/x] $}
+  {$`G \seq (t, u) : \Sigma x : T.U$}
+  {}
+}
+ 
+\def\LetSum{
+  \BAX{LetSum}
+  {$`G \seq t : `S x : T. U $}
+  {$`G, x : T, u : U \seq v : V $}
+  {$`G \seq \letml (x, u) = t \inml v : V$}
+  {}
+}
+
+\def\Subset{
+  \BAX{Subset}
+  {$`G \seq P : \Pi x : U. \Prop $}
+  {$`G \seq x : U $}
+                                %    {$`G \seq p : P~x $}
+  {$`G \seq x : \{ x : U `| P~x \}$}
+  {$$}
+}
+
+\def\LetSub{
+  \UAX{LetSub}
+  {$`G \seq t : \subset{x}{T}{P}$}
+  {$`G \seq t : T$}
+  {}
+}
+
+\def\Conv{
+  \TAX{Conv}
+  {$`G \seq U : s$}
+  {$`G \seq t : U$}      
+  {$`G \seq U \eqbi T$}
+  {$`G \seq t : T$}
+  {}
+}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\wf}
+    \WfAtom\DP
+    \WfVar\DP
+    
+    \def\fCenter{\typed}
+    \vspace{\infvspace}
+    \PropSet\DP
+
+    \vspace{\infvspace}
+    \Var\DP
+    
+    \vspace{\infvspace}
+    \Prod\DP
+    
+    \vspace{\infvspace}
+    \Abs\DP
+
+    \vspace{\infvspace}
+    \App\DP
+
+    \vspace{\infvspace}
+    \LetIn\DP
+    
+    \vspace{\infvspace}
+    \SigmaR\DP
+
+    \vspace{\infvspace}
+    \Sum\DP
+    
+    \vspace{\infvspace}
+    \LetSum\DP
+
+    \vspace{\infvspace}
+    \Subset\DP
+
+    \vspace{\infvspace}
+    \LetSub\DP
+
+    \vspace{\infvspace}
+    \Conv\DP
+    
+  \end{center}
+  \label{typing-decl-rules}
+  \caption{Calcul des constructions avec types sous-ensembles (version déclarative)}
+\end{figure}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 

@@ -1,0 +1,54 @@
+\def\AppI{
+\TAX{App}
+{$`G \seq f : \Pi x : V. W $}
+{$`G \seq u : U$}
+{$`G \judgesub u : U \impsub V $}
+{$`G \seq (f u) : W [ u / x ]$}
+{}
+}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\wf}
+    \def\type{\typei}
+    
+    \WfAtom\DP    
+    \WfVar\DP
+    
+    \def\fCenter{\typei}
+    \vspace{\infvspace}
+    \PropSet\DP
+    
+    \vspace{\infvspace}
+    \Var\DP
+    
+    \vspace{\infvspace}
+    \Prod\DP
+    
+    \vspace{\infvspace}
+    \Abs\DP
+
+    \vspace{\infvspace}
+    \AppI\DP
+
+    \vspace{\infvspace}
+    \LetIn\DP
+    
+    \vspace{\infvspace}
+    \SigmaR\DP
+
+    \vspace{\infvspace}
+    \Sum\DP
+    
+    \vspace{\infvspace}
+    \LetSum\DP
+    
+  \end{center}
+  \label{typing-algo-rules}
+  \caption{Calcul des constructions avec sous-typage (version algorithmique)}
+\end{figure}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 

@@ -100,7 +100,7 @@
 
 \def\thetitle{Sous-typage par prédicats en Coq}
 
-\pagestyle{fancy}
+\pagestyle{plain}
 \fancyhead[RO,LE]{\thetitle}
 \fancyfoot[C]{\thepage}
 %\renewcommand{\headrulewidth}{0pt}
@@ -146,18 +146,21 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\SubsetRule{\rname{Subset}}
 \def\LetSubRule{\rname{LetSub}}
 \def\ConvRule{\rname{Conv}}
-
-\input{typing-decl}
-\input{typing-algo}
-\input{subtyping-algo}
-
-\clearpage
  
 \def\SubConvRule{\rname{Sub-Conv}}
 \def\SubProdRule{\rname{Sub-Prod}}
 \def\SubSigmaRule{\rname{Sub-Sigma}}
 \def\SubLeftRule{\rname{Sub-Left}}
 \def\SubRightRule{\rname{Sub-Right}}
+
+\input{typing-decl}
+\input{typing-algo}
+\input{subtyping-algo}
+\input{typing-proofs}
+\clearpage
+
+\section*{Travaux connexes(?)}
+Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 
 \section*{Journal}
 
@@ -168,8 +171,10 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \input{log/15mars}
 \input{log/16mars}
 \input{log/17mars}
+\input{log/22mars}
+\input{log/23mars}
 
-\bibliography{subset-typing,../bib/bib-joehurd,../bib/pvs-bib}
+\bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
 \bibliographystyle{plain}
 
 \renewcommand{\thefootnote}{}

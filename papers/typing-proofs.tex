@@ -1,0 +1,316 @@
+\setboolean{displayLabels}{false}
+
+\begin{lemma}[Conservation de la conversion par sous-typage]
+  Si $`G \typed t : T$, $T \eqbi U$ alors $`G \judgesub t : T \impsub U$.
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la forme de $T$.
+  
+  \def\seq{\judgesub}.
+  
+  \begin{itemize}
+  \item[$T$ atomique:]
+    On a alors $U = T$, trivial.
+    
+  \item[$T `= \Pi X.Y$:]
+    Alors $U `= \Pi V.W$ et $X \eqbi V$, $Y \eqbi W$, 
+    donc par induction $`G \judgesub x : U \impsub T$ et 
+    $`G, x : U \judgesub v : V \impsub W$. On applique alors
+    \SubProdRule{} à ces deux prémisses.
+    
+  \item[$T `= \Sigma x : X.Y$:]
+    $U$ est de la forme $\Sigma x : V.W$, avec $X \eqbi V$ et $Y \eqbi
+    W$. Par induction et application de \SubSigmaRule.
+    
+  \item[$T `= \subset{x}{X}{P}$:] 
+    On a alors $U `= \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
+    P'$, et la propriété est vraie par \SubLeftRule{} et \SubRightRule{}:
+    
+    \begin{prooftree}
+      \AXC{$`G \seq t : X \impsub X'$}
+      \AXC{$`G \typei P : \Pi x : X.\Prop$}
+      \LeftLabel{\SubLeftRule}
+      \BIC{$`G \seq t : \subset{x}{X}{P} \impsub X'$}
+      \LeftLabel{\SubRightRule}
+      \UIC{$`G \seq t : \subset{x}{X}{P} \impsub \subset{x}{X'}{P'}$}
+    \end{prooftree}
+    
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}[Substitutivité des termes du sous-typage]
+  \label{substitutive-term-subtyping}
+  Si $`G \judgesub x : U \impsub T$ alors pour tout $u$ tel que $`G
+  \typed u : U$, $`G \judgesub u : U \impsub T$.
+\end{lemma}
+\begin{proof}
+  Par induction sur la dérivation de sous-typage 
+  $`G \judgesub x : U \impsub T$:
+  \def\seq{\judgesub}.
+  
+  \begin{itemize}
+  \item[\SubConvRule:]
+    Direct par préservation de l'équivalence $\eqbi$ par le sous-typage.
+    
+  \item[\SubProdRule,\SubSigmaRule:] $x$ est une variable, on ne peut
+    donc pas utiliser ces règles.
+    
+  \item[\SubLeftRule:] On a
+    \begin{prooftree}
+      \BAX{Sub-Left}
+      {$`G \seq x : U' \impsub V$}
+      {$`G \typei P : \Pi x : U'. \Prop$}
+      {$`G \seq x : \subset{x}{U'}{P} \impsub V$}
+      {}
+    \end{prooftree}
+    
+    On a $U `= \subset{x}{U'}{P}$ et $`G \judgesub x : U' \impsub V$.
+    Par induction, si $`G \typed u : U'$ alors $`G \judgesub u : U' \impsub T$.
+    Si $`G \typed u : \subset{x}{U'}{P}$ alors
+    $`G \typed u : U'$ par application de \LetSubRule et donc par
+    application de \SubLeftRule, $`G \judgesub u : \subset{x}{U'}{P}
+    \impsub V$.
+    
+  \item[\SubRightRule:] On a
+    \begin{prooftree}
+      \UAX{}
+      {$`G \seq x : U \impsub V'$}
+      {$`G \seq x : U \impsub \subset{x}{V'}{P}$}
+      {}
+    \end{prooftree}
+    
+    On a $V `= \subset{x}{V'}{P}$ et $`G \judgesub x : U \impsub V'$.
+    Par induction, si $`G \typed u : U$ alors $`G \judgesub u : U
+    \impsub V'$. Donc par application de \SubRightRule, $`G \judgesub u : U \impsub V$.
+    
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}[Substitutivité du sous-typage]
+  \label{substitutive-subtyping}
+
+  Si $`G, x : V \judgesub t : T \impsub U$, $G \typei u : V$ et 
+  $`G \typei t[u/x] : T[u/x]$, alors $`G \typed t[u/x] : T[u/x] \impsub U[u/x]$.
+\end{lemma}
+%% \begin{proof}
+%%   Par induction sur la dérivation de sous-typage:
+%%   \def\seq{\judgesub}.
+  
+%%   \begin{itemize}
+%%   \item[\SubConvRule:]
+%%     On a $T \eqbi U$, $`G, x : V \judgesub y : T \impsub U$ et
+%%     $`G \typei y[u/x] : T[u/x]$.    
+%%     Si $y = x$, alors on doit montrer $`G \judgesub u : T[u/x] \impsub
+%%     U[u/x]$ qui est vrai car $\eqbi$ est substitutive et $T[u/x], U[u/x]
+%%     $ sont bien typés.
+%%     Sinon, $`G \typei y : T[u/x] \impsub U[u/x]$, vrai par
+%%     substitutivité de $\eqbi$.
+    
+%%   \item[\SubProdRule:] On a
+%%     \begin{prooftree}
+%%       \SubProd
+%%     \end{prooftree}
+    
+    
+%%   \item[\SubSigmaRule:] On a 
+%%     \begin{prooftree}
+%%       \SubSigma
+%%     \end{prooftree}
+    
+%%     Par hypothèse d'induction, $`G \typed t : T, U$, $`G \typed v : V[t/x], W[t/y]$.
+%%     Par \SumRule, $(t, v) : \Sigma y : U, W$.
+
+%%   \item[\SubLeftRule:] On a
+%%     \begin{prooftree}
+%%       \SubLeft
+%%     \end{prooftree}
+    
+%%     Par induction, $`G \typed p : V$.
+
+%%   \item[\SubRightRule:] On a
+%%     \begin{prooftree}
+%%       \SubRight
+%%     \end{prooftree}
+    
+%%     Par induction, $`G \typed p : U$. Par \SubsetRule, $`G \typed p :
+%%     \subset{x}{U}{P}$.
+    
+%%   \end{itemize}
+%% \end{proof}
+
+\begin{lemma}[Inversion du typage]
+\label{inversion-typing}
+
+On a les propriétés suivantes sur le jugement de typage:
+\begin{enumerate}
+\item Si $`G \type t : \Pi x : T.U$ alors $t = \lambda x : T.v$ et $`G, x : T
+  \type v : U$.
+\item Si $`G \type t : \Sigma x : T.U$ alors $t = (t', v)$, $`G, x : T \type U
+  : s1$ et $`G \type v : U[t/x]$.
+\item Si $`G \type t : \subset{x}{U}{P}$ alors $`G \type t : U$.
+\end{enumerate}
+\end{lemma}
+
+\begin{lemma}[Inversion du sous-typage]
+  \label{inversion-subtyping}
+  Si $`G \judgesub t : \Pi x : T.U \impsub \Pi x : V.W$ 
+  alors $t = \lambda x : T. M$ et $`G, x : T \typei M : U$.
+  
+\end{lemma}
+
+\begin{lemma}[Admissibilité de la réflexivité, transitivité du sous-typage]
+  \quad
+  \label{refl-trans-subtyping}
+  \begin{enumerate}
+  \item Pour tout $t, S$, si $`G \typed t : S$ alors $`G \judgesub t : S \impsub S$.
+  \item Pour tout $t, S, T, U$,  si $`G \judgesub t : S \impsub T$ et $`G \judgesub t
+    : T \impsub U$ alors $`G \judgesub t : S \impsub U$.
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}  
+  \begin{enumerate}
+  \item $S \eqbi S$, donc pour tout $x : S$, $`G \judgesub x : S \impsub
+    S$. Par substivité du sous-typage, la propriété est vraie pour tout
+    $t$ tel que $`G \typed t : S$.
+  \item Dans \cite{Pierce:TypeSystems}, voir p. 420.
+  \end{enumerate}
+\end{proof}
+
+\begin{lemma}[Correction du sous-typage]
+  \label{correct-subtyping}
+  Si $`G \judgesub t : U \impsub V$ alors $`G \typed t : U "=>" `G
+  \typed t : V$.
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation de sous-typage:
+  
+  \begin{itemize}
+  \item[\SubConvRule:] On a $T \eqbi U$ et l'on suppose 
+    $x \typed T$. On a donc bien $`G \typed x : U$.
+    
+  \item[\SubProdRule:] On a
+    \begin{prooftree}
+      \SubProd
+    \end{prooftree}
+    
+    Par induction, $`G \typed x : U "=>" `G \typed x : T$, 
+    $`G, x : U \typed v : V "=>" `G, x : U \typed v : W$.
+    On suppose $`G \typed \lambda x : T.v : \Pi x : T.V$.
+    Par inversion du typage, on a $`G, x : T \typed v : V$.
+    
+    Par \AbsRule, $`G \typed \lambda x : U.v : \Pi x : U.W$.
+    
+  \item[\SubSigmaRule:] On a 
+    \begin{prooftree}
+      \SubSigma
+    \end{prooftree}
+    
+    Par hypothèse d'induction, $`G \typed t : T, U$, $`G \typed v : V[t/x], W[t/y]$.
+    Par \SumRule, $(t, v) : \Sigma y : U, W$.
+
+  \item[\SubLeftRule:] On a
+    \begin{prooftree}
+      \SubLeft
+    \end{prooftree}
+    
+    Par induction, $`G \typed p : V$.
+
+  \item[\SubRightRule:] On a
+    \begin{prooftree}
+      \SubRight
+    \end{prooftree}
+    
+    Par induction, $`G \typed p : U$. Par \SubsetRule, $`G \typed p :
+    \subset{x}{U}{P}$.
+    
+  \end{itemize}
+  
+\end{proof}
+
+
+\begin{lemma}[Correction du typage]
+  \label{correct-typing}
+  $`G \typei t : T "=>" `G \typed t : T$
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation dans le système algorithmique:
+
+  \begin{description}
+  \item[\WfAtomRule,\WfVarRule,\PropSetRule,\VarRule,\ProdRule,\AbsRule,
+    \LetInRule, \SigmaRule, \SumRule, \LetSumRule:] règles inchangées.
+
+  \item[\AppRule:] On a
+    \def\fCenter{\typei}
+    \begin{prooftree}
+      \AppI
+    \end{prooftree}
+    
+    Par induction, $`G \typed f : \Pi x : V. W $.
+    Par le lemme \ref{correct-subtyping}, et l'hypothèse $`G \typed u : U$, 
+    $`G \typed u : V$. Donc, par \AppRule, on a bien $`G \typed f u :
+    W[u/x]$.
+  \end{description}
+  
+\end{proof}
+
+\begin{lemma}[Complétude du typage]
+  \label{complete-typing}
+  $`G \typed t : T "=>" `E U, `G \typei t : U `^ `G \judgesub t : U \impsub T$
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation dans le système déclaratif:
+
+  \begin{description}
+  \item[\WfAtomRule,\WfVarRule,\PropSetRule,\VarRule,\ProdRule,\AbsRule,
+    \LetInRule, \SigmaRule, \SumRule, \LetSumRule:] règles inchangées.
+    
+  \item[\AppRule:] On a 
+    \begin{prooftree}
+      \App
+    \end{prooftree}
+    
+    Par induction, $`E X, Y, `G \typei f : \Pi x : X. Y `^ 
+    `G \judgesub f : \Pi x : X. Y \impsub \Pi x : V. W$ et
+    $`E U, `G \typei u : U `^ `G \judgesub u : U \impsub V$.
+    
+    Si $`G \judgesub f : \Pi x : X.Y \impsub \Pi x : V.W$, alors 
+    $f$ est de la forme $\lambda x : X.v$ et par inversion (lemme
+    \ref{inversion-subtyping}) $`G \judgesub x : V \impsub X$.
+    Par substitutivité du sous-typage (lemme
+    \ref{substitutive-term-subtyping}), on a donc $`G \judgesub u : V
+    \impsub X$. Par transitivité du sous-typage \ref{refl-trans-subtyping}, 
+    $`G \judgesub u : U \impsub X$. On peut donc appliquer \AppRule{} pour
+    obtenir $`G \typei f u : Y[u/x]$. 
+    
+    Par la covariance du produit en son codomaine, 
+    $`G, x : V \judgesub v : Y \impsub W$. Par substitivité du
+    sous-typage (lemme \ref{substitutive-subtyping}), on a donc
+    $`G \judgesub v[u/x] : Y[u/x] \impsub W[u/x]$, la propriété est
+    donc bien vérifiée.
+    
+  \item[\SubsetRule:] On a
+    \begin{prooftree}
+      \Subset
+    \end{prooftree}
+    
+    Par induction, $`E T, `G \typei x : T `^ `G \judgesub x : T \impsub U$.
+    
+
+  \item[\LetSubRule:]
+    
+  \item[\ConvRule:]
+
+  \end{description}
+  
+\end{proof}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 
