@@ -1,7 +1,7 @@
 \def\typec{\vdash_{CCI}}
 
 \newcommand{\timpl}[6]{#1 \typea #2 : #3 "~>" #4 \typec #5 : #6}
-\newcommand{\subimpl}[7]{#1 \typea #2 \suba #3 "~>" #4 \typec #5 : #6 "->" #7}
+\newcommand{\subimpl}[4]{#1 \typec #2 : #3 "->" #4}
 
 \def\muterm{\mu_{\mbox{term}}}
 
@@ -63,8 +63,8 @@
   {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
   {$\muterm~T' `= (\pi, \Pi x : V'. W')$}
   {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
-  {$\subimpl{`G}{U}{V}{`G'}{c}{U'}{V'}$}
-  {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ u'' / x ]}$}
+  {$\subimpl{`G'}{c}{U'}{V'}$}
+  {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
   {}
 }
 
@@ -116,7 +116,7 @@
 \def\SubsetI{
   \BAX{Subset}
   {$\timpl{`G}{U}{\Type}{`G'}{U'}{\Type}$}
-  {$\timpl{`G}{P}{\Pi x : U. \Prop}{`G'}{P'}{\Pi x : U'. \Prop} $}
+  {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop} $}
   {$\timpl{`G}{\subset{x}{U}{P}}{\Type}{`G'}{\subset{x}{U'}{P'}}{\Type}$}
   {$$}
 }
@@ -163,6 +163,8 @@
     \vspace{\infvspace}
     \LetSumI\DP
     
+    \vspace{\infvspace}
+    \SubsetI\DP
   \end{center}
   \label{typing-algo-rules}
   \caption{Réecriture du typage vers \Coq}

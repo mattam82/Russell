@@ -29,7 +29,7 @@
 \def\SubLeftI{
   \BAX{Sub-Left}
   {$\subimpl{`G}{U}{V}{`G'}{c}{U'}{V'}$}
-  {$\timpl{`G}{P}{\Pi x : U. \Prop}{`G'}{P'}{\Pi x : U'.\Prop}$}
+  {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop}$}
   {$\subimpl{`G}{\subset{x}{U}{P}}{V}{`G'}
     {c `o \pi_1}
     {\subset{x}{U'}{P'}}{V'}$}
@@ -38,10 +38,10 @@
     
 \def\SubRightI{
   \BAX{Sub-Right}
-  {$\timpl{`G}{P}{\Pi x : U. \Prop}{`G'}{P'}{\Pi x : U'.\Prop}$}
-  {$\subimpl{`G}{T}{U}{`G''}{c}{T'}{U'}$}
+  {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop}$}
+  {$\subimpl{`G}{T}{U}{`G'}{c}{T'}{U'}$}
   {$\subimpl{`G}{T}{\subset{x}{U}{P}}
-    {`G'}{\lambda t : T'. \elt{U'}{P'}{c~t}{?(P'[c~t/x])}}
+    {`G'}{\lambda t : T'. \elt{U'}{P'}{(c~t)}{?(P'[c~t/x])}}
     {T'}{\subset{x}{U'}{P'}}$}
   {}
 }
