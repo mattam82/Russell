@@ -1,0 +1,70 @@
+\def\SubConvI{
+\UAX{Sub-Conv}
+                                %{$`G \judgetypea x : T$}
+{$T \eqbi U$}
+{$`G \seq x : T \sub U$}
+{} 
+}
+
+\def\SubProdI{
+  \BAX{Sub-Prod}
+  {$`G, x : U \seq x : U \sub T$} %"<|-|>"
+  {$`G, x : U \seq v : V \sub W$}
+  {$`G \seq \lambda x : T. v : \Pi x : T.V 
+    \sub \Pi x : U.W$}
+  {}
+}
+
+\def\SubSigmaI{
+  \BAX{Sub-Sigma}
+  {$`G \seq t : T \sub U$}
+  {$`G \seq v : V[t/x] \sub W[t/y]$}
+  {$`G \seq (t, v) : \Sigma x : T. V
+    \sub \Sigma y : U. W$}
+  {}
+}
+
+\def\SubLeftI{
+  \BAX{Sub-Left}
+  {$`G \seq p : U \sub V$}
+  {$`G \type P : \Pi x : U. \Prop$}
+  {$`G \seq p : \subset{x}{U}{P} \sub V$}
+  {}
+}
+    
+\def\SubRightI{
+  \UAX{Sub-Right}
+  {$`G \seq p : T \sub U$}
+                                %{$`G \judgetype h : P~p$}
+  {$`G \seq p : T \sub \subset{x}{U}{P}$}
+  {}
+}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\subtd}
+    
+    \vspace{\infvspace}
+    \SubConvI\DP
+
+    \vspace{\infvspace}
+    \SubProdI\DP
+
+    \vspace{\infvspace}
+    \SubSigmaI\DP
+    
+    \vspace{\infvspace}
+    \SubLeftI\DP
+    
+    \vspace{\infvspace}
+    \SubRightI\DP
+    
+  \end{center}
+  \label{subtyping-impl-rules}
+  \caption{Réecriture du sous-typage vers \Coq}
+\end{figure}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 

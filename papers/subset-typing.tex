@@ -97,28 +97,28 @@
 \def\judgewf{\vdash_{wf}}
 \def\judgetyped{\vdash}
 \def\judgetypea{\vdash_{\bullet}}
-\def\judgetypei{\vdash_{\box}}
+\def\judgetypei{\vdash_{\Box}}
 \def\typed{\judgetyped}
 \def\typea{\judgetypea}
-%\def\typei{\judgetypei}
+\def\typei{\judgetypei}
 \def\type{\typed}
 \def\judgesubd{\vdash}
 \def\judgesuba{\vdash_{\bullet}}
-\def\judgesubi{\vdash_{\box}}
+\def\judgesubi{\vdash_{\Box}}
 \def\subtd{\judgesubd}
 \def\subta{\judgesuba}
-%\def\subti{\judgesubi}
+\def\subti{\judgesubi}
 \def\subt{\subtd}
 \def\subd{\rightslice}
 \def\suba{\rightslice_{\bullet}}
-\def\subi{\rightslice_{\box}}
+\def\subi{\rightslice_{\Box}}
 \def\sub{\subd}
 
 \def\judgerw{~{\mbox{$"~>"$}}~}
 \def\wf{\judgewf}
 
 \newcommand{\elt}[4]{\text{elt}~#1~#2~#3~#4}
-\renewcommand{\subset}[3]{\{ #1 : #2 `| #3~#1 \}}
+\renewcommand{\subset}[3]{\{ #1 : #2 `| #3 \}}
 
 \def\thetitle{Sous-typage par prédicats en Coq}
 
@@ -173,7 +173,8 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\ConvRule{\rname{Conv}}
 
 
- 
+\def\SubReflRule{\rname{Sub-Refl}}
+\def\SubTransRule{\rname{Sub-Trans}} 
 \def\SubConvRule{\rname{Sub-Conv}}
 \def\SubProdRule{\rname{Sub-Prod}}
 \def\SubSigmaRule{\rname{Sub-Sigma}}
@@ -187,6 +188,8 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \input{subtyping-decl}
 \input{typing-algo}
 \input{subtyping-algo}
+\input{typing-impl}
+\input{subtyping-impl}
 \input{typing-proofs}
 \clearpage
 

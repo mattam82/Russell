@@ -1,14 +1,13 @@
-\def\AppI{
-\QAX{App}
-{$`G \seq f : T$}
-{$\mu~T `= \Pi x : V. W$}
+\def\AppA{
+\TAX{App}
+{$`G \seq f : T \quad \mu~T `= \Pi x : V. W$}
 {$`G \seq u : U$}
 {$`G \subt u : U \sub V $}
 {$`G \seq (f u) : W [ u / x ]$}
 {}
 }
 
-\def\SumInf{
+\def\SumInfA{
   \TAX{SumInf}
   {$`G \seq t : T $}
   {$`G \seq u : U $}
@@ -17,12 +16,12 @@
   {}
 }
 
-\def\SumDep{
+\def\SumDepA{
   \TAX{SumDep}
   {$`G \seq t : T $}
-  {$`G \seq u : V[t/x] $}
-  {$`G \seq \Sigma x : T.V : s$}
-  {$`G \seq (t, u : V) : \Sigma x : T.V$}
+  {$`G \seq u : U[t/x] $}
+  {$`G \seq \Sigma x : T.U : s$}
+  {$`G \seq (t, u : U) : \Sigma x : T.U$}
   {}
 }
 
@@ -30,6 +29,8 @@
   \begin{center}
     \def\fCenter{\wf}
     \def\type{\typea}
+    \def\subt{\subta}
+    \def\sub{\suba}
     
     \WfAtom\DP    
     \WfVar\DP
@@ -48,7 +49,7 @@
     \Abs\DP
 
     \vspace{\infvspace}
-    \AppI\DP
+    \AppA\DP
 
     \vspace{\infvspace}
     \LetIn\DP
@@ -57,10 +58,10 @@
     \SigmaR\DP
 
     \vspace{\infvspace}
-    \SumInf\DP
+    \SumInfA\DP
 
     \vspace{\infvspace}
-    \SumDep\DP
+    \SumDepA\DP
     
     \vspace{\infvspace}
     \LetSum\DP

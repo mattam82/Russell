@@ -1,10 +1,14 @@
 \subsection*{31 mars}
 Corrections d'hier...
 Inférence des sommes, plus de contextes au sous-typage.
-Vérification des sortes.
+Vérification des sortes. Quelques explications sur la conversion.
+Problème d'enlever les termes pour \SubSigmaRule{}, on perd les
+dépendances.
+
+Définition de $\muterm$, exemple:
+$\muterm~(\lambda x. x)~\subset{x}{\subset{y}{`N}{y > 0}}{x \neq 0} = (id `o \pi_1 `o \pi_1, `N)$
 
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "~/research/coq/papers/subset-typing"
 %%% End: 
-        

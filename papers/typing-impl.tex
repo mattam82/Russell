@@ -1,0 +1,184 @@
+\def\typec{\vdash_{CCI}}
+
+\newcommand{\timpl}[6]{#1 \typea #2 : #3 "~>" #4 \typec #5 : #6}
+\newcommand{\subimpl}[6]{#1 \typea #2 : #3 \sub #4 "~>" #5 \typec #6}
+
+\def\muterm{\mu_{\mbox{term}}}
+
+\def\WfAtomI{
+  \UAX{Wf-Atom}
+  {}
+  {$\wf [] "~>"~\wf []$}
+  {}
+}  
+  
+\def\WfVarI{
+  \UAX{Wf-Var}
+  {$\timpl{`G}{A}{s}{`G'}{A'}{s}$}
+  {$\wf `G, x : A "~>"~\wf `G', x : A'$}
+  {$s `: \{ \Set, \Prop, \Type(i) \}$}
+}
+
+\def\PropSetI{
+  \UAX{PropSet}
+  {$\wf `G "~>" ~\wf `G'$}
+  {$\timpl{`G}{s}{\Type(0)}{`G'}{s}{\Type(0)}$}
+  {$s `: \{ \Prop, \Set \}$} 
+}
+
+\def\TypeTypeI{
+  \UAX{Type}
+  {$\wf `G "~>" \wf `G$}
+  {$\timpl{`G}{\Type(i)}{\Type(i + 1)}{`G'}{\Type(i)}{\Type(i + 1)}$}
+  {}
+}
+
+\def\VarI{
+  \BAX{Var}
+  {$\wf `G "~>"~\wf `G'$}
+  {$x : A `: `G "~>" x : A' `: `G'$}
+  {$\timpl{`G}{x}{A}{`G'}{x}{A'}$}
+  {}
+}
+
+\def\ProdI{
+  \BAX{Prod}
+  {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
+  {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
+  {$\timpl{`G}{\Pi x : T.U}{s2}{`G'}{\Pi x : T'.U'}{s2}$}
+  {$(s1, s2) `: \text{{\sc Sort}}$}
+}
+
+\def\AbsI{
+  \BAX{Abs}
+  {$\timpl{`G}{\Pi x : T. U}{s}{`G'}{\Pi x : T'. U'}{s}$}
+  {$\timpl{`G, x : T}{M}{U}{`G', x : T'}{M'}{U'}$}
+  {$\timpl{`G}{\lambda x : T. M}{\Pi x : T.U}
+    {`G'}{\lambda x : T'. M'}{\Pi x : T'.U'}$}
+  {}
+}
+
+\def\AppI{
+  \QAX{App}
+  {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
+  {$\muterm~T' `= (\pi, \Pi x : V'. W')$}
+  {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
+  {$\subimpl{`G}{u'}{U'}{V'}{`G'}{u''}$}
+  {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~u''}{W'[ u'' / x ]}$}
+  {}
+}
+
+\def\LetInI{
+  \BAX{LetIn}
+  {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
+  {$\timpl{`G, x : T}{v}{V}{`G', x : T'}{v'}{V'}$}
+  {$\timpl{`G}{\letml x = t \inml v}{V[t / x]}
+    {`G'}{\letml x = t' \inml v'}{V'[t' / x]}$}
+  {}
+}
+
+\def\SigmaRI{
+  \BAX{Sigma}
+  {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
+  {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
+  {$\timpl{`G}{\Sigma x : T.U}{s2}{`G'}{\Sigma x : T'.U'}{s2} $}
+  {$(s1, s2) `: \matht{Sort}$}
+}
+
+
+\def\SumInfI{
+  \TAX{SumInf}
+  {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
+  {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
+  {$\timpl{`G}{\Sigma T.U}{s}{`G'}{\Sigma T'.U'}{s}$}
+  {$\timpl{`G}{(t, u)}{\Sigma T.U}{`G'}{(t', u')}{\Sigma T'.U'}$}
+  {}
+}
+
+\def\SumDepI{
+  \TAX{SumDep}
+  {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
+  {$\timpl{`G}{u}{U[t/x]}{`G'}{u'}{U'[t'/x]}$}
+  {$\timpl{`G}{\Sigma x : T.U}{s}{`G'}{\Sigma x : T'.U'}{s}$}
+  {$\timpl{`G}{(t, u : U)}{\Sigma x : T.U}{`G'}{(t', u')}{\Sigma x : T'.U'}$}
+  {}
+}
+ 
+\def\LetSumI{
+  \BAX{LetSum}
+  {$\timpl{`G}{t}{\Sigma x : T. U}{`G'}{t'}{\Sigma x : T'.U'}$}
+  {$\timpl{`G, x : T, u : U}{v}{V}{`G, x : T', u : U'}{v'}{V'}$}
+  {$\timpl{`G}{\letml (x, u) = t \inml v}{V}
+    {`G'}{\letml (x, u) = t' \inml v'}{V'}$}
+  {}
+}
+
+\def\SubsetI{
+  \BAX{Subset}
+  {$\timpl{`G}{U}{\Type}{`G'}{U'}{\Type}$}
+  {$\timpl{`G}{P}{\Pi x : U. \Prop}{`G'}{P'}{\Pi x : U'. \Prop} $}
+  {$\timpl{`G}{\subset{x}{U}{P}}{\Type}{`G'}{\subset{x}{U'}{P'}}{\Type}$}
+  {$$}
+}
+
+\def\marginleft{0em}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\wf}
+    \def\type{\typec}
+    
+    \WfAtomI\DP
+
+    \vspace{\infvspace}
+    \WfVarI\DP
+    
+    \vspace{\infvspace}
+    \PropSetI\DP
+    
+    \vspace{\infvspace}
+    \VarI\DP
+    
+    \vspace{\infvspace}
+    \ProdI\DP
+    
+    \vspace{\infvspace}
+    \AbsI\DP
+    
+    \vspace{\infvspace}
+    \AppI\DP
+
+    \vspace{\infvspace}
+    \LetInI\DP
+    
+    \vspace{\infvspace}
+    \SigmaRI\DP
+
+    \vspace{\infvspace}
+    \SumInfI\DP
+
+    \vspace{\infvspace}
+    \SumDepI\DP
+    
+    \vspace{\infvspace}
+    \LetSumI\DP
+    
+  \end{center}
+  \label{typing-algo-rules}
+  \caption{Réecriture du typage vers \Coq}
+\end{figure}
+
+\begin{figure}
+  \begin{eqnarray*}
+    (f, \subset{x}{U}{P}))   & "=>" & \letml (f, t) = \muterm~(f, U) \inml (f `o
+    \pi_1, t) \\
+    x                        & "=>"  & x
+  \end{eqnarray*}
+  \label{muterm-definition}
+  \caption{Définition de $\muterm$}
+\end{figure}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 
