@@ -1,0 +1,77 @@
+\def\SubRefl{
+\UAX{SubRefl}
+{}
+{$`G \seq S \sub S$}
+{}
+}
+
+\def\SubTrans{
+\BAX{SubTrans}
+{$`G \seq S \sub T$}
+{$`G \seq T \sub U$}
+{$`G \seq S \sub U$}
+{}
+} 
+
+\def\SubProd{
+\BAX{SubProd}
+{$`G \seq U \sub T$} %"<|-|>"
+{$`G, x : U \seq V \sub W$}
+{$`G \seq \Pi x : T.V \sub \Pi x : U.W$}
+{}
+}
+
+\def\SubSigma{
+  \BAX{Sub-Sigma}
+  {$`G \seq T \sub U$}
+  {$`G \seq V[t/x] \sub W[t/y]$}
+  {$`G \seq \Sigma x : T. V
+    \sub \Sigma y : U. W$}
+  {}
+}
+
+\def\SubProof{
+  \UAX{Sub-Proof}
+  {$`G \seq U \sub V$}
+  {$`G \seq U \sub \subset{x}{V}{P}$}
+  {}
+}
+
+\def\SubSub{
+  \UAX{Sub-Subset}
+  {$`G \seq U \sub V$}
+  {$`G \seq \subset{x}{U}{P} \sub V$}
+  {}
+}
+
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\subtd}
+    
+    \vspace{\infvspace}
+    \SubRefl\DP
+
+    \vspace{\infvspace}
+    \SubTrans\DP
+
+    \vspace{\infvspace}
+    \SubProd\DP
+
+    \vspace{\infvspace}
+    \SubSigma\DP
+    
+    \vspace{\infvspace}
+    \SubProof\DP
+    
+    \vspace{\infvspace}
+    \SubSub\DP
+    
+  \end{center}
+  \label{subtyping-algo-rules}
+  \caption{Sous-typage déclaratif}
+\end{figure}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 

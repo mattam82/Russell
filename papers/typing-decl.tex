@@ -36,12 +36,11 @@
 }
 
 \def\Abs{
-  \TAX{Abs}
-  {$`G \seq T : s1 $}
-  {$`G, x : T \seq U : s2 $}
+  \BAX{Abs}
+  {$`G \seq \Pi x : T. U : s $}
   {$`G, x : T \seq M : U $}
   {$`G \seq \lambda x : T. M : \Pi x : T.U$}
-  {$s1, s2 `: \matht{Sort}$}
+  {}
 }
 
 \def\App{
@@ -69,7 +68,8 @@
 }
 
 \def\Sum{
-  \BAX{Sum}
+  \TAX{Sum}
+  {$`G \seq \Sigma x : T.U : s$}
   {$`G \seq t : T $}
   {$`G \seq u : U[t/x] $}
   {$`G \seq (t, u) : \Sigma x : T.U$}
@@ -103,7 +103,7 @@
 \def\Subsum{
   \BAX{Subsumption}
   {$`G \seq t : U$}
-  {$`G \subt t : U \sub T$}
+  {$`G \subt U \sub T$}
   {$`G \seq t : T$}
   {}
 }

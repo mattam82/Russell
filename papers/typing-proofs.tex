@@ -1,6 +1,246 @@
 \setboolean{displayLabels}{false}
 
+\begin{lemma}[Sous-typage bien sorté]
+  \label{subtyping-sorts}
+  Si $`G \subtd U \sub T$ alors $`G \typed U : s$ si et seulement si
+  $`G \typed T : s$.
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation de sous-typage.
+  Pour \SubProdRule et \SubSigmaRule, par induction les composantes
+  correspondantes sont dans la même sorte, donc le composé aussi.
+
+  Pour \SubProofRule et \SubSubRule, comme le constructeur de types subset
+  est de type $\Type "->" \Prop "->" \Type$, on conserve bien les mêmes
+  sortes de part et d'autre.
+\end{proof}
+
+\begin{lemma}[Renforcement]
+  Si $`G, x : S \seq t : T$ et $`G \subtd S' \sub S$ alors $`G, x : S'
+  \seq t : T$
+\end{lemma}
+
+\begin{proof}
+  
+\end{proof}
+
+
+\begin{lemma}[Passage de la subsumption à l'application]
+  \label{subsum-elim}
+  On peut réecrire toute dérivation $`G \typed t : T$ utilisant la
+  subsumption ailleurs qu'à sa racine vers une dérivation l'utilisant
+  uniquement à sa racine ou pour la prémisse droite de l'application.
+\end{lemma}
+
+\begin{proof}
+  On inspecte les dérivations possibles utilisant \SubSubRule{} juste avant
+  une autre règle.
+
+  \begin{description}
+    \item[\VarRule:] Par de prémisse de la forme $`G \typed t : T$, donc
+      pas d'application de \SubsumRule{} possible.
+      
+    \item[\AbsRule:] \quad
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq \Pi x : T. U : s $}
+        \AXC{\vdots}
+        \UIC{$`G, x : T \seq M : U'$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd U' \sub U$}
+        \BIC{$`G, x : T \seq M : U $}
+        \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
+      \end{prooftree}
+      
+      Par le lemme \ref{subtyping-sorts}, on a $`G \seq \Pi x : T. U' : s$.
+
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq \Pi x : T. U' : s $}
+        \AXC{\vdots}
+        \UIC{$`G, x : T \seq M : U'$}
+        \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U'$}
+        \AXC{$`G \subtd T \sub T$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd U' \sub U$}
+        \BIC{$`G \subtd \Pi x : T.U' \sub \Pi X : T.U$}        
+        \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
+      \end{prooftree}
+      
+    \item[\SumRule:]\quad
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq \Sigma x : T.U : s $}
+        \AXC{\vdots}
+        \UIC{$`G \seq t : S$}
+        \UIC{$`G \subtd S \sub T$}
+        \BIC{$`G \seq t : T $}
+        \AXC{\vdots}
+        \UIC{$`G \seq u : U[t/x]$}
+        \AXC{\vdots}
+        \TIC{$`G \seq (t,u) : \Sigma x : T.U$}
+      \end{prooftree}
+      
+      Comme $S \sub T$, on a bien $\Sigma x : S.U \sub \Sigma x : T.U$
+      par \SubSigmaRule. On sait de plus que $\Sigma x : S.U$ est bien
+      sorté de sorte $s$.
+
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq \Sigma x : S.U : s $}
+        \AXC{\vdots}
+        \UIC{$`G \seq t : S$}
+        \AXC{\vdots}
+        \UIC{$`G \seq u : U[t/x]$}
+        \TIC{$`G \seq (t,u) : \Sigma x : S.U$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd \Sigma x : S.U \sub \Sigma x : T.U$}
+        \BIC{$`G \seq (t,u) : \Sigma x : T.U$}
+      \end{prooftree}
+      
+    \item[\LetSumRule,\LetInRule:]\quad
+      Règles problèmatiques. Si l'on ajoute des anotations au let, on
+      obtient:
+      
+      \begin{prooftree}
+        \AXC{\vdots}        
+        \UIC{$`G \seq t : T' $}
+        \AXC{\vdots}
+        \UIC{$`G \subtd T' \sub \Sigma x : T.U$}
+        \BIC{$`G \seq t : \Sigma x : T.U $}
+        \AXC{\vdots}
+        \UIC{$`G, x : T, u : U \seq v : V $}
+        \BIC{$`G \seq \letml (x, u) : \Sigma x : T.U = t \inml v : V$}
+      \end{prooftree}
+      
+      On peut alors changer les règles pour faire du sous-typage dans la
+      prémisse gauche. A droite c'est direct ($V' \sub V$).
+      
+      
+    \item[\AppRule:] On autorise le sous-typage à la prémisse droite. A
+      gauche on peut avoir:
+      
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq f : T' $}
+        \AXC{\vdots}
+        \UIC{$`G \subtd  T' \sub \Pi x : V. W$}
+        \BIC{$`G \seq f : \Pi x : V. W $}
+        \AXC{\vdots}
+        \UIC{$`G \seq u : V $}
+        \BIC{$`G \seq f u : W [ u / x ]$}
+      \end{prooftree}
+      
+      Par inspection des règles de sous-typage, on sait que le jugement
+      $T' \sub \Pi x : V.W$ résulte soit d'une application de
+      \SubProdRule{} soit de \SubSubRule.
+      Dans le premier cas on a la dérivation:
+
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq f : \Pi x : V'.W'$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd V \sub V'$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd W' \sub W$}
+        \BIC{$`G \subtd  \Pi x : V'.W' \sub \Pi x : V. W$}
+        \BIC{$`G \seq f : \Pi x : V. W $}
+        \AXC{\vdots}
+        \UIC{$`G \seq u : V $}
+        \BIC{$`G \seq f u : W [ u / x ]$}
+      \end{prooftree}
+      
+      Comme on peut utiliser la subsumption sur l'argument, qu'on
+      l'autorise en racine de la dérivation on réécrit cette dérivation en:
+
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq f : \Pi x : V'.W'$}
+        \AXC{\vdots}
+        \UIC{$`G \seq u : V $}
+        \AXC{\vdots}
+        \UIC{$`G \subtd V \sub V'$}
+        \BIC{$`G \seq u : V'$}
+        \BIC{$`G \seq f u : W' [ u / x ]$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd W' \sub W$}
+        \BIC{$`G \seq f u : W [ u / x ]$}
+      \end{prooftree}
+      
+      \def\subs{\subset{x}{U}{P}}
+      Si $T' `= \subs$, on peut déduire que la dérivation est de la
+      forme:
+      
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq f : \subs$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd V \sub V'$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd W' \sub W$}
+        \BIC{$`G \subtd \Pi x : V'.W' \sub \Pi x : V.W$}
+        \UIC{\vdots}
+        \noLine
+        \UIC{$`G \subtd U \sub \Pi x : V. W$}
+        \UIC{$`G \subtd \subs \sub \Pi x : V. W$}
+        \BIC{$`G \seq f : \Pi x : V. W $}
+        \AXC{\vdots}
+        \UIC{$`G \seq u : V $}
+        \BIC{$`G \seq f u : W [ u / x ]$}
+      \end{prooftree}
+
+      On ne peut réecrire cette dérivation à cause de la
+      \emph{décomprehension} du type $T'$, on doit donc 
+      reprendre la fonction $\mu_0$ de \PVS{} \cite{PVS-Semantics:TR}
+      renomée $\mu$ ici qui opère cette décompréhension.
+      
+      \begin{definition}[$\mu$]
+        \begin{eqnarray*}
+          \subset{x}{U}{P} & "=>" & \mu~U \\
+          x                & "=>" & x
+        \end{eqnarray*}
+      \end{definition}
+      
+      On obtient la règle:
+      \begin{prooftree}
+        \QAX{App}
+        {$`G \subtd f : T$}
+        {$\mu~T = \Pi x : V. W$}
+        {$`G \seq u : V' $}
+        {$`G \subtd V' \sub V$}
+        {$`G \seq (f u) : W [ u / x ]$}
+        {$$}
+      \end{prooftree}     
+      
+      \begin{techremark}
+        En pratique, les types du Calcul des Constructions ne sont pas
+        toujours en forme normale et il peut donc être nécessaire de les
+        réduire pour vérifier des jugements du genre: 
+        $`G \seq t : \Pi x : T.V$. On pourrait voir $\mu$ comme une
+        extension de la relation de $\beta$-équivalence avec la réduction
+        $\subset{x}{U}{P} "->"_\mu U$.
+        On aurait 
+
+      \end{techremark}
+      
+    \end{description}
+  
+\end{proof}
+
+On a donc montré que l'on peut réduire l'utilisation de la règle de
+subsumption aux arguments d'applications et à la racine du jugement.
+On peut simplement ignorer cette dernière utilisation du sous-typage, car
+cela ne peut donner qu'un type moins précis au même terme. Considérant
+que nous voulons donner à la fois un terme et sa spécification, il
+peut même être utile d'enlever cette dernière avant de faire la
+vérification que le type inféré du terme est bien sous-type du type
+spécifié.  
+
+Conversion!. %\cite{ChenPhD}
+  
 \begin{lemma}[Conservation de la conversion par sous-typage]
+  \label{conv-sub}
   Si $`G \typed t : T$, $T \eqbi U$ alors $`G \subti t : T \sub U$.
 \end{lemma}
 

@@ -1,0 +1,56 @@
+\subsection*{24 mars}
+J'ai enlevé les termes du jugement de sous-typage déclaratif qui n'en a
+pas besoin.
+
+Preuves d'équivalence entre système algorithmique et déclaratif.
+Plusieurs problèmes:
+\begin{itemize}
+\item Besoin d'annotations de typage au let, ou alors restriction du
+  type on a pas le droit d'utiliser le sous-typage au let. Ou alors on
+  peut réecrire la dérivation $x : S \sub t : T$ en $x : S' \sub t : T$
+  lorsque $S' \sub S$ (narrowing) mais de façon à ce que l'on ajoute pas
+  d'utilisation de $\sub$.
+\item Application d'une fonction dans un type subset... on ne peut pas
+  réecrire la dérivation: soit on ajoute une fonction de
+  'décompréhension' qu'on applique à gauche ou on autorise le
+  sous-typage complet avec une règle du style:
+  \begin{prooftree}
+    \QAX{App}
+    {$`G \seq f : T$}
+    {$`G \subtd T \sub \Pi x : V. W$}
+    {$`G \seq u : V' $}
+    {$`G \subtd V' \sub V$}
+    {$`G \seq (f u) : W [ u / x ]$}
+    {$$}
+  \end{prooftree}
+
+  Mais on en revient à trouver une fonction pour décider de la deuxième
+  prémisse. On doit donc reprendre la fonction $\mu_0$ de \PVS{}.
+
+  Définition de $\mu_0$:
+  \begin{eqnarray*}
+    \subset{x}{U}{P} & "=>" & \mu_0~U \\
+    x                & "=>" & x
+  \end{eqnarray*}
+  
+  et l'on obtient la règle:
+  \begin{prooftree}
+    \QAX{App}
+    {$`G \subtd f : T$}
+    {$\mu_0~T = \Pi x : V. W$}
+    {$`G \seq u : V' $}
+    {$`G \subtd V' \sub V$}
+    {$`G \seq (f u) : W [ u / x ]$}
+    {$$}
+  \end{prooftree}
+\item ce n'est qu'une preuve informelle ;)
+\end{itemize}
+
+Comment traiter la conversion ? Voir la thèse de Chen.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "~/research/coq/papers/subset-typing"
+%%% End: 
+        

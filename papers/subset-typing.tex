@@ -29,8 +29,11 @@
 \EnableBpAbbreviations
 
 \newtheorem{lemma}{Lemme}[section]
-\newtheorem{theo}[lemma]{Théorême}
-\newtheorem{prop}[lemma]{Proposition}
+\newtheorem{theorem}[lemma]{Théorême}
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{definition}[lemma]{Définition}
+
+\newtheorem{techremark}[]{Remarque technique}
 
 \newcommand{\src}[1]{\texttt{#1}}
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
@@ -71,6 +74,12 @@
   \LeftRuleLabel{#1}
   \@ifnotmtarg{#6}{\RightLabel{#6}}
   \TIC{#5}}
+
+\newcommand{\QAX}[7]{\AXC{#2}\noLine\UIC{#3}\AXC{#4}\AXC{#5}
+  \LeftRuleLabel{#1}
+  \@ifnotmtarg{#7}{\RightLabel{#7}}
+  \TIC{#6}}
+
 \makeatother
 
 \newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
@@ -83,7 +92,7 @@
 \newcommand{\elseml}{~\textbf{else}~}
 \newcommand{\funml}{~\textbf{fun}~}
 
-\newcommand{\eqbi}{`=_{\beta\iota}}
+\newcommand{\eqbi}{`=_{\beta}}
 
 \def\judgewf{\vdash_{wf}}
 \def\judgetyped{\vdash}
@@ -151,6 +160,7 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\LetSumRule{\rname{LetSum}}
 \def\SubsetRule{\rname{Subset}}
 \def\LetSubRule{\rname{LetSub}}
+\def\SubsumRule{\rname{SubSum}}
 \def\ConvRule{\rname{Conv}}
  
 \def\SubConvRule{\rname{Sub-Conv}}
@@ -158,6 +168,8 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\SubSigmaRule{\rname{Sub-Sigma}}
 \def\SubLeftRule{\rname{Sub-Left}}
 \def\SubRightRule{\rname{Sub-Right}}
+\def\SubProofRule{\rname{Sub-Proof}}
+\def\SubSubRule{\rname{Sub-Subset}}
 
 \input{typing-decl}
 \input{subtyping-decl}
@@ -180,6 +192,7 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 \input{log/17mars}
 \input{log/22mars}
 \input{log/23mars}
+\input{log/24mars}
 
 \bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
 \bibliographystyle{plain}
