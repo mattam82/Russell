@@ -19,7 +19,6 @@
 \usepackage{cmbright}
 \usepackage{fancyhdr}
 
-
 \def\infvspace{3em}
 % This is the "centered" symbol
 \def\fCenter{~{\mbox{$\vdash$}}}
@@ -41,19 +40,36 @@
 \newcommand{\UR}[2]{\RightLabel{\rulelabel{#1}}\UIC{#2}}
 \newcommand{\URL}[2]{\LeftLabel{\rulelabel{#1}}\UIC{#2}}
 
-\newcommand{\UAX}[4]{\AXC{#2}\LeftLabel{\rulelabel{#1}}\RightLabel{#4}\UIC{#3}}
+\def\HOL{{\tt HOL}}
+\def\Coq{{\tt Coq}}
+\def\PVS{{\tt PVS}}
+
+\makeatletter
+
+\newcommand{\UAX}[4]{\AXC{#2}
+  \@ifnotmtarg{#1}{\LeftLabel{\rulelabel{#1}}}
+  \@ifnotmtarg{#4}{\RightLabel{#4}}
+  \UIC{#3}}
 
 \newcommand{\BAX}[5]{\AXC{#2}\AXC{#3}
-  \LeftLabel{\rulelabel{#1}}\RightLabel{#5}\BIC{#4}}
+  \@ifnotmtarg{#1}{\LeftLabel{\rulelabel{#1}}}
+  \@ifnotmtarg{#5}{\RightLabel{#5}}
+  \BIC{#4}}
 
 \newcommand{\TAX}[6]{\AXC{#2}\AXC{#3}\AXC{#4}
-  \LeftLabel{\rulelabel{#1}}\RightLabel{#6}\TIC{#5}}
+  \@ifnotmtarg{#1}{\LeftLabel{\rulelabel{#1}}}
+  \@ifnotmtarg{#6}{\RightLabel{#6}}
+  \TIC{#5}}
+\makeatother
 
 \newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
 \newcommand{\BRL}[2]{\LeftLabel{\rulelabel{#1}}\BIC{#2}}
 
 \newcommand{\letml}{\textbf{let}~}
 \newcommand{\inml}{~\textbf{in}~}
+\newcommand{\ifml}{~\textbf{if}~}
+\newcommand{\thenml}{~\textbf{then}~}
+\newcommand{\elseml}{~\textbf{else}~}
 
 \newcommand{\eqbi}{`=_{\beta\iota}}
 
@@ -121,7 +137,6 @@
     {$`G \seq \elt{U}{f}{x}{p} : \{ x : U `| P~x \}$}{$$} \DisplayProof
     
     \vspace{\infvspace}
-
     \TAX{App}
     {$`G \seq u : U$}
     {$`G \seq f : \Pi x : V. W$}
@@ -153,10 +168,10 @@
     \vspace{\infvspace}
 
     \BAX{Sub-Prod}
-    {$`G \seq x : U "<|-|>" T "~>" p$}
-    {$`G, x : T \seq v : V ``<= W[x/y] "~>" q$}
-    {$`G \seq \lambda x : T. v : \Pi x : T.V ``<= \Pi y : U.W "~>" 
-      \lambda y : U. q[p/y]$}
+    {$`G \seq x : U ``<= T "~>" p$} %"<|-|>"
+    {$`G, x : U \seq v[p/x] : V[p/x] ``<= W "~>" q$}
+    {$`G \seq \lambda x : T. v : \Pi x : T.V ``<= \Pi x : U.W "~>" 
+      \lambda x : U. q$}
     {}
     \DisplayProof
     
@@ -236,11 +251,13 @@
 \end{proof}
 
 \begin{prop}[Equivalence des supertypes maximaux]
-  Si $U ``<= V$ alors $\pi~U~u \mu~U "->" \mu~V$.
+  Si $`G \judgesub U ``<= V$ alors 
+  $`G \judgetype \mu~U \eqbi \mu~V$ et 
+  $`G \judgetype (\pi~U)~(\mu~U) "->" (\pi~V)~(\mu~V)$.
 \end{prop}
 \begin{proof}
   Par induction sur la dérivation de typage:
-
+  
   \begin{description}
   \item[\SubConvRule:] $U \eqbi V$, donc par le lemme
     \ref{mu-equiv-preserve}, $\mu~U \eqbi \mu~V$.
@@ -252,6 +269,7 @@
     \begin{eqnarray*}
       \mu~\Sigma x : T.V & = & \Sigma x : \mu~T. \mu~V `/ ((\pi T) x) \\
       & \eqbi & \Sigma x : \mu~U. \mu~W[p/y] `/ ((\pi T) x) \\
+      & & \{ p : T "->" U, \pi~T "->" \pi~U \} \\
       & = & \mu~\Sigma x : U. W[p/y]
     \end{eqnarray*}
     
@@ -263,8 +281,61 @@
 \end{proof}
 
 
+\section*{Journal}
+
+\subsection*{8 mars}
+Nouvelle règle de produit fonctionel avec contravariance bien typée,
+produit dépendant (\SubSigmaRule) covariant.
+Un exemple de produit avec contravariance se trouve dans \cite{cal00coherence}, p. 6.
+Exemple d'utilisation intéressante:
+
+\newcommand{\matht}[1]{\text{{\tt #1}}}
+
+\def\even{\matht{even}}
+\def\odd{\matht{odd}}
+
+\BAX{}
+{$`G \judgetype f : \{ \phi : \even "->" `N `| `A x : `N, \phi~x ``<= x \}$}
+{$`G \judgetype g : `N "->" `N := \matht{pred}$}
+{$`G \judgesub g ``<= f$}
+{}
+\DP
+
+Le sous-typage avec coercions: Luo, Callaghan, Saïbi \cite{saibi97inheritance}... 
+\begin{itemize}
+\item Uniformité du sous-typage: ne dépend pas du contexte.
+\item Coercions déclarées dans l'environement (ex: Coq).
+\end{itemize}
+
+Dans HOL, Joe Hurd simule le \emph{predicate subtyping} à la PVS avec
+des \emph{predicate sets} \cite{hurd2001a}. Technique adaptable à Coq ?
+
+\def\ps{\emph{predicate subtyping}}
+
+\subsection*{9 mars}
+Le \ps{} dans HOL n'est pas correct, il peut être subverti aisément à
+cause d'une sorte de covariance des domaines de fonctions et de la
+fonction de suppression des predicats (similaire à $\mu$):
+$inv : `R^{\neq 0} "->" `R `: `R "->" `R$. Le dévellopement dans \HOL{}
+est fait directement dans le language, et il est argué qu'il n'est pas
+possible de le faire correctement à cause de l'exemple
+précédent. L'algorithme de sous-typage est simplement une génération de
+tout les sous-types possibles à partir d'un ensemble de rêgles de
+sous-typage pour les constantes et constructions logiques ou fonctionelles.
+
+Trouvé un article \cite{stumpsubset} sur les types sous-ensembles dans PF, logique d'ordre supérieur
+avec fonctions partielles... Permet de traiter le cas
+$\ifml 1 / i > 0 \thenml i \neq 0 \elseml `_$, qui génère une obligation de
+preuve $i \neq 0$ dans \PVS{}. Evidemment on ne risque pas de pouvoir
+typer ce code en \Coq{} lorsque $`/ : `Z "->" \{ x : `Z `| x \neq 0 \} "->" `Z$ mais
+certaines idées peuvent être intéressantes. 
+
+
+\bibliography{subset-typing,../bib/bib-joehurd}
+\bibliographystyle{plain}
+
 \renewcommand{\thefootnote}{}
 \footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
-  \texttt{Concrete Math}}
+  \texttt{Computer Modern Bright}}
 
 \end{document}
