@@ -39,7 +39,7 @@
   {$`G \seq T : s1$}
   {$`G, x : T \seq U : s2$}
   {$`G \seq \Pi x : T.U : s2$}
-  {$(s1, s2) `: \text{{\sc Sort}}$}
+  {$(s1, s2) `: \mathcal{R}$}
 }
 
 \def\Abs{
@@ -71,7 +71,7 @@
   {$`G \seq T : s1 $}
   {$`G, x : T \seq U : s2 $}
   {$`G \seq \Sigma x : T.U : s2 $}
-  {$(s1, s2) `: \matht{Sort}$} 
+  {$(s1, s2) `: \mathcal{R}$} 
 }
 
 \def\Sum{
@@ -107,7 +107,7 @@
 }
 
 \def\Subsum{
-  \BAX{Subsumption}
+  \TAX{Subsumption}
   {$`G \seq T : s$}
   {$`G \seq t : U$}
   {$`G \subt U \sub T$}
@@ -170,8 +170,8 @@
     \vspace{\infvspace}
     \Subsum\DP
 
-    \vspace{\infvspace}
-    \Conv\DP
+%%     \vspace{\infvspace}
+%%     \Conv\DP
     
   \end{center}
   \label{typing-decl-rules}

@@ -1,26 +1,25 @@
-\def\SubConv{
-\BAX{Sub-Conv}
-{$`G \seq T, U : s$}
-{$T \eqbi U$}
-{$`G \seq T \sub U$}
-{} 
-}
+%% \def\SubConv{
+%% \BAX{Sub-Conv}
+%% {$T \eqbi U$}
+%% {$T \sub U$}
+%% {} 
+%% }
 
-\def\SubProd{
-  \BAX{Sub-Prod}
-  {$`G \seq U \sub T$} %"<|-|>"
-  {$`G, x : U \seq V \sub W$}
-  {$`G \seq \Pi x : T.V \sub \Pi x : U.W$}
-  {}
-}
+%% \def\SubProd{
+%%   \BAX{Sub-Prod}
+%%   {$`G \seq U \sub T$} %"<|-|>"
+%%   {$`G, x : U \seq V \sub W$}
+%%   {$`G \seq \Pi x : T.V \sub \Pi x : U.W$}
+%%   {}
+%% }
 
-\def\SubSigma{
-  \BAX{Sub-Sigma}
-  {$`G \seq T \sub U$}
-  {$`G \seq V \sub W$}
-  {$`G \seq \Sigma x : T. V \sub \Sigma y : U. W$}
-  {}
-}
+%% \def\SubSigma{
+%%   \BAX{Sub-Sigma}
+%%   {$`G \seq T \sub U$}
+%%   {$`G \seq V \sub W$}
+%%   {$`G \seq \Sigma x : T. V \sub \Sigma x : U. W$}
+%%   {}
+%% }
 
 \def\SubLeft{
   \BAX{Sub-Left}
@@ -41,7 +40,7 @@
 
 \begin{figure}[h]
   \begin{center}
-    \def\fCenter{\subta}
+    \def\fCenter{\suba}
     \def\type{\typea}
     \def\sub{\suba}
 
@@ -54,11 +53,12 @@
     \SubSigma\DP
     
     \vspace{\infvspace}
-    \SubLeft\DP
-    
-    \vspace{\infvspace}
-    \SubRight\DP
-    
+    %\SubLeft\DP
+    \SubProof\DP
+
+    \vspace{\infvspace}    
+    %\SubRight\DP
+    \SubSub\DP
   \end{center}
   \label{subtyping-algo-rules}
   \caption{Sous-typage algorithmique}
