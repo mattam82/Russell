@@ -224,6 +224,30 @@
 
       \end{techremark}
       
+    \item[\SubsumRule:]\quad
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq t : S$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd S \sub T$}
+        \BIC{$`G \seq t : T$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd T \sub U$}
+        \BIC{$`G \seq t : U$}
+      \end{prooftree}
+      
+      En utilisant \SubTransRule{} on obtient:
+      \begin{prooftree}
+        \AXC{\vdots}
+        \UIC{$`G \seq t : S$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd S \sub T$}
+        \AXC{\vdots}
+        \UIC{$`G \subtd T \sub U$}
+        \BIC{$`G \subtd S \sub U$}
+        \BIC{$`G \seq t : U$}
+      \end{prooftree}
+
     \end{description}
   
 \end{proof}
@@ -440,7 +464,7 @@ On a les propriétés suivantes sur le jugement de typage:
     $`G, x : U \typed v : V "=>" `G, x : U \typed v : W$.
     On suppose $`G \typed \lambda x : T.v : \Pi x : T.V$.
     Par inversion du typage, on a $`G, x : T \typed v : V$.
-    
+    \bf{Renforcement ?}
     Par \AbsRule, $`G \typed \lambda x : U.v : \Pi x : U.W$.
     
   \item[\SubSigmaRule:] On a 
