@@ -1,10 +1,13 @@
-\subsection*{1^{er} avril}
+\subsection*{1er avril}
 On enlève les contextes au sous-typage algorithmique définitivement.
 Pour faciliter les preuves on considère que le sous-typage contient la
 $\eqbi$ dès le départ.
 Ecriture de la réecriture du sous-typage pour Coq. 
-
-
+On fait du sous-typage sur les traductions et l'on devra montrer que $U
+\suba V "=>" `E t, t : U' \subi V'$.
+Réecriture: $\subimpl{`G}{U}{V}{`G'}{t}{U'}{V'}$. On connait $`G, U, V,
+`G', U', V'$ et l'on cherche la coercion $t$.
+        
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "~/research/coq/papers/subset-typing"

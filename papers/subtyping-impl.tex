@@ -1,42 +1,48 @@
 \def\SubConvI{
 \UAX{Sub-Conv}
-                                %{$`G \judgetypea x : T$}
 {$T \eqbi U$}
-{$`G \seq x : T \sub U$}
+{$\subimpl{`G}{T}{U}{`O}{(\lambda x. x)}{T'}{U'}$}
 {} 
 }
 
 \def\SubProdI{
   \BAX{Sub-Prod}
-  {$`G, x : U \seq x : U \sub T$} %"<|-|>"
-  {$`G, x : U \seq v : V \sub W$}
-  {$`G \seq \lambda x : T. v : \Pi x : T.V 
-    \sub \Pi x : U.W$}
+  {$\subimpl{`G}{U}{T}{`G'}{c_1}{U'}{T'}$} %"<|-|>"
+  {$\subimpl{`G}{V}{W}{`G'}{c_2}{V'}{W'}$}
+  {$\subimpl{`G}{\Pi x : T.V}{\Pi x : U.W}{`G'}
+    {\lambda f. c_2 `o f `o c_1}
+    {\Pi x : T'.V'}{\Pi x : U'.W'}$}
   {}
 }
 
 \def\SubSigmaI{
   \BAX{Sub-Sigma}
-  {$`G \seq t : T \sub U$}
-  {$`G \seq v : V[t/x] \sub W[t/x]$}
-  {$`G \seq (t, v) : \Sigma x : T. V
-    \sub \Sigma x : U. W$}
+  {$\subimpl{`G}{T}{U}{`G'}{c_1}{T'}{U'}$}
+  {$\subimpl{`G}{V}{W}{`G'}{c_2}{V'}{W'}$}
+  {$\subimpl{`G}{\Sigma x : T. V}{\Sigma x : U. W}{`G'}
+    {\lambda (x, y). (c_1~x, c_2~y)}
+    {\Sigma x : T'. V'}{\Sigma x : U'. W'}
+    $}
   {}
 }
 
 \def\SubLeftI{
   \BAX{Sub-Left}
-  {$`G \seq p : U \sub V$}
-  {$`G \type P : \Pi x : U. \Prop$}
-  {$`G \seq p : \subset{x}{U}{P} \sub V$}
+  {$\subimpl{`G}{U}{V}{`G'}{c}{U'}{V'}$}
+  {$\timpl{`G}{P}{\Pi x : U. \Prop}{`G'}{P'}{\Pi x : U'.\Prop}$}
+  {$\subimpl{`G}{\subset{x}{U}{P}}{V}{`G'}
+    {c `o \pi_1}
+    {\subset{x}{U'}{P'}}{V'}$}
   {}
 }
     
 \def\SubRightI{
-  \UAX{Sub-Right}
-  {$`G \seq p : T \sub U$}
-                                %{$`G \judgetype h : P~p$}
-  {$`G \seq p : T \sub \subset{x}{U}{P}$}
+  \BAX{Sub-Right}
+  {$\timpl{`G}{P}{\Pi x : U. \Prop}{`G'}{P'}{\Pi x : U'.\Prop}$}
+  {$\subimpl{`G}{T}{U}{`G''}{c}{T'}{U'}$}
+  {$\subimpl{`G}{T}{\subset{x}{U}{P}}
+    {`G'}{\lambda t : T'. \elt{U'}{P'}{c~t}{?(P'[c~t/x])}}
+    {T'}{\subset{x}{U'}{P'}}$}
   {}
 }
 
