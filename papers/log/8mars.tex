@@ -1,0 +1,26 @@
+\subsection*{8 mars}
+Nouvelle règle de produit fonctionel avec contravariance bien typée,
+produit dépendant (\SubSigmaRule) covariant.
+Un exemple de produit avec contravariance se trouve dans \cite{cal00coherence}, p. 6.
+Exemple d'utilisation intéressante:
+
+\BAX{}
+{$`G \judgetype f : \{ \phi : \even "->" `N `| `A x : `N, \phi~x ``<= x \}$}
+{$`G \judgetype g : `N "->" `N := \matht{pred}$}
+{$`G \judgesub g ``<= f$}
+{}
+\DP
+
+Le sous-typage avec coercions: Luo, Callaghan, Saïbi \cite{saibi97inheritance}... 
+\begin{itemize}
+\item Uniformité du sous-typage: ne dépend pas du contexte.
+\item Coercions déclarées dans l'environement (ex: Coq).
+\end{itemize}
+
+Dans HOL, Joe Hurd simule le \emph{predicate subtyping} à la PVS avec
+des \emph{predicate sets} \cite{hurd2001a}. Technique adaptable à Coq ?
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "~/research/coq/papers/subset-typing"
+%%% End: 

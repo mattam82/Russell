@@ -1,0 +1,22 @@
+\subsection*{9 mars}
+Le \ps{} dans HOL n'est pas correct, il peut être subverti aisément à
+cause d'une sorte de covariance des domaines de fonctions et de la
+fonction de suppression des predicats (similaire à $\mu$):
+$inv : `R^{\neq 0} "->" `R `: `R "->" `R$. Le développement dans \HOL{}
+est fait directement dans le language, et il est argué qu'il n'est pas
+possible de le faire correctement à cause de l'exemple
+précédent. L'algorithme de sous-typage est simplement une génération de
+tout les sous-types possibles à partir d'un ensemble de rêgles de
+sous-typage pour les constantes et constructions logiques ou fonctionelles.
+
+Trouvé un article \cite{stumpsubset} sur les types sous-ensembles dans PF, logique d'ordre supérieur
+avec fonctions partielles... Permet de traiter le cas
+$\ifml 1 / i > 0 \thenml i \neq 0 \elseml `_$, qui génère une obligation de
+preuve $i \neq 0$ dans \PVS{}. Evidemment on ne risque pas de pouvoir
+typer ce code en \Coq{} lorsque $`/ : `Z "->" \{ x : `Z `| x \neq 0 \} "->" `Z$ mais
+certaines idées peuvent être intéressantes. 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "~/research/coq/papers/subset-typing"
+%%% End: 

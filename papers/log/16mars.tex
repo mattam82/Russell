@@ -1,0 +1,21 @@
+\subsection*{16 mars}
+Il faut faire du sous-typage dans la spécification aussi:
+$f : x : \subset{n}{`N}{0 \neq} "->" \subset{n}{`N}{x <}$.
+
+Les deux phases:
+\begin{description}
+\item[Inférence] on donne les types imprécis, ie: dans $x > n$, 
+  $n "~>" `N$.
+\item[Typage] on traverse la première dérivation de typage en ajoutant
+  les coercions appropriées, par exemple:
+  $`G \type n : \subset{n}{`N}{0 \neq}$,  $\type_{inf} n "~>" `N$ est
+  réecrit en: 
+  $`G \type \pi_{1}~n : `N$.
+\end{description}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "~/research/coq/papers/subset-typing"
+%%% End: 
