@@ -1,0 +1,60 @@
+%\makeatletter
+\usepackage{ifmtarg}
+
+%\let\ifempty = \@ifmtarg
+
+\usepackage{qsymbols}
+
+\newqsymbol{`<}{\langle}
+\newqsymbol{`>}{\rangle}
+
+\newcommand{\cad}{c'est-à-dire}
+\newcommand{\ssi}{si et seulement si~}
+
+\newcommand{\unique}{\mbox{ unique }}
+\newcommand{\catt}[2]{\ensuremath{\mathcal{#1}#2}}
+\newcommand{\Set}{\catt{S}{et}}
+\newcommand{\Mon}{\catt{M}{on}}
+\newcommand{\Coh}{\catt{C}{oh}}
+\newcommand{\cat}[1]{\catt{#1}{}}
+
+\newcommand{\dom}[1]{\mathbb{#1}}
+\newqsymbol{`N}{\dom{N}}
+\newqsymbol{`Z}{\dom{Z}}
+\newqsymbol{`R}{\dom{R}}
+\newqsymbol{`Q}{\dom{Q}}
+
+\newqsymbol{`|}{\mid}
+\newqsymbol{`O}{\emptyset}
+
+% Coherence spaces
+\newqsymbol{"("}{\smile} 
+\newqsymbol{")"}{\frown}
+
+\newcommand{\coh}{\mathrel{\raisebox{-.3em}{\shortstack{$\frown$\\
+$\smile$}}}}
+\newcommand{\icoh}{\mathrel{\raisebox{- 
+.3em}{\shortstack{$\smile$\\$\frown$}}}}
+
+\newqsymbol{"()"}{\ensuremath{\coh}}
+\newqsymbol{")("}{\ensuremath{\icoh}}
+
+% logic
+\newqsymbol{`-}{\mp}
+\newqsymbol{"|="}{\models}
+\newqsymbol{"|/="}{\not\models}
+
+% linear logic
+\newqsymbol{`*}{\ensuremath{\otimes}}
+\newqsymbol{`+}{\ensuremath{\oplus}}
+\newqsymbol{`x}{\ensuremath{\times}}
+\newcommand{\with}{\ensuremath{\binampersand}}
+\newcommand{\para}{\ensuremath{\bindnasrepma}}
+
+\newcommand{\step}[1]{\{ \mbox{ #1 } \}}
+%\makeatother
+
+% Pi-calculus
+\newcommand{\picalc}{$\pi$-calculus}
+\newqsymbol{`n}{\boldsymbol{\nu}}
+\renewcommand{\bar}[1]{{\overline #1}}

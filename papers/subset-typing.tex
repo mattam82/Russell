@@ -5,7 +5,7 @@
 \usepackage{indentfirst}
 \usepackage{a4}
 \usepackage[dvips]{graphicx}
-\usepackage{coqdoc}
+%\usepackage{coqdoc}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsthm}
@@ -172,7 +172,6 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\SubsumRule{\rname{Subsumption}}
 \def\ConvRule{\rname{Conv}}
 
-
 \def\SubReflRule{\rname{Sub-Refl}}
 \def\SubTransRule{\rname{Sub-Trans}} 
 \def\SubConvRule{\rname{Sub-Conv}}
@@ -183,6 +182,8 @@ Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby9
 \def\SubProofRule{\rname{Sub-Proof}}
 \def\SubSubRule{\rname{Sub-Subset}}
 \def\SubTransRule{\rname{Sub-Trans}}
+
+\input{grammar}
 
 \input{typing-decl}
 \input{subtyping-decl}
@@ -213,6 +214,7 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 \input{log/31mars}
 \input{log/1avril}
 \input{log/5avril}
+\input{log/1juin}
 
 \bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
 \bibliographystyle{plain}
@@ -222,3 +224,8 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
   \texttt{Computer Modern Bright}}
 
 \end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% End: 
