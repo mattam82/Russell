@@ -348,8 +348,9 @@ convertibilité.
     On a alors $U = T$, trivial.
     
   \item[$T `= \Pi X.Y$:]
-    Alors $U `= \Pi V.W$ et $X \eqbi V$, $Y \eqbi W$, 
-    donc par induction $`G \subta x : U \sub T$ et 
+    Alors $U `= \Pi V.W$ et $X \eqbi V$, $Y \eqbi W$
+    d'après le lemme \TODO{}.
+    Par induction $`G \subta x : U \sub T$ et 
     $`G, x : U \subta v : V \sub W$. On applique alors
     \SubProdRule{} à ces deux prémisses.
     
@@ -402,7 +403,7 @@ convertibilité.
     On a $U `= \subset{x}{U'}{P}$ et $`G \subta x : U' \sub V$.
     Par induction, si $`G \typed u : U'$ alors $`G \subta u : U' \sub T$.
     Si $`G \typed u : \subset{x}{U'}{P}$ alors
-    $`G \typed u : U'$ par application de \LetSubRule et donc par
+    $`G \typed u : U'$ par application de \LetSubRule{} et donc par
     application de \SubLeftRule, $`G \subta u : \subset{x}{U'}{P}
     \sub V$.
     
@@ -478,8 +479,10 @@ convertibilité.
   \label{inversion-subtyping}
   Si $`G \subta \lambda x : T. M : \Pi x : T.U \sub \Pi x : V.W$ 
   alors $`G, x : T \typea M : U$.
-  
 \end{lemma}
+\begin{proof}
+  \TODO{}
+\end{proof}
 
 \begin{lemma}[Admissibilité de la réflexivité, transitivité du sous-typage]
   \quad
@@ -493,8 +496,9 @@ convertibilité.
 
 \begin{proof}  
   \begin{enumerate}
-  \item $S \eqbi S$, donc pour tout $x : S$, $`G \subta x : S \sub
-    S$. Par substivité du sous-typage, la propriété est vraie pour tout
+  \item $S \eqbi S$, donc $`G \subta x : S \sub S$ est dérivable par
+    \SubConvRule. 
+    Par substivité du sous-typage, la propriété est vraie pour tout
     $t$ tel que $`G \typed t : S$.
   \item Dans \cite{Pierce:TypeSystems}, voir p. 420.
   \end{enumerate}
@@ -511,7 +515,7 @@ convertibilité.
   
   \begin{itemize}
   \item[\SubConvRule:] On a $T \eqbi U$ et l'on suppose 
-    $x \typed T$. On a donc bien $`G \typed x : U$.
+    $`G \typed x : T$. On a donc bien $`G \typed x : U$ par \SubConvRule.
     
   \item[\SubProdRule:] On a
     \begin{prooftree}
@@ -533,7 +537,7 @@ convertibilité.
     Par hypothèse d'induction, $`G \typed t : T, U$, $`G \typed v : V[t/x], W[t/y]$.
     Par \SumRule, $(t, v) : \Sigma y : U, W$.
 
-  \item[\SubLeftRule:] On a
+  \item[\SubLeftRule:] On a 
     \begin{prooftree}
       \SubLeft
     \end{prooftree}

@@ -16,10 +16,12 @@
 \usepackage{bussproofs}
 \usepackage{hyperref}
 \usepackage{fullpage}
-%\usepackage{concmath}
-\usepackage{cmbright}
+\usepackage{concmath}
+%\usepackage{cmbright}
 \usepackage{fancyhdr}
 \usepackage{ifthen}
+\usepackage{pxfonts}
+
 
 \def\infvspace{2em}
 % This is the "centered" symbol
@@ -34,7 +36,7 @@
 \newtheorem{definition}[lemma]{Définition}
 
 \newtheorem{techremark}[]{Remarque technique}
-
+\newcommand{\TODO}{\textbf{TODO}}
 \newcommand{\src}[1]{\texttt{#1}}
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
 %\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
@@ -85,12 +87,12 @@
 \newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
 \newcommand{\BRL}[2]{\LeftLabel{\rulelabel{#1}}\BIC{#2}}
 
-\newcommand{\letml}{\textbf{let}~}
-\newcommand{\inml}{~\textbf{in}~}
-\newcommand{\ifml}{~\textbf{if}~}
-\newcommand{\thenml}{~\textbf{then}~}
-\newcommand{\elseml}{~\textbf{else}~}
-\newcommand{\funml}{~\textbf{fun}~}
+\newcommand{\letml}{\textbf{let}}
+\newcommand{\inml}{\textbf{in}}
+\newcommand{\ifml}{\textbf{if}}
+\newcommand{\thenml}{\textbf{then}}
+\newcommand{\elseml}{\textbf{else}}
+\newcommand{\funml}{\textbf{fun}}
 
 \newcommand{\eqbi}{`=_{\beta}}
 
@@ -214,7 +216,7 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 \input{log/31mars}
 \input{log/1avril}
 \input{log/5avril}
-\input{log/1juin}
+\input{log/3juin}
 
 \bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
 \bibliographystyle{plain}
