@@ -1,13 +1,20 @@
 \setboolean{displayLabels}{false}
 \def\ssi{si et seulement si}
+\def\setproptype{\{ \Set, \Prop, \Type(i) \}}
+\def\nf{\downarrow~}
+\def\nat{\matht{nat}}
+\def\irule#1{\indrule{#1}}
 
 \subsection*{Notations}
-$`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
+\begin{list}{}{}
+\item $`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
+\item $\_ \nf `= \text{forme normale}$
+\end{list}
 
 \section*{Propriétés élementaires}
 
-\begin{lemma}[Inversion du typage]
-  \label{inversion-typing}
+\begin{fact}[Inversion du typage]
+  \label{inversion-typing-d}
   On a les propriétés suivantes sur le jugement de typage:
   \begin{enumerate}
   \item Si $`G \type \lambda x : T.v : \Pi x : T.U : s$ alors $`G, x : T \type
@@ -16,27 +23,87 @@ $`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
     : s1$ et $`G \type v : U[t/x]$.
   \item Si $`G \type t : \subset{x}{U}{P}$ alors $`G \type t : U$.
   \end{enumerate}
+\end{fact}
+
+\begin{lemma}[Inversion pour le produit]
+  \label{inversion-prod-d}
+  Si $`G \type \Pi x : T.U : s$ alors $s `: \setproptype$, $`G \type T : t$ et 
+  $`G, x : T \type U : s$.
 \end{lemma}
+\begin{proof}
+  Les seules règles ayant pour conclusion possible un jugement de la
+  forme $\Pi x : T.U : s$ sont \irule{Prod} et \irule{Subsum}
+  (\irule{App} se termine par une application). Pour \irule{Prop} la
+  propriété est directe. Supposons que la dernière règle appliquée fut
+  \irule{Subsum}. Alors il existe $s'$ tel que $`G \type \Pi x : T.U :
+  s'$ et par induction, $s' `: \setproptype$. Une
+  inspection des règles de sous-typage révèle que seules les
+  règles \irule{SubConv} et \irule{SubTrans} ont pu s'appliquer dans
+  la dérivation $`G \type s' \sub s$. On en déduit que $s `=_\beta s'$,
+  et il s'ensuit que $`G \type T : s'$ (lemme~\ref{type-convertibility}). 
+  On peut appliquer \irule{Subsum} à la fin de la dérivation 
+  $`G, x : T \type U : s'$ pour obtenir le résultat $`G, x : T \type U :
+  s$.
+  
+  % La dérivation est donc de la forme:
+%   \begin{prooftree}
+%     \AXC{$t `=_\beta s'$}
+%     \UIC{$t \sub s'$}
+%     \AXC{$\ldots$}
+%     \AXC{$s `=_\beta t$}
+%     \UIC{$s \sub t$}
+%     \TIC{$s \sub s'$}
+%   \end{prooftree}
+
+
+%   Comme les classes de
+%   $\beta$-équivalence des éléments de $\setproptype$ sont réduites à un
+%   élément,
+
+\end{proof}
 
 \begin{lemma}[Sous-typage bien sorté]
-  \label{subtyping-sorts}
+  \label{subtyping-sorts-d}
   Si $S \subd T$ alors $`G \typed S : s$ \ssi~$`G \typed T : s$.
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la dérivation de sous-typage.
-
-  \begin{description}
-  \item[\SubConvRule:] Trivial.
-  \item[\SubTransRule:] Trivial.
+  \begin{induction}{subtyping-decl}
+  
+    \casetwo{SubConv}{SubTrans} Trivial.
     
-  \item[\SubProdRule,\SubSigmaRule:] Par induction les composantes
+    \casetwo{SubProd}{SubSigma} Par induction les composantes
     correspondantes sont dans la même sorte, donc les composés aussi.
     
-  \item[\SubProofRule,\SubSubRule:] Comme le constructeur de types subset
+    \casetwo{SubProof}{SubSub} Comme le constructeur de types subset
     est de type $\Type "->" \Prop "->" \Type$, on conserve bien les mêmes
     sortes de part et d'autre.
-  \end{description}
+  \end{induction}
+\end{proof}
+
+\begin{lemma}[Bonne formation des contextes]
+  \label{wf-contexts-d}
+  Si $`G \type t : T$ alors $\typewf `G$.
+\end{lemma}
+\begin{proof}
+  \inductionon{typing-decl}
+\end{proof}
+
+\begin{fact}[Inversion du jugement de bonne formation]
+  \label{inversion-wf-d}
+  Si $\typewf `G, x : U$ alors $`G \type U : s$ pour 
+  $s `: \{ \Set, \Prop, \Type(i) \}$.
+\end{fact}
+
+\begin{lemma}[Conservation de la bonne formation par renforcement]
+  \label{wf-reinforcment-d}
+  Si $\typewf `G, x : S$ et $`G \subt S' \sub S$ alors $\typewf `G, x :
+  S'$.
+\end{lemma}
+\begin{proof}
+  On a $`G \type S : s$ (fait~\ref{inversion-wf-d}).
+  On applique le lemme~\ref{subtyping-sorts-d} pour obtenir $`G \type S' : s$
+  puis \irule{WfVar} nous donne $\typewf `G, x : S'$.  
 \end{proof}
 
 \begin{lemma}[Renforcement]
@@ -45,19 +112,32 @@ $`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
 \end{lemma}
 
 \begin{proof}
-  
+  Par le lemme~\ref{wf-reinforcment-d} on sait que $\typewf `G, x : S$
+  implique $\typewf `G, x : S'$.
+
+  \begin{induction}[typing-decl]
+    \casetwo{PropSet}{Type} Direct par le lemme~\ref{wf-reinforcment-d}.
+
+    \case{Var} Dans les deux cas $t `= x$ et $t `= y, y "/=" x$ il suffit
+    d'appliquer~\irule{Var}~(le contexte $`G, x : S'$ étant bien formé).
+
+    \case{Prod} 
+    Par induction, $`G, x : S' \type T : s1$ et $`G, x : S',
+    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+    $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
+  \end{induction}
 \end{proof}
 
 \subsection*{Conversion}
 On peut changer le système pour inclure la relation de conversion $\eqbi$
 dans le sous-typage. On peut en effet remplacer toute application de la
-règle de conversion \ConvRule{} par une application de la subsumption:
+règle de conversion \irule{Conv} par une application de la subsumption:
 
 \hfill
 \AXC{\vdots}
 \UIC{$`G \seq T : s$}
 \AXC{\vdots}
-\UIC{$`G \seq t : U$}      
+\UIC{$`G \seq t : U$}
 \AXC{$U \eqbi T$}
 \TIC{$`G \seq t : T$}
 \DP
@@ -73,32 +153,30 @@ règle de conversion \ConvRule{} par une application de la subsumption:
 \hfill
 \\
 
-\def\nat{\matht{nat}}
-
-Le système obtenu en remplacant \ConvRule{} par \SubConvRule{} type donc
+Le système obtenu en remplacant \irule{Conv} par \irule{SubConv} type donc
 au moins les mêmes termes. Pour conserver la propriété de sous-typage
 bien sorté, il faut cependant ajouter une condition de sorte à
-\SubConvRule{} puisque la $\beta$-convertibilité n'assure pas que deux
+\irule{SubConv} puisque la $\beta$-convertibilité n'assure pas que deux
 termes ont la même sorte dans notre système:
 $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
 
 \subsection*{Subsumption}
-\begin{lemma}[Passage de la subsumption à l'application]
+\begin{proposition}[Passage de la subsumption à l'application]
   \label{subsum-elim}
   On peut réecrire toute dérivation $`G \typed t : T$ utilisant la
   subsumption ailleurs qu'à sa racine vers une dérivation l'utilisant
   uniquement à sa racine ou pour la prémisse droite de l'application.
-\end{lemma}
+\end{proposition}
 
 \begin{proof}
-  On inspecte les dérivations possibles utilisant \SubSubRule{} juste avant
+  On inspecte les dérivations possibles utilisant \irule{SubSub} juste avant
   une autre règle.
   
-  \begin{description}
-  \item[\VarRule:] Par de prémisse de la forme $`G \typed t : T$, donc
-    pas d'application de \SubsumRule{} possible.
+  \begin{induction}
+  \case{Var} Par de prémisse de la forme $`G \typed t : T$, donc
+    pas d'application de \irule{Subsum} possible.
       
-  \item[\AbsRule:] \quad
+  \case{Abs}\quad
     \begin{prooftree}
       \AXC{\vdots}
       \UIC{$`G \seq \Pi x : T. U : s $}
@@ -125,7 +203,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
       \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
     \end{prooftree}
     
-  \item[\SumRule:]\quad
+  \case{Sum}\quad
     \begin{prooftree}
       \AXC{\vdots}
       \UIC{$`G \seq \Sigma x : T.U : s $}
@@ -140,7 +218,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
     \end{prooftree}
     
     Comme $S \sub T$, on a bien $\Sigma x : S.U \sub \Sigma x : T.U$
-    par \SubSigmaRule. On sait de plus que $\Sigma x : S.U$ est bien
+    par \irule{SubSigma}. On sait de plus que $\Sigma x : S.U$ est bien
     sorté de sorte $s$.
 
     \begin{prooftree}
@@ -156,7 +234,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
       \BIC{$`G \seq (t,u) : \Sigma x : T.U$}
     \end{prooftree}
     
-  \item[\LetSumRule,\LetInRule:]\quad
+  \casetwo{LetSum}{LetIn}\quad
     Règles problèmatiques. Si l'on ajoute des anotations au let, on
     obtient:
     
@@ -175,7 +253,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
     prémisse gauche. A droite c'est direct ($V' \sub V$).
     
     
-  \item[\AppRule:] On autorise le sous-typage à la prémisse droite. A
+  \case{App} On autorise le sous-typage à la prémisse droite. A
     gauche on peut avoir:
     
     \begin{prooftree}
@@ -191,7 +269,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
     
     Par inspection des règles de sous-typage, on sait que le jugement
     $T' \sub \Pi x : V.W$ résulte soit d'une application de
-    \SubProdRule{} soit de \SubSubRule.
+    \irule{SubProd} soit de \irule{SubSub}.
     Dans le premier cas on a la dérivation:
 
     \begin{prooftree}
@@ -270,16 +348,16 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
       {$$}
     \end{prooftree}     
     
-    \begin{techremark}
+    \begin{remark}
       En pratique, les types du Calcul des Constructions ne sont pas
       toujours en forme normale et il peut donc être nécessaire de les
       réduire pour vérifier des jugements du genre: 
       $`G \seq t : \Pi x : T.V$. On pourrait voir $\mu$ comme une
       extension de la relation de $\beta$-équivalence avec la réduction
       $\subset{x}{U}{P} "->"_\mu U$.
-    \end{techremark}
+    \end{remark}
     
-  \item[\SubsumRule:]\quad
+  \case{Subsum}\quad
     \begin{prooftree}
       \AXC{\vdots}
       \UIC{$`G \seq t : S$}
@@ -291,7 +369,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
       \BIC{$`G \seq t : U$}
     \end{prooftree}
     
-    En utilisant \SubTransRule{} on obtient:
+    En utilisant \irule{SubTrans} on obtient:
     \begin{prooftree}
       \AXC{\vdots}
       \UIC{$`G \seq t : S$}
@@ -303,7 +381,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
       \BIC{$`G \seq t : U$}
     \end{prooftree}
 
-  \end{description}
+  \end{induction}
   
 \end{proof}
 
@@ -317,15 +395,15 @@ vérification que le type inféré du terme est bien sous-type du type
 spécifié.  
 
 \subsection*{Sommes dépendantes}
-En inspectant la règle \SumRule{}, on remarque qu'il n'est pas possible
+En inspectant la règle \irule{Sum}, on remarque qu'il n'est pas possible
 d'inférer le type $U$ à partir du seul terme $(t, u)$. Cela
 nécessiterait de résoudre un problème d'unification d'ordre supérieur
 auquel il n'y a pas de solution la plus générale. On introduit donc dans
-le système algorithmique deux nouvelles règles, dont une (\SumDepRule{})
+le système algorithmique deux nouvelles règles, dont une (\irule{SumDep})
 permettant d'annoter le terme avec le type $U$ recherché. On considère
 que c'est à l'utilisateur d'annoter suffisament les termes. Par défaut,
 si le terme n'est pas annoté on considère l'objet $(u, v)$ comme une
-paire non-dépendante (\SumInfRule{}).
+paire non-dépendante (\irule{SumInf}).
 
 \subsection*{Conversion}  
 En pratique nous ne voulons pas faire de tests de convertibilité
@@ -352,15 +430,15 @@ convertibilité.
     d'après le lemme \TODO{}.
     Par induction $`G \subta x : U \sub T$ et 
     $`G, x : U \subta v : V \sub W$. On applique alors
-    \SubProdRule{} à ces deux prémisses.
+    \irule{SubProd} à ces deux prémisses.
     
   \item[$T `= \Sigma x : X.Y$:]
     $U$ est de la forme $\Sigma x : V.W$, avec $X \eqbi V$ et $Y \eqbi
-    W$. Par induction et application de \SubSigmaRule.
+    W$. Par induction et application de \irule{SubSigma}.
     
   \item[$T `= \subset{x}{X}{P}$:] 
     On a alors $U `= \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
-    P'$, et la propriété est vraie par \SubLeftRule{} et \SubRightRule{}:
+    P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
     \begin{prooftree}
       \AXC{$`G \seq t : X \sub X'$}
@@ -384,14 +462,14 @@ convertibilité.
   $`G \subta x : U \sub T$:
   \def\seq{\subta}.
   
-  \begin{itemize}
-  \item[\SubConvRule:]
+  \begin{induction}
+    \case{SubConv}
     Direct par préservation de l'équivalence $\eqbi$ par le sous-typage.
     
-  \item[\SubProdRule,\SubSigmaRule:] $x$ est une variable, on ne peut
+    \casetwo{SubProd}{SubSigma} $x$ est une variable, on ne peut
     donc pas utiliser ces règles.
     
-  \item[\SubLeftRule:] On a
+    \case{SubLeft} On a
     \begin{prooftree}
       \BAX{Sub-Left}
       {$`G \seq x : U' \sub V$}
@@ -403,11 +481,11 @@ convertibilité.
     On a $U `= \subset{x}{U'}{P}$ et $`G \subta x : U' \sub V$.
     Par induction, si $`G \typed u : U'$ alors $`G \subta u : U' \sub T$.
     Si $`G \typed u : \subset{x}{U'}{P}$ alors
-    $`G \typed u : U'$ par application de \LetSubRule{} et donc par
-    application de \SubLeftRule, $`G \subta u : \subset{x}{U'}{P}
+    $`G \typed u : U'$ par application de \irule{LetSub} et donc par
+    application de \irule{SubLeft}, $`G \subta u : \subset{x}{U'}{P}
     \sub V$.
     
-  \item[\SubRightRule:] On a
+    \case{SubRight} On a
     \begin{prooftree}
       \UAX{}
       {$`G \seq x : U \sub V'$}
@@ -417,9 +495,9 @@ convertibilité.
     
     On a $V `= \subset{x}{V'}{P}$ et $`G \subta x : U \sub V'$.
     Par induction, si $`G \typed u : U$ alors $`G \subta u : U
-    \sub V'$. Donc par application de \SubRightRule, $`G \subta u : U \sub V$.
+    \sub V'$. Donc par application de \irule{SubRight}, $`G \subta u : U \sub V$.
     
-  \end{itemize}
+  \end{induction}
 \end{proof}
 
 \begin{lemma}[Substitutivité du sous-typage]
@@ -511,13 +589,11 @@ convertibilité.
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la dérivation de sous-typage:
-  
-  \begin{itemize}
-  \item[\SubConvRule:] On a $T \eqbi U$ et l'on suppose 
-    $`G \typed x : T$. On a donc bien $`G \typed x : U$ par \SubConvRule.
+  \begin{induction}[subtyping-decl]
+    \case{SubConv} On a $T \eqbi U$ et l'on suppose 
+    $`G \typed x : T$. On a donc bien $`G \typed x : U$ par \irule{SubConv}.
     
-  \item[\SubProdRule:] On a
+    \case{SubProd} On a
     \begin{prooftree}
       \SubProd
     \end{prooftree}
@@ -527,33 +603,32 @@ convertibilité.
     On suppose $`G \typed \lambda x : T.v : \Pi x : T.V$.
     Par inversion du typage, on a $`G, x : T \typed v : V$.
     \bf{Renforcement ?}
-    Par \AbsRule, $`G \typed \lambda x : U.v : \Pi x : U.W$.
+    Par \irule{Abs}, $`G \typed \lambda x : U.v : \Pi x : U.W$.
     
-  \item[\SubSigmaRule:] On a 
+    \case{SubSigma} On a 
     \begin{prooftree}
       \SubSigma
     \end{prooftree}
     
     Par hypothèse d'induction, $`G \typed t : T, U$, $`G \typed v : V[t/x], W[t/y]$.
-    Par \SumRule, $(t, v) : \Sigma y : U, W$.
+    Par \irule{Sum}, $(t, v) : \Sigma y : U, W$.
 
-  \item[\SubLeftRule:] On a 
+    \case{SubLeft} On a 
     \begin{prooftree}
       \SubLeft
     \end{prooftree}
     
     Par induction, $`G \typed p : V$.
 
-  \item[\SubRightRule:] On a
+    \case{SubRight} On a
     \begin{prooftree}
       \SubRight
     \end{prooftree}
     
-    Par induction, $`G \typed p : U$. Par \SubsetRule, $`G \typed p :
+    Par induction, $`G \typed p : U$. Par \irule{Subset}, $`G \typed p :
     \subset{x}{U}{P}$.
     
-  \end{itemize}
-  
+  \end{induction}  
 \end{proof}
 
 
@@ -563,13 +638,11 @@ convertibilité.
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la dérivation dans le système algorithmique:
+  \begin{induction}[typing-algo]
+  \item[\irule{WfAtom},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
+    \irule{LetIn}, \irule{Sigma}, \irule{Sum}, \irule{LetSum}:] règles inchangées.
 
-  \begin{description}
-  \item[\WfAtomRule,\WfVarRule,\PropSetRule,\VarRule,\ProdRule,\AbsRule,
-    \LetInRule, \SigmaRule, \SumRule, \LetSumRule:] règles inchangées.
-
-  \item[\AppRule:] On a
+    \case{App} On a
     \def\fCenter{\typea}
     \begin{prooftree}
       \AppI
@@ -577,10 +650,9 @@ convertibilité.
     
     Par induction, $`G \typed f : \Pi x : V. W $.
     Par le lemme \ref{correct-subtyping}, et l'hypothèse $`G \typed u : U$, 
-    $`G \typed u : V$. Donc, par \AppRule, on a bien $`G \typed f u :
+    $`G \typed u : V$. Donc, par \irule{App}, on a bien $`G \typed f u :
     W[u/x]$.
-  \end{description}
-  
+  \end{induction}  
 \end{proof}
 
 \begin{lemma}[Complétude du typage]
@@ -589,13 +661,11 @@ convertibilité.
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la dérivation dans le système déclaratif:
-
-  \begin{description}
-  \item[\WfAtomRule,\WfVarRule,\PropSetRule,\VarRule,\ProdRule,\AbsRule,
-    \LetInRule, \SigmaRule, \SumRule, \LetSumRule:] règles inchangées.
+  \begin{induction}[typing-decl]
+  \item[\irule{WfAtom},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
+    \irule{LetIn}, \irule{Sigma}, \irule{Sum}, \irule{LetSum}:] règles inchangées.
     
-  \item[\AppRule:] On a 
+    \case{App} On a 
     \begin{prooftree}
       \App
     \end{prooftree}
@@ -610,7 +680,7 @@ convertibilité.
     Par substitutivité du sous-typage (lemme
     \ref{substitutive-term-subtyping}), on a donc $`G \subta u : V
     \sub X$. Par transitivité du sous-typage \ref{refl-trans-subtyping}, 
-    $`G \subta u : U \sub X$. On peut donc appliquer \AppRule{} pour
+    $`G \subta u : U \sub X$. On peut donc appliquer \irule{App} pour
     obtenir $`G \typea f u : Y[u/x]$. 
     
     Par la covariance du produit en son codomaine, 
@@ -619,7 +689,7 @@ convertibilité.
     $`G \subta v[u/x] : Y[u/x] \sub W[u/x]$, la propriété est
     donc bien vérifiée.
     
-  \item[\SubsetRule:] On a
+    \case{Subset} On a
     \begin{prooftree}
       \Subset
     \end{prooftree}
@@ -627,11 +697,11 @@ convertibilité.
     Par induction, $`E T, `G \typea x : T `^ `G \subta x : T \sub U$.
     
 
-  \item[\LetSubRule:]
+    \case{LetSub}
     
-  \item[\ConvRule:]
-
-  \end{description}
+    \case{Conv}
+    
+  \end{induction}
   
 \end{proof}
 

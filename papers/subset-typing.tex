@@ -22,7 +22,6 @@
 \usepackage{ifthen}
 \usepackage{pxfonts}
 
-
 \def\infvspace{2em}
 % This is the "centered" symbol
 \def\fCenter{\vdash}
@@ -30,12 +29,16 @@
 % Optional to turn on the short abbreviations
 \EnableBpAbbreviations
 
-\newtheorem{lemma}{Lemme}[section]
-\newtheorem{theorem}[lemma]{Théorême}
-\newtheorem{proposition}[lemma]{Proposition}
-\newtheorem{definition}[lemma]{Définition}
+\newtheorem{theorem}{Théorême}[section]
+\newtheorem{lemma}[theorem]{Lemme}
+\newtheorem{fact}[theorem]{Fait}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Définition}
+\newtheorem{example}[theorem]{Exemple}
+\newtheorem{remark}[theorem]{Remarque}
+\newtheorem{corrolary}[theorem]{Corrolaire}
 
-\newtheorem{techremark}[]{Remarque technique}
+
 \newcommand{\TODO}{\textbf{TODO}}
 \newcommand{\src}[1]{\texttt{#1}}
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
@@ -101,9 +104,13 @@
 \def\judgetypea{\vdash_{\bullet}}
 \def\judgetypei{\vdash_{\Box}}
 \def\typed{\judgetyped}
+\def\typedwf{\judgewf}
 \def\typea{\judgetypea}
+\def\typeawf{\judgetypea_{wf}}
 \def\typei{\judgetypei}
+\def\typeiwf{\judgetypei_{wf}}
 \def\type{\typed}
+\def\typewf{\typedwf}
 \def\judgesubd{\vdash}
 \def\judgesuba{\vdash_{\bullet}}
 \def\judgesubi{\vdash_{\Box}}
@@ -138,6 +145,8 @@
 \def\Type{\matht{Type}}
 \def\ps{\emph{predicate subtyping}}
 
+\input{typing-macros}
+
 \title{\thetitle}
 
 \author{Matthieu Sozeau}
@@ -156,34 +165,35 @@
 Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
 
 
-\def\WfAtomRule{\rname{Wf-Atom}}
-\def\WfVarRule{\rname{Wf-Var}}
-\def\PropSetRule{\rname{PropSet}}
-\def\VarRule{\rname{Var}}
-\def\ProdRule{\rname{Prod}}
-\def\AbsRule{\rname{Abs}}
-\def\AppRule{\rname{App}}
-\def\LetInRule{\rname{LetIn}}
-\def\SigmaRule{\rname{Sigma}}
-\def\SumRule{\rname{Sum}}
-\def\SumInfRule{\rname{SumInf}}
-\def\SumDepRule{\rname{SumDep}}
-\def\LetSumRule{\rname{LetSum}}
-\def\SubsetRule{\rname{Subset}}
-\def\LetSubRule{\rname{LetSub}}
-\def\SubsumRule{\rname{Subsumption}}
-\def\ConvRule{\rname{Conv}}
+\def\WfAtomRule{Wf-Atom}
+\def\WfVarRule{Wf-Var}
+\def\PropSetRule{PropSet}
+\def\TypeRule{Type}
+\def\VarRule{Var}
+\def\ProdRule{Prod}
+\def\AbsRule{Abs}
+\def\AppRule{App}
+\def\LetInRule{Let-In}
+\def\SigmaRule{Sigma}
+\def\SumRule{Sum}
+\def\LetSumRule{Let-Sum}
+\def\SumInfRule{Sum-Inf}
+\def\SumDepRule{Sum-Dep}
+\def\SubsetRule{Subset}
+\def\LetSubRule{Let-Sub}
+\def\SubsumRule{Subsumption}
+\def\ConvRule{Conv}
 
-\def\SubReflRule{\rname{Sub-Refl}}
-\def\SubTransRule{\rname{Sub-Trans}} 
-\def\SubConvRule{\rname{Sub-Conv}}
-\def\SubProdRule{\rname{Sub-Prod}}
-\def\SubSigmaRule{\rname{Sub-Sigma}}
-\def\SubLeftRule{\rname{Sub-Left}}
-\def\SubRightRule{\rname{Sub-Right}}
-\def\SubProofRule{\rname{Sub-Proof}}
-\def\SubSubRule{\rname{Sub-Subset}}
-\def\SubTransRule{\rname{Sub-Trans}}
+\def\SubReflRule{Sub-Refl}
+\def\SubTransRule{Sub-Trans} 
+\def\SubConvRule{Sub-Conv}
+\def\SubProdRule{Sub-Prod}
+\def\SubSigmaRule{Sub-Sigma}
+\def\SubLeftRule{Sub-Left}
+\def\SubRightRule{Sub-Right}
+\def\SubProofRule{Sub-Proof}
+\def\SubSubRule{Sub-Subset}
+\def\SubTransRule{Sub-Trans}
 
 \input{grammar}
 
@@ -217,8 +227,14 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 \input{log/1avril}
 \input{log/5avril}
 \input{log/3juin}
+\input{log/6juin}
+\input{log/10juin}
 
-\bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
+\bibliography{../bib/bib-joehurd,
+  ../bib/pvs-bib,
+  ../bib/bcp,
+  ../bib/Luo,
+  subset-typing}
 \bibliographystyle{plain}
 
 \renewcommand{\thefootnote}{}
