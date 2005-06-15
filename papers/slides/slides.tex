@@ -1,0 +1,378 @@
+\documentclass[notes=show]{beamer} %
+\usepackage{myabbrevs}
+\usepackage{abbrevs}
+\usepackage{bussproofs}
+\EnableBpAbbreviations
+\def\fCenter{\vdash}
+\def\seq{\fCenter}
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+\mode<presentation>
+{
+  \usetheme{Warsaw} %Madrid
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[french]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title %[Short Paper Title] (optional, use only with long paper titles)
+{Sous-typage prédicatif en Coq}
+
+%\subtitle
+%{Un environnement de programmation sûre dans Coq}
+
+\author[Matthieu Sozeau]% (optional, use only with lots of authors)
+{Matthieu Sozeau}% \\ $\lambda x\lambda y~x.y\text{@lri.fr}$}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[LRI] % (optional, but mostly needed)
+{
+%  \inst{1}%
+  Equipe Démons \\
+  Laboratoire de Recherche en Informatique\\
+  Université Paris Sud}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date % (optional, should be abbreviation of conference name)
+{Pré-soutenance de Master II}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Theoretical Computer Science}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{lri-logo}{lri-logo}
+\logo{\pgfuseimage{lri-logo}}
+
+\pgfdeclareimage[height=2.5cm]{lambda-cube}{lambda-cube}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Plan}
+  \tableofcontents %[pausesections]
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+
+% Structuring a talk is a difficult task and the following structure
+% may not be suitable. Here are some rules that apply for this
+% solution: 
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+% - A conference audience is likely to know very little of what you
+%   are going to talk about. So *simplify*!
+% - In a 20min talk, getting the main ideas across is hard
+%   enough. Leave out details, even if it means being less precise than
+%   you think necessary.
+% - If you omit details that are vital to the proof/implementation,
+%   just say so once. Everybody will be happy with that.
+
+\section{Motivation}
+
+\subsection{Programmation sûre dans Coq}
+
+\begin{frame}
+  \frametitle{Un language très expressif} %Make Titles Informative. Use Uppercase Letters.}
+  % \framesubtitle{Subtitles are optional.}
+  % - A title should summarize the slide in an understandable fashion
+  % for anyone how does not follow everything on the slide itself.
+
+  % Use \texttt{itemize} a lot.
+  % Use very short sentences or short phrases.
+  \begin{itemize}
+  \item<1-> Le plus haut sommet du cube de Barendregt ; \\
+    \uncover<1>{\pgfuseimage{lambda-cube}}
+    \note<1>{
+      \begin{description}
+      \item[x] Types dépendants des termes
+      \item[y] Ordre supérieur, polymorphisme, termes dépendants des types
+      \item[z] Types dépendants des types \\
+        ex: $(\lambda x : \text{Value}.
+        \text{match}~x~\text{with}~\text{Int}~i "=>" \text{nat}
+        ~|~\text{Bool}~b "=>" \text{bool}) : \text{Value} "->"
+        \text{Set}$
+      \end{description}}
+  \item<2-> Verbeux ;
+    \note<2>{Inférence limitée (arguments implicites), 
+      sous-typage peu puissant}
+  \item<3-> Mêle logique et calcul.
+    \note<3>{Pas de séparation nette entre calcul et preuve}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Un langage cible idéal}
+  
+  \begin{itemize}
+  \item<1-> Grande richesse pour la spécification et l'implémentation ;
+  \item<2-> Extraction vers du code efficace ;
+  \item<3-> Distinction entre parties informatives et logiques dans
+    le système de type.
+  \end{itemize}
+    
+  \visible<4->{
+    \begin{block}{Objectif}
+      \alert{Développer un langage moins expressif mais plus pratique 
+        pour écrire des programmes corrects}
+    \end{block}}
+  
+  % \begin{itemize}
+%     \item
+%       First item.
+%       \pause
+%     \item    
+%       Second item.
+%     \end{itemize}
+%   \item
+%     using overlay specifications:
+%     \begin{itemize}
+%     \item<3->
+%       First item.
+%     \item<4->
+%       Second item.
+%     \end{itemize}
+%   \item
+%     using the general \texttt{uncover} command:
+%     \begin{itemize}
+%       \uncover<5->{\item
+%         First item.}
+%       \uncover<6->{\item
+%         Second item.}
+%     \end{itemize}
+%   \end{itemize}
+\end{frame}
+
+
+\subsection{Travaux connexes}
+
+\begin{frame}
+  \frametitle{Inversion de l'extraction}
+  \begin{block}{La tactique Program}
+    Pros/cons
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sous-typage \& coercions}
+  \begin{itemize}
+  \item<1-> Zhaohui Luo: ECC, cohérence.
+    \note<1>{ECC: Types Sigma paradoxal avec imprédicativité
+      \AXC{$`G, x : A \seq B : \Prop$}
+      \UIC{$`G \seq \Sigma x : A.B : \Prop$}
+      \DP}
+  \item<2-> Gang Chen: sous-typage par coercions avec types dépendants,
+    conversion.
+  \item<3-> Amorkare Saïbi: implémentation dans \Coq. 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Types sous-ensemble}
+  
+  \begin{block}{Définition}
+    $\subset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
+    propriété $P$.
+  \end{block}
+  
+  \note{Définir les projections ?}
+  \pause
+  \begin{block}{\PVS}
+    Système de type intégrant le \emph{Predicate subtyping}.
+    
+    \alert{Idée} Un objet de type $T$ peut être vu comme un objet de
+    type $\subset{x}{T}{P}$ pour tout $P$ et vice-versa.
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sous-typage prédicatif}
+  \begin{tabular}{lclcl}
+    $t : \subset{x}{T}{P}$ & $"->"$ & $t : T$
+    & $"~>"$ & $\pi_1~t$ \pause \\
+    $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
+    & $"~>"$ & $t$ + preuve de $P[x/t]$
+  \end{tabular}
+
+  \note{Exemple ?}
+
+  \note{Parler du dev. du système de type de Martin-Löf
+    avec sous-ensembles ? (Programming in Martin-Löf TT)}
+\end{frame}
+
+\section{Contribution}
+
+\subsection{Un langage de programmation pour le développement sûr}
+% Un peu trop long
+
+\begin{frame}
+  \frametitle{Syntaxe}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sémantique}
+  Présentation du système déclaratif. Peut-être en deux slides.
+  \begin{block}{Typage}
+  \end{block}
+  \begin{block}{Sous-typage}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Système algorithmique}
+  \begin{itemize}
+  \item Passage du sous-typage à l'application
+  \item Décidabilité du sous-typage
+  \item ...
+  \end{itemize}
+\end{frame}
+
+\subsection{Intégration à Coq}
+
+\begin{frame}
+  \frametitle{Implémentation}
+  \begin{itemize}
+  \item Réecriture vers \CCI
+  \item Variables existentielles
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Architecture}
+  \begin{itemize}
+  \item Le raffinement.
+  \item Correspondance code écrit/extrait.
+  \end{itemize}
+\end{frame}
+
+\subsection{Résultats théoriques}
+
+\begin{frame}
+  \frametitle{Work in progress ;)}
+  \begin{itemize}
+  \item Correction \& complétude entre les différents systèmes.
+  \item Lemmes classiques sur le sous-typage.
+  \item Problème de la conversion (revoir Gang Chen).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Une preuve intéressante et courte ?}
+\end{frame}
+
+\section*{Conclusion}
+\begin{frame}
+  \frametitle<presentation>{Conclusion}
+
+  % Keep the summary *very short*.
+  \begin{itemize}
+  \item
+    Dévellopement d'un language de programmation 
+    \alert{moins expressif} mais \alert{plus utilisable}.
+  \item
+    Programmes \alert{corrects par construction} une fois les
+    obligations satisfaites.
+  \end{itemize}
+  
+  % The following outlook is optional.
+  \vskip0pt plus.5fill
+  \begin{itemize}
+  \item
+    Futur
+    \begin{itemize}
+    \item
+      Intégration des inductifs.
+    \item
+      Preuves !
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+% All of the following is optional and typically not needed. 
+\appendix
+\section<presentation>*{\appendixname}
+\subsection<presentation>*{Bibliographie}
+
+\begin{frame}[allowframebreaks]
+  \frametitle<presentation>{Bibliographie}
+    
+  \begin{thebibliography}{10}
+    
+  \beamertemplatebookbibitems
+  % Start with overview books.
+  
+  \bibitem{Author1990}
+    A.~Author.
+    \newblock {\em Handbook of Everything}.
+    \newblock Some Press, 1990.
+ 
+    
+  \beamertemplatearticlebibitems
+  % Followed by interesting articles. Keep the list short. 
+
+  \bibitem{Someone2000}
+    S.~Someone.
+    \newblock On this and that.
+    \newblock {\em Journal of This and That}, 2(1):50--100,
+    2000.
+  \end{thebibliography}
+\end{frame}
+
+\end{document}
+
+

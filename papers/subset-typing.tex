@@ -12,6 +12,7 @@
 \usepackage{amsfonts}
 \usepackage{array}
 \usepackage{myabbrevs}
+\usepackage{abbrevs}
 \usepackage{bnf}
 \usepackage{bussproofs}
 \usepackage{hyperref}
@@ -43,7 +44,6 @@
 \newcommand{\src}[1]{\texttt{#1}}
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
 %\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
-\newcommand{\Prop}{\ensuremath{\text{\texttt{Prop}}}}
 
 \newcommand{\rname}[1]{{\bf #1}}
 \newcommand{\rulelabel}[1]{{\bf (#1)}}
@@ -54,10 +54,6 @@
 
 \newboolean{displayLabels}
 \setboolean{displayLabels}{true}
-
-\def\HOL{{\tt HOL}}
-\def\Coq{{\tt Coq}}
-\def\PVS{{\tt PVS}}
 
 \makeatletter
 
@@ -90,15 +86,6 @@
 \newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
 \newcommand{\BRL}[2]{\LeftLabel{\rulelabel{#1}}\BIC{#2}}
 
-\newcommand{\letml}{\textbf{let}}
-\newcommand{\inml}{\textbf{in}}
-\newcommand{\ifml}{\textbf{if}}
-\newcommand{\thenml}{\textbf{then}}
-\newcommand{\elseml}{\textbf{else}}
-\newcommand{\funml}{\textbf{fun}}
-
-\newcommand{\eqbi}{`=_{\beta}}
-
 \def\judgewf{\vdash_{wf}}
 \def\judgetyped{\vdash}
 \def\judgetypea{\vdash_{\bullet}}
@@ -125,9 +112,6 @@
 
 \def\judgerw{~{\mbox{$"~>"$}}~}
 \def\wf{\judgewf}
-
-\newcommand{\elt}[4]{\text{elt}~#1~#2~#3~#4}
-\renewcommand{\subset}[3]{\{ #1 : #2 `| #3 \}}
 
 \def\thetitle{Sous-typage par prédicats en Coq}
 
