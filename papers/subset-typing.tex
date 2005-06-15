@@ -12,7 +12,7 @@
 \usepackage{amsfonts}
 \usepackage{array}
 \usepackage{myabbrevs}
-\usepackage{abbrevs}
+\usepackage{style/abbrevs}
 \usepackage{bnf}
 \usepackage{bussproofs}
 \usepackage{hyperref}
@@ -21,6 +21,7 @@
 %\usepackage{cmbright}
 \usepackage{fancyhdr}
 \usepackage{ifthen}
+\usepackage{style/ifmtarg}
 \usepackage{pxfonts}
 
 \def\infvspace{2em}
@@ -58,7 +59,8 @@
 \makeatletter
 
 \newcommand{\LeftRuleLabel}[1]{
-  \@ifnotmtarg{#1}{\ifthenelse{\boolean{displayLabels}}{\LeftLabel{\rulelabel{#1}}}{}}
+  \@ifnotmtarg{#1}
+  {\ifthenelse{\boolean{displayLabels}}{\LeftLabel{\rulelabel{#1}}}{}}
 }
 
 \newcommand{\UAX}[4]{\AXC{#2}
@@ -214,11 +216,7 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 \input{log/6juin}
 \input{log/10juin}
 
-\bibliography{../bib/bib-joehurd,
-  ../bib/pvs-bib,
-  ../bib/bcp,
-  ../bib/Luo,
-  subset-typing}
+\bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
 \bibliographystyle{plain}
 
 \renewcommand{\thefootnote}{}
