@@ -1,39 +1,14 @@
-
+\input{grammar-macros}
 \section*{Grammaire du langage}
 
 \begin{figure}[h]
-  \begin{displaymath}
-    \begin{array}{lcl}
-      `a, `b & \Coloneqq & x \\
-      & | & \funml{}~x~:~`t "=>" `a \\
-      & | & `a~`b \\ 
-      & | & (`a,~`b) \\
-      & | & (x \coloneqq `a,~`b~: `a) \\
-      & | & 0 \ldots n \\
-      & | & \letml~x = `a ~\inml~`b \\
-      & | & \letml~(x_1, \ldots, x_n) = `a ~\inml~ `b     
-    \end{array}
-  \end{displaymath}
+  \termgrammar
   \caption{Termes}
   \label{fig:gram-terms}
-  
 \end{figure}
 
 \begin{figure}[h]
-  \begin{displaymath}
-    \begin{array}{lcl}
-      `t, `s & \Coloneqq & x \\
-      & | & \verb|Inductive| \\
-      & | & `t~`s \\
-      & | & `t~`a \\
-      & | & \Pi x : `t. `s \\
-      & | & \Sigma x : `t. `s \\
-      & | & `t * `s \\
-      & | & \subset{x}{`t}{`s} \\
-      & & \\
-      \verb|Inductive| & \Coloneqq & ident
-    \end{array}
-  \end{displaymath}
+  \typegrammar
   \caption{Types}
   \label{fig:gram-types}
 \end{figure}
@@ -44,4 +19,5 @@ d'un type (bonne modélisation du ``positionement interne'' des termes?).
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
 %%% End: 

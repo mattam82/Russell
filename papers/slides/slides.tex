@@ -1,6 +1,7 @@
 \documentclass[notes=show]{beamer} %
 \usepackage{myabbrevs}
 \usepackage{abbrevs}
+
 \usepackage{bussproofs}
 \EnableBpAbbreviations
 \def\fCenter{\vdash}
@@ -10,6 +11,9 @@
 % - Talk at a conference/colloquium.
 % - Talk length is about 20min.
 % - Style is ornate.
+
+\usepackage{pxfonts}
+\input{../grammar-macros.tex}
 
 \mode<presentation>
 {
@@ -137,7 +141,8 @@
   \begin{itemize}
   \item<1-> Le plus haut sommet du cube de Barendregt ; \\
     \uncover<1>{\pgfuseimage{lambda-cube}}
-    \note<1>{
+    \note<1>{Refaire le dessin avec juste $\lambda{\rightarrow}$ et
+      $\lambda C$ et les axes:
       \begin{description}
       \item[x] Types dépendants des termes
       \item[y] Ordre supérieur, polymorphisme, termes dépendants des types
@@ -151,7 +156,7 @@
     \note<2>{Inférence limitée (arguments implicites), 
       sous-typage peu puissant}
   \item<3-> Mêle logique et calcul.
-    \note<3>{Pas de séparation nette entre calcul et preuve}
+    \note<3>{Pas de séparation nette entre calcul et preuve dans les termes}
   \end{itemize}
 \end{frame}
 
@@ -160,9 +165,8 @@
   
   \begin{itemize}
   \item<1-> Grande richesse pour la spécification et l'implémentation ;
-  \item<2-> Extraction vers du code efficace ;
-  \item<3-> Distinction entre parties informatives et logiques dans
-    le système de type.
+  \item<2-> Distinction entre parties informatives et logiques dans
+    le système de type. \uncover<3->{Extraction vers du code efficace.}
   \end{itemize}
     
   \visible<4->{
@@ -170,7 +174,7 @@
       \alert{Développer un langage moins expressif mais plus pratique 
         pour écrire des programmes corrects}
     \end{block}}
-  
+  \note<4->{A long terme, preuve de programmes ML annotés}
   % \begin{itemize}
 %     \item
 %       First item.
@@ -203,7 +207,15 @@
 \begin{frame}
   \frametitle{Inversion de l'extraction}
   \begin{block}{La tactique Program}
-    Pros/cons
+    \begin{itemize}
+    \item Méthode générale pour la synthèse de preuves à partir de
+      programmes ;
+    \item Définition d'une extraction inversible, nécessite des
+      heuristiques (unification) ;
+      \note<1->{Exemple d'impossibilité d'inverser l'extraction
+        avec un \subset{x}{T}{P} (on ne peut pas inférer la preuve)}
+    \item Non maintenu, refine.
+    \end{itemize}
   \end{block}
 \end{frame}
 
@@ -211,10 +223,10 @@
   \frametitle{Sous-typage \& coercions}
   \begin{itemize}
   \item<1-> Zhaohui Luo: ECC, cohérence.
-    \note<1>{ECC: Types Sigma paradoxal avec imprédicativité
-      \AXC{$`G, x : A \seq B : \Prop$}
-      \UIC{$`G \seq \Sigma x : A.B : \Prop$}
-      \DP}
+%     \note<1>{ECC: Types Sigma paradoxal avec imprédicativité
+%       \AXC{$`G, x : A \seq B : \Prop$}
+%       \UIC{$`G \seq \Sigma x : A.B : \Prop$}
+%       \DP}
   \item<2-> Gang Chen: sous-typage par coercions avec types dépendants,
     conversion.
   \item<3-> Amorkare Saïbi: implémentation dans \Coq. 
@@ -229,7 +241,7 @@
     propriété $P$.
   \end{block}
   
-  \note{Définir les projections ?}
+  \note<1>{Définir les projections ?}
   \pause
   \begin{block}{\PVS}
     Système de type intégrant le \emph{Predicate subtyping}.
@@ -247,10 +259,10 @@
     $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
     & $"~>"$ & $t$ + preuve de $P[x/t]$
   \end{tabular}
+  
+  \note<2>{Exemple ?}
 
-  \note{Exemple ?}
-
-  \note{Parler du dev. du système de type de Martin-Löf
+  \note<2>{Parler du dev. du système de type de Martin-Löf
     avec sous-ensembles ? (Programming in Martin-Löf TT)}
 \end{frame}
 
@@ -260,13 +272,26 @@
 % Un peu trop long
 
 \begin{frame}
-  \frametitle{Syntaxe}
+  \frametitle{Syntaxe à la \ML}
+  \begin{columns}
+    \begin{column}{0.6\textwidth}
+      \begin{block}{Termes}
+        \termgrammar
+      \end{block}
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \begin{block}{Types}
+        \typegrammarOrig
+      \end{block}
+    \end{column}
+  \end{columns}  
 \end{frame}
 
 \begin{frame}
   \frametitle{Sémantique}
-  Présentation du système déclaratif. Peut-être en deux slides.
+  
   \begin{block}{Typage}
+    
   \end{block}
   \begin{block}{Sous-typage}
   \end{block}
@@ -375,4 +400,8 @@
 
 \end{document}
 
-
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "slides"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"../style:$TEXINPUTS\" ${pdfx}latex"
+%%% End: 
