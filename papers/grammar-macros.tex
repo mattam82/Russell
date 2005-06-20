@@ -1,0 +1,37 @@
+\newcommand{\termgrammar}
+{$\begin{array}{lcl}
+    `a & \Coloneqq & x \\
+    & | & \funml{}~x~:~`t "=>" `a \\
+    & | & `a~`a \\ 
+    & | & (`a,~`a) \\
+    & | & (x \coloneqq `a,~`a~: `t) \\
+    & | & 0 \ldots n \\
+    & | & \letml~x = `a ~\inml~`a \\
+    & | & \letml~(x_1, \ldots, x_n) = `a ~\inml~ `a \\
+    & | & \ifml~`a~\thenml~`a~\elseml~`a
+  \end{array}$}
+
+\newcommand{\typegrammarOrig}
+{$\begin{array}{lcl}
+    `t & \Coloneqq & x \\
+    & | & `t~`t \\
+    & | & `t~`a \\
+    & | & \Pi x : `t. `t \\
+    & | & \Sigma x : `t. `t \\
+    & | & `t * `t \\
+    & | & \subset{x}{`t}{`t}
+  \end{array}$}
+
+\newcommand{\typegrammar}
+{$\begin{array}{lcl}
+    `t & \Coloneqq & x \\
+    & | & `t~`t \\
+    & | & `t~`a \\
+    & | & \Pi x : `t. `t \\
+    & | & \Sigma x : `t. `t \\
+    & | & `t * `t \\
+    & | & \subset{x}{`t}{`t} \\
+    & | & \text{{\tt Inductive}} \\
+    & & \\
+    \text{{\tt Inductive}} & \Coloneqq & ident
+  \end{array}$}
