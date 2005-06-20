@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper,12pt]{report}
 \usepackage[francais]{babel} 
 \usepackage[latin1]{inputenc}  %% les accents dans le fichier.tex
 \usepackage[T1]{fontenc}       %% Pour la c\'{e}sure des mots accentu\'{e}s
@@ -34,12 +34,15 @@
 \input{mathenv}
 \input{typing-macros}
 
+\newcommand{\src}[1]{\texttt{#1}}
+\newcommand{\srcm}[1]{\text{\texttt{#1}}}
+%\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
+
 \def\thetitle{Sous-typage par prédicats en Coq}
 
 \pagestyle{plain}
 \fancyhead[RO,LE]{\thetitle}
 \fancyfoot[C]{\thepage}
-%\renewcommand{\headrulewidth}{0pt}
 
 \title{\thetitle}
 
@@ -52,46 +55,32 @@
 \maketitle
 
 \begin{abstract}
-  blabla 
+  Dans un assistant de % à la 
+  preuve tel que \Coq, la grande %haute
+  expressivité du langage
+  de spécification et d'implémentation est nécessaire pour pouvoir
+  traiter le plus large éventail de problèmes. En contrepartie, les
+  programmes sont plus difficiles à écrire et maintenir que dans un pur
+  langage de programmation de type \ML. Pour remédier à
+  ce problème, on propose un nouveau langage, moins expressif, mais
+  s'intégrant parfaitement à l'environnement de développement existant,
+  qui permet l'écriture rapide de programmes et découple les parties codage et
+  preuve.
 \end{abstract}
 
-\section*{Introduction}
-Le \ps{} implémenté dans \PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
+\section{Introduction}
+\subsection{Présentation de \Coq}
+\subsection{Motivation}
+\subsection{Travaux Connexes}
+% Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
+% Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 
-\input{grammar}
+\section{La tactique \Subtac}
+\subsection{Langage}
+\subsection{Réécriture vers \Coq}
+\subsection{Implémentation}
 
-\input{typing-decl}
-\input{subtyping-decl}
-\input{typing-algo}
-\input{subtyping-algo}
-\input{typing-impl}
-\input{subtyping-impl}
-\input{typing-proofs}
-\clearpage
-
-\section*{Travaux connexes(?)}
-Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
-
-\section*{Journal}
-
-\input{log/8mars}
-\input{log/9mars}
-\input{log/11mars}
-\input{log/14mars}
-\input{log/15mars}
-\input{log/16mars}
-\input{log/17mars}
-\input{log/22mars}
-\input{log/23mars}
-\input{log/24mars}
-\input{log/25mars}
-\input{log/30mars}
-\input{log/31mars}
-\input{log/1avril}
-\input{log/5avril}
-\input{log/3juin}
-\input{log/6juin}
-\input{log/10juin}
+\section{Conclusion}
 
 \bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
 \bibliographystyle{plain}
@@ -104,6 +93,6 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 
 %%% Local Variables: 
 %%% mode: latex
-%%% TeX-master: "subset-typing"
+%%% TeX-master: "subset-typing-short"
 %%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
 %%% End: 

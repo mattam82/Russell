@@ -1,19 +1,36 @@
 \documentclass{article}
 \usepackage[all]{xy}
+\usepackage[latin1]{inputenc}
 \begin{document}
 
+
+% \xymatrix@!0{
+%   & \lambda\omega \ar@{-}[rr]\ar@{-}'[d][dd]
+%   & & \lambda C \ar@{-}[dd]
+%   \\
+%   \lambda2 \ar@{-}[ur]\ar@{-}[rr]\ar@{-}[dd]
+%   & & \lambda P2 \ar@{-}[ur]\ar@{-}[dd]
+%   \\ 
+%   & \lambda\underline\omega \ar@{-}'[r][rr]
+%   & & \lambda P\underline\omega
+%   \\
+%   \lambda{\to} \ar@{-}[rr]\ar@{-}[ur]
+%   & & \lambda P \ar@{-}[ur]
+% }
+
 \xymatrix@!0{
-  & \lambda\omega \ar@{-}[rr]\ar@{-}'[d][dd]
-  & & \lambda C \ar@{-}[dd]
-  \\
-  \lambda2 \ar@{-}[ur]\ar@{-}[rr]\ar@{-}[dd]
-  & & \lambda P2 \ar@{-}[ur]\ar@{-}[dd]
-  \\ 
-  & \lambda\underline\omega \ar@{-}'[r][rr]
-  & & \lambda P\underline\omega
-  \\
-  \lambda{\to} \ar@{-}[rr]\ar@{-}[ur]
-  & & \lambda P \ar@{-}[ur]
+  & & \ar@{--}[rrrr] & & & & \lambda C \\
+  & & & & \\
+  \ar@{--}[rrrr] \ar@{--}[uurr] & & & &
+  \ar@{--}[uurr] \ar@{--}[dddd] & & \\   
+  & & & & & & \\
+  & & \ar@{--}[uuuu] \ar@{--}[rrrr] & & & & \ar@{--}[uuuu] \\
+  & & & & & & \\
+  \lambda 
+  \ar@{->}^{\mbox{{\bf Ordre supérieur}}}[uuuu] 
+  \ar@{->}_{\mbox{{\bf Types dépendants}}}[rrrr]
+  \ar@{->}_>{\mbox{{\bf Polymorphisme}}}[uurr]
+  & & & & \ar@{--}[uurr] & &
 }
 
 \end{document}

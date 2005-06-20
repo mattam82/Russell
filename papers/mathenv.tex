@@ -1,0 +1,51 @@
+\newtheorem{theorem}{Théorême}[section]
+\newtheorem{lemma}[theorem]{Lemme}
+\newtheorem{fact}[theorem]{Fait}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Définition}
+\newtheorem{example}[theorem]{Exemple}
+\newtheorem{remark}[theorem]{Remarque}
+\newtheorem{corrolary}[theorem]{Corrolaire}
+
+\newcommand{\UR}[2]{\RightLabel{\rulelabel{#1}}\UIC{#2}}
+\newcommand{\URL}[2]{\LeftLabel{\rulelabel{#1}}\UIC{#2}}
+
+\newboolean{displayLabels}
+\setboolean{displayLabels}{true}
+
+\makeatletter
+
+\newcommand{\LeftRuleLabel}[1]{
+  \@ifnotmtarg{#1}
+  {\ifthenelse{\boolean{displayLabels}}{\LeftLabel{\rulelabel{#1}}}{}}
+}
+
+\newcommand{\UAX}[4]{\AXC{#2}
+  \LeftRuleLabel{#1}
+  \@ifnotmtarg{#4}{\RightLabel{#4}}
+  \UIC{#3}}
+
+\newcommand{\BAX}[5]{\AXC{#2}\AXC{#3}
+  \LeftRuleLabel{#1}
+  \@ifnotmtarg{#5}{\RightLabel{#5}}
+  \BIC{#4}}
+
+\newcommand{\TAX}[6]{\AXC{#2}\AXC{#3}\AXC{#4}
+  \LeftRuleLabel{#1}
+  \@ifnotmtarg{#6}{\RightLabel{#6}}
+  \TIC{#5}}
+
+\newcommand{\QAX}[7]{\AXC{#2}\noLine\UIC{#3}\AXC{#4}\AXC{#5}
+  \LeftRuleLabel{#1}
+  \@ifnotmtarg{#7}{\RightLabel{#7}}
+  \TIC{#6}}
+
+\makeatother
+
+\newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
+\newcommand{\BRL}[2]{\LeftLabel{\rulelabel{#1}}\BIC{#2}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

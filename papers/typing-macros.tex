@@ -1,5 +1,73 @@
 %\def\ifstreq#1#2{\ifEqString{#1}{#2}}
 
+\def\impsub{\rightslice}
+
+\def\judgewf{\vdash_{wf}}
+\def\judgetyped{\vdash}
+\def\judgetypea{\vdash_{\bullet}}
+\def\judgetypei{\vdash_{\Box}}
+\def\typed{\judgetyped}
+\def\typedwf{\judgewf}
+\def\typea{\judgetypea}
+\def\typeawf{\judgetypea_{wf}}
+\def\typei{\judgetypei}
+\def\typeiwf{\judgetypei_{wf}}
+\def\type{\typed}
+\def\typewf{\typedwf}
+\def\judgesubd{\vdash}
+\def\judgesuba{\vdash_{\bullet}}
+\def\judgesubi{\vdash_{\Box}}
+\def\subtd{\judgesubd}
+\def\subta{\judgesuba}
+\def\subti{\judgesubi}
+\def\subt{\subtd}
+\def\subd{\rightslice}
+\def\suba{\rightslice_{\bullet}}
+\def\subi{\rightslice_{\Box}}
+\def\sub{\subd}
+
+\def\judgerw{~{\mbox{$"~>"$}}~}
+\def\wf{\judgewf}
+
+\newcommand{\matht}[1]{\text{{\tt #1}}}
+
+\def\even{\matht{even}}
+\def\odd{\matht{odd}}
+\def\Set{\matht{Set}}
+\def\Prop{\matht{Prop}}
+\def\Type{\matht{Type}}
+\def\ps{\emph{predicate subtyping}}
+
+\def\WfAtomRule{Wf-Atom}
+\def\WfVarRule{Wf-Var}
+\def\PropSetRule{PropSet}
+\def\TypeRule{Type}
+\def\VarRule{Var}
+\def\ProdRule{Prod}
+\def\AbsRule{Abs}
+\def\AppRule{App}
+\def\LetInRule{Let-In}
+\def\SigmaRule{Sigma}
+\def\SumRule{Sum}
+\def\LetSumRule{Let-Sum}
+\def\SumInfRule{Sum-Inf}
+\def\SumDepRule{Sum-Dep}
+\def\SubsetRule{Subset}
+\def\LetSubRule{Let-Sub}
+\def\SubsumRule{Subsumption}
+\def\ConvRule{Conv}
+
+\def\SubReflRule{Sub-Refl}
+\def\SubTransRule{Sub-Trans} 
+\def\SubConvRule{Sub-Conv}
+\def\SubProdRule{Sub-Prod}
+\def\SubSigmaRule{Sub-Sigma}
+\def\SubLeftRule{Sub-Left}
+\def\SubRightRule{Sub-Right}
+\def\SubProofRule{Sub-Proof}
+\def\SubSubRule{Sub-Subset}
+\def\SubTransRule{Sub-Trans}
+
 \def\ifstreq#1#2{\def\testa{#1}\def\testb{#2}\ifx\testa\testb }
 
 \def\inductionon#1{
@@ -65,6 +133,8 @@
 \def\casefour#1#2#3#4{\item[- \rulename{#1}, \rulename{#2},
   \rulename{#3}, \rulename{#4} :]}
 
+\newcommand{\rname}[1]{{\bf \rulename{#1}}}
+\newcommand{\rulelabel}[1]{{\bf (\rulename[#1])}}
 
 %%% Local Variables: 
 %%% mode: latex
