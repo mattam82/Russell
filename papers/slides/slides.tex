@@ -1,4 +1,6 @@
-\documentclass[notes=show]{beamer} %
+\documentclass{beamer} %notes=show
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
 \usepackage{myabbrevs}
 \usepackage{abbrevs}
 
@@ -13,24 +15,24 @@
 % - Style is ornate.
 
 \usepackage{pxfonts}
-%\input{../grammar-macros.tex}
+\input{../grammar-macros.tex}
 
 %\mode<handout> 
 \mode<presentation>
 {
   \usetheme{Warsaw} %Madrid
   % or ...
-
+  \usecolortheme{crane}
+  
   \setbeamercovered{transparent}
   % or whatever (possibly just delete it)
 }
 
 
 
-\usepackage[french]{babel}
 % or whatever
 
-\usepackage[latin1]{inputenc}
+
 % or whatever
 
 \usepackage{times}
@@ -50,6 +52,7 @@
 % - Give the names in the same order as the appear in the paper.
 % - Use the \inst{?} command only if the authors have different
 %   affiliation.
+
 
 \institute[LRI] % (optional, but mostly needed)
 {
@@ -132,6 +135,9 @@
 
 \subsection{Programmation sûre dans Coq}
 
+\def\Definition{\text{Definition}}
+\def\sref#1{\text{#1}}
+
 \begin{frame}
   \frametitle{Un language très expressif} %Make Titles Informative. Use Uppercase Letters.}
   % \framesubtitle{Subtitles are optional.}
@@ -140,28 +146,39 @@
 
   % Use \texttt{itemize} a lot.
   % Use very short sentences or short phrases.
-  \begin{itemize}[<+-| handout:1>]
-  \item Le plus haut sommet du cube de Barendregt ; \\
-    \uncover<1| handout:1>{\pgfuseimage{lambda-cube}}
-    \note<1| handout:1>{Refaire le dessin avec juste $\lambda{\rightarrow}$ et
-      $\lambda C$ et les axes:
-      \begin{description}
-      \item[x] Types dépendants des termes
-      \item[y] Ordre supérieur, polymorphisme, termes dépendants des types
-      \item[z] Types dépendants des types \\
-        ex: $(\lambda x : \text{Value}.
-        \text{match}~x~\text{with}~\text{Int}~i "=>" \text{nat}
-        ~|~\text{Bool}~b "=>" \text{bool}) : \text{Value} "->"
-        \text{Set}$
-      \end{description}}
-  \item Verbeux ;
-    \note<2| handout:1>{Inférence limitée (arguments implicites), 
-      sous-typage peu puissant}
-  \item Mêle logique et calcul.
-    \note<3| handout:1>{Pas de séparation nette entre calcul et preuve dans les termes}
-  \end{itemize}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}[<+-| handout:1>]
+      \item Le plus haut sommet du cube de Barendregt ; \\
+        \uncover<1| handout:1>{\pgfuseimage{lambda-cube}}
+        \note<1| handout:1>{Refaire le dessin avec juste $\lambda{\rightarrow}$ et
+          $\lambda C$ et les axes:
+          \begin{description}
+          \item[x] Types dépendants des termes
+          \item[y] Ordre supérieur, polymorphisme, termes dépendants des types
+          \item[z] Types dépendants des types \\
+            ex: $(\lambda x : \text{Value}.
+            \text{match}~x~\text{with}~\text{Int}~i "=>" \text{nat}
+            ~|~\text{Bool}~b "=>" \text{bool}) : \text{Value} "->"
+            \text{Set}$
+          \end{description}}
+      \item Verbeux ;
+        \note<2| handout:1>{Inférence limitée (arguments implicites), 
+          sous-typage peu puissant}
+      \item Mêle logique et calcul.
+        \note<3| handout:1>{Pas de séparation nette entre calcul et preuve dans les termes}
+      \end{itemize}
+     \end{column}
+     
+     \begin{column}{0.5\textwidth}
+       $\Definition~\text{qsort} : (\sref{compare} : (x : A)(y : A)~ \{ x
+       < y \} + \{ x \geq y \}) 
+       (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
+         \sref{sorted}~\sref{compare}~l' \}.$
+       \end{column}
+   \end{columns}  
 \end{frame}
-
+    
 \begin{frame}
   \frametitle{Un langage cible idéal}
   
@@ -177,30 +194,6 @@
         pour écrire des programmes corrects}
     \end{block}}
   \note<4->{A long terme, preuve de programmes ML annotés}
-  % \begin{itemize}
-%     \item
-%       First item.
-%       \pause
-%     \item    
-%       Second item.
-%     \end{itemize}
-%   \item
-%     using overlay specifications:
-%     \begin{itemize}
-%     \item<3->
-%       First item.
-%     \item<4->
-%       Second item.
-%     \end{itemize}
-%   \item
-%     using the general \texttt{uncover} command:
-%     \begin{itemize}
-%       \uncover<5->{\item
-%         First item.}
-%       \uncover<6->{\item
-%         Second item.}
-%     \end{itemize}
-%   \end{itemize}
 \end{frame}
 
 
@@ -231,7 +224,7 @@
 %       \DP}
   \item<2-> Gang Chen: sous-typage par coercions avec types dépendants,
     conversion ;
-  \item<3-> Amorkare Saïbi: implémentation dans \Coq. 
+  \item<3-> Amokrane Saïbi: implémentation dans \Coq. 
   \end{itemize}
 \end{frame}
 
@@ -279,12 +272,12 @@
     \begin{column}{0.6\textwidth}
       \begin{block}{Termes}
         % missing file
-        % \termgrammar
+        \termgrammar
       \end{block}
     \end{column}
     \begin{column}{0.35\textwidth}
       \begin{block}{Types}
-        %\typegrammarOrig
+        \typegrammarOrig
       \end{block}
     \end{column}
   \end{columns}  
