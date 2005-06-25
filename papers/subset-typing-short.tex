@@ -1,9 +1,9 @@
-\documentclass[a4paper,12pt]{report}
+\documentclass[a4paper,11pt]{article}
 \usepackage[francais]{babel} 
 \usepackage[latin1]{inputenc}  %% les accents dans le fichier.tex
 \usepackage[T1]{fontenc}       %% Pour la c\'{e}sure des mots accentu\'{e}s
 \usepackage{indentfirst}
-\usepackage{a4}
+\usepackage{fullpage}
 \usepackage[dvips]{graphicx}
 %\usepackage{coqdoc}
 \usepackage{amssymb}
@@ -17,7 +17,7 @@
 \usepackage{bussproofs}
 \usepackage{hyperref}
 \usepackage{fullpage}
-\usepackage{concmath}
+%\usepackage{concmath}
 %\usepackage{cmbright}
 \usepackage{fancyhdr}
 \usepackage{ifthen}
@@ -30,6 +30,12 @@
 \def\seq{\fCenter}
 % Optional to turn on the short abbreviations
 \EnableBpAbbreviations
+
+\oddsidemargin 0cm
+\topmargin -1cm
+\headsep 5mm
+\textwidth 17cm
+\textheight 24cm
 
 \input{mathenv}
 \input{typing-macros}
@@ -62,27 +68,89 @@
   traiter le plus large éventail de problèmes. En contrepartie, les
   programmes sont plus difficiles à écrire et maintenir que dans un pur
   langage de programmation de type \ML. Pour remédier à
-  ce problème, on propose un nouveau langage, moins expressif, mais
+  ce problème, on propose un nouveau langage, moins puissant, mais
   s'intégrant parfaitement à l'environnement de développement existant,
   qui permet l'écriture rapide de programmes et découple les parties codage et
   preuve.
 \end{abstract}
 
-\section{Introduction}
-\subsection{Présentation de \Coq}
-\subsection{Motivation}
-\subsection{Travaux Connexes}
-% Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
-% Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
+\section*{Introduction}
 
-\section{La tactique \Subtac}
-\subsection{Langage}
-\subsection{Réécriture vers \Coq}
-\subsection{Implémentation}
+\subsection*{Présentation de \Coq}
 
-\section{Conclusion}
+- Assistant de preuve (PVS, ...)
+- Basé sur l'iso de Curry-Howard. Correspondance logique-calcul (lambda
+calcul).
 
-\bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
+\subsubsection*{Preuve}
+- Preuve par tactiques, procédurale.
+- Déduction naturelle (exemple ?)
+
+=> Développements mathématiques (logiques).
+
+\subsubsection*{Programmes}
+- Lambda calcul avec types dépendants, polymorphisme et ordre supérieur
+(lambda cube)
+- Correspond à la logique intuitioniste
+- Preuve = habitant d'un type.
+
+=> Permet de développer des programmes. Développement informatiques
+(calculatoires)
+
+\subsection*{Motivation}
+
+\subsubsection*{Un langage très expressif}
+
+- Features
+- Extraction..
+
+- Utilisation académique et real-world.
+
+\subsubsection*{Difficultés}
+
+- Besoin d'expertise pour dev des programmes:
+  - Verbosité
+  - Mélange logique et calcul
+
+\subsection*{Travaux Connexes}
+
+\subsubsection*{La tactique Program}
+Développée par Catherine Parent \cite{DBLP:conf/mpc/Parent95}.
+
+\subsubsection*{Types sous-ensemble}
+Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
+
+\subsubsection*{Coercions}
+ \cite{Chen:POPL-2003, saibi97inheritance}
+
+\section*{La tactique \Subtac}
+
+Sous-typage avec coercions explicites + \ps{}.
+
+
+\subsection*{Langage}
+
+\subsubsection*{Syntaxe}
+
+\subsubsection*{Sémantique}
+
+\subsubsection*{Elaboration du système algorithmique \& Propriétés}
+
+\subsection*{Réécriture vers \Coq}
+
+\subsubsection*{Définition}
+
+\subsubsection*{Propriétés}
+
+\subsection*{Implémentation}
+
+\subsubsection*{Existentielles}
+
+\subsubsection*{Traitement de la récursion}
+
+\section*{Conclusion}
+
+\bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent.bib}
 \bibliographystyle{plain}
 
 \renewcommand{\thefootnote}{}
