@@ -7,13 +7,13 @@
 \newtheorem{remark}[theorem]{Remarque}
 \newtheorem{corrolary}[theorem]{Corrolaire}
 
+\makeatletter
+
 \newcommand{\UR}[2]{\RightLabel{\rulelabel{#1}}\UIC{#2}}
 \newcommand{\URL}[2]{\LeftLabel{\rulelabel{#1}}\UIC{#2}}
 
 \newboolean{displayLabels}
 \setboolean{displayLabels}{true}
-
-\makeatletter
 
 \newcommand{\LeftRuleLabel}[1]{
   \@ifnotmtarg{#1}
@@ -40,10 +40,10 @@
   \@ifnotmtarg{#7}{\RightLabel{#7}}
   \TIC{#6}}
 
-\makeatother
-
 \newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
 \newcommand{\BRL}[2]{\LeftLabel{\rulelabel{#1}}\BIC{#2}}
+
+\makeatother
 
 %%% Local Variables: 
 %%% mode: latex

@@ -1,19 +1,19 @@
 \def\SubConv{
-\UAX{Sub-Conv}
+\UAX{SubConv}
 {$T \eqbi U$}
 {$T \sub U$}
 {} 
 }
 
 \def\SubRefl{
-  \UAX{Sub-Refl}
+  \UAX{SubRefl}
   {}
   {$S \seq S$}
   {}
 }
 
 \def\SubTrans{
-\BAX{Sub-Trans}
+\BAX{SubTrans}
 {$S \seq T$}
 {$T \seq U$}
 {$S \seq U$}
@@ -21,7 +21,7 @@
 } 
 
 \def\SubProd{
-\BAX{Sub-Prod}
+\BAX{SubProd}
 {$U \seq T$} %"<|-|>"
 {$V \seq W$}
 {$\Pi x : T.V \seq \Pi x : U.W$}
@@ -29,7 +29,7 @@
 }
 
 \def\SubSigma{
-  \BAX{Sub-Sigma}
+  \BAX{SubSigma}
   {$T \seq U$}
   {$V \seq W$}
   {$\Sigma x : T. V \seq \Sigma y : U. W$}
@@ -37,19 +37,20 @@
 }
 
 \def\SubProof{
-  \UAX{Sub-Proof}
+  \UAX{SubProof}
   {$U \seq V$}
   {$U \seq \subset{x}{V}{P}$}
   {}
 }
 
 \def\SubSub{
-  \UAX{Sub-Subset}
+  \UAX{SubSub}
   {$U \seq V$}
   {$\subset{x}{U}{P} \seq V$}
   {}
 }
 
+\def\subtypingdFull{
 \begin{figure}[h]
   \begin{center}
     \def\fCenter{\subd}
@@ -73,9 +74,10 @@
     \SubSub\DP
     
   \end{center}
-  \label{subtyping-algo-rules}
+  \label{subtyping-decl-rules}
   \caption{Sous-typage déclaratif}
 \end{figure}
+}
 
 %%% Local Variables: 
 %%% mode: latex

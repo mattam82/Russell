@@ -29,6 +29,21 @@
 \def\judgerw{~{\mbox{$"~>"$}}~}
 \def\wf{\judgewf}
 
+% \def\typenv#1{\typeout{Changing to #1 version}
+%   \def\typewf{\csname\string\type\string#1\string{wf}\endcsname}
+%   \def\type{\csname\string\type\string#1\endcsname}
+%   \def\subt{\csname\string\subt#1\endcsname}
+%   \def\sub{\csname\string\sub\string#1\endcsname}
+% }
+
+\newcommand{\typenvd}{
+  \typeout{Changing to declarative version}
+  \def\typewf{\typewfd}
+  \def\type{\typed}
+  \def\subt{\subtd}
+  \def\sub{\subd}
+}
+
 \newcommand{\matht}[1]{\text{{\tt #1}}}
 
 \def\even{\matht{even}}
@@ -125,6 +140,7 @@
 \newcommand{\rulename}[1]{{\bf \inductionrule{#1}}}
 
 \def\indrule{\rulename}
+\def\irule{\rulename}
 
 \def\case#1{\item[- \rulename{#1} :]}
 \newcommand{\casetwo}[2]{\item[- \rulename{#1}, \rulename{#2} :]}
@@ -134,7 +150,7 @@
   \rulename{#3}, \rulename{#4} :]}
 
 \newcommand{\rname}[1]{{\bf \rulename{#1}}}
-\newcommand{\rulelabel}[1]{{\bf (\rulename[#1])}}
+\newcommand{\rulelabel}[1]{{\bf (\inductionrule{#1})}}
 
 %%% Local Variables: 
 %%% mode: latex
