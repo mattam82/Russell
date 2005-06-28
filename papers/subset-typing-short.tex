@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper,10pt]{article}
 \usepackage[francais]{babel} 
 \usepackage[latin1]{inputenc}  %% les accents dans le fichier.tex
 \usepackage[T1]{fontenc}       %% Pour la c\'{e}sure des mots accentu\'{e}s
@@ -12,17 +12,18 @@
 \usepackage{amsfonts}
 \usepackage{array}
 \usepackage{myabbrevs}
-\usepackage{style/abbrevs}
+\usepackage{abbrevs}
 \usepackage{bnf}
 \usepackage{bussproofs}
 \usepackage{hyperref}
 \usepackage{fullpage}
-%\usepackage{concmath}
+\usepackage{concmath}
 %\usepackage{cmbright}
 \usepackage{fancyhdr}
 \usepackage{ifthen}
 \usepackage{ifmtarg}
 \usepackage{pxfonts}
+\usepackage{pgf}
 
 \def\infvspace{2em}
 % This is the "centered" symbol
@@ -39,6 +40,8 @@
 
 \input{mathenv}
 \input{typing-macros}
+
+\pgfdeclareimage[height=3cm]{lambda-cube}{pictures/lambda-cube}
 
 \newcommand{\src}[1]{\texttt{#1}}
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
@@ -76,51 +79,228 @@
 
 \section*{Introduction}
 
+Nous souhaitons intégrer un langage de programmation ...
+
 \subsection*{Présentation de \Coq}
 
-- Assistant de preuve (PVS, ...)
-- Basé sur l'iso de Curry-Howard. Correspondance logique-calcul (lambda
-calcul).
+\Coq~est un assistant de preuve dont la première version date de 1985,
+et qui est aujourd'hui développé dans le projet \LogiCal{} (INRIA, LIX,
+LRI, CNRS). Originellement basé sur le Calculs des Constructions (\CoC), 
+il a été étendu par le \CCIfull~(\CCI) et
+contient aujourd'hui de nombreuses améliorations telles qu'un système
+sophistiqué d'extraction de programmes ou encore des procédures de
+décision pour aider à la preuve.
+
+Le développement de \Coq~est intimement lié à l'isomorphisme de
+{\sc Curry-Howard} qui montre le lien entre certaines logiques et
+calculs. Il s'agissait à l'époque de montrer qu'élaborer une preuve en
+logique intuitioniste de premier ordre était équivalent à écrire un terme du \lc
+simplement typé (\lcst). Par exemple, montrer que $A "=>" A$ pour un certain $A$
+revient à écrire la fonction identité $\lambda~x : A. x$ qui a bien pour
+type $A "->" A$. Cette dualité ce reflète aussi à l'utilisation.
+
+Il existe une classification des \lc{} découverte par Henk Barendregt,
+qui montre bien où se situe le calcul sous-jacent à $Coq$ par rapport à
+\lcst.
+\begin{center}
+  \begin{figure}[h]
+    \pgfuseimage{lambda-cube}
+    \label{Le ``Lambda cube''}
+  \end{figure}
+\end{center}
+
+On voit ici que le \CCIfull{} est un \lc{} très expréssif, puisqu'il
+intègre toutes les extensions. Nous allons montrer ce qu'elles
+permettent du point de vue des preuves et des programmes.
+
+% \begin{array}[l|c|c]
+%   & Preuves Mathématiques & Programmes Informatiques \\
+%   Polymorphisme & Quantification universelle sur les ensembles & 
+%   Abstractions sur les types \\
+%   Ordre supérieur & Quantification sur les prédicats &
+%   Abstractions dans les types (rare) \\
+%   Types dépendants & Quantification sur les éléments d'un ensemble & 
+%   \\
+% \end{array}
+
+  
+% (PVS, ...)
 
 \subsubsection*{Preuve}
-- Preuve par tactiques, procédurale.
-- Déduction naturelle (exemple ?)
+\Coq{} est utilisé le plus souvent pour élaborer des théories
+mathématiques prouvées mécaniquement. Dans cette optique, l'utilisateur 
+modélise un problème par des structures mathématiques et veut prouver
+certaines propriétés sur ce modèle (par exemple la preuve du théorême
+des quatres couleurs \ref{} récemment terminée utilisait des résultats de
+géométrie algébrique). 
 
-=> Développements mathématiques (logiques).
+Pour prouver un but sous certaines hypothèses, on utilise des
+tactiques qui simulent un raisonement déductif pour l'utilisateur. % LCF-style ?
+Celles-ci permettent par exemple d'introduire une hypothèse: pour le but
+$A "=>" A$ on peut introduire l'hypothèse $H : A$ ; ou bien d'en appliquer une: en
+appliquant l'hypothèse $H$ on prouve le but directement.
+% Figure ?
+Ces tactiques peuvent être d'une complexité arbitraire mais nous avons
+l'assurance de la correction d'une preuve par des propriétés du langage
+sous-jacent.
+
+%- Preuve par tactiques, procédurale.
+%- Déduction naturelle (exemple ?)
+
+% => Développements mathématiques (logiques).
 
 \subsubsection*{Programmes}
-- Lambda calcul avec types dépendants, polymorphisme et ordre supérieur
-(lambda cube)
-- Correspond à la logique intuitioniste
-- Preuve = habitant d'un type.
+Les tactiques utilisées pour créer des preuves ne sont en fait qu'une
+sorte de sucre au-dessus du noyau de \Coq{} qui se réduit à un typeur
+pour \CCI. A la fin d'une preuve, on a en effet construit un terme 
+($\lambda x : A. x$ dans notre exemple) que l'on va soumettre au typeur
+dont le but est de vérifier qu'il est bien de type $A "->" A$.
+Si le typage réussi, on obtient une preuve \emph{constructive} de notre
+but. 
 
-=> Permet de développer des programmes. Développement informatiques
-(calculatoires)
+D'un point de vue preuve de programmes, on a donc un environnement qui
+permet de vérifier qu'un programme (un terme du calcul) vérifie une
+certaine spécification (son type). Avec un langage aussi expressif, on
+peut prouver des propriétés complexes sur des programmes polymorphes à
+la \ML. 
+
+A l'inverse, on peut extraire un programme de toute preuve puisque nous
+sommes dans une logique constructive.
+
+% - Lambda calcul avec types dépendants, polymorphisme et ordre supérieur
+% (lambda cube)
+% - Correspond à la logique intuitioniste
+% - Preuve = habitant d'un type.
+
+% => Permet de développer des programmes. Développement informatiques
+% (calculatoires)
 
 \subsection*{Motivation}
 
-\subsubsection*{Un langage très expressif}
+\Coq{} permet de développer des programmes complexes,
+de leur donner des spécifications fortes et de les vérifier
+automatiquement. On peut même extraire de ces dévelopemments des
+programmes corrects par construction. Il y a cependant certaines
+difficultés à développer en \Coq{} que nous allons étudier maintenant.
 
-- Features
-- Extraction..
+\subsubsection*{Un langage trop expressif?} 
+\def\Definition{\text{Definition}}
+\def\sref#1{\text{#1}}
 
-- Utilisation académique et real-world.
+Le langage de \CCI{} permet de bien spécifier des fonctions non
+triviales, par exemple:
+\begin{figure}[h]
+  $\Definition~\text{qsort} : (\sref{compare} : (x : A)(y : A)~ \{ x
+  < y \} + \{ x \geq y \}) 
+  (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
+  \sref{sorted}~\sref{compare}~l' \}.$
+  \caption{Spécification de l'algorithme ``quicksort''}
+\end{figure}
 
-\subsubsection*{Difficultés}
+En revanche, le terme de preuve correspondant est nettement plus long,
+et ne peut simplement pas être écrit d'une traite sans une expertise
+approfondie (voir \TODO{Annexe}). Pour remédier à ce problème, on
+utilise des tactiques qui permettent d'écrire la preuve/programme
+incrémentalement (\TODO{script de preuve}). L'inconvénient de cette
+méthode est que l'on obtient pas toujours le programme désiré
+au départ, puisque les tactiques cachent profondément leur effet sur le
+terme de preuve. Certaines techniques de réecriture peuvent aussi
+générer des termes de complexité algorithmique bien moins optimale que
+ce que l'utilisateur écrirait. 
 
-- Besoin d'expertise pour dev des programmes:
-  - Verbosité
-  - Mélange logique et calcul
+\subsubsection*{Mélange logique et calcul}
+Une difficulté essentielle lorsque l'on veut permettre à des
+utilisateurs non experts de développer dans \Coq{} est le ``mélange
+des genres'' permanant entre logique et calcul. Pour appliquer une
+fonction division qui attend un dénominateur différent de $0$ par
+exemple, il faut passer à la fois l'argument lui même, mais aussi une
+preuve de sa non-nullité. Lorsque l'on a l'habitude de programmer, ça
+n'est pas la chose la plus naturelle et l'on aimerait pouvoir découpler
+les parties codages et preuve pour simplement diviser le problème.
+
+\subsubsection*{Objectif}
+A long terme, on souhaite permettre à un utilisateur de programmer dans
+un langage proche de \ML{} et de prouver ses programmes dans un deuxième
+temps à l'aide de \Coq{}. Une fois les preuves terminées, on peut
+extraire un programme correct par construction et essentielement
+équivalent à celui de départ.
+
+% - Features
+% - Extraction..
+
+% - Utilisation académique et real-world.
+
+% \subsubsection*{Difficultés}
+
+% - Besoin d'expertise pour dev des programmes:
+%   - Verbosité
+%   - Mélange logique et calcul
 
 \subsection*{Travaux Connexes}
 
-\subsubsection*{La tactique Program}
-Développée par Catherine Parent \cite{DBLP:conf/mpc/Parent95}.
+La preuve de programmes fonctionnels est un domaine de recherche actif
+(cite?), de mê
+Il existe un travail réalisant une partie de nos objectif
+qui a été réalisé dans \Coq{}.
+\subsubsection*{La tactique \Program}
+Développée par Catherine Parent \cite{DBLP:conf/mpc/Parent95}, 
+la tactique \Program{} permettait de synthétiser des preuves à partir de
+programmes. L'idée était de trouver un langage de programmation
+suffisament restrictif pour réaliser une inversion de l'extraction, 
+c'est à dire, à partir d'un terme essentiellement calculatoire
+(des annotations étaient nécessaires), retrouver un terme de preuve
+réalisant la spécification donnée. 
+A partir de là, on était assuré que le programme extrait serait
+identique à celui que l'on écrivait pour sa partie informative. Cette
+méthode générale avait l'inconvénient de donner des termes difficiles à
+prouver et n'a pas été maintenue depuis. 
 
 \subsubsection*{Types sous-ensemble}
-Le \ps{} implémenté dans PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
+Plutôt que de continuer dans la meme direction, nous avons 
+cherché à assouplir le système. L'assistant de preuve \PVS{}
+\cite{PVS-Semantics:TR} au capacités similaires à \Coq, intègre un
+mécanisme dénommé \ps{} que nous allons présenter maintenant.
+Tout d'abord une définition:
+\begin{definition}[Type sous-ensemble]
+  $\subset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
+  propriété $P$.
+\end{definition}
+
+Les types sous-ensembles sont d'une grande utilité pour la spécification
+de programmes, par exemple pour les pré-conditions:
+$\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat$.
+
+L'idée du \ps implémenté dans PVS
+(\cite{Shankar&Owre:WADT99,Rushby98:TSE}) est de considérer tout objet de
+type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
+vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
+propriété $P$, on génére des ``Type-checking conditions'' (\TCC), c'est
+à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer
+que le programme est correct.
 
 \subsubsection*{Coercions}
+ \PVS{} n'a pas la même architecture que \Coq{}, en particulier il n'y a
+ pas de termes de preuve et de noyau pour vérifier ces termes. Il faut
+ donc faire confiance à la quasi-totalité du code pour croire en la
+ correction des programmes vérifiés. Le critère de {\sc De Bruijn},
+ qui dit en substance qu'un petit noyau (et celui de \Coq a meme été
+ formellement vérifié \cite{BarrasCiC}) est mieux qu'un gros 
+ n'est pas respecté.
+
+ Dans notre cas, il faut générer des termes de preuve et donc le code 
+ correspondant à ce ``sous-typage''. Une littérature importante existe
+ autour des systèmes à coercions explicites dont nous nous sommes
+ inspirés pour réaliser l'engendrement des termes. Dans un système à
+ coercions explicites, on peut faire des abus de notations tels que
+ utiliser un objet de type $T$ à la place d'un de type $U$, mais
+ on applique une coercion qui amène l'objet vers le type $U$ avant 
+ de retyper dans un système sans coercions. Généralement les coercions
+ sont très similaires à des idéntités, c'est-à-dire qu'elles sont calculatoirement
+ insignifiantes mais leur utilisation facilite le développement. Dans
+ \Coq{} par exemple le système de coercions a permis de développer un
+ des théories algébriques réutilisables sur plusieurs structures
+ instantanément (un théoreme sur les corps pouvant s'appliquer aux
+ anneaux par exemple).
  \cite{Chen:POPL-2003, saibi97inheritance}
 
 \section*{La tactique \Subtac}
@@ -162,5 +342,5 @@ Sous-typage avec coercions explicites + \ps{}.
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "subset-typing-short"
-%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"style:$TEXINPUTS\" ${pdfx}latex"
 %%% End: 
