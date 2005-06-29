@@ -123,6 +123,7 @@
 
 \def\marginleft{0em}
 
+\def\typeiFig{
 \begin{figure}[h]
   \begin{center}
     \def\fCenter{\wf}
@@ -169,7 +170,9 @@
   \label{typing-algo-rules}
   \caption{Réecriture du typage vers \Coq}
 \end{figure}
+}
 
+\def\typemuiFig{
 \begin{figure}
   \begin{eqnarray*}
     (f, \subset{x}{U}{P}))   & "=>" & \letml (f, t) = \muterm~(f, U) \inml (f `o
@@ -179,6 +182,7 @@
   \label{muterm-definition}
   \caption{Définition de $\muterm$}
 \end{figure}
+}
 
 %%% Local Variables: 
 %%% mode: latex

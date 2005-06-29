@@ -44,6 +44,23 @@
   \def\sub{\subd}
 }
 
+\newcommand{\typenva}{
+  \typeout{Changing to algorithmic version}
+  \def\typewf{\typewfa}
+  \def\type{\typea}
+  \def\subt{\subta}
+  \def\sub{\suba}
+}
+
+\newcommand{\typenvi}{
+  \typeout{Changing to implementation version}
+  \def\typewf{\typewfi}
+  \def\type{\typei}
+  \def\subt{\subti}
+  \def\sub{\subi}
+}
+
+
 \newcommand{\matht}[1]{\text{{\tt #1}}}
 
 \def\even{\matht{even}}
@@ -137,10 +154,14 @@
 \fi\ifstreq{#1}{SubSub}\SubSubRule
 \fi}
 
-\newcommand{\rulename}[1]{{\bf \inductionrule{#1}}}
+\newcommand{\rulename}[1]{{\sc \inductionrule{#1}}}
 
+% Factorize!!!
 \def\indrule{\rulename}
 \def\irule{\rulename}
+\def\rname{\rulename}
+
+\def\rulelabel{\rulename}
 
 \def\case#1{\item[- \rulename{#1} :]}
 \newcommand{\casetwo}[2]{\item[- \rulename{#1}, \rulename{#2} :]}
@@ -149,8 +170,7 @@
 \def\casefour#1#2#3#4{\item[- \rulename{#1}, \rulename{#2},
   \rulename{#3}, \rulename{#4} :]}
 
-\newcommand{\rname}[1]{{\bf \rulename{#1}}}
-\newcommand{\rulelabel}[1]{{\bf (\inductionrule{#1})}}
+\def\infvspace{1em}
 
 %%% Local Variables: 
 %%% mode: latex

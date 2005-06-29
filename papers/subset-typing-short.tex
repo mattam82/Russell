@@ -3,8 +3,7 @@
 \usepackage[latin1]{inputenc}  %% les accents dans le fichier.tex
 \usepackage[T1]{fontenc}       %% Pour la c\'{e}sure des mots accentu\'{e}s
 \usepackage{indentfirst}
-\usepackage{fullpage}
-\usepackage[dvips]{graphicx}
+%\usepackage[dvips]{graphicx}
 %\usepackage{coqdoc}
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -13,7 +12,7 @@
 \usepackage{array}
 \usepackage{myabbrevs}
 \usepackage{abbrevs}
-\usepackage{bnf}
+%\usepackage{bnf}
 \usepackage{bussproofs}
 \usepackage{hyperref}
 \usepackage{fullpage}
@@ -26,25 +25,31 @@
 \usepackage{pgf}
 \usepackage{subfigure}
 
-\def\infvspace{2em}
 % This is the "centered" symbol
 \def\fCenter{\vdash}
 \def\seq{\fCenter}
 % Optional to turn on the short abbreviations
 \EnableBpAbbreviations
 
-\oddsidemargin 0cm
+\oddsidemargin -1cm
 \topmargin -1cm
 \headsep 5mm
-\textwidth 17cm
+\textwidth 18cm
 \textheight 24cm
 
 \input{mathenv}
 \input{typing-macros}
+
+\setboolean{displayLabels}{true}
+
 \input{grammar-macros}
 
 \input{typing-decl}
 \input{subtyping-decl}
+\input{typing-algo}
+\input{subtyping-algo}
+\input{typing-impl}
+\input{subtyping-impl}
 
 \pgfdeclareimage[height=3cm]{lambda-cube}{pictures/lambda-cube}
 
@@ -52,7 +57,7 @@
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
 %\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
 
-\def\thetitle{Sous-typage par prédicats en Coq}
+\def\thetitle{Sous-typage par prédicats en \Coq}
 
 \pagestyle{plain}
 \fancyhead[RO,LE]{\thetitle}
@@ -90,29 +95,32 @@ Nous souhaitons intégrer un langage de programmation ...
 
 \Coq~est un assistant de preuve dont la première version date de 1985,
 et qui est aujourd'hui développé dans le projet \LogiCal{} (INRIA, LIX,
-LRI, CNRS). Originellement basé sur le Calculs des Constructions (\CoC), 
-il a été étendu par le \CCIfull~(\CCI) et
-contient aujourd'hui de nombreuses améliorations telles qu'un système
-sophistiqué d'extraction de programmes ou encore des procédures de
-décision pour aider à la preuve.
+LRI, CNRS). Originellement basé sur le Calculs des Constructions (\CoC),
+il a été étendu par le \CCIfull~(\CCI) et contient aujourd'hui de
+nombreuses améliorations telles qu'un système sophistiqué d'extraction
+de programmes ou encore des procédures de décision pour aider à la
+preuve.
 
-Le développement de \Coq~est intimement lié à l'isomorphisme de
-{\sc Curry-Howard} qui montre le lien entre certaines logiques et
-calculs. Il s'agissait à l'époque de montrer qu'élaborer une preuve en
-logique intuitioniste de premier ordre était équivalent à écrire un terme du \lc
-simplement typé (\lcst). Par exemple, montrer que $A "=>" A$ pour un certain $A$
-revient à écrire la fonction identité $\lambda~x : A. x$ qui a bien pour
-type $A "->" A$. Cette dualité ce reflète aussi à l'utilisation.
+Le développement de \Coq~est intimement lié à l'isomorphisme de {\sc
+Curry-Howard} qui montre le lien entre certaines logiques et calculs. Il
+s'agissait à l'époque de montrer qu'élaborer une preuve en logique
+intuitioniste de premier ordre était équivalent à écrire un terme du
+\lc~simplement typé (\lcst). Par exemple, montrer que $A "=>" A$ pour un
+certain $A$ revient à écrire la fonction identité $\lambda x : A. x$ qui
+a bien pour type $A "->" A$. Cette dualité ce reflète aussi à
+l'utilisation.
 
 Il existe une classification des \lc{} découverte par Henk Barendregt,
-qui montre bien où se situe le calcul sous-jacent à $Coq$ par rapport à
+qui montre bien où se situe le calcul sous-jacent à \Coq{} par rapport à
 \lcst.
-\begin{center}
-  \begin{figure}[h]
+%\vspace{-0.5cm}
+\begin{figure}[h]
+  \begin{center}
     \pgfuseimage{lambda-cube}
-    \label{Le ``Lambda cube''}
-  \end{figure}
-\end{center}
+  \end{center}
+  \label{Le ``Lambda cube''}
+\end{figure}
+%\vspace{-1cm}
 
 On voit ici que le \CCIfull{} est un \lc{} très expréssif, puisqu'il
 intègre toutes les extensions. Nous allons montrer ce qu'elles
@@ -288,7 +296,7 @@ que le programme est correct.
 pas de termes de preuve et de noyau pour vérifier ces termes. Il faut
 donc faire confiance à la quasi-totalité du code pour croire en la
 correction des programmes vérifiés. Le critère de {\sc De Bruijn},
-qui dit en substance qu'un petit noyau (et celui de \Coq a meme été
+qui dit en substance qu'un petit noyau (et celui de \Coq~a meme été
 formellement vérifié \cite{BarrasCiC}) est mieux qu'un gros 
 n'est pas respecté.
  
@@ -392,29 +400,9 @@ autre accepte plus d'entrées mais donne une sortie plus fine, voir
 sous-types deux-à-deux). La dernière règle formalise la transitivité du
 sous-typage, c'est une règle que l'on veut éliminer mais qui assure que
 l'on a un système compositionel (il y a ici une analogie avec
-l'élimination des coupures dans les syst 
+l'élimination des coupures dans les systê
 
-\setboolean{displayLabels}{true}
-
-\def\subtypingdShort{
-\begin{figure}[h]
-  \begin{center}
-    \def\fCenter{\subd}
-    \SubConv\DP
-    \SubProof\DP
-    \SubSub\DP
-
-    \vspace{1cm}
-    \SubProd\DP
-    \SubSigma\DP
-    \SubTrans\DP
-  \end{center}
-  \label{subtyping-decl-rules}
-  \caption{Sous-typage déclaratif}
-\end{figure}
-}
-
-\subtypingdShort
+\subtdShort
 
 \subsubsection*{Elaboration du système algorithmique \& Propriétés}
 Pour pouvoir typer des termes, il nous faut un système décidable, ce qui
@@ -434,7 +422,10 @@ une dérivation n'utilisant cette règle qu'à sa racine ou au niveau de la
 prémisse de l'argument de la règle d'application \irule{App}.
 
 \typenva
-\AppADP
+
+\begin{prooftree}
+\AppA
+\end{prooftree}
 
 La nouvelle règle d'application est intéressante pour deux raisons.
 Primo, c'est là qu'aura lieu le test de subsumption, qui génerera une
@@ -448,18 +439,79 @@ fonctionnel (c'est le rôle de la fonction $\mu$).
 On a maintenant un système de typage décidable et l'on veut désormais
 traduire ses dérivations dans \CCI{}. 
 
-
 \subsubsection*{Définition}
+La traduction est un homomorphisme (elle conserve la structure de la
+dérivation et se rappelle récursivement) excepté pour l'application, ce qui
+est normal puisque nous avons un système très proche de \CCI{}. 
+
+\typenvi
+\begin{prooftree}
+\AppI
+\end{prooftree}
+
+Ici la fonction $\muterm$ renvoie à la fois un type (qu'on demande
+équivalent à un produit) et une fonction de coercion qui va faire les
+projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
+objets de type sous-ensemble $\subset{x}{T}{P}$ sont codés par un terme 
+dont on peut extraire les parties objet (un certain $t$ de type $T$) et
+preuve (de type $P[t/x]$). Il faut donc faire une projection pour
+atteindre par exemple la fonction d'un objet de type $\subset{f}{\nat
+  "->" \nat}{f~0 \neq 0}$.
+
+Le jugement de sous-typage $U \sub V$ est utilisé pour construire une
+coercion de $U$ à $V$, donc une fonction de type $U "->" V$.
+
+\subtiShort
+
+On trouve ici l'essence du mécanisme de sous-typage par prédicats. La
+règle \irule{SubConv} crée une coercion idéntité puisque \CCI{}~a la
+règle de conversion. La règle \irule{SubLeft} engendre une projection,
+c'est le cas où l'on ne s'intéresse pas à la preuve accompagnant
+l'objet. La règle \irule{SubRight} correspond à la génération d'une
+obligation de preuve dans \PVS. On utilise le mécanisme des variables
+existentielles (notées $?:\text{type}$) décrit plus loin pour donner 
+l'information au système qu'il faut completer le terme à un endroit
+donné avec un nouveau terme de type approprié. Il est donc possible 
+de créer des termes ininstantiables. 
+Les règles \irule{SubProd} et \irule{SubSigma} réalisent respectivement
+les coercions pour les produits fonctionnels et cartésiens.
 
 \subsubsection*{Propriétés}
+On veut montrer que si l'on a une dérivation dans notre système
+algorithmique, alors son image par la réecriture est une dérivation
+valide de \CCI. Ce travail est en cours à ce jour, nous nous sommes
+plutôt penchés sur l'implémentation du typeur et de la fonction de
+réecriture avant de commencer cette dernière preuve.
 
 \subsection*{Implémentation}
+Nous avons développé la tactique \Subtac{} disponible dans la version
+\CVS{} courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
+créer un programme, le typer et générer un terme incomplet
+correspondant. 
 
 \subsubsection*{Existentielles}
+La génération des buts correspondants aux variables existentielles et la
+formation du terme final sont laissées à la tactique \Refine~et au
+système de gestion des existentielles de \Coq. Certaines limitations 
+dans l'implémentation du raffinement (le mécanisme permettant de manipuler
+des termes ``à trous'') devront être dépassées pour obtenir
+une contribution totalement fonctionnelle. On peut cependant espérer
+résoudre ces problèmes de façon satisfaisante dans le futur.
 
 \subsubsection*{Traitement de la récursion}
+Lorsque l'on développe un programme récursif dans un système tel que
+\Coq, on est forcé de fournir une preuve de terminaison de son
+algorithme. Pour cela, on montre généralement qu'on a un ordre bien
+fondé sur le type de l'argument de récusion et que chaque appel respecte
+cet ordre. Nous avons ajouté des facilités d'écriture de fonctions
+récursives à notre langage ; on ajoute les existentielles
+correspondant aux preuves que l'ordre est bien fondé ou qu'il est bien
+respecté aux termes. Ainsi lors du raffinement on obtient naturellement
+les buts correspondants à prouver.
 
 \section*{Conclusion}
+
+
 
 \bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent.bib}
 \bibliographystyle{plain}

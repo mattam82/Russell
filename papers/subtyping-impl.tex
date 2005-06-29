@@ -1,12 +1,12 @@
 \def\SubConvI{
-\UAX{Sub-Conv}
+\UAX{SubConv}
 {$T \eqbi U$}
 {$\subimpl{`G}{(\lambda x. x)}{T}{U}$}
 {} 
 }
 
 \def\SubProdI{
-  \BAX{Sub-Prod}
+  \BAX{SubProd}
   {$\subimpl{`G}{c_1}{U}{T}$}
   {$\subimpl{`G, x : U}{c_2}{V[c_1~x/x]}{W}$}
   {$\subimpl{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
@@ -14,7 +14,7 @@
 }
 
 \def\SubSigmaI{
-  \BAX{Sub-Sigma}
+  \BAX{SubSigma}
   {$\subimpl{`G}{c_1}{T}{U}$}
   {$\subimpl{`G}{c_2}{V}{W}$}
   {$\subimpl{`G}
@@ -24,7 +24,7 @@
 }
 
 \def\SubLeftI{
-  \BAX{Sub-Left}
+  \BAX{SubLeft}
   {$`G, x : U \typec P : \Prop$}
   {$\subimpl{`G}{c}{U}{V}$}
   {$\subimpl{`G}{c `o \pi_1}
@@ -33,7 +33,7 @@
 }
     
 \def\SubRightI{
-  \BAX{Sub-Right}
+  \BAX{SubRight}
   {$`G, x : U \typec P : \Prop$}
   {$\subimpl{`G}{c}{T}{U}$}
   {$\subimpl{`G}
@@ -42,6 +42,7 @@
   {}
 }
 
+\def\subtiFig{
 \begin{figure}[h]
   \begin{center}
     \def\fCenter{\subtd}
@@ -65,6 +66,30 @@
   \label{subtyping-impl-rules}
   \caption{Réecriture du sous-typage vers \Coq}
 \end{figure}
+}
+
+\def\subtiShort{
+\begin{figure}[h]
+  \begin{center}
+    \def\fCenter{\subti}
+    
+    \SubConvI\DP
+    \hspace{2cm}
+    \SubLeftI\DP
+
+    \vspace{\infvspace}
+    \SubRightI\DP
+
+    \vspace{\infvspace}
+    \SubProdI\DP
+    
+    \vspace{\infvspace}
+    \SubSigmaI\DP
+  \end{center}
+  \label{subtyping-impl-rules}
+  \caption{Réecriture du sous-typage vers \Coq}
+\end{figure}
+}
 
 %%% Local Variables: 
 %%% mode: latex

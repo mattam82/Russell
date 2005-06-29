@@ -24,7 +24,6 @@
 \usepackage{ifmtarg}
 \usepackage{pxfonts}
 
-\def\infvspace{2em}
 % This is the "centered" symbol
 \def\fCenter{\vdash}
 \def\seq{\fCenter}
@@ -61,15 +60,21 @@ Le \ps{} implémenté dans \PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby
 \input{grammar}
 
 \input{typing-decl}
-\typingdFull
-
 \input{subtyping-decl}
-\subtypingdFull
-
 \input{typing-algo}
 \input{subtyping-algo}
 \input{typing-impl}
 \input{subtyping-impl}
+
+\typedFig
+\subtdFig
+\typeaFig
+\typemuaFig
+\subtaFig
+\typeiFig
+\typemuiFig
+\subtiFig
+
 \input{typing-proofs}
 \clearpage
 
