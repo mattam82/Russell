@@ -60,7 +60,7 @@
 \def\thetitle{Sous-typage par prédicats en \Coq}
 
 \pagestyle{plain}
-\fancyhead[RO,LE]{\thetitle}
+\fancyhead[RO,L]{\thetitle}
 \fancyfoot[C]{\thepage}
 
 \title{\thetitle}
@@ -144,8 +144,8 @@ permettent du point de vue des preuves et des programmes.
 mathématiques prouvées mécaniquement. Dans cette optique, l'utilisateur 
 modélise un problème par des structures mathématiques et veut prouver
 certaines propriétés sur ce modèle (par exemple la preuve du théorême
-des quatres couleurs \ref{WernerGonthier4col} récemment terminée utilisait des résultats de
-géométrie algébrique). 
+des quatres couleurs \cite{Gonthier4col} récemment terminée utilisait des résultats de
+géométrie algébrique).
 
 Pour prouver un but sous certaines hypothèses, on utilise des
 tactiques qui simulent un raisonement déductif pour l'utilisateur. % LCF-style ?
@@ -256,7 +256,7 @@ La preuve de programmes fonctionnels est un domaine de recherche actif
 Il existe un travail réalisant une partie de nos objectif
 qui a été réalisé dans \Coq{}.
 \subsubsection*{La tactique \Program}
-Développée par Catherine Parent \cite{DBLP:conf/mpc/Parent95}, 
+Développée par Catherine Parent \cite{conf/mpc/Parent95}, 
 la tactique \Program{} permettait de synthétiser des preuves à partir de
 programmes. L'idée était de trouver un langage de programmation
 suffisament restrictif pour réaliser une inversion de l'extraction, 
@@ -271,7 +271,7 @@ prouver et n'a pas été maintenue depuis.
 \subsubsection*{Types sous-ensemble}
 Plutôt que de continuer dans la meme direction, nous avons 
 cherché à assouplir le système. L'assistant de preuve \PVS{}
-\cite{PVS-Semantics:TR} au capacités similaires à \Coq, intègre un
+\cite{PVS-Semantics} au capacités similaires à \Coq, intègre un
 mécanisme dénommé \ps{} que nous allons présenter maintenant.
 Tout d'abord une définition:
 \begin{definition}[Type sous-ensemble]
@@ -284,7 +284,7 @@ de programmes, par exemple pour les pré-conditions:
 $\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat$.
 
 L'idée du \ps implémenté dans PVS
-(\cite{Shankar&Owre:WADT99,Rushby98:TSE}) est de considérer tout objet de
+(\cite{ShankarOwreWADT99,Rushby98TSE}) est de considérer tout objet de
 type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
 propriété $P$, on génére des ``Type-checking conditions'' (\TCC), c'est
@@ -297,7 +297,7 @@ pas de termes de preuve et de noyau pour vérifier ces termes. Il faut
 donc faire confiance à la quasi-totalité du code pour croire en la
 correction des programmes vérifiés. Le critère de {\sc De Bruijn},
 qui dit en substance qu'un petit noyau (et celui de \Coq~a meme été
-formellement vérifié \cite{BarrasCiC}) est mieux qu'un gros 
+formellement vérifié \cite{Barras96a}) est mieux qu'un gros 
 n'est pas respecté.
  
 Dans notre cas, il faut générer des termes de preuve et donc le code 
@@ -314,7 +314,7 @@ insignifiantes mais leur utilisation facilite le développement. Dans
 des théories algébriques réutilisables sur plusieurs structures
 instantanément (un théoreme sur les corps pouvant s'appliquer aux
 anneaux par exemple).
-\cite{Chen:POPL-2003, saibi97inheritance}
+\cite{conf/popl/Chen03, saibi97inheritance}
 
 \section*{La tactique \Subtac}
 Nous avons développé un langage supportant le \ps{} utilisable dans
@@ -332,8 +332,6 @@ On part du \lc{} (variables, abstraction et application) puis l'on
 ajoute des constantes (pour les entiers, booléens, etc...) ainsi que les
 couples. La syntaxe $(x := `a, t : `t)$ permet de
 créer des paires dépendantes, de type $`E x : `a. `t$. 
-\note{Si l'on peut utiliser $x$ dans t, on peut inférer le bon type
-  $`t$!}
 
 Du côté des types, on a tout d'abord les types simples (constantes,
 flèche, produit cartésien) qui sont des cas particuliers du produit ($\Pi$) et
@@ -395,7 +393,7 @@ sous-typage dans les types composites. Classiquement \note{pas vrai dans
   PVS}, la règle pour le 
 produit fonctionel est contravariante (une fonction sous-type d'une
 autre accepte plus d'entrées mais donne une sortie plus fine, voir
-\cite{beppeConflict}) et la règle pour le produit cartésien covariante 
+\name{Castagna} \cite{journals/toplas/Castagna95}) et la règle pour le produit cartésien covariante 
 (une paire est sous-type d'une autre si leurs composantes sont
 sous-types deux-à-deux). La dernière règle formalise la transitivité du
 sous-typage, c'est une règle que l'on veut éliminer mais qui assure que
@@ -513,8 +511,8 @@ les buts correspondants à prouver.
 
 
 
-\bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent.bib}
-\bibliographystyle{plain}
+\bibliographystyle{mybib}
+\bibliography{../bib/bib-joehurd,../bib/barras.bib,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent.bib}
 
 \renewcommand{\thefootnote}{}
 \footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 

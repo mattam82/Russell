@@ -171,10 +171,15 @@
      \end{column}
      
      \begin{column}{0.5\textwidth}
-       $\Definition~\text{qsort} : (\sref{compare} : (x : A)(y : A)~ \{ x
-       < y \} + \{ x \geq y \}) 
-       (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
-         \sref{sorted}~\sref{compare}~l' \}.$
+       \only<1>{$\Definition~\text{qsort} :
+         (\sref{compare} : (x : A)(y : A)~ \{ x < y \} + \{ x \geq y \}) 
+         (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
+         \sref{sorted}~\sref{compare}~l' \}.$}
+       \only<2>{$\Definition~\text{qsort} :
+         ({\color{green}\sref{compare}} : (x : A)(y : A)~ \{ x < y \} + \{ x \geq y \}) 
+         (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
+         \sref{sorted}~\sref{compare}~l' \}.$}
+
        \end{column}
    \end{columns}  
 \end{frame}
@@ -238,14 +243,13 @@
   
   \note<1>{Définir les projections ?}
   \pause
-  \begin{block}{\PVS}
-    Système de type intégrant le \emph{Predicate subtyping}.
-    
-    \alert{Idée} Un objet de type $T$ peut être vu comme un objet de
+  \begin{block}{Idée} 
+    Un objet de type $T$ peut être vu comme un objet de
     type $\subset{x}{T}{P}$ pour tout $P$ et vice-versa.
   \end{block}
 \end{frame}
 
+%\PVS    Système de type intégrant le \emph{Predicate subtyping}.
 \begin{frame}
   \frametitle{Sous-typage par prédicats}
   \begin{tabular}{lclcl}
@@ -376,34 +380,34 @@
 
 
 % All of the following is optional and typically not needed. 
-\appendix
-\section<presentation>*{\appendixname}
-\subsection<presentation>*{Bibliographie}
+% \appendix
+% \section<presentation>*{\appendixname}
+% \subsection<presentation>*{Bibliographie}
 
-\begin{frame}[allowframebreaks]
-  \frametitle<presentation>{Bibliographie}
+% \begin{frame}[allowframebreaks]
+%   \frametitle<presentation>{Bibliographie}
     
-  \begin{thebibliography}{10}
+%   \begin{thebibliography}{10}
     
-  \beamertemplatebookbibitems
-  % Start with overview books.
+%   \beamertemplatebookbibitems
+%   % Start with overview books.
   
-  \bibitem{Author1990}
-    A.~Author.
-    \newblock {\em Handbook of Everything}.
-    \newblock Some Press, 1990.
+%   \bibitem{Author1990}
+%     A.~Author.
+%     \newblock {\em Handbook of Everything}.
+%     \newblock Some Press, 1990.
  
     
-  \beamertemplatearticlebibitems
-  % Followed by interesting articles. Keep the list short. 
+%   \beamertemplatearticlebibitems
+%   % Followed by interesting articles. Keep the list short. 
 
-  \bibitem{Someone2000}
-    S.~Someone.
-    \newblock On this and that.
-    \newblock {\em Journal of This and That}, 2(1):50--100,
-    2000.
-  \end{thebibliography}
-\end{frame}
+%   \bibitem{Someone2000}
+%     S.~Someone.
+%     \newblock On this and that.
+%     \newblock {\em Journal of This and That}, 2(1):50--100,
+%     2000.
+%   \end{thebibliography}
+% \end{frame}
 
 \end{document}
 
