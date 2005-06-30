@@ -74,83 +74,62 @@
 \maketitle
 
 \begin{abstract}
-  Dans un assistant de % à la 
-  preuve tel que \Coq, la grande %haute
-  expressivité du langage
-  de spécification et d'implémentation est nécessaire pour pouvoir
-  traiter le plus large éventail de problèmes. En contrepartie, les
+  \Coq{} est un assistant de preuve d'une grande expressivité pour le
+  développement de théories mathématiques et informatique, ce qui permet
+  de traiter le plus large éventail de problèmes. Le langage de \Coq{},
+  constitué d'un noyau fonctionnel de type \ML{} enrichi par les types
+  dépendants, permet de spécifier, vérifier puis
+  extraire des programmes corrects par construction. En contrepartie, les
   programmes sont plus difficiles à écrire et maintenir que dans un pur
-  langage de programmation de type \ML. Pour remédier à
-  ce problème, on propose un nouveau langage, moins puissant, mais
+  langage de programmation de type \ML, puisqu'ils mélangent les parties
+  logiques et calculatoires. Pour remédier à
+  ce problème, on propose un nouveau langage de programmation,
   s'intégrant parfaitement à l'environnement de développement existant,
-  qui permet l'écriture rapide de programmes et découple les parties codage et
-  preuve.
+  qui permet de découpler les parties codage et preuve.
 \end{abstract}
 
 \tableofcontents
 
 \section{Introduction}
 
-Nous souhaitons intégrer un langage de programmation ...
+Nous nous plaçons dans le cadre du système d'aide à la preuve \Coq{},
+auquel nous souhaitons intégrer un langage de programmation plus souple.
 
 \subsection{Présentation de \Coq}
 
 \Coq~est un assistant de preuve dont la première version date de 1985,
 et qui est aujourd'hui développé dans le projet \LogiCal{} (INRIA, LIX,
-LRI, CNRS). Originellement basé sur le Calculs des Constructions (\CoC),
-il a été étendu par le \CCIfull~(\CCI) et contient aujourd'hui de
+LRI, CNRS). Originellement basé sur le Calcul des Constructions (\CoC),
+il a été étendu au \CCIfull~(\CCI) et contient aujourd'hui de
 nombreuses améliorations telles qu'un système sophistiqué d'extraction
-de programmes ou encore des procédures de décision pour aider à la
+de programmes ou encore des procédures de décision pour automatiser la
 preuve.
 
 Le développement de \Coq~est intimement lié à l'isomorphisme de {\sc
-Curry-Howard} qui montre le lien entre certaines logiques et calculs. Il
-s'agissait à l'époque de montrer qu'élaborer une preuve en logique
-intuitioniste de premier ordre était équivalent à écrire un terme du
+Curry-Howard} qui montre le lien entre logique intuitioniste et calcul. Cet
+isomorphisme établit qu'élaborer une preuve du calcul propositionel
+intuitioniste est équivalent à écrire un terme du
 \lc~simplement typé (\lcst). Par exemple, montrer que $A "=>" A$ pour un
 certain $A$ revient à écrire la fonction identité $\lambda x : A. x$ qui
-a bien pour type $A "->" A$. Cette dualité ce reflète aussi à
-l'utilisation.
-
-Il existe une classification des \lc{} découverte par Henk Barendregt,
-qui montre bien où se situe le calcul sous-jacent à \Coq{} par rapport à
-\lcst.
-%\vspace{-0.5cm}
-\begin{figure}[h]
-  \begin{center}
-    \pgfuseimage{lambda-cube}
-  \end{center}
-  \label{Le ``Lambda cube''}
-\end{figure}
-%\vspace{-1cm}
-
-On voit ici que le \CCIfull{} est un \lc{} très expréssif, puisqu'il
-intègre toutes les extensions. Nous allons montrer ce qu'elles
-permettent du point de vue des preuves et des programmes.
-
-% \begin{array}[l|c|c]
-%   & Preuves Mathématiques & Programmes Informatiques \\
-%   Polymorphisme & Quantification universelle sur les ensembles & 
-%   Abstractions sur les types \\
-%   Ordre supérieur & Quantification sur les prédicats &
-%   Abstractions dans les types (rare) \\
-%   Types dépendants & Quantification sur les éléments d'un ensemble & 
-%   \\
-% \end{array}
-
-  
-% (PVS, ...)
+a bien pour type $A "->" A$. Chaque logique constructive est donc
+associée à un \lc{} particulier. Dans \Coq{}, on utilise cet
+isomorphisme pour vérifier les preuves. Le noyau est simplement un
+typeur pour \CCI{}. Si on peut typer un terme $t$ de type $T$, alors on est
+assuré d'avoir trouvé une preuve constructive $t$ de la formule $T$.
+Cette dualité ce reflète aussi à l'utilisation de \Coq{} où l'on a 
+les deux visions: logique (développement mathématique, preuve) et 
+calcul (développement informatique, programme).
 
 \subsubsection{Preuve}
 \Coq{} est utilisé le plus souvent pour élaborer des théories
 mathématiques prouvées mécaniquement. Dans cette optique, l'utilisateur 
 modélise un problème par des structures mathématiques et veut prouver
 certaines propriétés sur ce modèle (par exemple la preuve du théorême
-des quatres couleurs \cite{Gonthier4col} récemment terminée utilisait des résultats de
-géométrie algébrique).
+des quatres couleurs récemment terminée \cite{Gonthier4col} utilisait 
+des résultats de géométrie algébrique).
 
 Pour prouver un but sous certaines hypothèses, on utilise des
-tactiques qui simulent un raisonement déductif pour l'utilisateur. % LCF-style ?
+tactiques qui simulent un raisonnement déductif pour l'utilisateur.
 Celles-ci permettent par exemple d'introduire une hypothèse: pour le but
 $A "=>" A$ on peut introduire l'hypothèse $H : A$ ; ou bien d'en appliquer une: en
 appliquant l'hypothèse $H$ on prouve le but directement.
@@ -170,17 +149,24 @@ sorte de sucre au-dessus du noyau de \Coq{} qui se réduit à un typeur
 pour \CCI. A la fin d'une preuve, on a en effet construit un terme 
 ($\lambda x : A. x$ dans notre exemple) que l'on va soumettre au typeur
 dont le but est de vérifier qu'il est bien de type $A "->" A$.
-Si le typage réussi, on obtient une preuve \emph{constructive} de notre
-but. 
 
 D'un point de vue preuve de programmes, on a donc un environnement qui
 permet de vérifier qu'un programme (un terme du calcul) vérifie une
 certaine spécification (son type). Avec un langage aussi expressif, on
 peut prouver des propriétés complexes sur des programmes polymorphes à
-la \ML. 
+la \ML. Seulement, on ne peut pas écrire simplement un programme \ML{} et
+donner sa spécification forte. Comme on a enrichi les types (par
+exemple, la fonction $\sdef{div} : \nat "->" \nat "->" \nat$ de \ML{} est
+plus fortement spécifiée en \Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x
+  \neq 0} "->" \nat$), on doit aussi enrichir les termes avec des termes
+de preuve, inutilisés au calcul mais nécessaires pour garantir la
+correction logique du programme. Par exemple, si l'on veut appeler
+$\sref{div}$ et que l'on a un entier $x$, il faut construire un terme
+$\sref{div}~1~(\sref{elt}~x~p)$ où $p$ est une preuve de $x \neq 0$.
 
 A l'inverse, on peut extraire un programme de toute preuve puisque nous
-sommes dans une logique constructive.
+sommes dans une logique constructive (grossièrement, en éliminant les
+parties logiques et en ne conservant que la partie informative d'un terme).
 
 % - Lambda calcul avec types dépendants, polymorphisme et ordre supérieur
 % (lambda cube)
@@ -199,34 +185,43 @@ programmes corrects par construction. Il y a cependant certaines
 difficultés à développer en \Coq{} que nous allons étudier maintenant.
 
 \subsubsection{Un langage trop expressif?} 
-\def\Definition{\text{Definition}}
-\def\sref#1{\text{#1}}
 
 Le langage de \CCI{} permet de bien spécifier des fonctions non
-triviales, par exemple:
-\begin{figure}[h]
-  $\Definition~\text{qsort} : (\sref{compare} : (x : A)(y : A)~ \{ x
-  < y \} + \{ x \geq y \}) 
-  (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
-  \sref{sorted}~\sref{compare}~l' \}.$
-  \caption{Spécification de l'algorithme ``quicksort''}
-\end{figure}
+triviales, par exemple, si l'on définit un module qui implémente
+``quicksort'' pour un type et une fonction de comparaison données:
+\[
+\begin{array}[h]{l|l}
+  \multicolumn{1}{c}{\text{Coq}} & \multicolumn{1}{c}{\text{ML}} \\
+  \Variable~A : \Set & \moduleml~QSort(\sigml~\typeml~a \\
+  \Variable{}~\sdef{compare} : \forall x~y : A, \{ x < y \} + \{ x \geq y \} &
+  \valml~\sdef{compare} : a "->" a "->" \bool~\enml) = \structml \\
+  \Definition~\sdef{qsort} : \forall l : \sref{list}~A, \{ l' : 
+  \listml~A~|~\sref{permut}~l~l' `^ \sref{sorted}~\sref{compare}~l' \} &
+  \valml~\sdef{qsort} : a~\listml{} "->" a~\listml{}~\enml
+\end{array}
+\]
 
-En revanche, le terme de preuve correspondant est nettement plus long,
-et ne peut simplement pas être écrit d'une traite sans une expertise
-approfondie (voir \TODO{Annexe}). Pour remédier à ce problème, on
-utilise des tactiques qui permettent d'écrire la preuve/programme
+Les types dépendants permettent de bien relier les entrées aux sorties
+et donc de spécifier les programmes aussi fortement que l'on désire, 
+mais aussi de façon concise.
+En revanche, le terme de preuve correspondant à \sref{qsort} est 
+nettement plus long, et ne peut simplement pas être écrit d'une traite 
+sans une expertise approfondie (voir \TODO{Annexe}?). Pour remédier à ce
+problème, on utilise des tactiques qui permettent d'écrire la preuve/programme
 incrémentalement (\TODO{script de preuve}). L'inconvénient de cette
 méthode est que l'on obtient pas toujours le programme désiré
 au départ, puisque les tactiques cachent profondément leur effet sur le
 terme de preuve. Certaines techniques de réecriture peuvent aussi
 générer des termes de complexité algorithmique bien moins optimale que
-ce que l'utilisateur écrirait. 
+ce que l'utilisateur écrirait. Cependant ce mode de fonctionement est
+utile et utilisé par la majorité des utilisateurs de \Coq{} avec succès
+(certification d'un compilateur {\sc \C}, théoreme des quatres couleurs
+\cite{Gonthier4col}, \ldots).
 
 \subsubsection{Mélange logique et calcul}
 Une difficulté essentielle lorsque l'on veut permettre à des
 utilisateurs non experts de développer dans \Coq{} est le ``mélange
-des genres'' permanant entre logique et calcul. Pour appliquer une
+des genres'' permanent entre logique et calcul. Pour appliquer une
 fonction division qui attend un dénominateur différent de $0$ par
 exemple, il faut passer à la fois l'argument lui même, mais aussi une
 preuve de sa non-nullité. Lorsque l'on a l'habitude de programmer, ça
@@ -236,9 +231,10 @@ les parties codages et preuve pour simplement diviser le problème.
 \subsubsection{Objectif}
 A long terme, on souhaite permettre à un utilisateur de programmer dans
 un langage proche de \ML{} et de prouver ses programmes dans un deuxième
-temps à l'aide de \Coq{}. Une fois les preuves terminées, on peut
-extraire un programme correct par construction et essentielement
-équivalent à celui de départ.
+temps à l'aide de \Coq{} et ses tactiques. Une fois les preuves
+terminées, on peut extraire un programme correct par construction et
+essentiellement équivalent à celui de départ ou le réutiliser facilement
+dans l'environnement \Coq{}.
 
 % - Features
 % - Extraction..
