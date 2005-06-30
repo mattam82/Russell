@@ -1,45 +1,45 @@
-\def\SubConvI{
+\newcommand{\SubConvI}{%
 \UAX{SubConv}
 {$T \eqbi U$}
 {$\subimpl{`G}{(\lambda x. x)}{T}{U}$}
 {} 
 }
 
-\def\SubProdI{
-  \BAX{SubProd}
-  {$\subimpl{`G}{c_1}{U}{T}$}
-  {$\subimpl{`G, x : U}{c_2}{V[c_1~x/x]}{W}$}
-  {$\subimpl{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
-  {}
+\def\SubProdI{%
+\BAX{SubProd}
+{$\subimpl{`G}{c_1}{U}{T}$}
+{$\subimpl{`G, x : U}{c_2}{V[c_1~x/x]}{W}$}
+{$\subimpl{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
+{}
 }
 
-\def\SubSigmaI{
-  \BAX{SubSigma}
-  {$\subimpl{`G}{c_1}{T}{U}$}
-  {$\subimpl{`G}{c_2}{V}{W}$}
-  {$\subimpl{`G}
-    {\lambda (x, y). (c_1~x, c_2~y)}
-    {\Sigma x : T. V}{\Sigma x : U. W}$}
-  {}
+\def\SubSigmaI{%
+\BAX{SubSigma}
+{$\subimpl{`G}{c_1}{T}{U}$}
+{$\subimpl{`G, x : T}{c_2}{V}{W[c_1~x/x]}$}
+{$\subimpl{`G}
+  {\lambda (x, y). (c_1~x, c_2~y)}
+  {\Sigma x : T. V}{\Sigma x : U. W}$}
+{}
 }
 
-\def\SubLeftI{
-  \BAX{SubLeft}
-  {$`G, x : U \typec P : \Prop$}
-  {$\subimpl{`G}{c}{U}{V}$}
-  {$\subimpl{`G}{c `o \pi_1}
-    {\subset{x}{U}{P}}{V}$}
-  {}
+\def\SubLeftI{%
+\BAX{SubLeft}
+{$`G, x : U \typec P : \Prop$}
+{$\subimpl{`G}{c}{U}{V}$}
+{$\subimpl{`G}{c `o \pi_1}
+  {\subset{x}{U}{P}}{V}$}
+{}
 }
     
-\def\SubRightI{
-  \BAX{SubRight}
-  {$`G, x : U \typec P : \Prop$}
-  {$\subimpl{`G}{c}{T}{U}$}
-  {$\subimpl{`G}
-    {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{?(p : P[c~t/x])}}
-    {T}{\subset{x}{U}{P}}$}
-  {}
+\def\SubRightI{%
+\BAX{SubRight}
+{$`G, x : U \typec P : \Prop$}
+{$\subimpl{`G}{c}{T}{U}$}
+{$\subimpl{`G}
+  {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{?(p : P[c~t/x])}}
+  {T}{\subset{x}{U}{P}}$}
+{}
 }
 
 \def\subtiFig{

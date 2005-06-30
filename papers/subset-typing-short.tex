@@ -249,10 +249,19 @@ dans l'environnement \Coq{}.
 
 \subsection{Travaux Connexes}
 
-La preuve de programmes fonctionnels est un domaine de recherche actif
-(cite?), de mê
-Il existe un travail réalisant une partie de nos objectif
-qui a été réalisé dans \Coq{}.
+La preuve de programmes fonctionnels est un domaine de recherche
+actif. L'idée d'étendre les langages \ML{} avec des types dépendants a
+été développée dans \DML \cite{DML}, Cayenne \cite{Cayenne} et . Il
+s'agit toujours de faire un langage dont l'inférence est décidable, donc
+de restreindre les types dépendants à des domaines où l'on peut faire de
+la preuve automatique (\DML) ou bien d'affaiblir la puissance du langage
+pour rendre l'utilisation des types dépendants plus aisée (\Cayenne{}
+n'a pas la récursivité générale par exemple). Nous prenons le
+contre-pied de ces travaux en acceptant de générer des obligations de
+preuve et en essayant de trouver un langage le plus proche de \ML{}
+possible tout en retenant la puissance de \Coq{} et des types dépendants.
+Il existe un travail réalisant une partie de nos objectif qui a été
+réalisé dans \Coq{}.
 \subsubsection{La tactique \Program}
 Développée par Catherine Parent \cite{conf/mpc/Parent95}, 
 la tactique \Program{} permettait de synthétiser des preuves à partir de
@@ -263,13 +272,16 @@ c'est à dire, à partir d'un terme essentiellement calculatoire
 réalisant la spécification donnée. 
 A partir de là, on était assuré que le programme extrait serait
 identique à celui que l'on écrivait pour sa partie informative. Cette
-méthode générale avait l'inconvénient de donner des termes difficiles à
-prouver et n'a pas été maintenue depuis. 
+méthode générale avait l'inconvénient d'etre peu intuitive et de ne pas
+s'intégrer à l'environement \Coq. Liée à l'extraction interne qui
+a disparu dans les dernières versions de \Coq (remplacée par la
+contribution de Pierre Letouzey \cite{LetouzeyPhD}), elle n'est plus 
+maintenue aujourd'hui.
 
 \subsubsection{Types sous-ensemble}
 Plutôt que de continuer dans la meme direction, nous avons 
 cherché à assouplir le système. L'assistant de preuve \PVS{}
-\cite{PVS-Semantics} au capacités similaires à \Coq, intègre un
+\cite{PVS-Semantics} aux capacités similaires à \Coq, intègre un
 mécanisme dénommé \ps{} que nous allons présenter maintenant.
 Tout d'abord une définition:
 \begin{definition}[Type sous-ensemble]
@@ -281,8 +293,8 @@ Les types sous-ensembles sont d'une grande utilité pour la spécification
 de programmes, par exemple pour les pré-conditions:
 $\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat$.
 
-L'idée du \ps implémenté dans PVS
-(\cite{ShankarOwreWADT99,Rushby98TSE}) est de considérer tout objet de
+L'idée du \ps{} implémenté dans \PVS{}
+\cite{ShankarOwreWADT99,Rushby98TSE} est de considérer tout objet de
 type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
 propriété $P$, on génére des ``Type-checking conditions'' (\TCC), c'est
@@ -299,26 +311,29 @@ formellement vérifié \cite{Barras96a}) est mieux qu'un gros
 n'est pas respecté.
  
 Dans notre cas, il faut générer des termes de preuve et donc le code 
-correspondant à ce ``sous-typage''. Une littérature importante existe
+correspondant à ce ``sous-typage''. Une littérature importante
+\cite{conf/popl/Chen03,conf/csl/Luo96} existe
 autour des systèmes à coercions explicites dont nous nous sommes
-inspirés pour réaliser l'engendrement des termes. Dans un système à
+inspirés pour réaliser la génération des termes. Dans un système à
 coercions explicites, on peut faire des abus de notations tels que
 utiliser un objet de type $T$ à la place d'un de type $U$, mais
 on applique une coercion qui amène l'objet vers le type $U$ avant 
 de retyper dans un système sans coercions. Généralement les coercions
 sont très similaires à des idéntités, c'est-à-dire qu'elles sont calculatoirement
 insignifiantes mais leur utilisation facilite le développement. Dans
-\Coq{} par exemple le système de coercions a permis de développer un
-des théories algébriques réutilisables sur plusieurs structures
-instantanément (un théoreme sur les corps pouvant s'appliquer aux
+\Coq{} par exemple le système de coercions \cite{saibi97inheritance} a
+permis de développer des théories algébriques réutilisables sur
+plusieurs structures instantanément (un théoreme sur les corps pouvant s'appliquer aux
 anneaux par exemple).
-\cite{conf/popl/Chen03, saibi97inheritance}
 
 \section{La tactique \Subtac}
 Nous avons développé un langage supportant le \ps{} utilisable dans
 \Coq. L'utilisateur peut définir des programmes dans un langage plus
 souple puis prouver certains buts pour obtenir finalement un terme de
-\CCI{} complet vérifiable par le noyau.
+\CCI{} complet vérifiable par le noyau. L'architecture est la suivante:
+on type le programme dans notre langage, puis l'on réecrit le terme typé
+dans \CCI{} en laissant des ``trous'' dans les termes et enfin \Coq se
+charge de générer les obligations correspondants à ces trous.
 
 \subsection{Langage}
 Le langage que nous voulons est très proche de \ML, plus les annotations
@@ -355,16 +370,16 @@ terme ($`t~`a$).
 La sémantique du langage nous est donnée par un système de typage, qu'on
 formalise par un ensemble de règles d'inférence. Dans notre cas c'est un
 un sous-ensemble des règles de \CCI{} auquel on a ajouté une règle de
-subsumption que l'on trouve classiquement dans les systèmes avec
-sous-typage. Cette règle formalise l'idée que l'on peut utiliser un
-terme de type $T$ à la place d'un terme de type $U$ si $T$ et $U$ sont
-dans une certaine relation. 
+coercion que l'on trouve classiquement dans les systèmes avec
+sous-typage avec le nom de subsumption. Cette règle formalise l'idée que 
+l'on peut utiliser un terme de type $T$ à la place d'un terme de type
+$U$ si $T$ et $U$ sont dans une certaine relation. 
 
 \typenvd
 \vspace{-0.5cm}
 \begin{figure}[thb]
   \begin{center}
-    \subfigure {\Subsum\DP} %[\protect{\irule{Subsum}}]
+    \subfigure {\Coerce\DP} %[\protect{\irule{Subsum}}]
     \quad
     \subfigure{\Conv\DP} %[\protect{\irule{Conv}}]
   \end{center}
@@ -379,43 +394,67 @@ On peut directement intégrer cette relation de $`b$-convertibilité à notre
 système de sous-typage comme montré figure \ref{subtyping-decl-rules}
 (\irule{SubConv}), à la condition que les autres règles la conserve bien. 
 
-Notre système de sous-typage par prédicats permet à l'utilisateur
+Notre système de coercion par prédicats permet à l'utilisateur
 d'utiliser une valeur de type $U$ là où l'on attend une valeur de type
-$\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est un sous-type de $V$.
+$\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-meme coercible en $V$.
 A l'inverse, on permet aussi d'utiliser une valeur de type
 $\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
-$V$ si $U$ est sous-type de $V$. 
+$V$ si $U$ est coercible vers $V$. 
 
-Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire du
-sous-typage dans les types composites. Classiquement \note{pas vrai dans
-  PVS}, la règle pour le 
+Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire des
+coercions dans les types composites. Classiquement, la règle pour le 
 produit fonctionel est contravariante (une fonction sous-type d'une
 autre accepte plus d'entrées mais donne une sortie plus fine, voir
-\name{Castagna} \cite{journals/toplas/Castagna95}) et la règle pour le produit cartésien covariante 
-(une paire est sous-type d'une autre si leurs composantes sont
-sous-types deux-à-deux). La dernière règle formalise la transitivité du
-sous-typage, c'est une règle que l'on veut éliminer mais qui assure que
-l'on a un système compositionel (il y a ici une analogie avec
-l'élimination des coupures dans les systê
+\name{Castagna} \cite{journals/toplas/Castagna95}) et la règle pour le 
+produit cartésien covariante (une paire est coercible en une autre si 
+leurs composantes sont coercibles deux-à-deux). 
 
 \subtdShort
 
+Une première propriété montrée habituellement sur le sous-typage est
+qu'il est transitif, c'est à dire:
+\begin{lemma}[Transitivité de la coercion]
+  Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
+\end{lemma}
+
+Cette règle assure que l'on a un système compositionel. Il y a ici une
+analogie avec l'élimination des coupures dans les systemes logiques, où
+l'on montre que toute dérivation utilisant la règle de modus-ponens ($A "=>" B$ et $B "=>" C$ implique
+$A "=>" C$) peut se réecrire en une dérivation ne l'utilisant
+jamais. Dans les systèmes à sous-typage, on montre de façon équivalente
+que l'on peut éliminer la règle de transitivité ; première étape vers un
+système décidable.
+
 \subsubsection{Elaboration du système algorithmique \& propriétés}
-Pour pouvoir typer des termes, il nous faut un système décidable, ce qui
-n'est déjâ pas le cas pour le sous-typage puisque la règle
-\irule{SubTrans} peut être utilisée à l'infini lorsque l'on cherche à
-montrer qu'il existe une dérivation de n'importe quel but. Ce problème
-est résolu en montrant l'élimination de la transitivité, c'est-à-dire en
-prouvant que toute dérivation utilisant \irule{SubTrans} peut-être
-transformée en une dérivation ne l'utilisant pas. Pour \irule{SubConv},
-on peut n'appliquer le test de conversion que lorsque plus aucune règle
-ne s'applique, puisque les règles conservent la convertibilité.
+Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
+syntaxe. C'est presque le cas pour la coercion, il y a juste la règle
+\irule{SubConv} qu'on peut appliquer à n'importe quel moment. On montre
+le lemme suivant:
+\begin{lemma}[Conservation de la $\beta$-convertibilité]
+  Les règles de coercion conservent la convertibilité.
+\end{lemma}
+
+Cela signifie qu'on peut n'appliquer le test de conversion que lorsque plus aucune règle
+ne s'applique et qu'on conserve ainsi tout les types
+$\beta$-convertibles dans notre relation de coercion.
+
+Il reste l'indéterminisme entre les règles \irule{SubProof} et
+\irule{SubSub}. On peut laisser le choix à l'implémentation puisque
+le système est confluent.
 
 Cependant, il reste une source importante d'indécidabilité dans le
-système de typage, c'est la règle de subsumption. On peut montrer que
-toute dérivation de typage utilisant \irule{Subsum} peut se réecrire en
-une dérivation n'utilisant cette règle qu'à sa racine ou au niveau de la
-prémisse de l'argument de la règle d'application \irule{App}.
+système de typage, c'est la règle de coercion. On peut montrer que:
+\begin{lemma}[Passage de la coercion à l'application]
+  Toute dérivation de typage utilisant \irule{Coerce} peut se réecrire en
+  une dérivation n'utilisant cette règle qu'à sa racine ou au niveau de la
+  prémisse de l'argument de la règle d'application \irule{App}.
+\end{lemma}
+
+On modifie en conséquence la règle d'application et l'on enlève
+\irule{Coerce} du système. On peut ignorer sans-perte de généralité 
+l'utilisation de la coercion à la racine de la dérivation, 
+on fera de toute façon un test de coercion entre le type inféré et le
+type spécifié juste avant la réecriture.
 
 \typenva
 
@@ -424,18 +463,24 @@ prémisse de l'argument de la règle d'application \irule{App}.
 \end{prooftree}
 
 La nouvelle règle d'application est intéressante pour deux raisons.
-Primo, c'est là qu'aura lieu le test de subsumption, qui génerera une
+Primo, c'est là qu'aura lieu le test de coercion, qui génerera une
 coercion explicite dans le système final. Secundo, on est forcés de
 faire une opération supplémentaire pour la fonctionelle que l'on
 applique puisqu'il est possible qu'elle est un type sous-ensemble,
 auquel cas il faut l'``extraire'' pour trouver son type
 fonctionnel (c'est le rôle de la fonction $\mu$).
 
-\subsection{Réecriture vers \Coq}
+\subsection{Génération des obligations de preuve}
 On a maintenant un système de typage décidable et l'on veut désormais
 traduire ses dérivations dans \CCI{}. 
 
-\subsubsection{Définition}
+\subsubsection{Définition de la réecriture vers \Coq}
+La traduction transforme une dérivation dans notre système algorithmique
+vers une dérivation de \CCI{} valide. Le jugement 
+$\timpl{`G}{t}{T}{`G'}{t'}{T'}$ se lit: on transforme le séquent
+$`G \typea t : T$ (système algorithmique) en $`G' \typec t' : T'$
+(\Coq). Le jugement $\subimpl{`G}{c}{T}{U}$ se lit: la coercion de $T$ à
+$U$ est $c$ et $`G \typec c : T "->" U$.
 La traduction est un homomorphisme (elle conserve la structure de la
 dérivation et se rappelle récursivement) excepté pour l'application, ce qui
 est normal puisque nous avons un système très proche de \CCI{}. 
@@ -445,33 +490,55 @@ est normal puisque nous avons un système très proche de \CCI{}.
 \AppI
 \end{prooftree}
 
-Ici la fonction $\muterm$ renvoie à la fois un type (qu'on demande
+Ici la fonction $\mu$ renvoie à la fois un type (qu'on demande
 équivalent à un produit) et une fonction de coercion qui va faire les
 projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
 objets de type sous-ensemble $\subset{x}{T}{P}$ sont codés par un terme 
-dont on peut extraire les parties objet (un certain $t$ de type $T$) et
-preuve (de type $P[t/x]$). Il faut donc faire une projection pour
-atteindre par exemple la fonction d'un objet de type $\subset{f}{\nat
-  "->" \nat}{f~0 \neq 0}$.
+de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
+(un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
+ (de type $P[t/x]$). Il faut donc faire 
+une projection pour atteindre par exemple la fonction d'un objet de type
+ $\subset{f}{\nat "->" \nat}{f~0 \neq 0}$.
 
-Le jugement de sous-typage $U \sub V$ est utilisé pour construire une
-coercion de $U$ à $V$, donc une fonction de type $U "->" V$.
+Le jugement de sous-typage $U \suba V$ nous assure qu'il est possible de
+dériver le jugement $`G' \typec U' \subi V'$ et donc de créer une coercion de $U'$
+à $V'$ soit une fonction de type $U' "->" V'$ dans \CCI.
+On trouve ici l'essence du mécanisme de coercion par prédicats. 
 
-\subtiShort
+\vspace{1.4em}
+\begin{itemize}
+\item[ \SubConvI\DP:] \quad\\
 
-On trouve ici l'essence du mécanisme de sous-typage par prédicats. La
-règle \irule{SubConv} crée une coercion idéntité puisque \CCI{}~a la
-règle de conversion. La règle \irule{SubLeft} engendre une projection,
-c'est le cas où l'on ne s'intéresse pas à la preuve accompagnant
-l'objet. La règle \irule{SubRight} correspond à la génération d'une
-obligation de preuve dans \PVS. On utilise le mécanisme des variables
-existentielles (notées $?:\text{type}$) décrit plus loin pour donner 
-l'information au système qu'il faut completer le terme à un endroit
-donné avec un nouveau terme de type approprié. Il est donc possible 
-de créer des termes ininstantiables. 
-Les règles \irule{SubProd} et \irule{SubSigma} réalisent respectivement
-les coercions pour les produits fonctionnels et cartésiens.
+  Crée une coercion idéntité puisque \CCI{}~a la règle de conversion. 
+  \vspace{1em}
 
+\item[\SubLeftI\DP:] \quad\\
+  
+  Engendre une projection,
+  c'est le cas où l'on ne s'intéresse pas à la preuve accompagnant
+  l'objet. 
+  \vspace{1em}
+
+\item[\SubRightI\DP:] \quad\\
+
+  Correspond à la génération d'une
+  obligation de preuve dans \PVS. On utilise le mécanisme des variables
+  existentielles (notées $?:\text{type}$) décrit plus loin pour donner 
+  l'information au système qu'il faut completer le terme à un endroit
+  donné avec un nouveau terme de type approprié. Il est donc possible 
+  de créer des termes ininstantiables. 
+  \vspace{1em}
+
+\item[\SubProdI\DP,] \quad\\
+  
+
+\item[\SubSigmaI\DP:] \quad\\
+
+  Réalisent respectivement
+  les coercions pour les produits fonctionnels et cartésiens.
+
+\end{itemize}
+  
 \subsubsection{Propriétés}
 On veut montrer que si l'on a une dérivation dans notre système
 algorithmique, alors son image par la réecriture est une dérivation
@@ -483,7 +550,7 @@ réecriture avant de commencer cette dernière preuve.
 Nous avons développé la tactique \Subtac{} disponible dans la version
 \CVS{} courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
 créer un programme, le typer et générer un terme incomplet
-correspondant. 
+correspondant (voir \ref{annexe:subtac-example}). 
 
 \subsubsection{Existentielles}
 La génération des buts correspondants aux variables existentielles et la
@@ -498,7 +565,7 @@ résoudre ces problèmes de façon satisfaisante dans le futur.
 Lorsque l'on développe un programme récursif dans un système tel que
 \Coq, on est forcé de fournir une preuve de terminaison de son
 algorithme. Pour cela, on montre généralement qu'on a un ordre bien
-fondé sur le type de l'argument de récusion et que chaque appel respecte
+fondé sur le type de l'argument de récursion et que chaque appel respecte
 cet ordre. Nous avons ajouté des facilités d'écriture de fonctions
 récursives à notre langage ; on ajoute les existentielles
 correspondant aux preuves que l'ordre est bien fondé ou qu'il est bien

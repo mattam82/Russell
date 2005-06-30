@@ -86,7 +86,8 @@
 \def\SumDepRule{Sum-Dep}
 \def\SubsetRule{Subset}
 \def\LetSubRule{Let-Sub}
-\def\SubsumRule{Subsumption}
+\def\SubsumRule{Coerce}
+\def\CoerceRule{Coerce}
 \def\ConvRule{Conv}
 
 \def\SubReflRule{Sub-Refl}
@@ -139,10 +140,10 @@
 \fi\ifstreq{#1}{SumInf}\SumInfRule
 \fi\ifstreq{#1}{SumDep}\SumDepRule
 \fi\ifstreq{#1}{LetSub}\LetSubRule
-\fi\ifstreq{#1}{Subsum}\SubsumRule
+\fi\ifstreq{#1}{Subsum}\CoerceRule
+\fi\ifstreq{#1}{Coerce}\CoerceRule
 \fi\ifstreq{#1}{Conv}\ConvRule
 \fi\ifstreq{#1}{Subset}\SubsetRule
-
 \fi\ifstreq{#1}{SubRefl}\SubReflRule
 \fi\ifstreq{#1}{SubTrans}\SubTransRule
 \fi\ifstreq{#1}{SubConv}\SubConvRule
