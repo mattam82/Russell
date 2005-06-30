@@ -57,7 +57,7 @@
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}
 %\newcommand{\Set}{\ensuremath{\text{\texttt{Set}}}}
 
-\def\thetitle{Sous-typage par prédicats en \Coq}
+\def\thetitle{Coercion par prédicats en \Coq}
 
 \pagestyle{plain}
 \fancyhead[RO,L]{\thetitle}
@@ -65,7 +65,7 @@
 
 \title{\thetitle}
 
-\author{Matthieu Sozeau}
+\author{Matthieu Sozeau \\ sous la direction de Chistrine Paulin}
 
 \date{\today}
 
@@ -87,11 +87,13 @@
   preuve.
 \end{abstract}
 
-\section*{Introduction}
+\tableofcontents
+
+\section{Introduction}
 
 Nous souhaitons intégrer un langage de programmation ...
 
-\subsection*{Présentation de \Coq}
+\subsection{Présentation de \Coq}
 
 \Coq~est un assistant de preuve dont la première version date de 1985,
 et qui est aujourd'hui développé dans le projet \LogiCal{} (INRIA, LIX,
@@ -139,7 +141,7 @@ permettent du point de vue des preuves et des programmes.
   
 % (PVS, ...)
 
-\subsubsection*{Preuve}
+\subsubsection{Preuve}
 \Coq{} est utilisé le plus souvent pour élaborer des théories
 mathématiques prouvées mécaniquement. Dans cette optique, l'utilisateur 
 modélise un problème par des structures mathématiques et veut prouver
@@ -162,7 +164,7 @@ sous-jacent.
 
 % => Développements mathématiques (logiques).
 
-\subsubsection*{Programmes}
+\subsubsection{Programmes}
 Les tactiques utilisées pour créer des preuves ne sont en fait qu'une
 sorte de sucre au-dessus du noyau de \Coq{} qui se réduit à un typeur
 pour \CCI. A la fin d'une preuve, on a en effet construit un terme 
@@ -188,7 +190,7 @@ sommes dans une logique constructive.
 % => Permet de développer des programmes. Développement informatiques
 % (calculatoires)
 
-\subsection*{Motivation}
+\subsection{Motivation}
 
 \Coq{} permet de développer des programmes complexes,
 de leur donner des spécifications fortes et de les vérifier
@@ -196,7 +198,7 @@ automatiquement. On peut même extraire de ces dévelopemments des
 programmes corrects par construction. Il y a cependant certaines
 difficultés à développer en \Coq{} que nous allons étudier maintenant.
 
-\subsubsection*{Un langage trop expressif?} 
+\subsubsection{Un langage trop expressif?} 
 \def\Definition{\text{Definition}}
 \def\sref#1{\text{#1}}
 
@@ -221,7 +223,7 @@ terme de preuve. Certaines techniques de réecriture peuvent aussi
 générer des termes de complexité algorithmique bien moins optimale que
 ce que l'utilisateur écrirait. 
 
-\subsubsection*{Mélange logique et calcul}
+\subsubsection{Mélange logique et calcul}
 Une difficulté essentielle lorsque l'on veut permettre à des
 utilisateurs non experts de développer dans \Coq{} est le ``mélange
 des genres'' permanant entre logique et calcul. Pour appliquer une
@@ -231,7 +233,7 @@ preuve de sa non-nullité. Lorsque l'on a l'habitude de programmer, ça
 n'est pas la chose la plus naturelle et l'on aimerait pouvoir découpler
 les parties codages et preuve pour simplement diviser le problème.
 
-\subsubsection*{Objectif}
+\subsubsection{Objectif}
 A long terme, on souhaite permettre à un utilisateur de programmer dans
 un langage proche de \ML{} et de prouver ses programmes dans un deuxième
 temps à l'aide de \Coq{}. Une fois les preuves terminées, on peut
@@ -243,19 +245,19 @@ extraire un programme correct par construction et essentielement
 
 % - Utilisation académique et real-world.
 
-% \subsubsection*{Difficultés}
+% \subsubsection{Difficultés}
 
 % - Besoin d'expertise pour dev des programmes:
 %   - Verbosité
 %   - Mélange logique et calcul
 
-\subsection*{Travaux Connexes}
+\subsection{Travaux Connexes}
 
 La preuve de programmes fonctionnels est un domaine de recherche actif
 (cite?), de mê
 Il existe un travail réalisant une partie de nos objectif
 qui a été réalisé dans \Coq{}.
-\subsubsection*{La tactique \Program}
+\subsubsection{La tactique \Program}
 Développée par Catherine Parent \cite{conf/mpc/Parent95}, 
 la tactique \Program{} permettait de synthétiser des preuves à partir de
 programmes. L'idée était de trouver un langage de programmation
@@ -268,7 +270,7 @@ identique à celui que l'on écrivait pour sa partie informative. Cette
 méthode générale avait l'inconvénient de donner des termes difficiles à
 prouver et n'a pas été maintenue depuis. 
 
-\subsubsection*{Types sous-ensemble}
+\subsubsection{Types sous-ensemble}
 Plutôt que de continuer dans la meme direction, nous avons 
 cherché à assouplir le système. L'assistant de preuve \PVS{}
 \cite{PVS-Semantics} au capacités similaires à \Coq, intègre un
@@ -291,7 +293,7 @@ propriété $P$, on génére des ``Type-checking conditions'' (\TCC), c'est
 à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer
 que le programme est correct.
 
-\subsubsection*{Coercions}
+\subsubsection{Coercions}
 \PVS{} n'a pas la même architecture que \Coq{}, en particulier il n'y a
 pas de termes de preuve et de noyau pour vérifier ces termes. Il faut
 donc faire confiance à la quasi-totalité du code pour croire en la
@@ -316,17 +318,17 @@ instantanément (un théoreme sur les corps pouvant s'appliquer aux
 anneaux par exemple).
 \cite{conf/popl/Chen03, saibi97inheritance}
 
-\section*{La tactique \Subtac}
+\section{La tactique \Subtac}
 Nous avons développé un langage supportant le \ps{} utilisable dans
 \Coq. L'utilisateur peut définir des programmes dans un langage plus
 souple puis prouver certains buts pour obtenir finalement un terme de
 \CCI{} complet vérifiable par le noyau.
 
-\subsection*{Langage}
+\subsection{Langage}
 Le langage que nous voulons est très proche de \ML, plus les annotations
 nécessaires pour avoir un typage précis et décidable.
 
-\subsubsection*{Syntaxe}
+\subsubsection{Syntaxe}
 La syntaxe (figure \ref{fig:syntax}) est directement inspirée des langages fonctionnels.
 On part du \lc{} (variables, abstraction et application) puis l'on
 ajoute des constantes (pour les entiers, booléens, etc...) ainsi que les
@@ -353,7 +355,7 @@ terme ($`t~`a$).
 \end{figure}
 \vspace{-1cm}
 
-\subsubsection*{Sémantique}
+\subsubsection{Sémantique}
 La sémantique du langage nous est donnée par un système de typage, qu'on
 formalise par un ensemble de règles d'inférence. Dans notre cas c'est un
 un sous-ensemble des règles de \CCI{} auquel on a ajouté une règle de
@@ -402,7 +404,7 @@ l'élimination des coupures dans les systê
 
 \subtdShort
 
-\subsubsection*{Elaboration du système algorithmique \& Propriétés}
+\subsubsection{Elaboration du système algorithmique \& propriétés}
 Pour pouvoir typer des termes, il nous faut un système décidable, ce qui
 n'est déjâ pas le cas pour le sous-typage puisque la règle
 \irule{SubTrans} peut être utilisée à l'infini lorsque l'on cherche à
@@ -433,11 +435,11 @@ applique puisqu'il est possible qu'elle est un type sous-ensemble,
 auquel cas il faut l'``extraire'' pour trouver son type
 fonctionnel (c'est le rôle de la fonction $\mu$).
 
-\subsection*{Réécriture vers \Coq}
+\subsection{Réecriture vers \Coq}
 On a maintenant un système de typage décidable et l'on veut désormais
 traduire ses dérivations dans \CCI{}. 
 
-\subsubsection*{Définition}
+\subsubsection{Définition}
 La traduction est un homomorphisme (elle conserve la structure de la
 dérivation et se rappelle récursivement) excepté pour l'application, ce qui
 est normal puisque nous avons un système très proche de \CCI{}. 
@@ -474,20 +476,20 @@ de créer des termes ininstantiables.
 Les règles \irule{SubProd} et \irule{SubSigma} réalisent respectivement
 les coercions pour les produits fonctionnels et cartésiens.
 
-\subsubsection*{Propriétés}
+\subsubsection{Propriétés}
 On veut montrer que si l'on a une dérivation dans notre système
 algorithmique, alors son image par la réecriture est une dérivation
 valide de \CCI. Ce travail est en cours à ce jour, nous nous sommes
 plutôt penchés sur l'implémentation du typeur et de la fonction de
 réecriture avant de commencer cette dernière preuve.
 
-\subsection*{Implémentation}
+\subsection{Implémentation}
 Nous avons développé la tactique \Subtac{} disponible dans la version
 \CVS{} courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
 créer un programme, le typer et générer un terme incomplet
 correspondant. 
 
-\subsubsection*{Existentielles}
+\subsubsection{Existentielles}
 La génération des buts correspondants aux variables existentielles et la
 formation du terme final sont laissées à la tactique \Refine~et au
 système de gestion des existentielles de \Coq. Certaines limitations 
@@ -496,7 +498,7 @@ des termes ``à trous'') devront être dépassées pour obtenir
 une contribution totalement fonctionnelle. On peut cependant espérer
 résoudre ces problèmes de façon satisfaisante dans le futur.
 
-\subsubsection*{Traitement de la récursion}
+\subsubsection{Traitement de la récursion}
 Lorsque l'on développe un programme récursif dans un système tel que
 \Coq, on est forcé de fournir une preuve de terminaison de son
 algorithme. Pour cela, on montre généralement qu'on a un ordre bien
@@ -507,12 +509,10 @@ correspondant aux preuves que l'ordre est bien fondé ou qu'il est bien
 respecté aux termes. Ainsi lors du raffinement on obtient naturellement
 les buts correspondants à prouver.
 
-\section*{Conclusion}
+\section{Conclusion}
 
-
-
-\bibliographystyle{mybib}
-\bibliography{../bib/bib-joehurd,../bib/barras.bib,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent.bib}
+\bibliographystyle{plain}
+\bibliography{../bib/bib-joehurd,../bib/barras,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent.bib}
 
 \renewcommand{\thefootnote}{}
 \footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
