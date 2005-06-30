@@ -88,8 +88,10 @@
   qui permet de découpler les parties codage et preuve.
 \end{abstract}
 
+
 \tableofcontents
 
+\newpage
 \section{Introduction}
 
 Nous nous plaçons dans le cadre du système d'aide à la preuve \Coq{},
@@ -133,7 +135,6 @@ tactiques qui simulent un raisonnement déductif pour l'utilisateur.
 Celles-ci permettent par exemple d'introduire une hypothèse: pour le but
 $A "=>" A$ on peut introduire l'hypothèse $H : A$ ; ou bien d'en appliquer une: en
 appliquant l'hypothèse $H$ on prouve le but directement.
-% Figure ?
 Ces tactiques peuvent être d'une complexité arbitraire mais nous avons
 l'assurance de la correction d'une preuve par des propriétés du langage
 sous-jacent.
@@ -206,16 +207,16 @@ et donc de spécifier les programmes aussi fortement que l'on désire,
 mais aussi de façon concise.
 En revanche, le terme de preuve correspondant à \sref{qsort} est 
 nettement plus long, et ne peut simplement pas être écrit d'une traite 
-sans une expertise approfondie (voir \TODO{Annexe}?). Pour remédier à ce
+sans une expertise approfondie (voir \ref{fig:qsort-term}). Pour remédier à ce
 problème, on utilise des tactiques qui permettent d'écrire la preuve/programme
-incrémentalement (\TODO{script de preuve}). L'inconvénient de cette
+incrémentalement (figure \ref{fig:qsort-script}. L'inconvénient de cette
 méthode est que l'on obtient pas toujours le programme désiré
 au départ, puisque les tactiques cachent profondément leur effet sur le
 terme de preuve. Certaines techniques de réecriture peuvent aussi
 générer des termes de complexité algorithmique bien moins optimale que
 ce que l'utilisateur écrirait. Cependant ce mode de fonctionement est
 utile et utilisé par la majorité des utilisateurs de \Coq{} avec succès
-(certification d'un compilateur {\sc \C}, théoreme des quatres couleurs
+(certification d'un compilateur \C, théoreme des quatres couleurs
 \cite{Gonthier4col}, \ldots).
 
 \subsubsection{Mélange logique et calcul}
@@ -251,10 +252,11 @@ dans l'environnement \Coq{}.
 
 La preuve de programmes fonctionnels est un domaine de recherche
 actif. L'idée d'étendre les langages \ML{} avec des types dépendants a
-été développée dans \DML \cite{DML}, Cayenne \cite{Cayenne} et . Il
+été développée dans \DML{} \cite{XiPfenning1999DTP}, \Cayenne{}
+\cite{Augustsson99} et \TODO{???}. Il
 s'agit toujours de faire un langage dont l'inférence est décidable, donc
 de restreindre les types dépendants à des domaines où l'on peut faire de
-la preuve automatique (\DML) ou bien d'affaiblir la puissance du langage
+la preuve automatique (\DML{}) ou bien d'affaiblir la puissance du langage
 pour rendre l'utilisation des types dépendants plus aisée (\Cayenne{}
 n'a pas la récursivité générale par exemple). Nous prenons le
 contre-pied de ces travaux en acceptant de générer des obligations de
@@ -262,6 +264,7 @@ preuve et en essayant de trouver un langage le plus proche de \ML{}
 possible tout en retenant la puissance de \Coq{} et des types dépendants.
 Il existe un travail réalisant une partie de nos objectif qui a été
 réalisé dans \Coq{}.
+
 \subsubsection{La tactique \Program}
 Développée par Catherine Parent \cite{conf/mpc/Parent95}, 
 la tactique \Program{} permettait de synthétiser des preuves à partir de
@@ -274,14 +277,14 @@ A partir de là, on était assuré que le programme extrait serait
 identique à celui que l'on écrivait pour sa partie informative. Cette
 méthode générale avait l'inconvénient d'etre peu intuitive et de ne pas
 s'intégrer à l'environement \Coq. Liée à l'extraction interne qui
-a disparu dans les dernières versions de \Coq (remplacée par la
+a disparu dans les dernières versions de \Coq{} (remplacée par la
 contribution de Pierre Letouzey \cite{LetouzeyPhD}), elle n'est plus 
 maintenue aujourd'hui.
 
 \subsubsection{Types sous-ensemble}
 Plutôt que de continuer dans la meme direction, nous avons 
 cherché à assouplir le système. L'assistant de preuve \PVS{}
-\cite{PVS-Semantics} aux capacités similaires à \Coq, intègre un
+\cite{PVS-Semantics} aux capacités similaires à \Coq{}, intègre un
 mécanisme dénommé \ps{} que nous allons présenter maintenant.
 Tout d'abord une définition:
 \begin{definition}[Type sous-ensemble]
@@ -294,7 +297,7 @@ de programmes, par exemple pour les pré-conditions:
 $\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat$.
 
 L'idée du \ps{} implémenté dans \PVS{}
-\cite{ShankarOwreWADT99,Rushby98TSE} est de considérer tout objet de
+\cite{ShankarOwreWADT99} est de considérer tout objet de
 type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
 propriété $P$, on génére des ``Type-checking conditions'' (\TCC), c'est
@@ -332,7 +335,7 @@ Nous avons développé un langage supportant le \ps{} utilisable dans
 souple puis prouver certains buts pour obtenir finalement un terme de
 \CCI{} complet vérifiable par le noyau. L'architecture est la suivante:
 on type le programme dans notre langage, puis l'on réecrit le terme typé
-dans \CCI{} en laissant des ``trous'' dans les termes et enfin \Coq se
+dans \CCI{} en laissant des ``trous'' dans les termes et enfin \Coq{} se
 charge de générer les obligations correspondants à ces trous.
 
 \subsection{Langage}
@@ -357,12 +360,13 @@ terme ($`t~`a$).
 %impossible d'inférer le type $`t$ désiré car il peut dépendre de
 %$`a$. Par exemple $(x \Coloneq 1, f x)$
 \vspace{-0.5cm}
-\begin{figure}[thb]
+\begin{figure}[th]
   \begin{center}
     \subfigure[Termes]{\termgrammar}\quad
     \subfigure[Types]{\typegrammarOrig}
   \end{center}
   \label{fig:syntax}
+  \caption{Syntaxe}
 \end{figure}
 \vspace{-1cm}
 
@@ -376,7 +380,7 @@ l'on peut utiliser un terme de type $T$ à la place d'un terme de type
 $U$ si $T$ et $U$ sont dans une certaine relation. 
 
 \typenvd
-\vspace{-0.5cm}
+%\vspace{-0.5cm}
 \begin{figure}[thb]
   \begin{center}
     \subfigure {\Coerce\DP} %[\protect{\irule{Subsum}}]
@@ -384,7 +388,7 @@ $U$ si $T$ et $U$ sont dans une certaine relation.
     \subfigure{\Conv\DP} %[\protect{\irule{Conv}}]
   \end{center}
 \end{figure}
-\vspace{-1cm}
+%\vspace{-1cm}
 
 \CCI{} contient une règle de typage
 similaire, la conversion, qui dit essentiellement que deux types
@@ -550,7 +554,7 @@ réecriture avant de commencer cette dernière preuve.
 Nous avons développé la tactique \Subtac{} disponible dans la version
 \CVS{} courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
 créer un programme, le typer et générer un terme incomplet
-correspondant (voir \ref{annexe:subtac-example}). 
+correspondant (voir \ref{fig:subtac-example}). 
 
 \subsubsection{Existentielles}
 La génération des buts correspondants aux variables existentielles et la
@@ -576,6 +580,28 @@ les buts correspondants à prouver.
 
 \bibliographystyle{plain}
 \bibliography{../bib/bib-joehurd,../bib/barras,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent.bib}
+
+\appendix
+\section{Quicksort en \Coq}
+
+\begin{figure}[h]
+  blabla
+  \label{fig:qsort-script}
+  \caption{Script de preuve de ``quicksort''}
+\end{figure}
+
+\begin{figure}[h]
+  blabla
+  \label{fig:qsort-term}
+  \caption{Terme de preuve de ``quicksort''}
+\end{figure}
+
+\section{\Subtac}
+\begin{figure}[h]
+  blabla
+  \label{fig:subtac-example}
+  \caption{Exemple d'utilisation de subtac}
+\end{figure}
 
 \renewcommand{\thefootnote}{}
 \footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
