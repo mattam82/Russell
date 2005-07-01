@@ -488,7 +488,13 @@ $`G \typea t : T$ (système algorithmique) en $`G' \typec t' : T'$
 $U$ est $c$ et $`G \typec c : T "->" U$.
 La traduction est un homomorphisme (elle conserve la structure de la
 dérivation et se rappelle récursivement) excepté pour l'application, ce qui
-est normal puisque nous avons un système très proche de \CCI{}. 
+est normal puisque nous avons un système très proche de \CCI{}. Le fait
+de traduire aussi les environnements $\Gamma$ est dû au fait que nous
+faisons le sous-typage dans les types, donc les environnements (listes
+de couples $(\text{nom}, \text{type})$) doivent aussi être réecrits. Cela assure aussi la
+cohérence avec l'environnement général de \Coq, c'est à dire
+l'intégration transparente de notre tactique dans les développements
+\Coq~et la réutilisabilité des programmes générés.
 
 \typenvi
 \begin{prooftree}
@@ -578,6 +584,17 @@ respecté aux termes. Ainsi lors du raffinement on obtient naturellement
 les buts correspondants à prouver.
 
 \section{Conclusion}
+Nous avons développé un langage de programmation plus souple que le
+langage de \Coq{} mais conservant sa richesse expressive (types
+dépendants) et permettant de séparer les développements algorithmiques et
+logiques de l'utilisateur. La correction des termes engendrés est
+garantie par le système sous-jacent qui offre ensuite la possibilité
+d'extraire un programme correct par construction dans un langage de type
+\ML. D'autre part, cette méthode s'intègre bien dans l'environnement
+\Coq{} et ouvre la voie à la réalisation de travaux plus complexes par
+des utilisateurs non-experts. Cela constitue la première étape vers un
+environnement de programmation sûre utilisable dans \Coq.
+
 
 \bibliographystyle{plain}
 \bibliography{../bib/bib-joehurd,../bib/barras,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent}
