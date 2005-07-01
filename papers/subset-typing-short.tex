@@ -118,7 +118,7 @@ associée à un \lc{} particulier. Dans \Coq{}, on utilise cet
 isomorphisme pour vérifier les preuves. Le noyau est simplement un
 typeur pour \CCI{}. Si on peut typer un terme $t$ de type $T$, alors on est
 assuré d'avoir trouvé une preuve constructive $t$ de la formule $T$.
-Cette dualité ce reflète aussi à l'utilisation de \Coq{} où l'on a 
+Cette dualité se reflète aussi à l'utilisation de \Coq{} où l'on a 
 les deux visions: logique (développement mathématique, preuve) et 
 calcul (développement informatique, programme).
 
@@ -126,7 +126,7 @@ calcul (développement informatique, programme).
 \Coq{} est utilisé le plus souvent pour élaborer des théories
 mathématiques prouvées mécaniquement. Dans cette optique, l'utilisateur 
 modélise un problème par des structures mathématiques et veut prouver
-certaines propriétés sur ce modèle (par exemple la preuve du théorême
+certaines propriétés sur ce modèle (par exemple la preuve du théorème
 des quatres couleurs récemment terminée \cite{Gonthier4col} utilisait 
 des résultats de géométrie algébrique).
 
@@ -134,9 +134,9 @@ Pour prouver un but sous certaines hypothèses, on utilise des
 tactiques qui simulent un raisonnement déductif pour l'utilisateur.
 Celles-ci permettent par exemple d'introduire une hypothèse: pour le but
 $A "=>" A$ on peut introduire l'hypothèse $H : A$ pour obtenir le but
-$A$ ; ou bien d'en appliquer une (ou tout autre résultat déjâ établi): 
+$A$ ; ou bien d'en appliquer une (ou tout autre résultat déjà établi): 
 en appliquant l'hypothèse $H$ on prouve le but directement. 
-Ces tactiques peuvent être d'une complexité arbitraire (réecritures,
+Ces tactiques peuvent être d'une complexité arbitraire (réécritures,
 procédures de décision pour l'arithmétique, etc \ldots).
 
 Les tactiques utilisées pour créer des preuves ne sont en fait qu'une
@@ -180,7 +180,7 @@ parties logiques et en ne conservant que la partie calculatoire d'un terme.
 
 \Coq{} permet de développer des programmes complexes,
 de leur donner des spécifications fortes et de les vérifier
-automatiquement. On peut même extraire de ces dévelopemments des
+automatiquement. On peut même extraire de ces développements des
 programmes corrects par construction. Il y a cependant certaines
 difficultés à développer en \Coq{} que nous allons étudier maintenant.
 
@@ -204,11 +204,11 @@ incrémentalement (voir figure \ref{fig:euclid-script}
 page \pageref{fig:euclid-script}). L'inconvénient de cette
 méthode est que l'on n'obtient pas toujours le programme désiré
 au départ, puisque les tactiques cachent profondément leur effet sur le
-terme de preuve. Certaines techniques de réecriture peuvent aussi
+terme de preuve. Certaines techniques de réécriture peuvent aussi
 générer des termes de complexité algorithmique bien moins optimale que
-ce que l'utilisateur écrirait. Cependant ce mode de fonctionement est
+ce que l'utilisateur écrirait. Cependant ce mode de fonctionnement est
 utile et utilisé par la majorité des utilisateurs de \Coq{} avec succès
-(certification d'un compilateur \C, théorême des quatres couleurs
+(certification d'un compilateur \C, théorème des quatres couleurs
 \cite{Gonthier4col}, \ldots).
 
 \subsubsection{Mélange logique et calcul}
@@ -219,10 +219,9 @@ fonction division qui attend un dénominateur différent de $0$ par
 exemple, il faut passer à la fois l'argument lui même, mais aussi une
 preuve de sa non-nullité. Lorsque l'on a l'habitude de programmer, ça
 n'est pas la chose la plus naturelle et l'on aimerait pouvoir découpler
-les parties codages et preuve pour simplement diviser le problème. Les
+les parties codage et preuve pour simplement diviser le problème. Les
 parties logiques pourront souvent être résolues automatiquement par des
-\TODO{tactiques?}.
-
+tactiques.
 
 \subsubsection{Objectif}
 A long terme, on souhaite permettre à un utilisateur de programmer dans
@@ -231,17 +230,6 @@ temps à l'aide de \Coq{} et ses tactiques. Une fois les preuves
 terminées, on peut extraire un programme correct par construction et
 essentiellement équivalent à celui de départ ou le réutiliser facilement
 dans l'environnement \Coq{}.
-
-% - Features
-% - Extraction..
-
-% - Utilisation académique et real-world.
-
-% \subsubsection{Difficultés}
-
-% - Besoin d'expertise pour dev des programmes:
-%   - Verbosité
-%   - Mélange logique et calcul
 
 \subsection{Travaux Connexes}
 
@@ -266,19 +254,19 @@ Il existe un travail réalisé dans \Coq{} couvrant une partie de nos objectifs.
 Développée par Catherine Parent \cite{conf/mpc/Parent95}, 
 la tactique \Program{} permettait de synthétiser des preuves à partir de
 programmes. L'idée était de trouver un langage de programmation
-suffisament restrictif pour réaliser une inversion de l'extraction, 
-c'est à dire, à partir d'un terme essentiellement calculatoire
+suffisamment restrictif pour réaliser une inversion de l'extraction, 
+c'est-à-dire, à partir d'un terme essentiellement calculatoire
 (des annotations étaient nécessaires), retrouver un terme de preuve
 réalisant la spécification donnée. 
 A partir de là, on était assuré que le programme extrait serait
 identique à celui que l'on écrivait pour sa partie informative. Cette
 méthode générale avait l'inconvénient d'être peu intuitive et de ne pas
-s'intégrer à l'environement \Coq. Liée à l'extraction interne qui
+s'intégrer à l'environnement \Coq. Liée à l'extraction interne qui
 a disparu dans les dernières versions de \Coq{} (remplacée par la
 contribution de Pierre Letouzey \cite{LetouzeyPhD}), elle n'est plus 
 maintenue aujourd'hui.
 
-\subsubsection{Types ``subset''}
+\subsubsection{Types sous-ensemble}
 Plutôt que de continuer dans la même direction, nous avons 
 cherché à assouplir le système. L'assistant de preuve \PVS{}
 \cite{PVS-Semantics} aux capacités similaires à \Coq{}, intègre un
@@ -297,7 +285,7 @@ L'idée du \ps{} implémenté dans \PVS{}
 \cite{ShankarOwreWADT99} est de considérer tout objet de
 type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
-propriété $P$, on génére des ``Type-checking conditions'' (\TCC), c'est
+propriété $P$, on génère des ``Type-checking conditions'' (\TCC), c'est
 à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer
 que le programme est correct.
 
@@ -323,7 +311,7 @@ sont très similaires à des identités, c'est-à-dire qu'elles sont calculatoiremen
 insignifiantes mais leur utilisation facilite le développement. Dans
 \Coq{} par exemple le système de coercions \cite{saibi97inheritance} a
 permis de développer des théories algébriques réutilisables sur
-plusieurs structures instantanément (un théorême sur les corps pouvant s'appliquer aux
+plusieurs structures instantanément (un théorème sur les corps pouvant s'appliquer aux
 anneaux par exemple).
 
 \section{Le calcul de coercion par prédicats}
@@ -333,7 +321,7 @@ souple puis prouver certains buts pour obtenir finalement un terme de
 \CCI{} complet vérifiable par le noyau. On peut finalement utiliser les types dépendants comme des types
 simples et s'en occuper dans un deuxième temps (pour la preuve).
 L'architecture est la suivante:
-on type le programme dans notre langage, puis l'on réecrit le terme typé
+on type le programme dans notre langage, puis l'on réécrit le terme typé
 dans \CCI{} en laissant des ``trous'' dans les termes et enfin \Coq{} se
 charge de générer les obligations correspondant à ces trous.
 
@@ -401,7 +389,7 @@ similaire, la conversion (\irule{Conv}), qui dit essentiellement que deux types
 $`b$-convertibles (on rappelle que l'on peut calculer dans les types
 puisqu'on a l'abstraction, l'application, etc...) sont équivalents.
 On peut directement intégrer cette relation de $`b$-convertibilité à notre
-système de sous-typage comme montré figure \ref{subtyping-decl-rules}
+système de coercion comme montré figure \ref{subtyping-decl-rules}
 (\irule{SubConv}), à la condition d'avoir l'inclusion
 $`=_\beta~\subseteq~\subd + \text{\irule{SubConv}}$.
 
@@ -423,54 +411,47 @@ leurs composantes sont coercibles deux-à-deux).
 \subtdShort
 
 Une première propriété montrée habituellement sur le sous-typage est
-qu'il est transitif, c'est à dire:
+qu'il est transitif, c'est-à-dire:
 \begin{lemma}[Transitivité de la coercion]
   Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
 \end{lemma}
 
 Cette règle assure que l'on a un système compositionel. Il y a ici une
-analogie avec l'élimination des coupures dans les systemes logiques, où
+analogie avec l'élimination des coupures dans les systèmes logiques, où
 l'on montre que toute dérivation utilisant la règle de modus-ponens ($A "=>" B$ et $B "=>" C$ implique
 $A "=>" C$) peut se réécrire en une dérivation ne l'utilisant
 jamais. Dans les systèmes à sous-typage, on montre de façon équivalente
 que l'on peut éliminer la règle de transitivité ; première étape vers un
 système décidable.
 
-\subsubsection{Elaboration du système algorithmique \& propriétés}
+\subsubsection{Élaboration du système algorithmique \& propriétés}
 Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
 syntaxe. 
 C'est presque le cas pour la coercion, il y a juste la règle
-\irule{SubConv} qu'on peut appliquer à n'importe quel moment. On montre
-le lemme suivant:
-(les jugements $\typea$ et $\suba$ ont la même sémantique que
-dans le système déclaratif)
+\irule{SubConv} qu'on peut appliquer à n'importe quel moment. 
+On note $\suba$ le même système que figure \ref{subtyping-decl-rules} mais
+où l'on n'applique \irule{SubConv} seulement si aucune autre règle ne
+s'applique.
+On montre le lemme suivant:
 \begin{lemma}[Stabilité modulo $\beta$]
-  Pour tout $U$, $V$, $U `=_{\beta} V "=>" U \suba V$ dérivable en
-  n'appliquant \irule{SubConv} que lorsqu'aucune règle ne s'applique.
+  Pour tout $U$, $V$, $U `=_{\beta} V$ alors $U \suba V$ est dérivable.
 \end{lemma}
 
-Cela signifie qu'on peut n'appliquer \irule{SubConv} que lorsque
-plus aucune autre règle ne s'applique sans restreindre la conversion.
+En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
+d'inférence de $\suba$ donne donc un algorithme pour décider de la relation
+de coercion. L'indéterminisme entre les règles \irule{SubProof} et
+\irule{SubSub} ne pose pas de problème: on peut laisser le choix à 
+l'implémentation puisque le système est confluent.
 
-Il reste l'indéterminisme entre les règles \irule{SubProof} et
-\irule{SubSub}. On peut laisser le choix à l'implémentation puisque
-le système est confluent.
 
 Cependant, il reste une source importante d'indécidabilité dans le
 système de typage, c'est la règle de coercion. On peut montrer que
 toute dérivation de typage utilisant \irule{Coerce} peut se réécrire en
 une dérivation n'utilisant cette règle qu'à sa racine ou au niveau de la
 prémisse de l'argument de la règle d'application \irule{App}.
-On modifie en conséquence la règle d'application et l'on enlève
-\irule{Coerce} du système. On peut ignorer sans perte de généralité 
-l'utilisation de la coercion à la racine de la dérivation, 
-on fera de toute façon un test de coercion entre le type inféré et le
-type spécifié juste avant la réecriture.
-
-On a la propriété suivante entre les deux systèmes:
-\begin{lemma}[Equivalence des systèmes déclaratifs et algorithmiques]
-  $`G \typed t : T$ \ssi{} $`G \typea t : U$ et $U \subta T$.
-\end{lemma}
+On enlève \irule{Coerce} du système et on remplace la règle 
+d'application \irule{App} de la figure \ref{fig:typing-decl} par la
+règle suivante. On note $\typea$ le système de typage obtenu.
 
 \typenva
 
@@ -478,22 +459,36 @@ On a la propriété suivante entre les deux systèmes:
 \AppA
 \end{prooftree}
 
+On peut ignorer sans perte de généralité 
+l'utilisation de la coercion à la racine de la dérivation, 
+on fera de toute façon un test de coercion entre le type inféré et le
+type spécifié juste avant la réécriture.
+
+On a la propriété suivante entre les deux systèmes:
+\begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
+  $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \suba T$.
+\end{lemma}
+
 Ici $`=$ est l'équivalence syntaxique.
 La nouvelle règle d'application est intéressante pour deux raisons.
-Primo, c'est là qu'aura lieu le test de coercion, qui génerera une
-coercion explicite dans le système final. Secundo, on est forcés de
-faire une opération supplémentaire pour la fonctionelle que l'on
+Primo, c'est là qu'aura lieu le test de coercion, qui générera une
+coercion explicite dans le système final. Secundo, on est forcé de
+faire une opération supplémentaire pour la fonctionnelle que l'on
 applique puisqu'il est possible qu'elle ait un type sous-ensemble,
-auquel cas il faut l'``extraire'' pour trouver son type
+auquel cas il faut effacer les types sous-ensemble pour trouver son type
 fonctionnel (c'est le rôle de la fonction $\mu$, qui fait une mise en
 forme normale de tête en effaçant les types sous-ensemble qu'elle
 rencontre).
+
+\begin{lemma}[Décidabilité de $\typea$]
+  La relation de typage $`G \typea t : T$ est décidable.
+\end{lemma}
 
 \subsection{Génération des obligations de preuve}
 On a maintenant un système de typage décidable et l'on veut désormais
 traduire ses dérivations dans \CCI{} dont le jugement de typage est $\typec$. 
 
-\subsubsection{Définition de la réecriture vers \Coq}
+\subsubsection{Définition de la réécriture vers \Coq}
 \typenvi
 La traduction transforme une dérivation dans notre système algorithmique
 vers une dérivation de \CCI{} valide. Le jugement 
@@ -505,9 +500,9 @@ La traduction est un homomorphisme (elle conserve la structure de la
 dérivation et se rappelle récursivement) excepté pour l'application, ce qui
 est normal puisque nous avons un système très proche de \CCI{}. Le fait
 de traduire aussi les environnements $\Gamma$ est dû au fait que nous
-faisons le sous-typage dans les types,  donc les environnements (listes
-de couples $(\text{nom}, \text{type})$) doivent aussi être réecrits. Cela assure aussi la
-cohérence avec l'environnement général de \Coq, c'est à dire
+faisons la coercion dans les types,  donc les environnements (listes
+de couples $(\text{nom}, \text{type})$) doivent aussi être réécrits. Cela assure aussi la
+cohérence avec l'environnement général de \Coq, c'est-à-dire
 l'intégration transparente de notre tactique dans les développements
 \Coq~et la réutilisabilité des programmes générés. En conséquence, les
 types spécifiés ne sont donc pas toujours préservés (on veut pouvoir y
@@ -527,7 +522,7 @@ de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet
 une projection pour atteindre par exemple la fonction d'un objet de type
  $\subset{f}{\nat "->" \nat}{f~0 \neq 0}$.
 
-Le jugement de sous-typage $U \suba V$ nous assure qu'il est possible de
+Le jugement de coercion $U \suba V$ nous assure qu'il est possible de
 dériver le jugement $`G' \typec U' \subi V'$ et donc de créer une coercion de $U'$
 à $V'$ soit une fonction de type $U' "->" V'$ dans \CCI.
 On trouve ici l'essence du mécanisme de coercion par prédicats. 
@@ -536,7 +531,7 @@ On trouve ici l'essence du mécanisme de coercion par prédicats.
 \begin{itemize}
 \item[ \SubConvI\DP:] \quad\\
 
-  Crée une coercion idéntité puisque \CCI{}~a la règle de conversion. 
+  Crée une coercion identité puisque \CCI{}~a la règle de conversion. 
   \vspace{1em}
 
 \item[\SubLeftI\DP:] \quad\\
@@ -553,7 +548,8 @@ On trouve ici l'essence du mécanisme de coercion par prédicats.
   existentielles (notées $?:\text{type}$) décrit plus loin pour donner 
   l'information au système qu'il faut compléter le terme à un endroit
   donné avec un nouveau terme de type approprié. On peut aisément créer
-  des obligations qui ne seront pas prouvables.
+  des obligations qui ne seront pas prouvables mais cela relève de la
+  responsabilité de l'utilisateur.
   \vspace{1em}
 
 \item[\SubProdI\DP,] \quad\\
@@ -568,11 +564,11 @@ On trouve ici l'essence du mécanisme de coercion par prédicats.
   
 \subsubsection{Propriétés}
 On veut montrer que si l'on a une dérivation dans notre système
-algorithmique, alors son image par la réecriture est une dérivation
-valide de \CCI (par induction sur la dérivation dans le système
+algorithmique, alors son image par la réécriture est une dérivation
+valide de \CCI{} (par induction sur la dérivation dans le système
 algorithmique). Ce travail est en cours à ce jour, nous nous sommes
 plutôt penchés sur l'implémentation du typeur et de la fonction de
-réecriture avant de commencer cette dernière preuve.
+réécriture avant de commencer cette dernière preuve.
 
 \subsection{La tactique \Subtac}
 Nous avons développé la tactique \Subtac{} disponible dans la version
@@ -600,6 +596,13 @@ correspondant aux preuves que l'ordre est bien fondé ou qu'il est bien
 respecté par les termes. Ainsi lors du raffinement on obtient naturellement
 les buts correspondants à prouver.
 
+\subsubsection{Traitement des inductifs}
+Notre langage ne prend pas encore en compte les définitions inductives générales.
+Au-delà du traitement des types sous-ensemble, on a un support minimal
+pour les inductifs à deux constructeurs qui correspondent à des booléens
+annotés par des propriétés logiques (voir traitement de la
+conditionnelle figure \ref{fig:euclid-subtac}). 
+
 \section{Conclusion}
 Nous avons développé un langage de programmation plus souple que le
 langage de \Coq{} mais conservant sa richesse d'expression (types
@@ -610,30 +613,66 @@ d'extraire un programme correct par construction dans un langage de type
 \ML. D'autre part, cette méthode s'intègre bien dans l'environnement
 \Coq{} et ouvre la voie à la réalisation de travaux plus complexes par
 des utilisateurs non-experts. Cela constitue la première étape vers un
-environnement de programmation sûre utilisable dans \Coq.
+environnement de programmation sûre utilisable dans \Coq. 
 
 
 \bibliographystyle{plain}
 \bibliography{../bib/bib-joehurd,../bib/barras,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent}
 
+\renewcommand{\thefootnote}{}
+\footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
+  \texttt{Concrete Math}}
+
+\newpage
 \appendix
 \section{Exemples}
-
-\begin{figure}[ph]
+\begin{figure}[h]
 \begin{verbatim}
+(* Subtac ne gère pas encore les notations de Coq *)
+Definition neq (A : Type) (x y : A) : Prop := x <> y.
+Definition div_prop (a b q r : nat) := a = (b * q) + r /\ r < b. 
+Definition lt_ge_dec (x y : nat) : { x < y } + { x >= y }.
+Proof.
+  intros ; elim (le_lt_dec y x) ; intros ; auto with arith.
+Defined.
+
 Recursive program mydiv (a : nat) { well_founded lt a lt_wf } : { b : nat | neq nat b O } ->
-  [ q : nat ] { r : nat | and (lt r b) (div_prop a b q r) } :=
+  [ q : nat ] { r : nat | div_prop a b q r } :=
   fun { y : nat | neq nat y O } =>
     if lt_ge_dec a y
-    then (q := O, a : { r : nat | and (lt r y) (div_prop a y q r) })
+    then (q := O, a : { r : nat | div_prop a y q r })
     else let (q', r) = mydiv (minus a y) y in 
-        (q := S q', r : { r : nat | and (lt r y) (div_prop a y q r) }).
+        (q := S q', r : { r : nat | div_prop a y q r }).
+
+(* Dans Coq, mydiv aura le type:
+forall a : nat, forall b : { b : nat | b <> 0 },
+ { q : nat & { r : nat | div_prop a (proj1_sig b) q r } } *)
+
+(* Obligations de preuves engendrées *)
+(* Hypothèses communes: *)
+a : nat
+mydiv : (n : nat) n < a -> forall b : { b : nat | b <> 0 },
+ { q : nat & { r : nat | div_prop n (proj1_sig b) q r } }
+y : { b : nat | b <> 0 }
+
+(* (q := 0, a ...)
+[ H : a < proj1_sig y,
+|- div_prop a (proj1_sig y) 0 a]
+
+(* Argument de récursion *)
+[H : a >= proj1_sig y |- a - proj1_sig y < a]
+
+(* (q := S q', r) *)
+[ H : a >= proj1_sig y
+  q' : nat
+  r : { r : nat | div_prop (a - proj1_sig y) (proj1_sig y) q' r }
+|- div_prop a (proj1_sig y) (S q')  (proj1_sig r)]
 \end{verbatim}
   \label{fig:euclid-subtac}
   \caption{La division euclidienne avec \Subtac}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[h]
 \begin{verbatim}
 Definition div : forall a : nat, forall b : nat, 
   b <> 0 -> { q : nat & { r : nat | r < b /\ a = b * q + r } }.
@@ -642,39 +681,29 @@ intros a ; pattern a ; apply lt_wf_rec ; intros. (* Récursion *)
 elim (lt_ge_dec n b). (* If then else *)
 intros. (* Première branche *)
 (* Structure du terme *)
-refine (existS _ 0 _) ; refine (exist _ n _) ; refine (conj _ _).
-(* Preuve *)
-assumption.
-rewrite mult_0_r ; rewrite plus_0_l ; reflexivity.
+refine (existS _ 0 _) ; refine (exist _ n _) ; refine (conj _ _) ;
+[ assumption | rewrite mult_0_r ; rewrite plus_0_l ; reflexivity ]. (* Preuve *)
 (* Seconde branche *)
-intros.
-assert (n - b < n). (* Preuve pour l'appel *)
+intros ; assert (n - b < n). (* Preuve pour l'appel *)
 apply lt_minus ; [ apply (ge_le _ _ b0) | apply (nat_neq_0_gt_0 b H0) ].
 induction (H (n - b) H1 b H0). (* Appel récursif *)
 induction p ; induction p. (* Destruction du résultat *)
-(* Structure du terme *)
-refine (existS _ (S x) _) ; refine (exist _ x0 _).
+refine (existS _ (S x) _) ; refine (exist _ x0 _). (* Structure du terme *)
 (* Preuve *)
 split.
 assumption.
 pose (eq_plus_eq _ _ H3 b).
-replace (n - b + b) with n in e.  
-rewrite e ; rewrite plus_comm ; rewrite plus_assoc.
+assert (n - b + b = n) ; try omega.
+rewrite <- H4 ; rewrite e ; rewrite plus_comm ; rewrite plus_assoc.
 replace (b + b * x) with (b * S x).
 reflexivity.
 rewrite mult_comm ; simpl ; pattern (x * b) ; rewrite mult_comm.
 reflexivity.
-apply ge_minus_plus_simpl.
-apply (le_ge _ _ b0).
 Qed.
 \end{verbatim}
   \label{fig:euclid-script}
   \caption{Script de preuve de la division euclidienne}
 \end{figure}
-
-\renewcommand{\thefootnote}{}
-\footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
-  \texttt{Computer Modern Bright}}
 
 \end{document}
 
