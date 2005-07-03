@@ -3,6 +3,7 @@
 \usepackage[french]{babel}
 \usepackage{myabbrevs}
 \usepackage{abbrevs}
+%\usepackage{concmath}
 
 \usepackage{bussproofs}
 \EnableBpAbbreviations
@@ -14,8 +15,7 @@
 % - Talk length is about 20min.
 % - Style is ornate.
 
-\usepackage{pxfonts}
-\input{../grammar-macros.tex}
+\input{../grammar-macros}
 
 %\mode<handout> 
 \mode<presentation>
@@ -35,20 +35,20 @@
 
 % or whatever
 
-\usepackage{times}
+%\usepackage{times}
 \usepackage[T1]{fontenc}
 % Or whatever. Note that the encoding and the font should match. If T1
 % does not look nice, try deleting the line with the fontenc.
 
 
 \title %[Short Paper Title] (optional, use only with long paper titles)
-{Sous-typage par prédicats en Coq}
+{Coercion par prédicats en \Coq}
 
 %\subtitle
 %{Un environnement de programmation sûre dans Coq}
 
 \author[Matthieu Sozeau]% (optional, use only with lots of authors)
-{Matthieu Sozeau}% \\ $\lambda x\lambda y~x.y\text{@lri.fr}$}
+{Matthieu Sozeau \\ sous la direction de Christine Paulin}% \\ $\lambda x\lambda y~x.y\text{@lri.fr}$}
 % - Give the names in the same order as the appear in the paper.
 % - Use the \inst{?} command only if the authors have different
 %   affiliation.
@@ -57,7 +57,7 @@
 \institute[LRI] % (optional, but mostly needed)
 {
 %  \inst{1}%
-  Equipe Démons \\
+  Equipe {\sc Démons} \\
   Laboratoire de Recherche en Informatique\\
   Université Paris Sud}
 % - Use the \inst command only if there are several affiliations.
@@ -72,8 +72,6 @@
 \subject{Theoretical Computer Science}
 % This is only inserted into the PDF information catalog. Can be left
 % out. 
-
-
 
 % If you have a file called "university-logo-filename.xxx", where xxx
 % is a graphic format that can be processed by latex or pdflatex,
@@ -135,9 +133,6 @@
 
 \subsection{Programmation sûre dans Coq}
 
-\def\Definition{\text{Definition}}
-\def\sref#1{\text{#1}}
-
 \begin{frame}
   \frametitle{Un language très expressif} %Make Titles Informative. Use Uppercase Letters.}
   % \framesubtitle{Subtitles are optional.}
@@ -148,42 +143,44 @@
   % Use very short sentences or short phrases.
   \begin{columns}
     \begin{column}{0.5\textwidth}
-      \begin{itemize}[<+-| handout:1>]
-      \item Le plus haut sommet du cube de Barendregt ; \\
-        \uncover<1| handout:1>{\pgfuseimage{lambda-cube}}
-        \note<1| handout:1>{Refaire le dessin avec juste $\lambda{\rightarrow}$ et
-          $\lambda C$ et les axes:
-          \begin{description}
-          \item[x] Types dépendants des termes
-          \item[y] Ordre supérieur, polymorphisme, termes dépendants des types
-          \item[z] Types dépendants des types \\
-            ex: $(\lambda x : \text{Value}.
-            \text{match}~x~\text{with}~\text{Int}~i "=>" \text{nat}
-            ~|~\text{Bool}~b "=>" \text{bool}) : \text{Value} "->"
-            \text{Set}$
-          \end{description}}
+      \begin{itemize}[<+->]
+      \item Expressivité:
+        \begin{itemize}[<+->]
+        \item Types dépendants ;
+        \item Ordre supérieur ;
+        \item Types dépendants des types :
+        \end{itemize}
+        
       \item Verbeux ;
-        \note<2| handout:1>{Inférence limitée (arguments implicites), 
+        \note<2>{Inférence limitée (arguments implicites), 
           sous-typage peu puissant}
       \item Mêle logique et calcul.
-        \note<3| handout:1>{Pas de séparation nette entre calcul et preuve dans les termes}
+        \note<3>{Pas de séparation nette entre calcul et preuve dans les termes}
       \end{itemize}
-     \end{column}
-     
-     \begin{column}{0.5\textwidth}
-       \only<1>{$\Definition~\text{qsort} :
-         (\sref{compare} : (x : A)(y : A)~ \{ x < y \} + \{ x \geq y \}) 
-         (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
-         \sref{sorted}~\sref{compare}~l' \}.$}
-       \only<2>{$\Definition~\text{qsort} :
-         ({\color{green}\sref{compare}} : (x : A)(y : A)~ \{ x < y \} + \{ x \geq y \}) 
-         (l : \sref{list}~A) \{ l' : \sref{list}~A~|~\sref{permut}~l~l' `^
-         \sref{sorted}~\sref{compare}~l' \}.$}
-
-       \end{column}
-   \end{columns}  
-\end{frame}
+    \end{column}
     
+    \begin{column}{0.5\textwidth}
+%       $\sdef{div} : \forall a : \nat, \forall b : \nat, 
+%       b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r
+%       ~\} ~\}$
+      \only<2>{\def\b{{\color{red}b}}
+        \def\a{{\color{red}a}}
+        $\sdef{div} : \forall a : \nat, \forall \b : \nat, 
+        \b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < \b `^ \a = \b * q +
+        r ~\} ~\}$}
+      \only<3>{$\sdef{div} : \forall a : \nat, \forall b : \nat, 
+        b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q +
+        r ~\} ~\}$}
+      
+
+      \only<4>{$(\lambda x : \text{Value}.
+        \text{match}~x~\text{with}~\text{Int}~i "=>" \text{nat}
+        ~|~\text{Bool}~b "=>" \text{bool}) : \text{Value} "->"
+        \text{Set}$}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
 \begin{frame}
   \frametitle{Un langage cible idéal}
   
@@ -275,13 +272,13 @@
   \begin{columns}
     \begin{column}{0.6\textwidth}
       \begin{block}{Termes}
-        % missing file
-        \termgrammar
+        missing file
+        %\termgrammar
       \end{block}
     \end{column}
     \begin{column}{0.35\textwidth}
       \begin{block}{Types}
-        \typegrammarOrig
+        missing%\typegrammarOrig
       \end{block}
     \end{column}
   \end{columns}  
@@ -377,37 +374,6 @@
     \end{itemize}
   \end{itemize}
 \end{frame}
-
-
-% All of the following is optional and typically not needed. 
-% \appendix
-% \section<presentation>*{\appendixname}
-% \subsection<presentation>*{Bibliographie}
-
-% \begin{frame}[allowframebreaks]
-%   \frametitle<presentation>{Bibliographie}
-    
-%   \begin{thebibliography}{10}
-    
-%   \beamertemplatebookbibitems
-%   % Start with overview books.
-  
-%   \bibitem{Author1990}
-%     A.~Author.
-%     \newblock {\em Handbook of Everything}.
-%     \newblock Some Press, 1990.
- 
-    
-%   \beamertemplatearticlebibitems
-%   % Followed by interesting articles. Keep the list short. 
-
-%   \bibitem{Someone2000}
-%     S.~Someone.
-%     \newblock On this and that.
-%     \newblock {\em Journal of This and That}, 2(1):50--100,
-%     2000.
-%   \end{thebibliography}
-% \end{frame}
 
 \end{document}
 
