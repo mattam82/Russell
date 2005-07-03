@@ -3,7 +3,6 @@
 \usepackage[french]{babel}
 \usepackage{myabbrevs}
 \usepackage{abbrevs}
-%\usepackage{concmath}
 
 \usepackage{bussproofs}
 \EnableBpAbbreviations
@@ -14,8 +13,6 @@
 % - Talk at a conference/colloquium.
 % - Talk length is about 20min.
 % - Style is ornate.
-
-\input{../grammar-macros}
 
 %\mode<handout> 
 \mode<presentation>
@@ -35,11 +32,13 @@
 
 % or whatever
 
-%\usepackage{times}
+\usepackage{times}
 \usepackage[T1]{fontenc}
 % Or whatever. Note that the encoding and the font should match. If T1
 % does not look nice, try deleting the line with the fontenc.
 
+\usepackage{pxfonts}
+\input{../grammar-macros}
 
 \title %[Short Paper Title] (optional, use only with long paper titles)
 {Coercion par prédicats en \Coq}
@@ -131,9 +130,20 @@
 
 \section{Motivation}
 
-\subsection{Programmation sûre dans Coq}
+\subsection{Programmation sûre dans \Coq}
 
 \begin{frame}
+  \frametitle{Présentation de \Coq}
+  
+  \begin{itemize}
+  \item Assistant de preuve ;
+  \item Basé sur {\sc Curry-Howard} ;
+  \item Petit noyau réalisant le typage de \CCI.
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}[t]
   \frametitle{Un language très expressif} %Make Titles Informative. Use Uppercase Letters.}
   % \framesubtitle{Subtitles are optional.}
   % - A title should summarize the slide in an understandable fashion
@@ -141,44 +151,47 @@
 
   % Use \texttt{itemize} a lot.
   % Use very short sentences or short phrases.
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}[<+->]
-      \item Expressivité:
-        \begin{itemize}[<+->]
-        \item Types dépendants ;
-        \item Ordre supérieur ;
-        \item Types dépendants des types :
-        \end{itemize}
-        
-      \item Verbeux ;
-        \note<2>{Inférence limitée (arguments implicites), 
-          sous-typage peu puissant}
-      \item Mêle logique et calcul.
-        \note<3>{Pas de séparation nette entre calcul et preuve dans les termes}
-      \end{itemize}
-    \end{column}
+  \begin{itemize}
+  \item<1-> Types dépendants ;
+  \item<2-> Ordre supérieur ;
+  \item<3-> Inductifs
+  \end{itemize}
     
-    \begin{column}{0.5\textwidth}
+  \vspace{1cm}
+    
+%     \begin{column}{0.6\textwidth}
 %       $\sdef{div} : \forall a : \nat, \forall b : \nat, 
 %       b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r
 %       ~\} ~\}$
-      \only<2>{\def\b{{\color{red}b}}
-        \def\a{{\color{red}a}}
-        $\sdef{div} : \forall a : \nat, \forall \b : \nat, 
-        \b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < \b `^ \a = \b * q +
-        r ~\} ~\}$}
-      \only<3>{$\sdef{div} : \forall a : \nat, \forall b : \nat, 
-        b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q +
-        r ~\} ~\}$}
-      
+  \only<1>{\def\b{{\color{red}b}}
+    \def\a{{\color{red}a}}
+    $\sdef{div} : \forall \a : \nat, \forall \b : \nat, 
+    \b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < \b `^ \a = \b * q +
+    r ~\} ~\}$
+    
+    \vspace{1em}
+    $\sref{div} : \nat "->" \nat "->" \nat * \nat$}
 
-      \only<4>{$(\lambda x : \text{Value}.
-        \text{match}~x~\text{with}~\text{Int}~i "=>" \text{nat}
-        ~|~\text{Bool}~b "=>" \text{bool}) : \text{Value} "->"
-        \text{Set}$}
-    \end{column}
-  \end{columns}  
+  \only<2>{\def\A{{\color{red}A}}
+    $\sdef{rev} : \forall \A : \Set, \forall l : \listml~\A,
+    \{~l' : \listml~\A `| \forall n : \nat, nth~n~l' = nth~((length~l)
+    - n)~l ~\}$
+    
+    \vspace{1em}
+    $\sref{rev} : `a~\listml -> `a~\listml$}
+
+  \only<3>{$\Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq :=
+    ~|~\sdef{left} : A "->" \{A\} + \{B\} 
+    ~|~\sdef{right} : B "->" \{A\} + \{B\}.$ 
+
+    \vspace{1em}
+    $\typeml~\sdef{bool} = \texttt{True} ~|~ \texttt{False}$}
+
+%   \only<4>{faux!
+%     $(\lambda x : \text{Value}.
+%     \text{match}~x~\text{with}~\text{Int}~i "=>" \text{nat}
+%     ~|~\text{Bool}~b "=>" \text{bool}) : \text{Value} "->"
+%     \text{Set}$}
 \end{frame}
 
 \begin{frame}
@@ -186,18 +199,43 @@
   
   \begin{itemize}[<+-| handout:1>]
   \item Grande richesse pour la spécification et l'implémentation ;
-  \item Distinction entre parties informatives et logiques dans
-    le système de type. \uncover<3-| handout:1>{Extraction vers du code efficace.}
+  \item Garantie de la correction ;
+  \item Extraction vers du code efficace.
+%     Distinction entre parties informatives et logiques dans
+%     le système de type. \uncover<3-| handout:1>{}
   \end{itemize}
     
+\end{frame}
+
+\begin{frame}
+  \frametitle{Difficultés}
+  \begin{itemize}[<+->]
+  \item Verbeux ($"=>"$ tactiques) ;
+    \note<1>{Inférence limitée (arguments implicites), 
+      sous-typage peu puissant, long}
+  \item Mêle logique et calcul.
+    \note<2>{Pas de séparation nette entre calcul et preuve dans les
+      termes, expertise nécessaire}
+  \end{itemize}
+
+  \visible<3->{
+    $\pi_1 : \subset{x}{T}{P} "->" T$
+
+    $\sdef{div} : \forall a : \nat, \forall b : \subset{n}{\nat}{n \neq
+      0}
+    "->" \{~q : \nat~\&~\{~r : \nat `| r < (\pi_1~b) `^ a = (\pi_1~b) * q + r ~\} ~\}$
+
+    \vspace{.5em}
+    $\ldots \sref{div}~1~(\sref{elt}~(\lambda x : \nat "->" x \neq
+    0)~x~p) \ldots$}
+
   \visible<4->{
     \begin{block}{Objectif}
-      \alert{Développer un langage moins expressif mais plus pratique 
-        pour écrire des programmes corrects}
+      \alert{Développer un langage plus facile d'utilisation conservant
+        l'essentiel de l'expressivité de \CCI.}
     \end{block}}
   \note<4->{A long terme, preuve de programmes ML annotés}
 \end{frame}
-
 
 \subsection{Travaux connexes}
 
@@ -205,29 +243,17 @@
   \frametitle{Inversion de l'extraction}
   \begin{block}{La tactique Program}
     \begin{itemize}
-    \item Méthode générale pour la synthèse de preuves à partir de
+    \item[{\bf +}] Méthode générale pour la synthèse de preuves à partir de
       programmes ;
-    \item Définition d'une extraction inversible, nécessite des
-      heuristiques (unification) ;
-      \note<1->{Exemple d'impossibilité d'inverser l'extraction
+    \item[{\bf -}] Technique complexe, peu intuitive et ne permettant pas la
+      réutilisation ;
+      \note<1->{ Définition d'une extraction inversible, nécessite des
+        heuristiques (unification).
+        Exemple d'impossibilité d'inverser l'extraction
         avec un \subset{x}{T}{P} (on ne peut pas inférer la preuve)}
-    \item Non maintenu, refine.
+    \item Non maintenu (incompatible avec l'extraction actuelle). %, \Refine.
     \end{itemize}
   \end{block}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Sous-typage \& coercions}
-  \begin{itemize}
-  \item<1-> Zhaohui Luo: ECC, cohérence ;
-%     \note<1>{ECC: Types Sigma paradoxal avec imprédicativité
-%       \AXC{$`G, x : A \seq B : \Prop$}
-%       \UIC{$`G \seq \Sigma x : A.B : \Prop$}
-%       \DP}
-  \item<2-> Gang Chen: sous-typage par coercions avec types dépendants,
-    conversion ;
-  \item<3-> Amokrane Saïbi: implémentation dans \Coq. 
-  \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -235,50 +261,111 @@
   
   \begin{block}{Définition}
     $\subset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
-    propriété $P$.
+    propriété $P$. 
   \end{block}
   
-  \note<1>{Définir les projections ?}
-  \pause
+  \begin{itemize}
+  \item Très utilisé pour spécifier ($\sref{div}, \sref{rev}$) ;
+  \item Séparation objet / propriété ;
+  \end{itemize}
+
   \begin{block}{Idée} 
     Un objet de type $T$ peut être vu comme un objet de
-    type $\subset{x}{T}{P}$ pour tout $P$ et vice-versa.
+    type $\subset{x}{T}{P}$ pour toute propriété $P$ bien
+    formée et vice-versa.
   \end{block}
+
 \end{frame}
 
-%\PVS    Système de type intégrant le \emph{Predicate subtyping}.
 \begin{frame}
-  \frametitle{Sous-typage par prédicats}
-  \begin{tabular}{lclcl}
-    $t : \subset{x}{T}{P}$ & $"->"$ & $t : T$
-    & $"~>"$ & $\pi_1~t$ \pause \\
-    $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
-    & $"~>"$ & $t$ + preuve de $P[x/t]$
-  \end{tabular}
-  
-  \note<2>{Exemple ?}
+  \frametitle{\ps{} dans \PVS}
 
-  \note<2>{Parler du dev. du système de type de Martin-Löf
-    avec sous-ensembles ? (Programming in Martin-Löf TT)}
+  \begin{itemize}
+  \item<1-> Gestion spécifique des types sous-ensemble, génération de
+    ``\emph{Type-checking conditions}'' (obligations de preuve).
+    \pause
+    
+    \begin{tabular}{lcll}
+      $t : \subset{x}{T}{P}$ & $"->"$ & $t : T$
+      &  \pause \\
+      $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
+      & si preuve de $P[x/t]$
+    \end{tabular}
+    \pause
+
+  \item Succès pratique ;
+  \item<5->[{\bf -}] Architecture de \PVS{} peu sûre (bugs, critère de De Bruijn).
+  \end{itemize}  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sous-typage \& coercions}  
+  \begin{itemize}[<+->]
+  \item Zhaohui Luo: ``coercive subtyping'', problèmes de cohérence et transitivité ;
+  \item Amokrane Saïbi: héritage, implémentation dans \Coq. % pour tout PTS
+  \item Gang Chen: sous-typage par coercions avec types dépendants, conversion ;
+  \end{itemize}
 \end{frame}
 
 \section{Contribution}
 
-\subsection{Un langage de programmation pour le développement sûr}
-% Un peu trop long
+\subsection{Calcul de coercion par prédicats}
+\begin{frame}
+  \frametitle{Architecture}
+  
+  \begin{itemize}
+  \item \'{E}criture dans un langage avec coercions implicites ; \pause
+  \item Réecriture automatique vers \CCI ; 
+    \begin{tabular}{lclcl}
+      $t : \subset{x}{T}{P}$ & $"->"$ & $t : T$
+      & $"~>"$ & $\pi_1~t$ \pause \\
+      $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
+      & $"~>"$ & $\sref{elt}~{t}~(? : P[t/x])$
+    \end{tabular}
+    \pause
+  \item Preuve des obligations.
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \frametitle{Syntaxe à la \ML}
   \begin{columns}
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.5\textwidth}
       \begin{block}{Termes}
-        missing file
-        %\termgrammar
+        $\begin{array}{lcl}
+          `a & \Coloneqq & \text{\emph{constante}} \\
+          & | & x \\
+          & | & \funml{}~x~:~`t "=>" `a \\
+          & | & \letml~x = `a ~\inml~`a \\
+          & | & `a~`a \\
+          \uncover<2->{
+            & | & (`a,~`a) \\ 
+            & | & \letml~(x, y) = `a ~\inml~ `a \\ }
+          \uncover<3->{
+            & | & (x \coloneqq `a,~`a~: `t) \\}
+          \uncover<4->{
+            & | & \ifml~`a~\thenml~`a~\elseml~`a}
+        \end{array}$
       \end{block}
     \end{column}
-    \begin{column}{0.35\textwidth}
+    \begin{column}{0.5\textwidth}
       \begin{block}{Types}
-        missing%\typegrammarOrig
+        $\begin{array}{lcl}
+          `t & \Coloneqq & \text{\emph{constante}} \\
+          & | & `t "->" `t \\
+          & | & \subset{x}{`t}{`t} \\
+          \uncover<2->{
+            & | & `t * `t \\}
+          \uncover<3->{
+            & | & \Sigma x : `t. `t \\}
+          \uncover<4->{
+            & | &  x \\
+            & | & \lambda x : \textit{Sort} "=>" `t \\
+            & | & `t~`t \\
+            & | & `t~`a \\
+            & | & \Pi x : `t. `t \\
+          }
+        \end{array}$
       \end{block}
     \end{column}
   \end{columns}  
@@ -380,5 +467,5 @@
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "slides"
-%%% LaTeX-command: "x=pdf; TEXINPUTS=\"../style:$TEXINPUTS\" ${pdfx}latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"../style:\" ${pdfx}latex"
 %%% End: 
