@@ -1,5 +1,6 @@
 \documentclass[notheorems]{beamer} %notes=show
 \usepackage[latin1]{inputenc}
+\usepackage{xspace} % To get the right spacings in front of : and so on
 \usepackage[french]{babel}
 \usepackage{myabbrevs}
 \usepackage{abbrevs}
@@ -7,6 +8,8 @@
 \usepackage{ifthen}
 \usepackage{coqdoc}
 \usepackage{bussproofs}
+\usepackage{pgf,pgfarrows,pgfnodes}
+
 \EnableBpAbbreviations
 \def\fCenter{\vdash}
 \def\seq{\fCenter}
@@ -15,6 +18,12 @@
 % - Talk at a conference/colloquium.
 % - Talk length is about 20min.
 % - Style is ornate.
+
+\hypersetup{
+  pdftitle = Coercion par prédicats en Coq,
+  pdfauthor = Matthieu Sozeau,
+  pdfsubject= Présentation de présoutenance
+ } 
 
 %\mode<handout> 
 \mode<presentation>
@@ -67,8 +76,8 @@
 %\subtitle
 %{Un environnement de programmation sûre dans Coq}
 
-\author[Matthieu Sozeau]% (optional, use only with lots of authors)
-{Matthieu Sozeau \\ sous la direction de Christine Paulin}% \\ $\lambda x\lambda y~x.y\text{@lri.fr}$}
+\author[]% (optional, use only with lots of authors)
+{{\sc Matthieu Sozeau} \\ sous la direction de {\sc Christine Paulin-Mohring}}% \\ $\lambda x\lambda y~x.y\text{@lri.fr}$}
 % - Give the names in the same order as the appear in the paper.
 % - Use the \inst{?} command only if the authors have different
 %   affiliation.
@@ -79,12 +88,13 @@
 %  \inst{1}%
   Equipe {\sc Démons} \\
   Laboratoire de Recherche en Informatique\\
-  Université Paris Sud}
+  Université Paris Sud {\uppercase\expandafter{\romannumeral 11}}}
 % - Use the \inst command only if there are several affiliations.
 % - Keep it simple, no one is interested in your street address.
 
 \date % (optional, should be abbreviation of conference name)
-{Pré-soutenance de Master II}
+{Pré-soutenance de Master II \\
+5 Juillet 2005}
 % - Either use conference name or its abbreviation.
 % - Not really informative to the audience, more for people (including
 %   yourself) who are reading the slides online
@@ -97,18 +107,18 @@
 % is a graphic format that can be processed by latex or pdflatex,
 % resp., then you can add a logo as follows:
 
-\pgfdeclareimage[height=0.5cm]{lri-logo}{../pictures/lri-logo}
+\pgfdeclareimage[height=0.5cm]{lri-logo}{../figures/lri-logo}
 \logo{\pgfuseimage{lri-logo}}
 
-\pgfdeclareimage[height=3cm]{lambda-cube}{../pictures/lambda-cube}
+\pgfdeclareimage[height=3cm]{lambda-cube}{../figures/lambda-cube}
 
 % Delete this, if you do not want the table of contents to pop up at
 % the beginning of each subsection:
-\AtBeginSubsection[]
+\AtBeginSection[]
 {
   \begin{frame}<beamer>
     \frametitle{Plan}
-    \tableofcontents[currentsection,currentsubsection]
+    \tableofcontents[currentsection]
   \end{frame}
 }
 
@@ -127,7 +137,7 @@
 
 \begin{frame}
   \frametitle{Plan}
-  \tableofcontents %[pausesections]
+  \tableofcontents[pausesections]
   % You might wish to add the option [pausesections]
 \end{frame}
 
@@ -158,14 +168,14 @@
   
   \begin{itemize}
   \item Assistant de preuve ;
-  \item Basé sur {\sc Curry-Howard} ;
-  \item Petit noyau réalisant le typage de \CCI.
+  \item Basé sur l'isomorphisme de {\sc Curry-Howard} ;
+  \item Noyau réduit réalisant le typage du \CCIfull.
   \end{itemize}
   
 \end{frame}
 
 \begin{frame}[t]
-  \frametitle{Un language très expressif} %Make Titles Informative. Use Uppercase Letters.}
+  \frametitle{Un langage très expressif} %Make Titles Informative. Use Uppercase Letters.}
   % \framesubtitle{Subtitles are optional.}
   % - A title should summarize the slide in an understandable fashion
   % for anyone how does not follow everything on the slide itself.
@@ -185,25 +195,26 @@
 %       b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r
 %       ~\} ~\}$
   \only<1>{\def\b{{\color{red}b}}
-    \def\a{{\color{red}a}}
+    \def\a{{\color{red}a}}\def\q{{\color{red}q}}\def\r{{\color{red}r}}
     $\begin{array}{l}
-      \sdef{div} : \forall \a : \nat, \forall \b : \nat, \b \neq 0 "->"
+      \Definition~\sdef{div} : \forall \a : \nat, \forall \b : \nat, \b \neq 0 "->"
       \\
-      \{~q : \nat~\&~\{~r : \nat `| r < \b `^ \a = \b * q + r ~\} ~\} \\
+      \{~\q : \nat~\&~\{~\r : \nat `| \r < \b `^ \a = \b * \q + \r ~\} ~\} \\
       \\
       \\
-      \sref{div} : \nat "->" \nat "->" \nat * \nat
+      \valml~\sref{div} : \nat "->" \nat "->" \nat * \nat
     \end{array}
-    $}
+    $}  
 
-  \only<2>{\def\A{{\color{red}A}}
+  \only<2>{\def\A{{\color{red}A}}\def\B{{\color{red}B}}
     $\begin{array}{l}
-      \sdef{rev} : \forall \A : \Set, \forall l : \listml~\A,\\
-      \{~l' : \listml~\A `| \forall n : \nat, nth~n~l' = nth~((length~l)
-      - n)~l ~\} \\
+      \Definition~\sdef{map} : \forall \A~\B : \Set, \forall l :
+      \listml~\A, \forall f : \A "->" \B, \\
+      \{~l' : \listml~\B `| \forall n : \nat, n < \sref{length}~l "=>"
+      nth~\B~n~l' = f~(nth~\A~n~l)~\} \\
       \\
       \\
-      \sref{rev} : `a~\listml "->" `a~\listml
+      \valml~\sref{map} : (`a "->" `b) "->" `a~\listml "->" `b~\listml
     \end{array}$}
 
   \only<3>{
@@ -235,18 +246,32 @@
     
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Difficultés}
-  \begin{itemize}[<+->]
-  \item Verbeux ($"=>"$ tactiques) ;
+
+  \begin{itemize}
+  \item<1-> Verbeux ;
+    \only<4>{($"=>"$ \alert{tactiques})}
     \note<1>{Inférence limitée (arguments implicites), 
       sous-typage peu puissant, long}
-  \item Mêle logique et calcul.
-    \note<2>{Pas de séparation nette entre calcul et preuve dans les
+  \item<5-> Mêle logique et calcul.
+    \note<5>{Pas de séparation nette entre calcul et preuve dans les
       termes, expertise nécessaire}
   \end{itemize}
 
-  \visible<3->{
+  \only<2-4>{$\Definition~\sref{lt\_ge\_dec} : \forall x~y : \nat, 
+    \{~x < y ~\} + \{~x ``>= y~\}$}
+  \only<3>{\input{lt_ge_dec-proof}}
+  \only<4>{\input{lt_ge_dec-tactic}}
+%     $\tactic{intros} ; \tactic{elim} (\sref{le_gt_dec}~y~x) ;
+%     \tactic{auto with arith}$.
+%     $\Proof{}~(fun x y : \setN \Rightarrow
+%     sumbool_rec (fun _ : {y \leq x} + {y > x} \Rightarrow {x < y} + {x \geq y})
+%     (fun a : y \leq x \Rightarrow right (x < y) a) (fun b : y > x \Rightarrow left (x \geq y) b)
+%     (le_gt_dec y x))$.
+
+  
+  \only<5->{
     $\pi_1 : \subset{x}{T}{P} "->" T$
 
     $\sdef{div} : \forall a : \nat, \forall b : \subset{n}{\nat}{n \neq
@@ -257,7 +282,7 @@
     $\ldots \sref{div}~1~(\sref{elt}~(\lambda x : \nat "->" x \neq
     0)~x~p) \ldots$}
 
-  \visible<4->{
+  \only<6->{
     \begin{block}{Objectif}
       \alert{Développer un langage plus facile d'utilisation conservant
         l'essentiel de l'expressivité de \CCI.}
@@ -269,16 +294,18 @@
 
 \begin{frame}
   \frametitle{Inversion de l'extraction}
-  \begin{block}{La tactique Program}
+  \begin{block}{La tactique \Program (\name{Catherine Parent})}
     \begin{itemize}
     \item[{\bf +}] Méthode générale pour la synthèse de preuves à partir de
       programmes ;
+      
     \item[{\bf -}] Technique complexe, peu intuitive et ne permettant pas la
       réutilisation ;
       \note<1->{ Définition d'une extraction inversible, nécessite des
         heuristiques (unification).
         Exemple d'impossibilité d'inverser l'extraction
         avec un \subset{x}{T}{P} (on ne peut pas inférer la preuve)}
+      
     \item Non maintenu (incompatible avec l'extraction actuelle). %, \Refine.
     \end{itemize}
   \end{block}
@@ -293,7 +320,7 @@
   \end{block}
   
   \begin{itemize}
-  \item Très utilisé pour spécifier ($\sref{div}, \sref{rev}$) ;
+  \item Très utilisé pour spécifier ($\sref{div}, \sref{map}$) ;
   \item Séparation objet / propriété ;
   \end{itemize}
 
@@ -321,18 +348,63 @@
     \end{tabular}
     \pause
 
-  \item Succès pratique ;
+  \item[{\bf +}] Succès pratique ;
   \item<5->[{\bf -}] Architecture de \PVS{} peu sûre (bugs, critère de De Bruijn).
   \end{itemize}  
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Sous-typage \& coercions}  
-  \begin{itemize}[<+->]
-  \item Zhaohui Luo: ``coercive subtyping'', problèmes de cohérence et transitivité ;
-  \item Amokrane Saïbi: héritage, implémentation dans \Coq. % pour tout PTS
-  \item Gang Chen: sous-typage par coercions avec types dépendants, conversion ;
+  \pause
+  \begin{itemize}
+  \item Zhaohui Luo: ``\emph{coercive subtyping}'', \pause problèmes de \alert<3>{cohérence} et \alert<4>{transitivité} ;
+  \item<5-> Amokrane Saïbi: héritage, implémentation dans \Coq. % pour tout PTS
+  \item<6-> Gang Chen: sous-typage par coercions avec types dépendants, conversion ;
   \end{itemize}
+
+  \only<3>{
+    \begin{center}
+      \begin{pgfpicture}{0cm}{0cm}{2cm}{2cm}
+        \pgfnodebox{A}[virtual]{\pgfxy(1,0)}{A}{2pt}{2pt}
+        \pgfnodebox{B}[virtual]{\pgfxy(0,1)}{B}{2pt}{2pt}
+        \pgfnodebox{C}[virtual]{\pgfxy(2,1)}{C}{2pt}{2pt}
+        \pgfnodebox{D}[virtual]{\pgfxy(1,2)}{D}{2pt}{2pt}
+
+        \pgfnodesetsepstart{0pt}
+        \pgfnodesetsepend{5pt}
+        \pgfsetendarrow{\pgfarrowtriangle{4pt}}
+
+        \pgfnodeconnline{A}{B}
+        \pgfnodeconnline{B}{D}
+        \pgfnodeconnline{C}{D}
+        \pgfnodeconnline{A}{C}
+      \end{pgfpicture}
+    \end{center}
+  }
+
+  \only<4>{
+    \begin{center}
+      \begin{pgfpicture}{0cm}{0cm}{2cm}{2cm}
+        \pgfnodebox{A}[virtual]{\pgfxy(1,0)}{A}{2pt}{2pt}
+        \pgfnodebox{B}[virtual]{\pgfxy(0,1)}{B}{2pt}{2pt}
+        \pgfnodebox{C}[virtual]{\pgfxy(2,1)}{C}{2pt}{2pt}
+        \pgfnodebox{D}[virtual]{\pgfxy(1,2)}{D}{2pt}{2pt}
+
+        \pgfnodesetsepstart{0pt}
+        \pgfnodesetsepend{5pt}
+        \pgfsetendarrow{\pgfarrowtriangle{4pt}}
+
+        \pgfnodeconnline{A}{B}
+        \pgfnodeconnline{B}{C}
+        \pgfnodeconnline{C}{D}
+
+        \pgfsetdash{{0.2cm}{0.2cm}{0.2cm}{0.2cm}{0.2cm}}{0cm}
+        \pgfnodeconnline{A}{D}
+      \end{pgfpicture}
+    \end{center}
+  }
+    
+
 \end{frame}
 
 \section{Contribution}
@@ -342,8 +414,8 @@
   \frametitle{Architecture}
   
   \begin{itemize}
-  \item \'{E}criture dans un langage avec coercions implicites ; \pause
-  \item Réecriture automatique vers \CCI ; 
+  \item Écriture dans un langage avec coercions implicites ; \pause
+  \item Réécriture automatique vers \CCI ; 
     \begin{tabular}{lclcl}
       $t : \subset{x}{T}{P}$ & $"->"$ & $t : T$
       & $"~>"$ & $\pi_1~t$ \pause \\
@@ -399,7 +471,7 @@
   \end{columns}  
 \end{frame}
 
-\begin{frame}[t]
+\begin{frame}[t,label=typingdecl]
   \frametitle{Sémantique}
   
   \typenvd
@@ -419,10 +491,11 @@
 
   \pause
   Traitement de la conversion (\irule{Conv}).
-  
+
+  \hyperlink{sysalgo<2>}{\beamerreturnbutton{}}  
 \end{frame}
 
-\begin{frame}[t]
+\begin{frame}[t,label=subtypingdecl]
   \frametitle{Coercion}
   \begin{center}
     \def\fCenter{\subd}
@@ -442,6 +515,7 @@
     Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
   \end{lemma}
   
+  \hyperlink{sysalgo<3>}{\beamerreturnbutton{}}
 %   \begin{itemize}
 %   \item<2-> Environnements non nécessaires.
 %     %, essentiellement équivalence en
@@ -458,7 +532,7 @@
 
 \typenva
 
-\begin{frame}[t]
+\begin{frame}[t,label=sysalgo]
   \frametitle{Système algorithmique}
   \begin{block}{Objectif}
     Extraire un algorithme du système formel. Nouveaux jugements de
@@ -466,8 +540,11 @@
   \end{block}
   
   \begin{itemize}
-  \item<2-> Passage de la coercion à l'application ;
-  \item<3-> Test de coercion dirigé par la syntaxe ;
+  \item<2-> Passage de la coercion à l'application 
+    \hyperlink{typingdecl<2>}{\beamergotobutton{}} ;
+    
+  \item<3-> Test de coercion dirigé par la syntaxe
+    \hyperlink{subtypingdecl}{\beamergotobutton{}} ;
   \item<4->[$"=>"$] Algorithme.
   \end{itemize}
 
@@ -497,7 +574,7 @@
   \end{center}
   
   \pause
-  \begin{theorem}[Correction de la réecriture]
+  \begin{theorem}[Correction de la réécriture]
     Si $`G \typea t : U$ alors $`G' \typec t' : U'$.
   \end{theorem}
   
@@ -510,9 +587,9 @@
 
 \subsection{Exemple}
 
-\begin{frame}{Exemple}
+\begin{frame}
   \tiny
-  \input{../pictures/subtac-euclid}
+  \input{subtac-euclid}
 \end{frame}
 
 % \subsection{Résultats théoriques}
@@ -537,11 +614,12 @@
   % Keep the summary *very short*.
   \begin{itemize}
   \item
-    Développement d'un language de programmation 
-    \alert{moins expressif} mais \alert{plus utilisable}.
+    Développement d'un langage de programmation plus \alert{souple}
+    conservant l'expressivité de \CCI ;
   \item
-    Programmes \alert{corrects par construction} une fois les
-    obligations satisfaites.
+    Bonne intégration à l'environnement (en cours) ; 
+  \item 
+    Justification formelle du \ps{}.
   \end{itemize}
   
   % The following outlook is optional.
@@ -563,6 +641,6 @@
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "slides"
-%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:\" ${pdfx}latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:../figures:\" ${pdfx}latex"
 %%% TeX-PDF-mode: t
 %%% End: 

@@ -1,0 +1,1 @@
+intros ; elim (le_gt_dec y x) ; auto with arith.
