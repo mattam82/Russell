@@ -1,9 +1,11 @@
-\documentclass{beamer} %notes=show
+\documentclass[notheorems]{beamer} %notes=show
 \usepackage[latin1]{inputenc}
 \usepackage[french]{babel}
 \usepackage{myabbrevs}
 \usepackage{abbrevs}
-
+\usepackage{subfigure}
+\usepackage{ifthen}
+\usepackage{coqdoc}
 \usepackage{bussproofs}
 \EnableBpAbbreviations
 \def\fCenter{\vdash}
@@ -20,6 +22,8 @@
   \usetheme{Warsaw} %Madrid
   % or ...
   \usecolortheme{crane}
+
+  \usefonttheme{professionalfonts}
   
   \setbeamercovered{transparent}
   % or whatever (possibly just delete it)
@@ -32,13 +36,30 @@
 
 % or whatever
 
-\usepackage{times}
+\usepackage{concmath}
 \usepackage[T1]{fontenc}
 % Or whatever. Note that the encoding and the font should match. If T1
 % does not look nice, try deleting the line with the fontenc.
 
-\usepackage{pxfonts}
-\input{../grammar-macros}
+\usepackage{txfonts}
+\input{grammar-macros}
+
+\newboolean{defineTheorem}
+\setboolean{defineTheorem}{true}
+\input{mathenv}
+\setboolean{displayLabels}{true}
+
+\input{typing-macros}
+\def\infvspace{0.5cm}
+
+\input{typing-decl}
+\input{subtyping-decl}
+
+\input{typing-algo}
+\input{subtyping-algo}
+
+\input{typing-impl}
+\input{subtyping-impl}
 
 \title %[Short Paper Title] (optional, use only with long paper titles)
 {Coercion par prédicats en \Coq}
@@ -165,27 +186,34 @@
 %       ~\} ~\}$
   \only<1>{\def\b{{\color{red}b}}
     \def\a{{\color{red}a}}
-    $\sdef{div} : \forall \a : \nat, \forall \b : \nat, 
-    \b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < \b `^ \a = \b * q +
-    r ~\} ~\}$
-    
-    \vspace{1em}
-    $\sref{div} : \nat "->" \nat "->" \nat * \nat$}
+    $\begin{array}{l}
+      \sdef{div} : \forall \a : \nat, \forall \b : \nat, \b \neq 0 "->"
+      \\
+      \{~q : \nat~\&~\{~r : \nat `| r < \b `^ \a = \b * q + r ~\} ~\} \\
+      \\
+      \\
+      \sref{div} : \nat "->" \nat "->" \nat * \nat
+    \end{array}
+    $}
 
   \only<2>{\def\A{{\color{red}A}}
-    $\sdef{rev} : \forall \A : \Set, \forall l : \listml~\A,
-    \{~l' : \listml~\A `| \forall n : \nat, nth~n~l' = nth~((length~l)
-    - n)~l ~\}$
-    
-    \vspace{1em}
-    $\sref{rev} : `a~\listml -> `a~\listml$}
+    $\begin{array}{l}
+      \sdef{rev} : \forall \A : \Set, \forall l : \listml~\A,\\
+      \{~l' : \listml~\A `| \forall n : \nat, nth~n~l' = nth~((length~l)
+      - n)~l ~\} \\
+      \\
+      \\
+      \sref{rev} : `a~\listml "->" `a~\listml
+    \end{array}$}
 
-  \only<3>{$\Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq :=
-    ~|~\sdef{left} : A "->" \{A\} + \{B\} 
-    ~|~\sdef{right} : B "->" \{A\} + \{B\}.$ 
-
-    \vspace{1em}
-    $\typeml~\sdef{bool} = \texttt{True} ~|~ \texttt{False}$}
+  \only<3>{
+    $\begin{array}{l}
+      \Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq := \\
+    ~|~\sdef{left} : A "->" \{A\} + \{B\} \\
+    ~|~\sdef{right} : B "->" \{A\} + \{B\}. \\
+    \\
+    \typeml~\sdef{bool} = \texttt{True} ~|~ \texttt{False}
+  \end{array}$}
 
 %   \only<4>{faux!
 %     $(\lambda x : \text{Value}.
@@ -371,68 +399,136 @@
   \end{columns}  
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Sémantique}
   
-  \begin{block}{Typage}
+  \typenvd
+  \begin{center}
+    \vdots
     
-  \end{block}
-  \begin{block}{Sous-typage}
-    \begin{itemize}
-    \item Contravariance du produit. exemple pquoi ça conserve la
-      sureté.
-      
-  \end{itemize}
-  \end{block}
+    \vspace{0.5cm}
+    \Conv\DP
+    
+    \vspace{0.5cm}
+    \App\DP
+    
+    \pause
+    \vspace{0.5cm}
+    \Coerce\DP  
+  \end{center}
+
+  \pause
+  Traitement de la conversion (\irule{Conv}).
+  
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
+  \frametitle{Coercion}
+  \begin{center}
+    \def\fCenter{\subd}
+    \SubConv\DP
+
+    \vspace{0.5cm}
+    \SubProof\DP
+    \SubSub\DP
+
+    \vspace{0.5cm}
+    \SubProd\DP
+    \SubSigma\DP
+    %\SubTrans\DP
+  \end{center}
+
+  \begin{lemma}[Transitivité de la coercion]
+    Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
+  \end{lemma}
+  
+%   \begin{itemize}
+%   \item<2-> Environnements non nécessaires.
+%     %, essentiellement équivalence en
+%     %réduisant les types sous-ensembles au type de leur objet ;
+%   \item<3-> Produit contravariant en son domaine et covariant en son codomaine:
+%     $\Pi x : \nat, \subset{x}{\nat}{x > 0} \subd \Pi \subset{x}{\nat}{x
+%       > 0}, \nat$.    
+%   \item<4-> Cette relation est symétrique ! (différent du sous-typage). % et
+%     % la conversion ?
+%   \end{itemize}
+
+
+\end{frame}
+
+\typenva
+
+\begin{frame}[t]
   \frametitle{Système algorithmique}
+  \begin{block}{Objectif}
+    Extraire un algorithme du système formel. Nouveaux jugements de
+    typage $\typea$ et coercion $\suba$.
+  \end{block}
+  
   \begin{itemize}
-  \item Passage du sous-typage à l'application ;
-  \item Décidabilité du sous-typage ;
-  \item ...
+  \item<2-> Passage de la coercion à l'application ;
+  \item<3-> Test de coercion dirigé par la syntaxe ;
+  \item<4->[$"=>"$] Algorithme.
   \end{itemize}
+
+  \only<2>{\AppA\DP}
+
+  \only<5>{
+    \begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
+      $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \suba T$.
+    \end{lemma}}
+  
 \end{frame}
 
-\subsection{Intégration à Coq}
+\subsection{Intégration à \Coq}
+\typenvi
+\begin{frame}[t]
+  \frametitle{Implémentation de la réécriture}
+  \subtiShortContent
 
-\begin{frame}
-  \frametitle{Implémentation}
-  \begin{itemize}
-  \item Réecriture vers \CCI ;
-  \item Variables existentielles.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Architecture}
-  \begin{itemize}
-  \item Le raffinement ;
-  \item Correspondance code écrit/extrait.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{exemple}
-  \TODO{Un exemple court, copie d'écran ?}
-\end{frame}
-
-
-\subsection{Résultats théoriques}
-
-\begin{frame}
-  \frametitle{Work in progress ;)}
-  \begin{itemize}
-  \item Correction \& complétude entre les différents systèmes.
-  \item Lemmes classiques sur le sous-typage.
-  \item Problème de la conversion (revoir Gang Chen).
-  \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Une preuve intéressante et courte ?}
+  \frametitle{Propriétés}
+
+  \begin{center}
+    \tiny
+    \AppI\DP
+  \end{center}
+  
+  \pause
+  \begin{theorem}[Correction de la réecriture]
+    Si $`G \typea t : U$ alors $`G' \typec t' : U'$.
+  \end{theorem}
+  
+  \pause
+  \begin{block}{Implémentation}
+    Variables existentielles $?_{`t}$ et \Refine{}.
+  \end{block}
+  % \item Correspondance code écrit/extrait.
 \end{frame}
+
+\subsection{Exemple}
+
+\begin{frame}{Exemple}
+  \tiny
+  \input{../pictures/subtac-euclid}
+\end{frame}
+
+% \subsection{Résultats théoriques}
+
+% \begin{frame}
+%   \frametitle{Work in progress ;)}
+%   \begin{itemize}
+%   \item Correction \& complétude entre les différents systèmes.
+%   \item Lemmes classiques sur le sous-typage.
+%   \item Problème de la conversion (revoir Gang Chen).
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Une preuve intéressante et courte ?}
+% \end{frame}
 
 \section*{Conclusion}
 \begin{frame}
@@ -467,5 +563,6 @@
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "slides"
-%%% LaTeX-command: "x=pdf; TEXINPUTS=\"../style:\" ${pdfx}latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:\" ${pdfx}latex"
+%%% TeX-PDF-mode: t
 %%% End: 

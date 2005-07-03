@@ -37,7 +37,7 @@
 {$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{T}{U}$}
 {$\subimpl{`G}
-  {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{(? : P[c~t/x])}}
+  {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}}
   {T}{\subset{x}{U}{P}}$}
 {}
 }
@@ -68,13 +68,11 @@
 \end{figure}
 }
 
-\def\subtiShort{
-\begin{figure}[h]
+\def\subtiShortContent{
   \begin{center}
     \def\fCenter{\subti}
-    
     \SubConvI\DP
-    \hspace{2cm}
+    \vspace{\infvspace}
     \SubLeftI\DP
 
     \vspace{\infvspace}
@@ -85,7 +83,11 @@
     
     \vspace{\infvspace}
     \SubSigmaI\DP
-  \end{center}
+  \end{center}}
+
+\def\subtiShort{
+\begin{figure}[h]
+  \subtiShortContent
   \label{subtyping-impl-rules}
   \caption{Réecriture du sous-typage vers \Coq}
 \end{figure}

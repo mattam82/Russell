@@ -1,11 +1,12 @@
-\newtheorem{theorem}{Théorême}[section]
-\newtheorem{lemma}[theorem]{Lemme}
-\newtheorem{fact}[theorem]{Fait}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{definition}[theorem]{Définition}
-\newtheorem{example}[theorem]{Exemple}
-\newtheorem{remark}[theorem]{Remarque}
-\newtheorem{corrolary}[theorem]{Corrolaire}
+\ifthenelse{\boolean{defineTheorem}}{
+  \newtheorem{theorem}{Théorême}[section]
+  \newtheorem{lemma}[theorem]{Lemme}
+  \newtheorem{fact}[theorem]{Fait}
+  \newtheorem{proposition}[theorem]{Proposition}
+  \newtheorem{definition}[theorem]{Définition}
+  \newtheorem{example}[theorem]{Exemple}
+  \newtheorem{remark}[theorem]{Remarque}
+  \newtheorem{corrolary}[theorem]{Corrolaire}}{}
 
 \makeatletter
 
