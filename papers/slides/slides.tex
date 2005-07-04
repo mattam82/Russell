@@ -1,4 +1,4 @@
-\documentclass[notheorems]{beamer} %notes=show
+\documentclass[notheorems]{beamer} %notes=show ,handout
 \usepackage[latin1]{inputenc}
 \usepackage{xspace} % To get the right spacings in front of : and so on
 \usepackage[french]{babel}
@@ -223,7 +223,7 @@
     ~|~\sdef{left} : A "->" \{A\} + \{B\} \\
     ~|~\sdef{right} : B "->" \{A\} + \{B\}. \\
     \\
-    \typeml~\sdef{bool} = \texttt{True} ~|~ \texttt{False}
+    \typeml~\sdef{sumbool} = \texttt{Left} ~|~ \texttt{Right}
   \end{array}$}
 
 %   \only<4>{faux!
@@ -255,14 +255,16 @@
     \note<1>{Inférence limitée (arguments implicites), 
       sous-typage peu puissant, long}
   \item<5-> Mêle logique et calcul.
-    \note<5>{Pas de séparation nette entre calcul et preuve dans les
-      termes, expertise nécessaire}
   \end{itemize}
 
-  \only<2-4>{$\Definition~\sref{lt\_ge\_dec} : \forall x~y : \nat, 
-    \{~x < y ~\} + \{~x ``>= y~\}$}
-  \only<3>{\input{lt_ge_dec-proof}}
-  \only<4>{\input{lt_ge_dec-tactic}}
+  \only<2-4>{\input{le_lt_dec-def}}
+
+%     $\Definition~\sref{lt\_ge\_dec} : \forall x~y : \nat, 
+%     \{~x < y ~\} + \{~x ``>= y~\}$}
+  \only<3>{\scriptsize\input{le_lt_dec-term}}
+  \only<4>{\input{le_lt_dec-tactic}}
+  \only<5>{\input{le_lt_dec-extterm}}
+
 %     $\tactic{intros} ; \tactic{elim} (\sref{le_gt_dec}~y~x) ;
 %     \tactic{auto with arith}$.
 %     $\Proof{}~(fun x y : \setN \Rightarrow
@@ -271,35 +273,36 @@
 %     (le_gt_dec y x))$.
 
   
-  \only<5->{
-    $\pi_1 : \subset{x}{T}{P} "->" T$
-
-    $\sdef{div} : \forall a : \nat, \forall b : \subset{n}{\nat}{n \neq
-      0}
-    "->" \{~q : \nat~\&~\{~r : \nat `| r < (\pi_1~b) `^ a = (\pi_1~b) * q + r ~\} ~\}$
-
-    \vspace{.5em}
-    $\ldots \sref{div}~1~(\sref{elt}~(\lambda x : \nat "->" x \neq
-    0)~x~p) \ldots$}
-
   \only<6->{
+    $\begin{array}{l}
+      \pi_1 : \subset{x}{T}{P} "->" T \\
+      \sdef{div} : \forall a : \nat, \forall b : \subset{n}{\nat}{n \neq
+        0}, \\
+      \{~q : \nat~\&~\{~r : \nat `| r < (\pi_1~b) `^ a = (\pi_1~b) * q +
+      r ~\} ~\} \\
+      \\
+      \ldots \sref{div}~1~(\sref{elt}~(\lambda x : \nat "->" x \neq
+      0)~x~p) \ldots
+    \end{array}$}
+
+  \only<7->{
     \begin{block}{Objectif}
       \alert{Développer un langage plus facile d'utilisation conservant
         l'essentiel de l'expressivité de \CCI.}
     \end{block}}
-  \note<4->{A long terme, preuve de programmes ML annotés}
+  %\note<4->{A long terme, preuve de programmes ML annotés}
 \end{frame}
 
 \subsection{Travaux connexes}
 
 \begin{frame}
   \frametitle{Inversion de l'extraction}
-  \begin{block}{La tactique \Program (\name{Catherine Parent})}
+  \begin{block}{La tactique \Program{} (\name{Catherine Parent})}
     \begin{itemize}
     \item[{\bf +}] Méthode générale pour la synthèse de preuves à partir de
       programmes ;
       
-    \item[{\bf -}] Technique complexe, peu intuitive et ne permettant pas la
+    \item[{\bf --}] Technique complexe, peu intuitive et ne permettant pas la
       réutilisation ;
       \note<1->{ Définition d'une extraction inversible, nécessite des
         heuristiques (unification).
@@ -326,7 +329,7 @@
 
   \begin{block}{Idée} 
     Un objet de type $T$ peut être vu comme un objet de
-    type $\subset{x}{T}{P}$ pour toute propriété $P$ correcte
+    type $\subset{x}{T}{P}$ % pour toute propriété $P$ correcte
     et vice-versa.
   \end{block}
 
@@ -348,61 +351,84 @@
     \end{tabular}
     \pause
 
-  \item[{\bf +}] Succès pratique ;
-  \item<5->[{\bf -}] Architecture de \PVS{} peu sûre (bugs, critère de De Bruijn).
+  \item[{\bf +}] Succès pratique ; \pause
+  \item[{\bf --}] Architecture de \PVS{} peu sûre (bugs, critère de De Bruijn).
   \end{itemize}  
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Sous-typage \& coercions}  
+  \only<1>{
+    \begin{center}
+      \begin{figure}
+        \subfigure[Sous-typage]{\BAX{}
+          {$t : A$}
+          {$A \sub B$}
+          {$t : B$}
+          {}
+          \DP}
+        \subfigure[Coercions]{\BAX{}
+          {$t : A$}
+          {$c : A "->" B$}
+          {$c~t : B$}
+          {}
+          \DP
+        }
+      \end{figure}
+    \end{center}
+  }
+  
   \pause
+  \only<2->{
   \begin{itemize}
-  \item Zhaohui Luo: ``\emph{coercive subtyping}'', \pause problèmes de \alert<3>{cohérence} et \alert<4>{transitivité} ;
-  \item<5-> Amokrane Saïbi: héritage, implémentation dans \Coq. % pour tout PTS
-  \item<6-> Gang Chen: sous-typage par coercions avec types dépendants, conversion ;
+  \item Amokrane Saïbi: héritage, implémentation dans \Coq. % pour tout PTS
+  \item<5-> Gang Chen: sous-typage par coercions avec types dépendants,
+    conversion ;
+  \item<6-> Zhaohui Luo: ``\emph{coercive subtyping}'' ; %, \pause problèmes de \alert<3>{cohérence} et \alert<4>{transitivité} ;
   \end{itemize}
-
-  \only<3>{
-    \begin{center}
-      \begin{pgfpicture}{0cm}{0cm}{2cm}{2cm}
-        \pgfnodebox{A}[virtual]{\pgfxy(1,0)}{A}{2pt}{2pt}
-        \pgfnodebox{B}[virtual]{\pgfxy(0,1)}{B}{2pt}{2pt}
-        \pgfnodebox{C}[virtual]{\pgfxy(2,1)}{C}{2pt}{2pt}
-        \pgfnodebox{D}[virtual]{\pgfxy(1,2)}{D}{2pt}{2pt}
-
-        \pgfnodesetsepstart{0pt}
-        \pgfnodesetsepend{5pt}
-        \pgfsetendarrow{\pgfarrowtriangle{4pt}}
-
-        \pgfnodeconnline{A}{B}
-        \pgfnodeconnline{B}{D}
-        \pgfnodeconnline{C}{D}
-        \pgfnodeconnline{A}{C}
-      \end{pgfpicture}
-    \end{center}
   }
 
-  \only<4>{
-    \begin{center}
-      \begin{pgfpicture}{0cm}{0cm}{2cm}{2cm}
-        \pgfnodebox{A}[virtual]{\pgfxy(1,0)}{A}{2pt}{2pt}
-        \pgfnodebox{B}[virtual]{\pgfxy(0,1)}{B}{2pt}{2pt}
-        \pgfnodebox{C}[virtual]{\pgfxy(2,1)}{C}{2pt}{2pt}
-        \pgfnodebox{D}[virtual]{\pgfxy(1,2)}{D}{2pt}{2pt}
+%   \only<3>{
+%     \begin{center}
+%       \begin{pgfpicture}{0cm}{0cm}{2cm}{2cm}
+%         \pgfnodebox{A}[virtual]{\pgfxy(1,0)}{A}{2pt}{2pt}
+%         \pgfnodebox{B}[virtual]{\pgfxy(0,1)}{B}{2pt}{2pt}
+%         \pgfnodebox{C}[virtual]{\pgfxy(2,1)}{C}{2pt}{2pt}
+%         \pgfnodebox{D}[virtual]{\pgfxy(1,2)}{D}{2pt}{2pt}
 
-        \pgfnodesetsepstart{0pt}
-        \pgfnodesetsepend{5pt}
-        \pgfsetendarrow{\pgfarrowtriangle{4pt}}
+%         \pgfnodesetsepstart{0pt}
+%         \pgfnodesetsepend{5pt}
+%         \pgfsetendarrow{\pgfarrowtriangle{4pt}}
 
-        \pgfnodeconnline{A}{B}
-        \pgfnodeconnline{B}{C}
-        \pgfnodeconnline{C}{D}
+%         \pgfnodeconnline{A}{B}
+%         \pgfnodeconnline{B}{D}
+%         \pgfnodeconnline{C}{D}
+%         \pgfnodeconnline{A}{C}
+%       \end{pgfpicture}
+%     \end{center}
+%   }
 
-        \pgfsetdash{{0.2cm}{0.2cm}{0.2cm}{0.2cm}{0.2cm}}{0cm}
-        \pgfnodeconnline{A}{D}
-      \end{pgfpicture}
-    \end{center}
-  }
+%   \only<4>{
+%     \begin{center}
+%       \begin{pgfpicture}{0cm}{0cm}{2cm}{2cm}
+%         \pgfnodebox{A}[virtual]{\pgfxy(1,0)}{A}{2pt}{2pt}
+%         \pgfnodebox{B}[virtual]{\pgfxy(0,1)}{B}{2pt}{2pt}
+%         \pgfnodebox{C}[virtual]{\pgfxy(2,1)}{C}{2pt}{2pt}
+%         \pgfnodebox{D}[virtual]{\pgfxy(1,2)}{D}{2pt}{2pt}
+
+%         \pgfnodesetsepstart{0pt}
+%         \pgfnodesetsepend{5pt}
+%         \pgfsetendarrow{\pgfarrowtriangle{4pt}}
+
+%         \pgfnodeconnline{A}{B}
+%         \pgfnodeconnline{B}{C}
+%         \pgfnodeconnline{C}{D}
+
+%         \pgfsetdash{{0.2cm}{0.2cm}{0.2cm}{0.2cm}{0.2cm}}{0cm}
+%         \pgfnodeconnline{A}{D}
+%       \end{pgfpicture}
+%     \end{center}
+%   }
     
 
 \end{frame}
@@ -443,8 +469,6 @@
             & | & \letml~(x, y) = `a ~\inml~ `a \\ }
           \uncover<3->{
             & | & (x \coloneqq `a,~`a~: `t) \\}
-          \uncover<4->{
-            & | & \ifml~`a~\thenml~`a~\elseml~`a}
         \end{array}$
       \end{block}
     \end{column}
@@ -453,17 +477,17 @@
         $\begin{array}{lcl}
           `t & \Coloneqq & \text{\emph{constante}} \\
           & | & `t "->" `t \\
+          & | & `t~`a \\
           & | & \subset{x}{`t}{`t} \\
           \uncover<2->{
             & | & `t * `t \\}
           \uncover<3->{
             & | & \Sigma x : `t. `t \\
             & | & \Pi x : `t. `t \\}
-          \uncover<4->{
-            & | &  x \\
-            & | & `t~`t \\
-            & | & `t~`a \\
-          }
+%          \uncover<4->{
+%             & | &  x \\
+%             & | & `t~`t \\
+%          }
         \end{array}$
       \end{block}
     \end{column}
@@ -534,63 +558,92 @@
 \begin{frame}[t,label=sysalgo]
   \frametitle{Système algorithmique}
   \begin{block}{Objectif}
-    Extraire un algorithme du système formel. Nouveaux jugements de
-    typage $\typea$ et coercion $\suba$.
+    Extraire un algorithme du système formel. Nouveau jugement de
+    typage $\typea$.
   \end{block}
   
   \begin{itemize}
   \item<2-> Intégration de la coercion à l'application 
     \hyperlink{typingdecl<2>}{\beamergotobutton{}} ;
     
-  \item<3-> Test de coercion dirigé par la syntaxe
+  \item<3-> Algorithme de coercion dirigé par la syntaxe
     \hyperlink{subtypingdecl}{\beamergotobutton{}} ;
-  \item<4->[$"=>"$] Algorithme.
+  \item<4->[$"=>"$] Algorithme de typage.
   \end{itemize}
 
   \only<2>{\AppA\DP}
 
   \only<5>{
     \begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
-      $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \suba T$.
+      $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \subd T$.
     \end{lemma}}
   
 \end{frame}
 
 \subsection{Intégration à \Coq}
 \typenvi
-\begin{frame}[t]
-  \frametitle{Implémentation de la réécriture}
-  \subtiShortContent
 
+\renewcommand{\subimpl}[4]{{\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
+
+\begin{frame}[t]
+  \frametitle{Définition de la réécriture}
+
+    \begin{center}
+      \def\fCenter{\subti}          
+      \SubConvI\DP
+
+      \vspace{0.25cm}
+      \SubLeftI\DP
+      
+      \vspace{0.25cm}
+      \SubRightI\DP
+      
+      \vspace{0.25cm}
+      \SubProdI\DP
+      
+      \vspace{0.25cm}
+      \SubSigmaI\DP
+    \end{center}
 \end{frame}
+
+\renewcommand{\subimpl}[4]{#2 : #3 \sub #4}
+
+\renewcommand{\QAX}[7]{\AXC{#3}\noLine\UIC{#2}\AXC{#5}\noLine\UIC{#4}
+  \LeftRuleLabel{#1}\BIC{#6}}
 
 \begin{frame}
   \frametitle{Propriétés}
 
   \begin{center}
-    \tiny
     \AppI\DP
   \end{center}
   
   \pause
   \begin{theorem}[Correction de la réécriture]
-    Si $`G \typea t : U$ et $\timpl{`G}{t}{U}{`G'}{t'}{U'} alors
-    \typec t' : U'$.
+    Si $`G \typea t : U$ et $\timpl{`G}{t}{U}{`G'}{t'}{U'}$ alors
+    $`G' \typec t' : U'$.
   \end{theorem}
   
-  \pause
-  \begin{block}{Implémentation}
-    Variables existentielles $?_{`t}$ et \Refine{}.
-  \end{block}
   % \item Correspondance code écrit/extrait.
 \end{frame}
 
-\subsection{Exemple}
+\subsection{Implémentation et exemple}
 
 \begin{frame}
-  \tiny
+  \begin{block}{Implémentation}
+    Variables existentielles $?_{`t}$ et \Refine{}.
+  \end{block}
+
+  \small
   \input{subtac-euclid}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Exemple: obligations de preuve}
+  \small
+  \input{subtac-euclid-tcc}
+\end{frame}
+
 
 % \subsection{Résultats théoriques}
 
@@ -619,14 +672,14 @@
   \item
     Bonne intégration à l'environnement (en cours) ; 
   \item 
-    Justification formelle du \ps{}.
+    Justification formelle du ``\ps{}''.
   \end{itemize}
   
+  \pause
   % The following outlook is optional.
   \vskip0pt plus.5fill
   \begin{itemize}
-  \item
-    Futur
+  \item[\bf{$"=>"$}] Futur
     \begin{itemize}
     \item
       Intégration des inductifs.

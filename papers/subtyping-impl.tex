@@ -24,8 +24,8 @@
 }
 
 \def\SubLeftI{%
-\BAX{SubLeft}
-{$`G, x : U \typec P : \Prop$}
+\UAX{SubLeft}
+%{$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{U}{V}$}
 {$\subimpl{`G}{c `o \pi_1}
   {\subset{x}{U}{P}}{V}$}
@@ -33,8 +33,8 @@
 }
     
 \def\SubRightI{%
-\BAX{SubRight}
-{$`G, x : U \typec P : \Prop$}
+\UAX{SubRight}
+%{$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{T}{U}$}
 {$\subimpl{`G}
   {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}}
