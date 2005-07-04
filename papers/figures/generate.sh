@@ -1,6 +1,6 @@
 #!/bin/sh
 
-COQDOC=/home/sozeau/V8/bin/coqdoc
+COQDOC=coqdoc
 
 generate() {
 	$COQDOC --latex --body-only $1.v > $1.tex 

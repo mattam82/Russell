@@ -23,8 +23,9 @@
 {}
 }
 
-\def\SubLeftI{%
-\UAX{SubLeft}
+\def\SubLeftI{\SubSubI}
+\def\SubSubI{%
+\UAX{SubSub}
 %{$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{U}{V}$}
 {$\subimpl{`G}{c `o \pi_1}
@@ -32,8 +33,9 @@
 {}
 }
     
-\def\SubRightI{%
-\UAX{SubRight}
+\def\SubRightI{\SubProofI}
+\def\SubProofI{%
+\UAX{SubProof}
 %{$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{T}{U}$}
 {$\subimpl{`G}

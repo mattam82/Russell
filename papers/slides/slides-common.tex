@@ -27,13 +27,25 @@
 %\mode<handout> 
 \mode<presentation>
 {
-  \usetheme{Warsaw} %Madrid
-  % or ...
-  \usecolortheme{crane}
+\useinnertheme[shadow=true]{rounded}
+\useoutertheme{shadow}
+\usecolortheme{orchid}
+\usecolortheme{whale}
+\setbeamertemplate{footline}{
+  \quad {\bf \insertpagenumber}
+}
 
-  \usefonttheme{professionalfonts}
-  
-  \setbeamercovered{transparent}
+\setbeamerfont{block title}{size={}}
+\usefonttheme{professionalfonts}
+
+\setbeamercovered{transparent}
+
+\mode
+<all>
+%\usetheme{Warsaw} %Madrid
+  % or ...
+  %\usecolortheme{crane}
+
   % or whatever (possibly just delete it)
 }
 
@@ -167,8 +179,14 @@
   
   \begin{itemize}
   \item Assistant de preuve ;
-  \item Basé sur l'isomorphisme de {\sc Curry-Howard} ;
-  \item Noyau réduit réalisant le typage du \CCIfull.
+  \item Basé sur l'isomorphisme de {\sc Curry-Howard}:
+    \begin{tabular}{ccc}
+      preuves & = & programmes \\
+      formules & = & types \\
+      \pause
+      vérifier & = & typer
+    \end{tabular}
+  %\item Noyau réduit réalisant le typage du \CCIfull.
   \end{itemize}
   
 \end{frame}
@@ -183,8 +201,8 @@
   % Use very short sentences or short phrases.
   \begin{itemize}
   \item<1-> Types dépendants ;
-  \item<2-> Ordre supérieur ;
-  \item<3-> Inductifs
+%  \item<2-> Ordre supérieur ;
+  \item<2-> Inductifs
   \end{itemize}
     
   \vspace{1cm}
@@ -195,35 +213,46 @@
 %       ~\} ~\}$
   \only<1>{\def\b{{\color{red}b}}
     \def\a{{\color{red}a}}\def\q{{\color{red}q}}\def\r{{\color{red}r}}
-    $\begin{array}{l}
-      \Definition~\sdef{div} : \forall \a : \nat, \forall \b : \nat, \b \neq 0 "->"
+    $\begin{array}{cl}
+      \text{\Coq} & \Definition~\sdef{div} : \forall \a : \nat, \forall \b : \nat, \b \neq 0 "->"
       \\
-      \{~\q : \nat~\&~\{~\r : \nat `| \r < \b `^ \a = \b * \q + \r ~\} ~\} \\
-      \\
-      \\
-      \valml~\sref{div} : \nat "->" \nat "->" \nat * \nat
+      & \{~\q : \nat~\&~\{~\r : \nat `| \r < \b `^ \a = \b * \q + \r ~\} ~\} \\
+      & \\
+      \text{\ML} & \valml~\sref{div} : \nat "->" \nat "->" \nat * \nat
     \end{array}
     $}  
 
-  \only<2>{\def\A{{\color{red}A}}\def\B{{\color{red}B}}
-    $\begin{array}{l}
-      \Definition~\sdef{map} : \forall \A~\B : \Set, , \forall f : \A
-      "->" \B, \forall l : \listml~\A, \\
-      \{~l' : \listml~\B `| \forall n : \nat, n < \sref{length}~l "=>"
-      nth~\B~n~l' = f~(nth~\A~n~l)~\} \\
-      \\
-      \\
-      \valml~\sref{map} : (`a "->" `b) "->" `a~\listml "->" `b~\listml
+%   \only<2>{\def\A{{\color{red}A}}\def\B{{\color{red}B}}
+%     $\begin{array}{l}
+%       \Definition~\sdef{map} : \forall \A~\B : \Set, , \forall f : \A
+%       "->" \B, \forall l : \listml~\A, \\
+%       \{~l' : \listml~\B `| \forall n : \nat, n < \sref{length}~l "=>"
+%       nth~\B~n~l' = f~(nth~\A~n~l)~\} \\
+%       \\
+%       \\
+%       \valml~\sref{map} : (`a "->" `b) "->" `a~\listml "->" `b~\listml
+%     \end{array}$}
+
+  \only<2>{
+    $\begin{array}{cl}
+      \text{\Coq} & \Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq := \\
+      & ~|~\sdef{left} : A "->" \{A\} + \{B\} \\
+      & ~|~\sdef{right} : B "->" \{A\} + \{B\}. \\
+      & \Definition~\sdef{lt\_le\_dec}~: \forall x~y : \nat, \\
+      & \{~ x < y ~\} + \{~ x ``>= y ~\}. \\
+      & \\
+      \text{\ML} & \typeml~\sdef{sumbool} = \texttt{Left} ~|~
+      \texttt{Right} \\
+      & \valml~\sref{lt\_le\_dec} : \nat "->" \nat "->" \sref{sumbool}
     \end{array}$}
 
-  \only<3>{
-    $\begin{array}{l}
-      \Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq := \\
-    ~|~\sdef{left} : A "->" \{A\} + \{B\} \\
-    ~|~\sdef{right} : B "->" \{A\} + \{B\}. \\
-    \\
-    \typeml~\sdef{sumbool} = \texttt{Left} ~|~ \texttt{Right}
-  \end{array}$}
+%     $\begin{array}{cl}
+%       \text{\Coq} & \Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq := \\
+%       & ~|~\sdef{left} : A "->" \{A\} + \{B\} \\
+%       & ~|~\sdef{right} : B "->" \{A\} + \{B\}. \\
+%       & \\
+%       \text{\ML} & \typeml~\sdef{sumbool} = \texttt{Left} ~|~ \texttt{Right}
+%   \end{array}$}
 
 %   \only<4>{faux!
 %     $(\lambda x : \text{Value}.
@@ -233,21 +262,21 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Un langage cible idéal}
+  \frametitle{Un langage puissant}
   
-  \begin{itemize}[<+-| handout:1>]
+  \begin{itemize}
   \item Grande richesse pour la spécification et l'implémentation ;
-  \item Garantie de la correction ;
+  \item Vérification automatique de la correction par typage;
   \item Extraction vers du code efficace.
 %     Distinction entre parties informatives et logiques dans
 %     le système de type. \uncover<3-| handout:1>{}
   \end{itemize}
-    
+
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Difficultés}
-
+  
   \begin{itemize}
   \item<1-> Verbeux ;
     \only<4>{($"=>"$ \alert{tactiques})}
@@ -255,7 +284,7 @@
       sous-typage peu puissant, long}
   \item<5-> Mêle logique et calcul.
   \end{itemize}
-
+  
   \only<2-4>{\input{le_lt_dec-def}}
 
 %     $\Definition~\sref{lt\_ge\_dec} : \forall x~y : \nat, 
@@ -274,14 +303,12 @@
   
   \only<6->{
     $\begin{array}{l}
-      \pi_1 : \subset{x}{T}{P} "->" T \\
-      \sdef{div} : \forall a : \nat, \forall b : \subset{n}{\nat}{n \neq
-        0}, \\
-      \{~q : \nat~\&~\{~r : \nat `| r < (\pi_1~b) `^ a = (\pi_1~b) * q +
-      r ~\} ~\} \\
+      %\pi_1 : \subset{x}{T}{P} "->" T \\
+      \sdef{div} : \forall a b : \nat, b \neq 0 "->" \ldots...  \\
+%       \{~q : \nat~\&~\{~r : \nat `| r < (\pi_1~b) `^ a = (\pi_1~b) * q +
+%       r ~\} ~\} \\
       \\
-      \ldots \sref{div}~1~(\sref{elt}~(\lambda x : \nat "->" x \neq
-      0)~x~p) \ldots
+      \ldots \sref{div}~1~x~\alert{p} \ldots
     \end{array}$}
 
   \only<7->{
@@ -296,7 +323,7 @@
 
 \begin{frame}
   \frametitle{Inversion de l'extraction}
-  \begin{block}{La tactique \Program{} (\name{Catherine Parent})}
+  \begin{block}{La tactique \Program{} (\name{Catherine Parent}), 94}
     \begin{itemize}
     \item[{\bf +}] Méthode générale pour la synthèse de preuves à partir de
       programmes ;
@@ -322,7 +349,8 @@
   \end{block}
   
   \begin{itemize}
-  \item Très utilisé pour spécifier ($\sref{div}, \sref{map}$) ;
+  \item Très utilisé pour spécifier ($\sref{div}, \sref{map}$), présent
+    en mathématiques ;    
   \item Séparation objet / propriété ;
   \end{itemize}
 
@@ -331,61 +359,56 @@
     type $\subset{x}{T}{P}$ % pour toute propriété $P$ correcte
     et vice-versa.
   \end{block}
-
+  
 \end{frame}
 
 \begin{frame}
   \frametitle{\ps{} dans \PVS}
 
   \begin{itemize}
-  \item<1-> Gestion spécifique des types sous-ensemble, génération de
+  \item Gestion spécifique des types sous-ensemble, génération de
     ``\emph{Type-checking conditions}'' (obligations de preuve).
-    \pause
-    
     \begin{tabular}{lcll}
-      $t : \subset{x}{T}{P}$ & $"->"$ & $t : T$
-      &  \pause \\
-      $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
-      & si preuve de $P[x/t]$
+      $t : \subset{x}{T}{P}$ & utilisé comme & $t : T$
+      &  \\
+      $t : T$ & utilisé comme & $t : \subset{x}{T}{P}$ 
+      & si $P[x/t]$
     \end{tabular}
     \pause
 
   \item[{\bf +}] Succès pratique ; \pause
-  \item[{\bf --}] Architecture de \PVS{} peu sûre (bugs, critère de De Bruijn).
+  \item[{\bf --}] Architecture de \PVS{} peu sûre. % bugs, de Bruijn
   \end{itemize}  
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Sous-typage \& coercions}  
-  \only<1>{
-    \begin{center}
-      \begin{figure}
-        \subfigure[Sous-typage]{\BAX{}
-          {$t : A$}
-          {$A \sub B$}
-          {$t : B$}
-          {}
-          \DP}
-        \subfigure[Coercions]{\BAX{}
-          {$t : A$}
-          {$c : A "->" B$}
-          {$c~t : B$}
-          {}
-          \DP
-        }
-      \end{figure}
-    \end{center}
-  }
+  \begin{center}
+    \begin{figure}
+      \subfigure[Sous-typage (implicite)]{\BAX{}
+        {$t : A$}
+        {$A \sub B$}
+        {$t : B$}
+        {}
+        \DP}
+      \subfigure[Coercion (explicite)]{\BAX{}
+        {$t : A$}
+        {$c : A "->" B$}
+        {$c~t : B$}
+        {}
+        \DP
+      }
+    \end{figure}
+  \end{center}
   
   \pause
-  \only<2->{
+%   \only<2->{
   \begin{itemize}
-  \item Amokrane Saïbi: héritage, implémentation dans \Coq. % pour tout PTS
-  \item<5-> Gang Chen: sous-typage par coercions avec types dépendants,
-    conversion ;
-  \item<6-> Zhaohui Luo: ``\emph{coercive subtyping}'' ; %, \pause problèmes de \alert<3>{cohérence} et \alert<4>{transitivité} ;
+  \item Amokrane Saïbi: héritage, implémentation dans \Coq ; % pour tout PTS
+  \item Gang Chen: sous-typage par coercions avec types dépendants ; %    \pause
+  \item Zhaohui Luo: ``\emph{coercive subtyping}'', aspects théoriques. %, \pause problèmes de \alert<3>{cohérence} et \alert<4>{transitivité} ;
   \end{itemize}
-  }
+%  }
 
 %   \only<3>{
 %     \begin{center}
@@ -434,22 +457,23 @@
 
 \section{Contribution}
 
-\subsection{Calcul de coercion par prédicats}
-\begin{frame}
+\subsection{Langage pour la programmation dans \Coq} %Calcul de coercion par prédicats}
+\begin{frame}[t]
   \frametitle{Architecture}
   
   \begin{itemize}
-  \item Écriture dans un langage avec coercions implicites ; \pause
-  \item Réécriture automatique vers \CCI ; 
-    \begin{tabular}{lclcl}
-      $t : \subset{x}{T}{P}$ & $"->"$ & $t : T$
-      & $"~>"$ & $\pi_1~t$ \pause \\
-      $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
-      & $"~>"$ & $\sref{elt}~{t}~(? : P[t/x])$
-    \end{tabular}
-    \pause
-  \item Preuve des obligations.
+  \item<1-> Écriture dans un langage avec coercions implicites;
+  \item<2-> Réécriture automatique vers \CCI ; 
+  \item<3-> Preuve des obligations.
   \end{itemize}
+
+  \begin{tabular}{lclcl}
+    $t : \subset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
+    & \only<2->{$"~>"$} & \only<2->{$\pi_1~t$ \\
+      $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
+      & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
+  \end{tabular}
+  
 \end{frame}
 
 \begin{frame}
@@ -460,14 +484,13 @@
         $\begin{array}{lcl}
           `a & \Coloneqq & \text{\emph{constante}} \\
           & | & x \\
+          & | & (`a,~`a) \\ 
           & | & \funml{}~x~:~`t "=>" `a \\
-          & | & \letml~x = `a ~\inml~`a \\
           & | & `a~`a \\
-          \uncover<2->{
-            & | & (`a,~`a) \\ 
-            & | & \letml~(x, y) = `a ~\inml~ `a \\ }
-          \uncover<3->{
-            & | & (x \coloneqq `a,~`a~: `t) \\}
+          & | & \letml~x = `a ~\inml~`a \\
+          & | & \letml~(x, y) = `a ~\inml~ `a \\
+          \uncover<2->{ 
+            & | & (x \coloneqq `a,~`a~: `t)}
         \end{array}$
       \end{block}
     \end{column}
@@ -475,15 +498,14 @@
       \begin{block}{Types}
         $\begin{array}{lcl}
           `t & \Coloneqq & \text{\emph{constante}} \\
+          & | & `t * `t \\
           & | & `t "->" `t \\
-          & | & `t~`a \\
+          & | & \alert{`t~`a} \\
           & | & \subset{x}{`t}{`t} \\
           \uncover<2->{
-            & | & `t * `t \\}
-          \uncover<3->{
             & | & \Sigma x : `t. `t \\
-            & | & \Pi x : `t. `t \\}
-%          \uncover<4->{
+            & | & \Pi x : `t. `t}
+%          \uncover<3->{
 %             & | &  x \\
 %             & | & `t~`t \\
 %          }
@@ -499,43 +521,52 @@
   \typenvd
   \begin{center}
     \vdots
+%    
+%    \vspace{0.5cm}
+%    \Conv\DP
     
     \vspace{0.5cm}
-    \Conv\DP
-    
-    \vspace{0.5cm}
-    \App\DP
+    \BAX{App}
+    {$`G \seq f : \Pi x : V. W $}
+    {$`G \seq u : V $}
+    {$`G \seq (f u) : \alert<1>{W[ u / x ]}$}
+    {$$}
+    \DP
     
     \pause
     \vspace{0.5cm}
     \Coerce\DP  
   \end{center}
 
-  \pause
-  Traitement de la conversion (\irule{Conv}).
+%   \pause
+%   Traitement de la conversion (\irule{Conv}).
 
   \hyperlink{sysalgo<2>}{\beamerreturnbutton{}}  
 \end{frame}
+
+\def\eqbi{`=}
 
 \begin{frame}[t,label=subtypingdecl]
   \frametitle{Coercion}
   \begin{center}
     \def\fCenter{\subd}
+    
     \SubConv\DP
-
-    \vspace{0.5cm}
-    \SubProof\DP
     \SubSub\DP
 
     \vspace{0.5cm}
-    \SubProd\DP
-    \SubSigma\DP
-    %\SubTrans\DP
+    \uncover<2->{\SubProof\DP
+      \only<2>{$\nat~\sub \subset{x}{\nat}{x \neq 0}$}}
+    
+    \vspace{0.5cm}
+    \uncover<3->{\SubProd\DP
+      \SubSigma\DP}
   \end{center}
 
-  \begin{lemma}[Transitivité de la coercion]
+  \uncover<3->
+  {\begin{lemma}[Transitivité de la coercion]
     Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
-  \end{lemma}
+  \end{lemma}}
   
   \hyperlink{sysalgo<3>}{\beamerreturnbutton{}}
 %   \begin{itemize}
@@ -558,63 +589,95 @@
   \frametitle{Système algorithmique}
   \begin{block}{Objectif}
     Extraire un algorithme du système formel. Nouveau jugement de
-    typage $\typea$.
+    typage $\typea$ qu'on veut \emph{décidable}.
   \end{block}
   
   \begin{itemize}
   \item<2-> Intégration de la coercion à l'application 
     \hyperlink{typingdecl<2>}{\beamergotobutton{}} ;
     
-  \item<3-> Algorithme de coercion dirigé par la syntaxe
+  \item<3-> Algorithme de coercion déterministe
     \hyperlink{subtypingdecl}{\beamergotobutton{}} ;
-  \item<4->[$"=>"$] Algorithme de typage.
   \end{itemize}
 
-  \only<2>{\AppA\DP}
+  \only<2>{\AppA\DP
 
-  \only<5>{
+    \begin{eqnarray*}
+      \mu~\subset{x}{U}{P} & "=>" & \mu~U \\
+      \mu~x                & "=>" & x
+    \end{eqnarray*}
+  }
+  
+  \only<4>{
     \begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
       $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \subd T$.
-    \end{lemma}}
+    \end{lemma}
+    \begin{fact}[Décidabilité de $\typea$]
+      Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
+    \end{fact}
+  }
   
 \end{frame}
 
-\subsection{Intégration à \Coq}
+\subsection{Plongement dans \Coq}
 \typenvi
 
 \renewcommand{\subimpl}[4]{{\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
 
 \begin{frame}[t]
-  \frametitle{Définition de la réécriture}
-
+  \frametitle{Coercions explicites}
+  % Remettre de la logique, véritable sémantique 
+  \pause
     \begin{center}
       \def\fCenter{\subti}          
       \SubConvI\DP
 
       \vspace{0.25cm}
-      \SubLeftI\DP
-      
+      \SubSubI\DP
+
       \vspace{0.25cm}
-      \SubRightI\DP
-      
+      \uncover<3->{\UAX{SubProof}
+      % {$`G, x : U \typec P : \Prop$}
+      {$\subimpl{`G}{c}{T}{U}$}
+      {$\subimpl{`G}
+        {\lambda t : T. \sref{elt}~(c~t)~?_{P[c~t/x]}}
+        {T}{\subset{x}{U}{P}}$}
+      {}\DP}
+      % \SubRightI\DP
+      \uncover<4->{
       \vspace{0.25cm}
       \SubProdI\DP
       
       \vspace{0.25cm}
-      \SubSigmaI\DP
+      \SubSigmaI\DP}
     \end{center}
+
+    \only<3>{$0 : \nat$ et $\nat~\sub \subset{x}{\nat}{x \neq 0}$
+      mais $(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]})) 0 
+      `= \sref{elt}~0~?_{\alert{0 \neq 0}}$}
+
 \end{frame}
 
 \renewcommand{\subimpl}[4]{#2 : #3 \sub #4}
 
-\renewcommand{\QAX}[7]{\AXC{#3}\noLine\UIC{#2}\AXC{#5}\noLine\UIC{#4}
+\renewcommand{\timpl}[6]{#1 \typea #2 : #3\uncover<2->{"~>" #4 \typec #5 : #6}}
+
+\newcommand{\QAXII}[7]{\AXC{\uncover<2->{#3}}\noLine\UIC{#2}
+  \AXC{\uncover<2->{#5}}\noLine\UIC{#4}
   \LeftRuleLabel{#1}\BIC{#6}}
 
 \begin{frame}
   \frametitle{Propriétés}
 
   \begin{center}
-    \AppI\DP
+  \QAXII{App}
+  {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
+  {$\mu~T' `= (\pi, \Pi x : V'. W')$}
+  {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
+  {$\subimpl{`G'}{c}{U'}{V'}$}
+  {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
+  {}
+\DP
   \end{center}
   
   \pause
@@ -632,7 +695,10 @@
   \begin{block}{Implémentation}
     Variables existentielles $?_{`t}$ et \Refine{}.
   \end{block}
+\end{frame}
 
+\begin{frame}
+  \frametitle{Exemple: Définition}
   \small
   \input{subtac-euclid}
 \end{frame}

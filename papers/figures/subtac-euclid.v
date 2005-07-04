@@ -1,4 +1,3 @@
-Require Import Coq.Arith.Arith.
 Definition div_prop (a b q r : nat) := r < b /\ a = b * q + r.
 
 Recursive program mydiv (a : nat) using lt proof lt_wf :
