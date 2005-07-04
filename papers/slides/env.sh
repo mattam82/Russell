@@ -1,1 +1,1 @@
-export TEXINPUTS=${TEXINPUTS}../style:
+export TEXINPUTS=..:../style:../figures:${TEXINPUTS}

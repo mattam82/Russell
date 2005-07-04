@@ -208,8 +208,8 @@
 
   \only<2>{\def\A{{\color{red}A}}\def\B{{\color{red}B}}
     $\begin{array}{l}
-      \Definition~\sdef{map} : \forall \A~\B : \Set, \forall l :
-      \listml~\A, \forall f : \A "->" \B, \\
+      \Definition~\sdef{map} : \forall \A~\B : \Set, , \forall f : \A
+      "->" \B, \forall l : \listml~\A, \\
       \{~l' : \listml~\B `| \forall n : \nat, n < \sref{length}~l "=>"
       nth~\B~n~l' = f~(nth~\A~n~l)~\} \\
       \\
@@ -326,8 +326,8 @@
 
   \begin{block}{Idée} 
     Un objet de type $T$ peut être vu comme un objet de
-    type $\subset{x}{T}{P}$ pour toute propriété $P$ bien
-    formée et vice-versa.
+    type $\subset{x}{T}{P}$ pour toute propriété $P$ correcte
+    et vice-versa.
   \end{block}
 
 \end{frame}
@@ -457,13 +457,12 @@
           \uncover<2->{
             & | & `t * `t \\}
           \uncover<3->{
-            & | & \Sigma x : `t. `t \\}
+            & | & \Sigma x : `t. `t \\
+            & | & \Pi x : `t. `t \\}
           \uncover<4->{
             & | &  x \\
-            & | & \lambda x : \textit{Sort} "=>" `t \\
             & | & `t~`t \\
             & | & `t~`a \\
-            & | & \Pi x : `t. `t \\
           }
         \end{array}$
       \end{block}
@@ -540,7 +539,7 @@
   \end{block}
   
   \begin{itemize}
-  \item<2-> Passage de la coercion à l'application 
+  \item<2-> Intégration de la coercion à l'application 
     \hyperlink{typingdecl<2>}{\beamergotobutton{}} ;
     
   \item<3-> Test de coercion dirigé par la syntaxe
@@ -575,7 +574,8 @@
   
   \pause
   \begin{theorem}[Correction de la réécriture]
-    Si $`G \typea t : U$ alors $`G' \typec t' : U'$.
+    Si $`G \typea t : U$ et $\timpl{`G}{t}{U}{`G'}{t'}{U'} alors
+    \typec t' : U'$.
   \end{theorem}
   
   \pause
