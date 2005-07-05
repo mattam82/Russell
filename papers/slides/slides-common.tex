@@ -182,11 +182,11 @@
   \item Basé sur l'isomorphisme de {\sc Curry-Howard}:
     \begin{tabular}{ccc}
       preuves & = & programmes \\
-      formules & = & types \\
+      propositions & = & types \\
       \pause
       vérifier & = & typer
     \end{tabular}
-  %\item Noyau réduit réalisant le typage du \CCIfull.
+  \item \CCIfull~(\CCI).
   \end{itemize}
   
 \end{frame}
@@ -304,7 +304,7 @@
   \only<6->{
     $\begin{array}{l}
       %\pi_1 : \subset{x}{T}{P} "->" T \\
-      \sdef{div} : \forall a b : \nat, b \neq 0 "->" \ldots...  \\
+      \sdef{div} : \forall a~b : \nat, b \neq 0 "->" \ldots...  \\
 %       \{~q : \nat~\&~\{~r : \nat `| r < (\pi_1~b) `^ a = (\pi_1~b) * q +
 %       r ~\} ~\} \\
       \\
@@ -370,12 +370,12 @@
     ``\emph{Type-checking conditions}'' (obligations de preuve).
     \begin{tabular}{lcll}
       $t : \subset{x}{T}{P}$ & utilisé comme & $t : T$
-      &  \\
+      & ok \\
       $t : T$ & utilisé comme & $t : \subset{x}{T}{P}$ 
       & si $P[x/t]$
     \end{tabular}
     \pause
-
+    
   \item[{\bf +}] Succès pratique ; \pause
   \item[{\bf --}] Architecture de \PVS{} peu sûre. % bugs, de Bruijn
   \end{itemize}  
@@ -474,6 +474,11 @@
       & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
   \end{tabular}
   
+%   \begin{itemize}
+%   \item $\pi_1~(v, p) "=>" v$
+%   \item $v $
+%   \end{itemize}
+  
 \end{frame}
 
 \begin{frame}
@@ -520,6 +525,7 @@
   
   \typenvd
   \begin{center}
+
     \vdots
 %    
 %    \vspace{0.5cm}
@@ -597,11 +603,17 @@
     \hyperlink{typingdecl<2>}{\beamergotobutton{}} ;
     
   \item<3-> Algorithme de coercion déterministe
-    \hyperlink{subtypingdecl}{\beamergotobutton{}} ;
+    \hyperlink{subtypingdecl<2>}{\beamergotobutton{}} ;
   \end{itemize}
 
-  \only<2>{\AppA\DP
-
+  \only<2>{\TAX{App}
+    {$`G \seq f : T \quad \mu(T) `= \Pi x : V. W$}
+    {$`G \seq u : U$}
+    {$U \subd V $}
+    {$`G \seq (f u) : W [ u / x ]$}
+    {}
+    \DP
+    
     \begin{eqnarray*}
       \mu~\subset{x}{U}{P} & "=>" & \mu~U \\
       \mu~x                & "=>" & x
@@ -612,14 +624,14 @@
     \begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
       $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \subd T$.
     \end{lemma}
-    \begin{fact}[Décidabilité de $\typea$]
-      Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
-    \end{fact}
+%     \begin{fact}[Décidabilité de $\typea$]
+%       Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
+%     \end{fact}
   }
   
 \end{frame}
 
-\subsection{Plongement dans \Coq}
+\subsection{Traduction dans \Coq}
 \typenvi
 
 \renewcommand{\subimpl}[4]{{\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
@@ -631,12 +643,12 @@
     \begin{center}
       \def\fCenter{\subti}          
       \SubConvI\DP
+      
+      \vspace{0.25cm}
+      \uncover<3->{\SubSubI\DP}
 
       \vspace{0.25cm}
-      \SubSubI\DP
-
-      \vspace{0.25cm}
-      \uncover<3->{\UAX{SubProof}
+      \uncover<4->{\UAX{SubProof}
       % {$`G, x : U \typec P : \Prop$}
       {$\subimpl{`G}{c}{T}{U}$}
       {$\subimpl{`G}
@@ -644,7 +656,7 @@
         {T}{\subset{x}{U}{P}}$}
       {}\DP}
       % \SubRightI\DP
-      \uncover<4->{
+      \uncover<5->{
       \vspace{0.25cm}
       \SubProdI\DP
       
@@ -652,7 +664,7 @@
       \SubSigmaI\DP}
     \end{center}
 
-    \only<3>{$0 : \nat$ et $\nat~\sub \subset{x}{\nat}{x \neq 0}$
+    \only<4>{$0 : \nat$ et $\nat~\sub \subset{x}{\nat}{x \neq 0}$
       mais $(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]})) 0 
       `= \sref{elt}~0~?_{\alert{0 \neq 0}}$}
 
@@ -693,7 +705,10 @@
 
 \begin{frame}
   \begin{block}{Implémentation}
-    Variables existentielles $?_{`t}$ et \Refine{}.
+    \begin{itemize}
+    \item Variables existentielles $?_{`t}$ ;
+    \item \Refine{}.
+    \end{itemize}
   \end{block}
 \end{frame}
 
@@ -747,9 +762,9 @@
   \item[\bf{$"=>"$}] Futur
     \begin{itemize}
     \item
-      Intégration des inductifs.
+      Extension aux autres constructions de \Coq{} (inductifs\ldots) ;
     \item
-      Preuves !
+      Preuve de la correction de la réécriture.
     \end{itemize}
   \end{itemize}
 \end{frame}
