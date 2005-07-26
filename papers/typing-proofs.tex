@@ -22,6 +22,11 @@
   \end{enumerate}
 \end{fact}
 
+% \begin{fact}[Convertibilité]
+%   \label{type-convertibility}
+%   Si $`G \type T : s$ et $s `=_\beta s'$ alors $`G \type T : s'$.
+% \end{fact}
+
 \begin{lemma}[Inversion pour le produit]
   \label{inversion-prod-d}
   Si $`G \type \Pi x : T.U : s$ alors $s `: \setproptype$, $`G \type T : t$ et 
@@ -37,7 +42,8 @@
   inspection des règles de sous-typage révèle que seules les
   règles \irule{SubConv} et \irule{SubTrans} ont pu s'appliquer dans
   la dérivation $`G \type s' \sub s$. On en déduit que $s `=_\beta s'$,
-  et il s'ensuit que $`G \type T : s'$ (lemme~\ref{type-convertibility}). 
+  et il s'ensuit que $`G \type T : s'$ (par application de
+  \irule{Conv}). % \ref{type-convertibility}
   On peut appliquer \irule{Subsum} à la fin de la dérivation 
   $`G, x : T \type U : s'$ pour obtenir le résultat $`G, x : T \type U :
   s$.
@@ -88,8 +94,7 @@
 
 \begin{fact}[Inversion du jugement de bonne formation]
   \label{inversion-wf-d}
-  Si $\typewf `G, x : U$ alors $`G \type U : s$ pour 
-  $s `: \{ \Set, \Prop, \Type(i) \}$.
+  Si $\typewf `G, x : U$ alors $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
 \end{fact}
 
 \begin{lemma}[Conservation de la bonne formation par renforcement]
@@ -130,25 +135,28 @@ On peut changer le système pour inclure la relation de conversion $\eqbi$
 dans le sous-typage. On peut en effet remplacer toute application de la
 règle de conversion \irule{Conv} par une application de la subsumption:
 
-\hfill
+\begin{figure}
+  \begin{subfigure}{
 \AXC{\vdots}
 \UIC{$`G \seq T : s$}
 \AXC{\vdots}
 \UIC{$`G \seq t : U$}
 \AXC{$U \eqbi T$}
 \TIC{$`G \seq t : T$}
-\DP
-\hfill$"~>"$\hfill
-\AXC{\vdots}
+\DP}
+\subfigure{
+  $"~>"$}
+\subfigure{
+  \AXC{\vdots}
 \UIC{$`G \seq T : s$}
 \AXC{\vdots}
 \UIC{$`G \seq t : U$}
 \AXC{$U \eqbi T$}
 \UIC{$U \sub T$}
 \TIC{$`G \seq t : T$}
-\DP
-\hfill
-\\
+\DP}
+\end{subfigure}
+\end{figure}
 
 Le système obtenu en remplacant \irule{Conv} par \irule{SubConv} type donc
 au moins les mêmes termes. Pour conserver la propriété de sous-typage
@@ -185,7 +193,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
       \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
     \end{prooftree}
     
-    Par le lemme \ref{subtyping-sorts}, on a $`G \seq \Pi x : T. U' : s$.
+    Par le lemme \ref{subtyping-sorts-d}, on a $`G \seq \Pi x : T. U' : s$.
     
     \begin{prooftree}
       \AXC{\vdots}

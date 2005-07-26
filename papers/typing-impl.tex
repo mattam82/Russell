@@ -87,7 +87,7 @@
 
 
 \def\SumInfI{
-  \TAX{SumInf}
+  \TAXWide{SumInf}
   {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
   {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
   {$\timpl{`G}{\Sigma \_ : T.U}{s}{`G'}{\Sigma \_ : T'.U'}{s}$}
@@ -96,7 +96,7 @@
 }
 
 \def\SumDepI{
-  \TAX{SumDep}
+  \TAXWide{SumDep}
   {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
   {$\timpl{`G}{u}{U[t/x]}{`G'}{u'}{U'[t'/x]}$}
   {$\timpl{`G}{\Sigma x : T.U}{s}{`G'}{\Sigma x : T'.U'}{s}$}
@@ -124,7 +124,7 @@
 \def\marginleft{0em}
 
 \def\typeiFig{
-\begin{figure}[h]
+\begin{figure}[ht]
   \begin{center}
     \def\fCenter{\wf}
     \def\type{\typec}
@@ -167,7 +167,7 @@
     \vspace{\infvspace}
     \SubsetI\DP
   \end{center}
-  \label{typing-algo-rules}
+  \label{typing-impl-rules}
   \caption{Réecriture du typage vers \Coq}
 \end{figure}
 }
@@ -179,7 +179,7 @@
     \pi_1, t) \\
     x                        & "=>"  & x
   \end{eqnarray*}
-  \label{muterm-definition}
+  \label{muimpl-definition}
   \caption{Définition de $\muterm$}
 \end{figure}
 }

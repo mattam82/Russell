@@ -2,7 +2,7 @@
 Distinction inf\'erence et typage. 
 \begin{description}
 \item[Inf\'erence ($"~>"$)] \`a la ML, on v\'erifie: $`G \typea p "~>" T "=>"
-  `G \typed p ":" T$. 
+  `G \typed p : T$. 
 \item[Typage ($:$)]. On a $`G \typed p : T$, on veut $`E U, `G \typea p
   "~>" U `^ `G \typea U "~>" T$. On utilise le sous-typage g\'en\`erant les
   obligations de preuve.
@@ -28,4 +28,5 @@ V\'erifier Sub-{Left, Right}, l'application du sous-typage.
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "~/research/coq/papers/subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
 %%% End: 

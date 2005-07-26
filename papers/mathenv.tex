@@ -36,6 +36,11 @@
   \@ifnotmtarg{#6}{\RightLabel{#6}}
   \TIC{#5}}
 
+\newcommand{\TAXWide}[6]{\AXC{#2}\AXC{#3}\noLine\UIC{#4}
+  \LeftRuleLabel{#1}
+  \@ifnotmtarg{#6}{\RightLabel{#6}}
+  \BIC{#5}}
+
 \newcommand{\QAX}[7]{\AXC{#2}\noLine\UIC{#3}\AXC{#4}\AXC{#5}
   \LeftRuleLabel{#1}
   \@ifnotmtarg{#7}{\RightLabel{#7}}

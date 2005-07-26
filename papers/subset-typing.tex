@@ -1,44 +1,9 @@
 \documentclass[a4paper,11pt]{article}
-\usepackage[francais]{babel} 
-\usepackage[latin1]{inputenc}  %% les accents dans le fichier.tex
-\usepackage[T1]{fontenc}       %% Pour la c\'{e}sure des mots accentu\'{e}s
-\usepackage{indentfirst}
-\usepackage{a4}
-\usepackage[dvips]{graphicx}
-%\usepackage{coqdoc}
-\usepackage{amssymb}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{amsfonts}
-\usepackage{array}
-\usepackage{myabbrevs}
-\usepackage{style/abbrevs}
-\usepackage{bnf}
-\usepackage{bussproofs}
-\usepackage{hyperref}
-\usepackage{fullpage}
-\usepackage{concmath}
-%\usepackage{cmbright}
-\usepackage{fancyhdr}
-\usepackage{ifthen}
-\usepackage{ifmtarg}
-\usepackage{pxfonts}
 
-% This is the "centered" symbol
-\def\fCenter{\vdash}
-\def\seq{\fCenter}
-% Optional to turn on the short abbreviations
-\EnableBpAbbreviations
+\input{subset-typing-preamble}
 
-\input{mathenv}
-\input{typing-macros}
-
-\def\thetitle{Sous-typage par prédicats en Coq}
-
-\pagestyle{plain}
-\fancyhead[RO,LE]{\thetitle}
-\fancyfoot[C]{\thepage}
-%\renewcommand{\headrulewidth}{0pt}
+\newboolean{showlog}
+\setboolean{showlog}{false}
 
 \title{\thetitle}
 
@@ -59,13 +24,6 @@ Le \ps{} implémenté dans \PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby
 
 \input{grammar}
 
-\input{typing-decl}
-\input{subtyping-decl}
-\input{typing-algo}
-\input{subtyping-algo}
-\input{typing-impl}
-\input{subtyping-impl}
-
 \typedFig
 \subtdFig
 \typeaFig
@@ -81,6 +39,7 @@ Le \ps{} implémenté dans \PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby
 \section*{Travaux connexes(?)}
 Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 
+\ifthenelse{\boolean{showlog}}{
 \section*{Journal}
 
 \input{log/8mars}
@@ -101,8 +60,9 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 \input{log/3juin}
 \input{log/6juin}
 \input{log/10juin}
+}{}
 
-\bibliography{../bib/bib-joehurd,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing}
+\bibliography{../bib/bib-joehurd,../bib/barras,../bib/pvs-bib,../bib/bcp,../bib/Luo,subset-typing,../bib/cparent/cparent}
 \bibliographystyle{plain}
 
 \renewcommand{\thefootnote}{}
