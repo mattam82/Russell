@@ -12,6 +12,7 @@
 \def\typeawf{\judgetypea_{wf}}
 \def\typei{\judgetypei}
 \def\typeiwf{\judgetypei_{wf}}
+\def\typec{\vdash_{CCI}}
 \def\type{\typed}
 \def\typewf{\typedwf}
 \def\judgesubd{\vdash}
@@ -29,6 +30,10 @@
 \def\judgerw{~{\mbox{$"~>"$}}~}
 \def\wf{\judgewf}
 
+\def\mualgo{\mu_{\bullet}}
+\def\muimpl{\mu_{\Box}}
+
+
 % \def\typenv#1{\typeout{Changing to #1 version}
 %   \def\typewf{\csname\string\type\string#1\string{wf}\endcsname}
 %   \def\type{\csname\string\type\string#1\endcsname}
@@ -38,7 +43,7 @@
 
 \newcommand{\typenvd}{
   \typeout{Changing to declarative version}
-  \def\typewf{\typewfd}
+  %\def\typewf{\typewf}
   \def\type{\typed}
   \def\subt{\subtd}
   \def\sub{\subd}
@@ -47,7 +52,7 @@
 
 \newcommand{\typenva}{
   \typeout{Changing to algorithmic version}
-  \def\typewf{\typewfa}
+  %\def\typewf{\typewf}
   \def\type{\typea}
   \def\subt{\subta}
   \def\sub{\suba}
@@ -56,7 +61,7 @@
 
 \newcommand{\typenvi}{
   \typeout{Changing to implementation version}
-  \def\typewf{\typewfi}
+  %\def\typewf{\typewf}
   \def\type{\typei}
   \def\subt{\subti}
   \def\sub{\subi}

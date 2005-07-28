@@ -1,0 +1,99 @@
+\chapter{Le calcul de coercion par prédicats}
+Nous avons développé un langage supportant le \ps{} utilisable dans
+\Coq. L'utilisateur peut définir des programmes dans un langage plus
+souple puis prouver certains buts pour obtenir finalement un terme de
+\CCI{} complet vérifiable par le noyau. On peut finalement utiliser les types dépendants comme des types
+simples et s'en occuper dans un deuxième temps (pour la preuve).
+L'architecture est la suivante:
+on type le programme dans notre langage, puis l'on réécrit le terme typé
+dans \CCI{} en laissant des ``trous'' dans les termes et enfin \Coq{} se
+charge de générer les obligations correspondant à ces trous.
+
+
+\setboolean{displayLabels}{false}
+\def\setproptype{\{ \Set, \Prop, \Type(i) \}}
+\def\nf{\downarrow~}
+
+\section{Notations}
+On utilise dans la suite les notations et abbréviations suivantes:
+\begin{list}{}{}
+\item $`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
+\item $\_ \nf `= \text{forme normale}$
+\end{list}
+
+
+\section{Langage}
+Le langage que nous voulons est très proche de \ML, plus les annotations
+nécessaires pour avoir un typage précis et décidable.
+
+\subsection{Syntaxe}
+La syntaxe (figure \ref{fig:syntax}) est directement inspirée des langages fonctionnels.
+On part du \lc{} (variables, abstraction et application) puis l'on
+ajoute des constantes (pour les entiers, booléens, etc...) ainsi que les
+couples. La syntaxe $(x := `a, t : `t)$ permet de
+créer des paires dépendantes, de type $\Sigma x : `t. `t$. 
+
+Du côté des types, on a tout d'abord les types simples (constantes,
+flèche, produit cartésien) qui sont des cas particuliers du produit ($\Pi$) et
+de la somme ($\Sigma$) dépendants. Les variables introduites par ces
+types peuvent être utilisées lors des applications de types. On
+peut de plus abstraire sur les types avec le $\lambda$ (polymorphisme). 
+Enfin on peut appliquer un type à un terme ($`t~`a$). Dans la suite, les règles sont données avec l'idée
+qu'on fait les réductions de tête nécessaires pour obtenir un type
+d'une certaine forme (produit, somme, sous-ensemble, etc \ldots).
+
+%impossible d'inférer le type $`t$ désiré car il peut dépendre de
+%$`a$. Par exemple $(x \Coloneq 1, f x)$
+%\vspace{-0.5cm}
+\begin{figure}[ht]
+  \begin{center}
+    \subfigure[Termes]{\termgrammar}\quad
+    \subfigure[Types]{\typegrammar}
+  \end{center}
+  \label{fig:syntax}
+  \caption{Syntaxe}
+\end{figure}
+% \vspace{-1cm}
+
+\input{subset-typing-decl}
+\input{subset-typing-algo}
+\input{subset-typing-impl}
+
+\section{La tactique \Subtac}
+Nous avons développé la tactique \Subtac{} disponible dans la version
+\CVS{}~courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
+créer un programme, le typer et générer un terme incomplet
+correspondant (voir annexe \ref{fig:euclid-subtac}). 
+
+\subsection{Existentielles}
+La génération des buts correspondant aux variables existentielles et la
+formation du terme final sont laissées à la tactique \Refine~et au
+système de gestion des existentielles de \Coq. Certaines limitations 
+dans l'implémentation du raffinement (le mécanisme permettant de manipuler
+des termes ``à trous'') devront être dépassées pour obtenir
+une contribution totalement fonctionnelle. On peut cependant espérer
+résoudre ces problèmes de façon satisfaisante dans un futur proche.
+
+\subsection{Traitement de la récursion}
+Lorsque l'on développe un programme récursif dans un système tel que
+\Coq, on est forcé de fournir une preuve de terminaison de son
+algorithme. Pour cela, on montre généralement qu'on a un ordre bien
+fondé sur le type de l'argument de récursion et que chaque appel respecte
+cet ordre. Nous avons ajouté des facilités d'écriture de fonctions
+récursives à notre langage ; on ajoute les existentielles
+correspondant aux preuves que l'ordre est bien fondé ou qu'il est bien
+respecté par les termes. Ainsi lors du raffinement on obtient naturellement
+les buts correspondants à prouver.
+
+\subsection{Traitement des inductifs}
+Notre langage ne prend pas encore en compte les définitions inductives générales.
+Au-delà du traitement des types sous-ensemble, on a un support minimal
+pour les inductifs à deux constructeurs qui correspondent à des booléens
+annotés par des propriétés logiques (voir traitement de la
+conditionnelle figure \ref{fig:euclid-subtac}). 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 

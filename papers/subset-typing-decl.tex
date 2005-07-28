@@ -1,0 +1,181 @@
+\subsection{Sémantique}
+\typenvd
+\typedFig
+\subtdFig
+
+La sémantique du langage nous est donnée par un système de typage, qu'on
+formalise par un ensemble de règles d'inférence. Dans notre cas c'est un
+un sous-ensemble des règles de \CCI{} auquel on a ajouté une règle de
+coercion (\irule{Coerce}) que l'on trouve classiquement dans les systèmes avec
+sous-typage avec le nom de subsumption. Cette règle formalise l'idée que 
+l'on peut utiliser un terme de type $T$ à la place d'un terme de type
+$U$ si $T$ et $U$ sont dans une certaine relation. 
+Le jugement $\Gamma \typed t : T$ se lit: dans l'environnement $\Gamma$,
+$t$ est de type $T$.
+
+\CCI{} contient une règle de typage
+similaire, la conversion (\irule{Conv}), qui dit essentiellement que deux types
+$`b$-convertibles (on rappelle que l'on peut calculer dans les types
+puisqu'on a l'abstraction, l'application, etc...) sont équivalents.
+On peut directement intégrer cette relation de $`b$-convertibilité à notre
+système de coercion comme montré figure \ref{subtyping-decl-rules}
+(\irule{SubConv}), à la condition d'avoir l'inclusion
+$`=_\beta~\subseteq~\subd + \text{\irule{SubConv}}$.
+
+Notre système de coercion par prédicats permet à l'utilisateur
+d'utiliser une valeur de type $U$ là où l'on attend une valeur de type
+$\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
+A l'inverse, on permet aussi d'utiliser une valeur de type
+$\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
+$V$ si $U$ est coercible vers $V$. 
+
+Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire des
+coercions dans les types composites. Classiquement, la règle pour le 
+produit fonctionnel est contravariante (une fonction sous-type d'une
+autre accepte plus d'entrées mais donne une sortie plus fine, voir
+\name{Castagna} \cite{journals/toplas/Castagna95}) et la règle pour le 
+produit cartésien covariante (une paire est coercible en une autre si 
+leurs composantes sont coercibles deux-à-deux). 
+
+Une première propriété montrée habituellement sur le sous-typage est
+qu'il est transitif, c'est-à-dire:
+\begin{lemma}[Transitivité de la coercion]
+  Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
+\end{lemma}
+
+Cette règle assure que l'on a un système compositionel. Il y a ici une
+analogie avec l'élimination des coupures dans les systèmes logiques, où
+l'on montre que toute dérivation utilisant la règle de modus-ponens ($A "=>" B$ et $B "=>" C$ implique
+$A "=>" C$) peut se réécrire en une dérivation ne l'utilisant
+jamais. Dans les systèmes à sous-typage, on montre de façon équivalente
+que l'on peut éliminer la règle de transitivité ; première étape vers un
+système décidable.
+
+\section*{Propriétés élementaires}
+
+\begin{fact}[Inversion du typage]
+  \label{inversion-typing-d}
+  On a les propriétés suivantes sur le jugement de typage:
+  \begin{enumerate}
+  \item Si $`G \type \lambda x : T.v : \Pi x : T.U : s$ alors $`G, x : T \type
+    v : U : s$.
+  \item Si $`G \type (t, v) : \Sigma x : T.U$ alors $`G, x : T \type U
+    : s1$ et $`G \type v : U[t/x]$.
+  \item Si $`G \type t : \subset{x}{U}{P}$ alors $`G \type t : U$.
+  \end{enumerate}
+\end{fact}
+
+% \begin{fact}[Convertibilité]
+%   \label{type-convertibility}
+%   Si $`G \type T : s$ et $s `=_\beta s'$ alors $`G \type T : s'$.
+% \end{fact}
+
+\begin{lemma}[Inversion pour le produit]
+  \label{inversion-prod-d}
+  Si $`G \type \Pi x : T.U : s$ alors $s `: \setproptype$, $`G \type T : t$ et 
+  $`G, x : T \type U : s$.
+\end{lemma}
+\begin{proof}
+  Les seules règles ayant pour conclusion possible un jugement de la
+  forme $\Pi x : T.U : s$ sont \irule{Prod} et \irule{Subsum}
+  (\irule{App} se termine par une application). Pour \irule{Prop} la
+  propriété est directe. Supposons que la dernière règle appliquée fut
+  \irule{Subsum}. Alors il existe $s'$ tel que $`G \type \Pi x : T.U :
+  s'$ et par induction, $s' `: \setproptype$. Une
+  inspection des règles de sous-typage révèle que seules les
+  règles \irule{SubConv} et \irule{SubTrans} ont pu s'appliquer dans
+  la dérivation $`G \type s' \sub s$. On en déduit que $s `=_\beta s'$,
+  et il s'ensuit que $`G \type T : s'$ (par application de
+  \irule{Conv}). % \ref{type-convertibility}
+  On peut appliquer \irule{Subsum} à la fin de la dérivation 
+  $`G, x : T \type U : s'$ pour obtenir le résultat $`G, x : T \type U :
+  s$.
+  
+  % La dérivation est donc de la forme:
+%   \begin{prooftree}
+%     \AXC{$t `=_\beta s'$}
+%     \UIC{$t \sub s'$}
+%     \AXC{$\ldots$}
+%     \AXC{$s `=_\beta t$}
+%     \UIC{$s \sub t$}
+%     \TIC{$s \sub s'$}
+%   \end{prooftree}
+
+
+%   Comme les classes de
+%   $\beta$-équivalence des éléments de $\setproptype$ sont réduites à un
+%   élément,
+
+\end{proof}
+
+\begin{lemma}[Sous-typage bien sorté]
+  \label{subtyping-sorts-d}
+  Si $S \subd T$ alors $`G \typed S : s$ \ssi~$`G \typed T : s$.
+\end{lemma}
+
+\begin{proof}
+  \begin{induction}{subtyping-decl}
+  
+    \casetwo{SubConv}{SubTrans} Trivial.
+    
+    \casetwo{SubProd}{SubSigma} Par induction les composantes
+    correspondantes sont dans la même sorte, donc les composés aussi.
+    
+    \casetwo{SubProof}{SubSub} Comme le constructeur de types subset
+    est de type $\Type "->" \Prop "->" \Type$, on conserve bien les mêmes
+    sortes de part et d'autre.
+  \end{induction}
+\end{proof}
+
+\begin{lemma}[Bonne formation des contextes]
+  \label{wf-contexts-d}
+  Si $`G \type t : T$ alors $\typewf `G$.
+\end{lemma}
+\begin{proof}
+  \inductionon{typing-decl}
+\end{proof}
+
+\begin{fact}[Inversion du jugement de bonne formation]
+  \label{inversion-wf-d}
+  Si $\typewf `G, x : U$ alors $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
+\end{fact}
+
+\begin{lemma}[Conservation de la bonne formation par renforcement]
+  \label{wf-reinforcment-d}
+  Si $\typewf `G, x : S$ et $`G \subt S' \sub S$ alors $\typewf `G, x :
+  S'$.
+\end{lemma}
+\begin{proof}
+  On a $`G \type S : s$ (fait~\ref{inversion-wf-d}).
+  On applique le lemme~\ref{subtyping-sorts-d} pour obtenir $`G \type S' : s$
+  puis \irule{WfVar} nous donne $\typewf `G, x : S'$.  
+\end{proof}
+
+\begin{lemma}[Renforcement]
+  Si $`G, x : S \seq t : T$ et $`G \subtd S' \sub S$ alors $`G, x : S'
+  \seq t : T$
+\end{lemma}
+
+\begin{proof}
+  Par le lemme~\ref{wf-reinforcment-d} on sait que $\typewf `G, x : S$
+  implique $\typewf `G, x : S'$.
+
+  \begin{induction}[typing-decl]
+    \casetwo{PropSet}{Type} Direct par le lemme~\ref{wf-reinforcment-d}.
+
+    \case{Var} Dans les deux cas $t `= x$ et $t `= y, y "/=" x$ il suffit
+    d'appliquer~\irule{Var}~(le contexte $`G, x : S'$ étant bien formé).
+
+    \case{Prod} 
+    Par induction, $`G, x : S' \type T : s1$ et $`G, x : S',
+    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+    $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
+  \end{induction}
+\end{proof}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 

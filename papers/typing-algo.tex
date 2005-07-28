@@ -1,6 +1,6 @@
 \def\AppA{
 \TAX{App}
-{$`G \seq f : T \quad \mu(T) `= \Pi x : V. W$}
+{$`G \seq f : T \quad \mualgo(T) `= \Pi x : V. W$}
 {$`G \seq u : U$}
 {$U \sub V $}
 {$`G \seq (f u) : W [ u / x ]$}
@@ -71,18 +71,18 @@
     \Subset\DP
   \end{center}
   \label{typing-algo-rules}
-  \caption{Calcul des constructions avec sous-typage (version algorithmique)}
+  \caption{Calcul de coercion par prédicats - version algorithmique}
 \end{figure}
 }
 
 \def\typemuaFig{
 \begin{figure}[ht]
   \begin{eqnarray*}
-    \subset{x}{U}{P} & "=>" & \mu~U \\
+    \subset{x}{U}{P} & "=>" & \mualgo~U \\
     x                & "=>" & x
   \end{eqnarray*}
-  \label{mu-definition}
-  \caption{Définition de $\mu$}
+  \label{mualgo-definition}
+  \caption{Définition de $\mualgo$}
 \end{figure}
 }
 

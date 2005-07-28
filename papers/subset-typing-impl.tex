@@ -1,0 +1,92 @@
+\section{Génération des obligations de preuve}
+On a maintenant un système de typage décidable et l'on veut désormais
+traduire ses dérivations dans \CCI{} dont le jugement de typage est $\typec$. 
+
+\subsection{Définition de la réécriture vers \Coq}
+\typenvi
+La traduction transforme une dérivation dans notre système algorithmique
+vers une dérivation de \CCI{} valide. Le jugement 
+$\timpl{`G}{t}{T}{`G'}{t'}{T'}$ se lit: on transforme le séquent
+$`G \typea t : T$ (système algorithmique) en $`G' \typec t' : T'$
+(\Coq). Le jugement $\subimpl{`G}{c}{T}{U}$ se lit: la coercion de $T$ à
+$U$ est $c$ et on construit le séquent $`G \typec c : T "->" U$.
+La traduction est un homomorphisme (elle conserve la structure de la
+dérivation et se rappelle récursivement) excepté pour l'application, ce qui
+est normal puisque nous avons un système très proche de \CCI{}. Le fait
+de traduire aussi les environnements $\Gamma$ est dû au fait que nous
+faisons la coercion dans les types,  donc les environnements (listes
+de couples $(\text{nom}, \text{type})$) doivent aussi être réécrits. Cela assure aussi la
+cohérence avec l'environnement général de \Coq, c'est-à-dire
+l'intégration transparente de notre tactique dans les développements
+\Coq~et la réutilisabilité des programmes générés. En conséquence, les
+types spécifiés ne sont donc pas toujours préservés (on veut pouvoir y
+introduire des coercions).
+
+\typeiFig
+\typemuiFig
+
+Ici la fonction $\mu$ renvoie à la fois un type (qu'on demande
+équivalent à un produit) et une fonction de coercion qui va faire les
+projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
+objets de type sous-ensemble $\subset{x}{T}{P}$ sont codés par un terme 
+de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
+(un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
+ (de type $P[t/x]$). Il faut donc faire exactement
+une projection pour atteindre par exemple la fonction d'un objet de type
+ $\subset{f}{\nat "->" \nat}{f~0 \neq 0}$.
+
+Le jugement de coercion $U \suba V$ nous assure qu'il est possible de
+dériver le jugement $`G' \typec U' \subi V'$ et donc de créer une coercion de $U'$
+à $V'$ soit une fonction de type $U' "->" V'$ dans \CCI.
+On trouve ici l'essence du mécanisme de coercion par prédicats. 
+
+\subtiFig
+
+\vspace{1.4em}
+\begin{itemize}
+\item[ \SubConvI\DP:] \quad\\
+
+  Crée une coercion identité puisque \CCI{}~a la règle de conversion. 
+  \vspace{1em}
+
+\item[\SubLeftI\DP:] \quad\\
+  
+  Engendre une projection,
+  c'est le cas où l'on ne s'intéresse pas à la preuve accompagnant
+  l'objet. 
+  \vspace{1em}
+
+\item[\SubRightI\DP:] \quad\\
+
+  Correspond à la génération d'une
+  obligation de preuve dans \PVS. On utilise le mécanisme des variables
+  existentielles (notées $?:\text{type}$) décrit plus loin pour donner 
+  l'information au système qu'il faut compléter le terme à un endroit
+  donné avec un nouveau terme de type approprié. On peut aisément créer
+  des obligations qui ne seront pas prouvables mais cela relève de la
+  responsabilité de l'utilisateur.
+  \vspace{1em}
+
+\item[\SubProdI\DP,] \quad\\
+  
+
+\item[\SubSigmaI\DP:] \quad\\
+
+  Réalisent respectivement
+  les coercions pour les produits fonctionnels et cartésiens.
+
+\end{itemize}
+  
+\subsection{Propriétés}
+On veut montrer que si l'on a une dérivation dans notre système
+algorithmique, alors son image par la réécriture est une dérivation
+valide de \CCI{} (par induction sur la dérivation dans le système
+algorithmique). Ce travail est en cours à ce jour, nous nous sommes
+plutôt penchés sur l'implémentation du typeur et de la fonction de
+réécriture avant de commencer cette dernière preuve.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 

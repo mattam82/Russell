@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper,11pt]{report}
 
 \input{subset-typing-preamble}
 
@@ -16,30 +16,254 @@
 \maketitle
 
 \begin{abstract}
-  blabla 
+  \Coq{} est un assistant de preuve d'une grande expressivité pour le
+  développement de théories mathématiques et informatiques, ce qui permet
+  de traiter un large éventail de problèmes. Le langage de \Coq{},
+  constitué d'un noyau fonctionnel de type \ML{} enrichi par des types
+  dépendants, permet de spécifier, vérifier puis
+  extraire des programmes corrects par construction. En contrepartie, les
+  programmes sont plus difficiles à écrire et maintenir que dans un pur
+  langage de programmation de type \ML, puisqu'ils mélangent les parties
+  logiques et calculatoires. Pour remédier à
+  ce problème, on propose un nouveau langage de programmation,
+  s'intégrant parfaitement à l'environnement de développement existant,
+  qui permet de découpler les parties codage et preuve.
 \end{abstract}
 
-\section*{Introduction}
-Le \ps{} implémenté dans \PVS (\cite{PVS-Semantics:TR,Shankar&Owre:WADT99,Rushby98:TSE}).
+\newpage
+\tableofcontents
+\newpage
 
-\input{grammar}
+\chapter{Introduction}
 
-\typedFig
-\subtdFig
-\typeaFig
-\typemuaFig
-\subtaFig
-\typeiFig
-\typemuiFig
-\subtiFig
+Nous nous plaçons dans le cadre du système d'aide à la preuve \Coq{},
+auquel nous souhaitons intégrer un langage de programmation plus souple
+que le langage actuellement utilisé.
 
-\input{typing-proofs}
-\clearpage
+\section{Présentation de \Coq}
 
-\section*{Travaux connexes(?)}
-Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
+\Coq~est un assistant de preuve dont la première version date de 1985,
+et qui est aujourd'hui développé dans le projet \PCRI{} \LogiCal{} (INRIA, LIX,
+LRI, CNRS). Originellement basé sur le Calcul des Constructions (\CoC),
+il a été étendu au \CCIfull~(\CCI) et contient aujourd'hui de
+nombreuses améliorations telles qu'un système sophistiqué d'extraction
+de programmes ou encore des procédures de décision pour automatiser la
+preuve.
+
+Le développement de \Coq~est intimement lié à l'isomorphisme de {\sc
+Curry-Howard} qui montre le lien entre logique intuitionniste et calcul. Cet
+isomorphisme établit qu'élaborer une preuve du calcul propositionnel
+intuitionniste est équivalent à écrire un terme du
+\lc~simplement typé (\lcst). Par exemple, montrer que $A "=>" A$ pour un
+certain $A$ revient à écrire la fonction identité $\lambda x : A. x$ qui
+a bien pour type $A "->" A$. Chaque logique constructive est donc
+associée à un \lc{} particulier. Dans \Coq{}, on utilise cet
+isomorphisme pour vérifier les preuves. Le noyau est simplement un
+typeur pour \CCI{}. Si on peut typer un terme $t$ de type $T$, alors on est
+assuré d'avoir trouvé une preuve constructive $t$ de la formule $T$.
+Cette dualité se reflète aussi à l'utilisation de \Coq{} où l'on a 
+les deux visions: logique (développement mathématique, preuve) et 
+calcul (développement informatique, programme).
+
+\subsection{Preuve}
+\Coq{} est utilisé le plus souvent pour élaborer des théories
+mathématiques prouvées mécaniquement. Dans cette optique, l'utilisateur 
+modélise un problème par des structures mathématiques et veut prouver
+certaines propriétés sur ce modèle (par exemple la preuve du théorème
+des quatres couleurs récemment terminée \cite{Gonthier4col} utilisait 
+des résultats de géométrie algébrique).
+
+Pour prouver un but sous certaines hypothèses, on utilise des
+tactiques qui simulent un raisonnement déductif pour l'utilisateur.
+Celles-ci permettent par exemple d'introduire une hypothèse: pour le but
+$A "=>" A$ on peut introduire l'hypothèse $H : A$ pour obtenir le but
+$A$ ; ou bien d'en appliquer une (ou tout autre résultat déjà établi): 
+en appliquant l'hypothèse $H$ on prouve le but directement. 
+Ces tactiques peuvent être d'une complexité arbitraire (réécritures,
+procédures de décision pour l'arithmétique, etc \ldots).
+
+Les tactiques utilisées pour créer des preuves ne sont en fait qu'une
+sorte de sucre au-dessus du noyau de \Coq{} qui se réduit à un typeur
+pour \CCI. A la fin d'une preuve, on a en effet construit un terme 
+($\lambda x : A. x$ dans notre exemple) que l'on va soumettre au typeur
+dont le but est de vérifier qu'il est bien de type $A "->" A$.
+
+\subsection{Programmes}
+D'un point de vue preuve de programmes, on a donc un environnement qui
+permet de vérifier qu'un programme (un terme du calcul) vérifie une
+certaine spécification (son type). Les types dépendants permettent de
+spécifier fortement les termes. Par exemple, la fonction $\sdef{div} :
+\nat "->" \nat "->" \nat$ de \ML{} est plus fortement spécifiée en 
+\Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat$.
+Seulement, on ne peut pas écrire simplement un programme \ML{} et
+donner sa spécification forte. Comme on a enrichi les types, on doit 
+aussi enrichir les termes avec des termes de preuve, inutiles au 
+calcul mais nécessaires pour garantir la
+correction logique du programme et le fait que la machine puisse
+vérifier mécaniquement la correction (annotations,...). Par exemple,
+ si l'on veut appeler $\sref{div}$ sur $1$ et $n$ (pour $n : \nat$), il
+faut construire un terme $\sref{div}~1~(\sref{elt}~(\lambda x : \nat
+"->" x \neq 0)~x~p)$ où $p$ est une preuve de $n \neq 0$. La
+fonctionnelle est nécessaire pour la décidabilité du système (on ne peut
+pas inférer le type de $P$ à partir de $p$ puisqu'il est de type
+$P[n/x]$), et la preuve $p$ pour la correction logique.
+
+A l'inverse, on peut extraire un programme de toute preuve en éliminant les
+parties logiques et en ne conservant que la partie calculatoire d'un terme.
+
+\section{Motivation}
+
+\Coq{} permet de développer des programmes complexes,
+de leur donner des spécifications fortes et de les vérifier
+automatiquement. On peut même extraire de ces développements des
+programmes corrects par construction. Il y a cependant certaines
+difficultés à développer en \Coq{} que nous allons étudier maintenant.
+
+\subsection{Un langage trop expressif?} 
+
+Le langage de \CCI{} permet de bien spécifier des fonctions non
+triviales, par exemple, si l'on définit une fonction de division
+euclidienne en \ML{} on aurait: $  \valml~\sdef{div} : \nat "->" \nat "->"
+\nat * \nat$. En \Coq, on peut définir:
+\[\Definition~\sdef{div} : \forall a : \nat, \forall b : \nat,
+b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r~\} \}\]
+
+Les types dépendants permettent de bien relier les entrées aux sorties
+et donc de spécifier les programmes aussi fortement que l'on désire, 
+mais aussi de façon concise. En revanche, le terme de preuve 
+correspondant à \sref{div} est nettement plus long (de l'ordre de 60 lignes), 
+et ne peut simplement pas être écrit d'une traite 
+sans une expertise approfondie. Pour remédier à ce
+problème, on utilise des tactiques qui permettent d'écrire la preuve/programme
+incrémentalement (voir figure \ref{fig:euclid-script}
+page \pageref{fig:euclid-script}). L'inconvénient de cette
+méthode est que l'on n'obtient pas toujours le programme désiré
+au départ, puisque les tactiques cachent profondément leur effet sur le
+terme de preuve. Certaines techniques de réécriture peuvent aussi
+générer des termes de complexité algorithmique bien moins optimale que
+ce que l'utilisateur écrirait. Cependant ce mode de fonctionnement est
+utile et utilisé par la majorité des utilisateurs de \Coq{} avec succès
+(certification d'un compilateur \C, théorème des quatres couleurs
+\cite{Gonthier4col}, \ldots).
+
+\subsection{Mélange logique et calcul}
+Une difficulté essentielle lorsque l'on veut permettre à des
+utilisateurs non experts de développer dans \Coq{} est le ``mélange
+des genres'' permanent entre logique et calcul. Pour appliquer une
+fonction division qui attend un dénominateur différent de $0$ par
+exemple, il faut passer à la fois l'argument lui même, mais aussi une
+preuve de sa non-nullité. Lorsque l'on a l'habitude de programmer, ça
+n'est pas la chose la plus naturelle et l'on aimerait pouvoir découpler
+les parties codage et preuve pour simplement diviser le problème. Les
+parties logiques pourront souvent être résolues automatiquement par des
+tactiques.
+
+\subsection{Objectif}
+A long terme, on souhaite permettre à un utilisateur de programmer dans
+un langage proche de \ML{} et de prouver ses programmes dans un deuxième
+temps à l'aide de \Coq{} et ses tactiques. Une fois les preuves
+terminées, on peut extraire un programme correct par construction et
+essentiellement équivalent à celui de départ ou le réutiliser facilement
+dans l'environnement \Coq{}.
+
+\section{Travaux Connexes}
+
+La preuve de programmes fonctionnels est un domaine de recherche
+actif. L'idée d'étendre les langages \ML{} avec des types dépendants a
+été développée dans \DML{} \cite{XiPfenning1999DTP}, \Cayenne{}
+\cite{Augustsson99} et \Omegapdx{} \cite{Omega}. Il
+s'agit dans ces travaux de faire un langage dont l'inférence est décidable, donc
+de restreindre les types dépendants à des domaines où l'on peut faire de
+la preuve automatique (\DML{}) ou bien d'affaiblir la puissance du langage
+pour rendre l'utilisation des types dépendants plus aisée (\Cayenne{}
+n'a pas la récursivité générale par exemple). Nous prenons le
+contre-pied de ces travaux en acceptant de générer des obligations de
+preuve et en essayant de trouver un langage le plus proche de \ML{}
+possible tout en retenant la puissance de \Coq{} et des types
+dépendants. Nous présentons maintenant des travaux directement liés à
+notre contribution.
+
+
+\subsection{La tactique \Program}
+Il existe un travail réalisé dans \Coq{} couvrant une partie de nos objectifs.
+Développée par Catherine Parent \cite{conf/mpc/Parent95}, 
+la tactique \Program{} permettait de synthétiser des preuves à partir de
+programmes. L'idée était de trouver un langage de programmation
+suffisamment restrictif pour réaliser une inversion de l'extraction, 
+c'est-à-dire, à partir d'un terme essentiellement calculatoire
+(des annotations étaient nécessaires), retrouver un terme de preuve
+réalisant la spécification donnée. 
+A partir de là, on était assuré que le programme extrait serait
+identique à celui que l'on écrivait pour sa partie informative. Cette
+méthode générale avait l'inconvénient d'être peu intuitive et de ne pas
+s'intégrer à l'environnement \Coq. Liée à l'extraction interne qui
+a disparu dans les dernières versions de \Coq{} (remplacée par la
+contribution de Pierre Letouzey \cite{LetouzeyPhD}), elle n'est plus 
+maintenue aujourd'hui.
+
+\subsection{Types sous-ensemble}
+Plutôt que de continuer dans la même direction, nous avons 
+cherché à assouplir le système. L'assistant de preuve \PVS{}
+\cite{PVS-Semantics:TR} aux capacités similaires à \Coq{}, intègre un
+mécanisme dénommé \ps{} que nous allons présenter maintenant.
+Tout d'abord une définition:
+\begin{definition}[Type sous-ensemble]
+  $\subset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
+  propriété $P$.
+\end{definition}
+
+Les types sous-ensembles sont d'une grande utilité pour la spécification
+de programmes, par exemple pour les pré-conditions:
+$\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat$.
+
+L'idée du \ps{} implémenté dans \PVS{}
+\cite{Shankar&Owre:WADT99,Rushby98:TSE} est de considérer tout objet de
+type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
+vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
+propriété $P$, on génère des ``Type-checking conditions'' (\TCC), c'est
+à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer
+que le programme est correct.
+
+\subsection{Coercions}
+\PVS{} n'a pas la même architecture que \Coq{}, en particulier il n'y a
+pas de termes de preuve et de noyau pour vérifier ces termes. Il faut
+donc faire confiance à la quasi-totalité du code pour croire en la
+correction des programmes vérifiés. Le critère de {\sc De Bruijn},
+qui dit en substance qu'un petit noyau (et celui de \Coq~a même été
+formellement vérifié \cite{Barras96a}) est plus sûr n'est pas respecté.
+ 
+Dans notre cas, il faut générer des termes de preuve et donc le code 
+correspondant à ce ``sous-typage''. Une littérature importante
+\cite{conf/popl/Chen03,conf/csl/Luo96} existe
+autour des systèmes à coercions explicites dont nous nous sommes
+inspirés pour réaliser la génération des termes. Dans un système à
+coercions explicites, on peut faire des abus de notations tels que
+utiliser un objet de type $T$ à la place d'un de type $U$, mais
+on applique une coercion qui amène l'objet vers le type $U$ avant 
+de retyper dans un système sans coercions. Généralement les coercions
+sont très similaires à des identités, c'est-à-dire qu'elles sont calculatoirement
+insignifiantes mais leur utilisation facilite le développement. Dans
+\Coq{} par exemple le système de coercions \cite{saibi97inheritance} a
+permis de développer des théories algébriques réutilisables sur
+plusieurs structures instantanément (un théorème sur les corps pouvant s'appliquer aux
+anneaux).
+
+\input{subset-typing-ccp}
+
+\chapter{Conclusion}
+Nous avons développé un langage de programmation plus souple que le
+langage de \Coq{} mais conservant sa richesse d'expression (types
+dépendants). Il permet de découpler la description algorithmique de la
+vérification. La correction des termes engendrés est
+garantie par le système sous-jacent qui offre ensuite la possibilité
+d'extraire un programme correct par construction dans un langage de type
+\ML. D'autre part, cette méthode s'intègre bien dans l'environnement
+\Coq{} et ouvre la voie à la réalisation de travaux plus complexes par
+des utilisateurs non-experts. Cela constitue la première étape vers un
+environnement de programmation sûre utilisable dans \Coq. 
 
 \ifthenelse{\boolean{showlog}}{
+\clearpage
 \section*{Journal}
 
 \input{log/8mars}
@@ -68,6 +292,13 @@ Coercions: \cite{Chen:POPL-2003, saibi97inheritance}
 \renewcommand{\thefootnote}{}
 \footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
   \texttt{Computer Modern Bright}}
+
+\newpage
+\appendix
+\input{subset-typing-appendix}
+
+\chapter{Liste des figures}
+\listoffigures
 
 \end{document}
 
