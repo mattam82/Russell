@@ -123,7 +123,7 @@ difficultés à développer en \Coq{} que nous allons étudier maintenant.
 
 Le langage de \CCI{} permet de bien spécifier des fonctions non
 triviales, par exemple, si l'on définit une fonction de division
-euclidienne en \ML{} on aurait: $  \valml~\sdef{div} : \nat "->" \nat "->"
+euclidienne en \ML{} elle aurait le type: $  \valml~\sdef{div} : \nat "->" \nat "->"
 \nat * \nat$. En \Coq, on peut définir:
 \[\Definition~\sdef{div} : \forall a : \nat, \forall b : \nat,
 b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r~\} \}\]
@@ -135,7 +135,7 @@ correspondant à \sref{div} est nettement plus long (de l'ordre de 60 lignes),
 et ne peut simplement pas être écrit d'une traite 
 sans une expertise approfondie. Pour remédier à ce
 problème, on utilise des tactiques qui permettent d'écrire la preuve/programme
-incrémentalement (voir figure \ref{fig:euclid-script}
+incrémentalement (\note{figure ici?}voir figure \ref{fig:euclid-script}
 page \pageref{fig:euclid-script}). L'inconvénient de cette
 méthode est que l'on n'obtient pas toujours le programme désiré
 au départ, puisque les tactiques cachent profondément leur effet sur le
@@ -214,13 +214,14 @@ Tout d'abord une définition:
 
 Les types sous-ensembles sont d'une grande utilité pour la spécification
 de programmes, par exemple pour les pré-conditions:
-$\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat$.
+$\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat
+`* \nat$.
 
 L'idée du \ps{} implémenté dans \PVS{}
 \cite{Shankar&Owre:WADT99,Rushby98:TSE} est de considérer tout objet de
 type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
-propriété $P$, on génère des ``Type-checking conditions'' (\TCC), c'est
+propriété $P$, on génère des ``\emph{Type-checking conditions}'' (\TCC), c'est
 à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer
 que le programme est correct.
 
@@ -247,6 +248,9 @@ insignifiantes mais leur utilisation facilite le développement. Dans
 permis de développer des théories algébriques réutilisables sur
 plusieurs structures instantanément (un théorème sur les corps pouvant s'appliquer aux
 anneaux).
+
+\TODO{Chen, Luo, Saïbi + détail}
+
 
 \input{subset-typing-ccp}
 

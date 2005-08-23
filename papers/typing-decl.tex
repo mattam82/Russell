@@ -1,12 +1,12 @@
-\def\WfAtom{
-  \UAX{Wf-Atom}
+\def\WfEmpty{
+  \UAX{WfEmpty}
   {}
   {$\seq []$}
   {}
 }  
   
 \def\WfVar{
-  \UAX{Wf-Var}
+  \UAX{WfVar}
   {$`G \type A : s$}
   {$\seq `G, x : A$}
   {$s `: \{ \Set, \Prop, \Type(i) \}$}
@@ -62,7 +62,7 @@
   \BAX{LetIn}
   {$`G \seq t : T $}
   {$`G, x : T \seq v : V $}
-  {$`G \seq \letml x = t \inml v : V[t / x]$}
+  {$`G \seq \letml~x = t~\inml~v : V[t / x]$}
   {}
 }
 
@@ -87,15 +87,15 @@
   \BAX{LetSum}
   {$`G \seq t : `S x : T. U $}
   {$`G, x : T, u : U \seq v : V $}
-  {$`G \seq \letml (x, u) = t \inml v : V$}
+  {$`G \seq \letml~(x, u) = t~\inml~v : V$}
   {}
 }
 
 \def\Subset{
   \BAX{Subset}
-  {$`G \seq U : \Type$}
+  {$`G \seq U : \Set$}
   {$`G, x : U \seq P : \Prop $}
-  {$`G \seq \subset{x}{U}{P} : \Type$}
+  {$`G \seq \subset{x}{U}{P} : \Set$}
   {$$}
 }
 
@@ -131,7 +131,7 @@
 \begin{figure}[htbp]
   \begin{center}
     \def\fCenter{\wf}
-    \WfAtom \DP
+    \WfEmpty \DP\quad
     \WfVar \DP
     
     \def\fCenter{\typed}
@@ -174,8 +174,8 @@
     \vspace{\infvspace}
     \Subsum\DP
     
-    \vspace{\infvspace}
-    \Conv\DP
+%%    \vspace{\infvspace}
+%%    \Conv\DP
     
   \end{center}
   \label{typing-decl-rules}

@@ -1,351 +1,29 @@
 \subsection{Élaboration du système algorithmique \& propriétés}
+
 Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
 syntaxe. 
 C'est presque le cas pour la coercion, il y a juste la règle
 \irule{SubConv} qu'on peut appliquer à n'importe quel moment. 
+
+
+\subsubsection*{Conversion}
 On note $\suba$ le même système que figure \ref{subtyping-decl-rules} mais
 où l'on n'applique \irule{SubConv} seulement si aucune autre règle ne
 s'applique.
-On montre le lemme suivant:
-\begin{lemma}[Stabilité modulo $\beta$]
-  Pour tout $U$, $V$, $U `=_{\beta} V$ alors $U \suba V$ est dérivable.
+
+On montre que les deux systèmes de coercion sont équivalents: 
+
+Il nous faut tout d'abord un lemme sur la conversion:
+\begin{lemma}
+  \label{conv-prod}
+  Si $\Pi T U \eqbi S$ alors $S \eqbi \Pi T' U'$ avec $T \eqbi T'$ et $U
+  \eqbi U'$.
 \end{lemma}
 
-En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
-d'inférence de $\suba$ donne donc un algorithme pour décider de la relation
-de coercion. L'indéterminisme entre les règles \irule{SubProof} et
-\irule{SubSub} ne pose pas de problème: on peut laisser le choix à 
-l'implémentation puisque le système est confluent.
-
-
-Cependant, il reste une source importante d'indécidabilité dans le
-système de typage, c'est la règle de coercion. On peut montrer que
-toute dérivation de typage utilisant \irule{Coerce} peut se réécrire en
-une dérivation n'utilisant cette règle qu'à sa racine ou au niveau de la
-prémisse de l'argument de la règle d'application \irule{App}.
-On enlève \irule{Coerce} du système et on remplace la règle 
-d'application \irule{App} de la figure \ref{typing-decl-rules} par la
-règle suivante. On note $\typea$ le système de typage obtenu.
-
-\typenva
-\typeaFig
-\typemuaFig
-\subtaFig
-
-On peut ignorer sans perte de généralité 
-l'utilisation de la coercion à la racine de la dérivation, 
-on fera de toute façon un test de coercion entre le type inféré et le
-type spécifié juste avant la réécriture.
-
-On a la propriété suivante entre les deux systèmes:
-\begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
-  $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \suba T$.
-\end{lemma}
-
-Ici $`=$ est l'équivalence syntaxique.
-La nouvelle règle d'application est intéressante pour deux raisons.
-Primo, c'est là qu'aura lieu le test de coercion, qui générera une
-coercion explicite dans le système final. Secundo, on est forcé de
-faire une opération supplémentaire pour la fonctionnelle que l'on
-applique puisqu'il est possible qu'elle ait un type sous-ensemble,
-auquel cas il faut effacer les types sous-ensemble pour trouver son type
-fonctionnel (c'est le rôle de la fonction $\mu$, qui fait une mise en
-forme normale de tête en effaçant les types sous-ensemble qu'elle
-rencontre).
-
-\begin{lemma}[Décidabilité de $\typea$]
-  La relation de typage $`G \typea t : T$ est décidable.
-\end{lemma}
-
-\subsection*{Conversion}
-On peut changer le système pour inclure la relation de conversion $\eqbi$
-dans le sous-typage. On peut en effet remplacer toute application de la
-règle de conversion \irule{Conv} par une application de la subsumption:
-
-\begin{figure}
-  \begin{subfigure}{
-\AXC{\vdots}
-\UIC{$`G \seq T : s$}
-\AXC{\vdots}
-\UIC{$`G \seq t : U$}
-\AXC{$U \eqbi T$}
-\TIC{$`G \seq t : T$}
-\DP}
-\subfigure{
-  $"~>"$}
-\subfigure{
-  \AXC{\vdots}
-\UIC{$`G \seq T : s$}
-\AXC{\vdots}
-\UIC{$`G \seq t : U$}
-\AXC{$U \eqbi T$}
-\UIC{$U \sub T$}
-\TIC{$`G \seq t : T$}
-\DP}
-\end{subfigure}
-\end{figure}
-
-Le système obtenu en remplacant \irule{Conv} par \irule{SubConv} type donc
-au moins les mêmes termes. Pour conserver la propriété de sous-typage
-bien sorté, il faut cependant ajouter une condition de sorte à
-\irule{SubConv} puisque la $\beta$-convertibilité n'assure pas que deux
-termes ont la même sorte dans notre système:
-$\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
-
-\subsection*{Subsumption}
-\begin{proposition}[Passage de la subsumption à l'application]
-  \label{subsum-elim}
-  On peut réecrire toute dérivation $`G \typed t : T$ utilisant la
-  subsumption ailleurs qu'à sa racine vers une dérivation l'utilisant
-  uniquement à sa racine ou pour la prémisse droite de l'application.
-\end{proposition}
-
-\begin{proof}
-  On inspecte les dérivations possibles utilisant \irule{SubSub} juste avant
-  une autre règle.
-  
-  \begin{induction}
-  \case{Var} Par de prémisse de la forme $`G \typed t : T$, donc
-    pas d'application de \irule{Subsum} possible.
-      
-  \case{Abs}\quad
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Pi x : T. U : s $}
-      \AXC{\vdots}
-      \UIC{$`G, x : T \seq M : U'$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd U' \sub U$}
-      \BIC{$`G, x : T \seq M : U $}
-      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
-    \end{prooftree}
-    
-    Par le lemme \ref{subtyping-sorts-d}, on a $`G \seq \Pi x : T. U' : s$.
-    
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Pi x : T. U' : s $}
-      \AXC{\vdots}
-      \UIC{$`G, x : T \seq M : U'$}
-      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U'$}
-      \AXC{$`G \subtd T \sub T$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd U' \sub U$}
-      \BIC{$`G \subtd \Pi x : T.U' \sub \Pi X : T.U$}        
-      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
-    \end{prooftree}
-    
-  \case{Sum}\quad
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Sigma x : T.U : s $}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \UIC{$`G \subtd S \sub T$}
-      \BIC{$`G \seq t : T $}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : U[t/x]$}
-      \AXC{\vdots}
-      \TIC{$`G \seq (t,u) : \Sigma x : T.U$}
-    \end{prooftree}
-    
-    Comme $S \sub T$, on a bien $\Sigma x : S.U \sub \Sigma x : T.U$
-    par \irule{SubSigma}. On sait de plus que $\Sigma x : S.U$ est bien
-    sorté de sorte $s$.
-
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Sigma x : S.U : s $}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : U[t/x]$}
-      \TIC{$`G \seq (t,u) : \Sigma x : S.U$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd \Sigma x : S.U \sub \Sigma x : T.U$}
-      \BIC{$`G \seq (t,u) : \Sigma x : T.U$}
-    \end{prooftree}
-    
-  \casetwo{LetSum}{LetIn}\quad
-    Règles problèmatiques. Si l'on ajoute des anotations au let, on
-    obtient:
-    
-    \begin{prooftree}
-      \AXC{\vdots}        
-      \UIC{$`G \seq t : T' $}
-      \AXC{\vdots}
-      \UIC{$`G \subtd T' \sub \Sigma x : T.U$}
-      \BIC{$`G \seq t : \Sigma x : T.U $}
-      \AXC{\vdots}
-      \UIC{$`G, x : T, u : U \seq v : V $}
-      \BIC{$`G \seq \letml (x, u) : \Sigma x : T.U = t \inml v : V$}
-    \end{prooftree}
-    
-    On peut alors changer les règles pour faire du sous-typage dans la
-    prémisse gauche. A droite c'est direct ($V' \sub V$).
-    
-    
-  \case{App} On autorise le sous-typage à la prémisse droite. A
-    gauche on peut avoir:
-    
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq f : T' $}
-      \AXC{\vdots}
-      \UIC{$`G \subtd  T' \sub \Pi x : V. W$}
-      \BIC{$`G \seq f : \Pi x : V. W $}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : V $}
-      \BIC{$`G \seq f u : W [ u / x ]$}
-    \end{prooftree}
-    
-    Par inspection des règles de sous-typage, on sait que le jugement
-    $T' \sub \Pi x : V.W$ résulte soit d'une application de
-    \irule{SubProd} soit de \irule{SubSub}.
-    Dans le premier cas on a la dérivation:
-
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq f : \Pi x : V'.W'$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd V \sub V'$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd W' \sub W$}
-      \BIC{$`G \subtd  \Pi x : V'.W' \sub \Pi x : V. W$}
-      \BIC{$`G \seq f : \Pi x : V. W $}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : V $}
-      \BIC{$`G \seq f u : W [ u / x ]$}
-    \end{prooftree}
-    
-    Comme on peut utiliser la subsumption sur l'argument, qu'on
-    l'autorise en racine de la dérivation on réécrit cette dérivation en:
-
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq f : \Pi x : V'.W'$}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : V $}
-      \AXC{\vdots}
-      \UIC{$`G \subtd V \sub V'$}
-      \BIC{$`G \seq u : V'$}
-      \BIC{$`G \seq f u : W' [ u / x ]$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd W' \sub W$}
-      \BIC{$`G \seq f u : W [ u / x ]$}
-    \end{prooftree}
-    
-    \def\subs{\subset{x}{U}{P}}
-    Si $T' `= \subs$, on peut déduire que la dérivation est de la
-    forme:
-    
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq f : \subs$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd V \sub V'$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd W' \sub W$}
-      \BIC{$`G \subtd \Pi x : V'.W' \sub \Pi x : V.W$}
-      \UIC{\vdots}
-      \noLine
-      \UIC{$`G \subtd U \sub \Pi x : V. W$}
-      \UIC{$`G \subtd \subs \sub \Pi x : V. W$}
-      \BIC{$`G \seq f : \Pi x : V. W $}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : V $}
-      \BIC{$`G \seq f u : W [ u / x ]$}
-    \end{prooftree}
-
-    On ne peut réecrire cette dérivation à cause de la
-    \emph{décomprehension} du type $T'$, on doit donc 
-    reprendre la fonction $\mu_0$ de \PVS{} \cite{PVS-Semantics:TR}
-    renomée $\mu$ ici qui opère cette décompréhension.
-    
-    \begin{definition}[$\mu$]
-      \begin{eqnarray*}
-        \subset{x}{U}{P} & "=>" & \mu~U \\
-        x                & "=>" & x
-      \end{eqnarray*}
-    \end{definition}
-    
-    On obtient la règle:
-    \begin{prooftree}
-      \QAX{App}
-      {$`G \subtd f : T$}
-      {$\mu~T = \Pi x : V. W$}
-      {$`G \seq u : V' $}
-      {$`G \subtd V' \sub V$}
-      {$`G \seq (f u) : W [ u / x ]$}
-      {$$}
-    \end{prooftree}     
-    
-    \begin{remark}
-      En pratique, les types du Calcul des Constructions ne sont pas
-      toujours en forme normale et il peut donc être nécessaire de les
-      réduire pour vérifier des jugements du genre: 
-      $`G \seq t : \Pi x : T.V$. On pourrait voir $\mu$ comme une
-      extension de la relation de $\beta$-équivalence avec la réduction
-      $\subset{x}{U}{P} "->"_\mu U$.
-    \end{remark}
-    
-  \case{Subsum}\quad
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd S \sub T$}
-      \BIC{$`G \seq t : T$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd T \sub U$}
-      \BIC{$`G \seq t : U$}
-    \end{prooftree}
-    
-    En utilisant \irule{SubTrans} on obtient:
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd S \sub T$}
-      \AXC{\vdots}
-      \UIC{$`G \subtd T \sub U$}
-      \BIC{$`G \subtd S \sub U$}
-      \BIC{$`G \seq t : U$}
-    \end{prooftree}
-
-  \end{induction}
-  
-\end{proof}
-
-On a donc montré que l'on peut réduire l'utilisation de la règle de
-subsumption aux arguments d'applications et à la racine du jugement.
-On peut simplement ignorer cette dernière utilisation du sous-typage, car
-cela ne peut donner qu'un type moins précis au même terme. Considérant
-que nous voulons donner à la fois un terme et sa spécification, il
-peut même être utile d'enlever cette dernière avant de faire la
-vérification que le type inféré du terme est bien sous-type du type
-spécifié.  
-
-\subsection*{Sommes dépendantes}
-En inspectant la règle \irule{Sum}, on remarque qu'il n'est pas possible
-d'inférer le type $U$ à partir du seul terme $(t, u)$. Cela
-nécessiterait de résoudre un problème d'unification d'ordre supérieur
-auquel il n'y a pas de solution la plus générale. On introduit donc dans
-le système algorithmique deux nouvelles règles, dont une (\irule{SumDep})
-permettant d'annoter le terme avec le type $U$ recherché. On considère
-que c'est à l'utilisateur d'annoter suffisament les termes. Par défaut,
-si le terme n'est pas annoté on considère l'objet $(u, v)$ comme une
-paire non-dépendante (\irule{SumInf}).
-
-\subsection*{Conversion}  
-En pratique nous ne voulons pas faire de tests de convertibilité
-inutiles, nous allons donc restreindre son utilisation au moment de
-typer les variables. Nous désirons cependant conserver la
-convertibilité.
-
+Le seul cas intéressant est si les deux termes sont dans la relation de $\beta$-équivalence:
 \begin{lemma}[Conservation de la conversion par sous-typage]
   \label{conv-sub}
-  Si $`G \typed t : T$, $`G \typed U : s$ et $T \eqbi U$ alors $`G \subta t : T \sub U$.
+  Si $`G \typea T, U : s$ et $T \eqbi U$ alors $T \suba U$.
 \end{lemma}
 
 \begin{proof}
@@ -359,13 +37,12 @@ convertibilité.
     
   \item[$T `= \Pi X.Y$:]
     Alors $U `= \Pi V.W$ et $X \eqbi V$, $Y \eqbi W$
-    d'après le lemme \TODO{}.
-    Par induction $`G \subta x : U \sub T$ et 
-    $`G, x : U \subta v : V \sub W$. On applique alors
-    \irule{SubProd} à ces deux prémisses.
+    d'après le lemme \ref{conv-prod}.
+    Par induction $X \sub Y$ et $V \sub W$. 
+    On applique alors \irule{SubProd} à ces deux prémisses.
     
-  \item[$T `= \Sigma x : X.Y$:]
-    $U$ est de la forme $\Sigma x : V.W$, avec $X \eqbi V$ et $Y \eqbi
+  \item[$T `= \Sigma X.Y$:]
+    $U$ est de la forme $\Sigma V.W$, avec $X \eqbi V$ et $Y \eqbi
     W$. Par induction et application de \irule{SubSigma}.
     
   \item[$T `= \subset{x}{X}{P}$:] 
@@ -373,17 +50,296 @@ convertibilité.
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
     \begin{prooftree}
-      \AXC{$`G \seq t : X \sub X'$}
-      \AXC{$`G \typea P : \Pi x : X.\Prop$}
+      \AXC{$X \sub X'$}
       \LeftLabel{\SubLeftRule}
-      \BIC{$`G \seq t : \subset{x}{X}{P} \sub X'$}
+      \UIC{$\subset{x}{X}{P} \sub X'$}
       \LeftLabel{\SubRightRule}
-      \UIC{$`G \seq t : \subset{x}{X}{P} \sub \subset{x}{X'}{P'}$}
+      \UIC{$\subset{x}{X}{P} \sub \subset{x}{X'}{P'}$}
     \end{prooftree}
-    
   \end{itemize}
 \end{proof}
 
+
+Il faut cependant s'assurer que deux types de sortes
+différentes ne peuvent être identifiés. En effet dans notre système
+la $\beta$-convertibilité n'assure pas que deux termes ont la même
+sorte, par exemple:
+$\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
+\TODO{Dans mon système, on ne peut pas faire la coercion de nat à Set}
+
+Le fait que les arguments sont tout deux sortés avec la même sorte
+avant de dériver le jugement de coercion nous assure que l'on ne fera
+pas d'identification erronée. 
+
+En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
+d'inférence de $\suba$ donne donc un algorithme pour décider de la relation
+de coercion. L'indéterminisme entre les règles \irule{SubProof} et
+\irule{SubSub} ne pose pas de problème: on peut laisser le choix à 
+l'implémentation puisque le système est confluent.
+
+Cependant, il reste une source importante d'indécidabilité dans le
+système de typage, c'est la règle de coercion. On va l'éliminer du
+système algorithmique après avoir montré que
+toute dérivation de typage utilisant \irule{Coerce} peut se réécrire en
+une dérivation n'utilisant cette règle qu'à sa racine.
+\def\subs{\subset{x}{U}{P}}
+Il nous faut changer quelque peu les règles pour obtenir le système
+algorithmique. En particulier, on va utiliser la fonction $\mu0$ de \PVS{}
+\cite{PVS-Semantics:TR} renomée $\mu$ ici pour opèrer des
+\emph{décompréhension}. Cette fonction efface les constructeurs de type
+sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
+  "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela va nous permettre de
+restreindre l'utilisation du jugement du sous-typage à l'application.
+
+\TODO{bof}
+\begin{remark}
+  En pratique, les types du Calcul des Constructions ne sont pas
+  toujours en forme normale et il peut donc être nécessaire de les
+  réduire pour vérifier des jugements du genre: 
+  $`G \seq t : \Pi x : T.V$. On pourrait voir $\mu$ comme une
+  extension de la relation de $\beta$-équivalence avec la réduction
+  $\subset{x}{U}{P} "->"_\mu U$. 
+\end{remark}
+
+\subsection*{Sommes dépendantes}
+En inspectant la règle \irule{Sum}, on remarque qu'il n'est pas possible
+d'inférer le type $U$ à partir du seul terme $(t, u)$. Cela
+nécessiterait de résoudre un problème d'unification d'ordre supérieur
+auquel il n'y a pas de solution la plus générale. On introduit donc dans
+le système algorithmique deux nouvelles règles, dont une (\irule{SumDep})
+permettant d'annoter le terme avec le type $U$ recherché. On considère
+que c'est à l'utilisateur d'annoter suffisament les termes. Par défaut,
+si le terme n'est pas annoté on considère l'objet $(u, v)$ comme une
+paire non-dépendante (\irule{SumInf}).
+
+\typenva
+\typeaFig
+\typemuaFig
+\subtaFig
+
+\subsection*{Subsumption}
+\typenva
+
+% On enlève \irule{Coerce} du système et on change la règle 
+% d'application \irule{App} de la figure \ref{typing-decl-rules}.
+% On note $\typea$ le système de typage obtenu. 
+
+\begin{proposition}[Passage de la subsumption à l'application]
+  \label{subsum-elim}
+  On peut réecrire toute dérivation $`G \typea t : T$ utilisant la
+  subsumption ailleurs qu'à sa racine vers une dérivation $`G \type t :
+  U$ avec $U \suba T$.
+\end{proposition}
+
+On a besoin de quelques lemmes auparavant:
+
+\begin{lemma}[$\beta$-equivalences et $\mu$]
+  \label{beta-mu}
+  Si $X \sub Y$ et $\mu~Y \eqbi \Sigma x : T.U$ alors $\mu X \eqbi \Sigma x : T'.U'$
+  et $T' \sub T$, $U' \sub U$.
+  Si $X \sub Y$ et $\mu~Y \eqbi \Pi x : T.U$ alors $\mu X \eqbi \Pi x :
+  T'.U'$ et $T \sub T'$, $U' \sub U$.
+\end{lemma}
+\begin{proof}
+  \begin{induction}
+    Par induction sur la dérivation de coercion, on fait le cas pour $\Sigma$.
+    
+    \case{SubConv} Trivial, puisqu'on aura $\mu~X = \mu~Y$.
+
+    \case{SubProd} Impossible, $\mu$ ne traversant pas les produits.
+
+    \case{SubSigma} Direct, on a une dérivation de $\Sigma x : T'. U'
+    \sub \Sigma x : T.U$.
+    
+    \case{SubLeft} Ici, $Y `= \subset{x}{V}{P}$, on peut donc déduire que
+    $\mu~Y = \mu~V \eqbi \Sigma x : T.U$. On 
+    applique l'hypothèse de récurence avec $X \sub V$ et on obtient:
+    $\mu~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+
+    \case{SubRight} Ici, $X `= \subset{x}{V}{P}$. Par induction, 
+    $\mu~V = \mu~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+  \end{induction}
+\end{proof}
+
+\begin{proof}
+  On inspecte les dérivations possibles utilisant \irule{Coerce} juste avant
+  une autre règle.
+  
+  \typenva
+  \begin{induction}
+    \case{Var} Par de prémisse de la forme $`G \type t : T$, donc
+    pas d'application de \irule{Subsum} possible.
+    
+    \case{Abs} \quad
+    
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq \Pi x : T. U : s $}
+      \AXC{\vdots}
+      \UIC{$`G, x : T \seq M : U'$}
+      \AXC{\vdots}
+      \UIC{$`G, x : T \seq U', U : s$}
+      \AXC{\vdots}
+      \UIC{$U' \sub U$}
+      \TIC{$`G, x : T \seq M : U $}
+      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
+    \end{prooftree}
+    
+    Comme $`G, x : T \typed U' : s$ on peut former le produit 
+    $`G \typea \Pi x : T. U' : s$.
+    On réecrit donc la dérivation en:     
+    
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq \Pi x : T. U' : s $}
+      \AXC{\vdots}
+      \UIC{$`G, x : T \seq M : U'$}
+      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U'$}
+      \AXC{$T \eqbi T$}
+      \UIC{$T \sub T$}
+      \AXC{\vdots}
+      \UIC{$U' \sub U$}
+      \BIC{$\Pi x : T.U' \sub \Pi X : T.U$}        
+      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
+    \end{prooftree}
+    
+    \case{Sum}\quad
+    
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq \Sigma x : T.U : s $}
+      \AXC{\vdots}
+      \UIC{$`G \seq t : S$}
+      \AXC{\vdots}
+      \UIC{$S \sub T$}
+      \BIC{$`G \seq t : T $}
+      \AXC{\vdots}
+      \UIC{$`G \seq u : U[t/x]$}
+      \TIC{$`G \seq (t,u) : \Sigma x : T.U$}
+    \end{prooftree}
+    
+    Comme $S \sub T$, on a bien $\Sigma x : S.U \sub \Sigma x : T.U$
+    par \irule{SubSigma}. On sait de plus que $\Sigma x : S.U$ est bien
+    sorté de sorte $s$. En effet, par inversion de $`G \seq \Sigma x :
+    T.U : s$ on a $`G, x : T \seq U : s$ et par renforcement ($S \sub T$), $`G, x : S \seq
+    U : s$. On peut donc dériver:
+
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq \Sigma x : S.U : s $}
+      \AXC{\vdots}
+      \UIC{$`G \seq t : S$}
+      \AXC{\vdots}
+      \UIC{$`G \seq u : U[t/x]$}
+      \TIC{$`G \seq (t,u) : \Sigma x : S.U$}
+      \AXC{\vdots}
+      \UIC{$\Sigma x : S.U \sub \Sigma x : T.U$}
+      \BIC{$`G \seq (t,u) : \Sigma x : T.U$}
+    \end{prooftree}
+    
+    \case{LetSum}\quad
+    \begin{prooftree}
+      \AXC{\vdots}        
+      \UIC{$`G \seq t : S $}
+      \AXC{\vdots}
+      \UIC{$S \sub V$}
+      \BIC{$`G \seq t : V$}
+      \AXC{$\mu~V \eqbi \Sigma x : T.U$}
+      \AXC{\vdots}
+      \UIC{$`G, x : T, u : U \seq v : V $}
+      \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
+    \end{prooftree}
+    
+    Par le lemme \ref{beta-mu}, on a $\mu~S \eqbi \Sigma x : T'.U'$,
+    $T' \suba T$ et $U' \suba U$. Par renforcement (lemme
+    \ref{narrowing-i}) on a:
+
+    \begin{prooftree}
+      \AXC{\vdots}        
+      \UIC{$`G \seq t : S $}
+      \AXC{$\mu~S \eqbi \Sigma x : T'.U'$}
+      \AXC{\vdots}
+      \UIC{$`G, x : T', u : U' \seq v : V $}
+      \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
+    \end{prooftree}
+
+    Si l'on applique la subsumption à droite c'est direct ($V' \sub V$).
+    
+    \case{LetIn}
+    De façon similaire, par renforcement on obtient la dérivation sans \irule{Coerce}.
+    
+    \case{App}\quad    
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq f : T $}
+      \AXC{\vdots}
+      \UIC{$ T \sub \Pi x : V. W$}
+      \BIC{$`G \seq f : \Pi x : V. W $}
+      \noLine
+      \UIC{$\mualgo(\Pi x : V.W) \eqbi \Pi x : V.W$}
+      \AXC{\vdots}
+      \UIC{$`G \seq u : U $}
+      \AXC{\vdots}
+      \UIC{$U \sub V$}
+      \TIC{$`G \seq f u : W [ u / x ]$}
+    \end{prooftree}
+    
+    Par le lemme \ref{beta-mu} on a $\mu(T) \eqbi \Pi x : V'.W'$ avec
+    $V \suba V'$ et $W' \suba W$. Par la transitivité de la coercion on
+    a: $U \suba V `^ V \suba V' "=>" U \suba V'$.
+    On peut donc dériver:
+    
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq f : T $}
+      \noLine
+      \UIC{$\mualgo(T) \eqbi \Pi x : V'.W'$}
+      \AXC{\vdots}
+      \UIC{$`G \seq u : U $}
+      \AXC{\vdots}
+      \UIC{$U \sub V'$}
+      \TIC{$`G \seq f u : W [ u / x ]$}
+    \end{prooftree}
+    
+    \case{Subsum}\quad
+
+    Dans le cas où l'on a un enchainement de règles \irule{Coerce}:
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq t : S$}
+      \AXC{\vdots}
+      \UIC{$S \sub T$}
+      \BIC{$`G \seq t : T$}
+      \AXC{\vdots}
+      \UIC{$T \sub U$}
+      \BIC{$`G \seq t : U$}
+    \end{prooftree}
+    
+    En utilisant la transitivité de la coercion on obtient:
+    \begin{prooftree}
+      \AXC{\vdots}
+      \UIC{$`G \seq t : S$}
+      \AXC{\vdots}
+      \UIC{$S \sub U$}
+      \BIC{$`G \seq t : U$}
+    \end{prooftree}
+
+  \end{induction}
+  
+\end{proof}
+
+Par induction, on a donc montré que l'on peut réduire l'utilisation de la règle de
+subsumption à la racine d'une dérivation. On peut ignorer sans perte de généralité 
+l'utilisation de la coercion à la racine de la dérivation, 
+on fera de toute façon un test de coercion entre le type inféré et le
+type spécifié juste avant la réécriture. On considère maintenant le
+système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
+
+
+
+
+
+\TODO{Check}
 \begin{lemma}[Substitutivité des termes du sous-typage]
   \label{substitutive-term-subtyping}
   Si $`G \subta x : U \sub T$ alors pour tout $u$ tel que $`G
@@ -391,7 +347,7 @@ convertibilité.
 \end{lemma}
 \begin{proof}
   Par induction sur la dérivation de sous-typage 
-  $`G \subta x : U \sub T$:
+  $U \sub T$:
   \def\seq{\subta}.
   
   \begin{induction}
@@ -485,7 +441,7 @@ convertibilité.
 %% \end{proof}
 
 
-\begin{lemma}[Inversion du sous-typage]
+\begin{lemma}[Inversion de la coercion]
   \label{inversion-subtyping}
   Si $`G \subta \lambda x : T. M : \Pi x : T.U \sub \Pi x : V.W$ 
   alors $`G, x : T \typea M : U$.
@@ -494,47 +450,132 @@ convertibilité.
   \TODO{}
 \end{proof}
 
-\begin{lemma}[Admissibilité de la réflexivité, transitivité du sous-typage]
-  \quad
-  \label{refl-trans-subtyping}
-  \begin{enumerate}
-  \item Pour tout $t, S$, si $`G \typed t : S$ alors $`G \subta t : S \sub S$.
-  \item Pour tout $t, S, T, U$,  si $`G \subta t : S \sub T$ et $`G \subta t
-    : T \sub U$ alors $`G \subta t : S \sub U$.
-  \end{enumerate}
+\begin{fact}[Symétrie de la coercion]
+  La relation $\sub$ est symétrique.
+\end{fact}
+
+\begin{lemma}[Coercion et $\mu$]
+  \label{coercion-mu}
+  Si $\Pi x : X.Y \sub U$ alors $\mu(U) \eqbi \Pi x : X'.Y'$ et $X' \sub
+  X$, $Y \sub Y'$.
+  Si $\Sigma x : X.Y \sub U$ alors $\mu(U) \eqbi \Sigma x : X'.Y'$ et $X \sub
+  X'$, $Y \sub Y'$.
+  Pour tout $U$, $U \sub \mu(U)$.
+\end{lemma}
+\begin{proof}
+  Par induction sur les dérivations de $\suba$ et la définition de $\mu$.
+\end{proof}
+
+\begin{lemma}[Coercion et conversion]
+  \label{coercion-conv}
+  Si $S \eqbi T$ alors $\left\{ \begin{array}{lcl}
+      T \sub U & "=>" & S \sub U \\
+      U \sub T & "=>" & U \sub S
+    \end{array} \right. $
+\end{lemma}
+
+\begin{proof}
+  Par simple inspection des règles on voit que le jugement ne peut
+  distinguer deux termes $\beta$-équivalents.
+\end{proof}
+
+\begin{lemma}[Transitivité de la coercion]
+  \label{trans-subtyping}
+  Pour tout $S, T, U$,  si $S \sub T$ et $T \sub U$ alors $S \sub U$.
 \end{lemma}
 
 \begin{proof}  
-  \begin{enumerate}
-  \item $S \eqbi S$, donc $`G \subta x : S \sub S$ est dérivable par
-    \SubConvRule. 
-    Par substivité du sous-typage, la propriété est vraie pour tout
-    $t$ tel que $`G \typed t : S$.
-  \item Dans \cite{Pierce:TypeSystems}, voir p. 420.
-  \end{enumerate}
+  \TODO{Dans \cite{Pierce:TypeSystems}, voir p. 420}
+  On procède par élimination de la règle \irule{SubTrans} dans toute
+  dérivation de $S \sub U$.
+  
+  \begin{induction}[subtyping-decl]
+
+    \case{SubConv}\quad
+    \begin{prooftree}
+      \AXC{$S \eqbi T$}
+      \UIC{$S \sub T$}
+      \AXC{$T \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+    
+    Par le lemme précédent, on élimine trivialement \irule{SubTrans}.
+
+    \case{SubProd}\quad
+    \begin{prooftree}
+      \AXC{$X' \sub X$}
+      \AXC{$Y \sub Y'$}
+      \BIC{$\Pi~X~Y \sub \Pi~X'~Y'$}
+      \AXC{$\Pi~X'~Y' \sub U$}
+      \BIC{$\Pi~X~Y \sub U$}
+    \end{prooftree}
+    
+    Si $\Pi~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
+    \eqbi \Pi~S~T$ et $S \sub X'$, $Y' \sub T$.
+    Par induction, $S \sub X$ et $Y \sub T$ donc $\Pi~X~Y \sub \Pi~S~T$ 
+    et enfin $\Pi~X~Y \sub U$.
+
+    De facon équivalente pour le second cas.
+
+    \case{SubSigma}\quad
+    \begin{prooftree}
+      \AXC{$X \sub X'$}
+      \AXC{$Y \sub Y'$}
+      \BIC{$\Sigma~X~Y \sub \Sigma~ X'~Y'$}
+      \AXC{$\Sigma~X'~Y' \sub U$}
+      \BIC{$\Sigma~X~Y \sub U$}
+    \end{prooftree}
+    
+    Si $\Sigma~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
+    \eqbi \Sigma~S~T$ et $X' \sub S$, $Y' \sub T$.
+    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma~X~Y \sub
+    \Sigma~S~T$ et enfin $\Sigma~X~Y \sub U$.
+    
+    De façon équivalente pour le second cas.
+
+    \case{SubProof}\quad
+    \begin{prooftree}
+      \AXC{$S \seq V$}
+      \UIC{$S \seq \subset{x}{V}{P}$}
+      \AXC{$\subset{x}{V}{P} \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+    
+    Si $\subset{x}{V}{P} \sub U$ alors $\mu(U) \eqbi V$.
+    Comme $S \seq V$, par induction, $S \seq \mu(U)$ donc
+    $S \sub U$.
+    
+    De façon équivalente pour le second cas.
+
+    \case{SubSub}
+    Cas identique à \irule{SubProof}
+    
+  \end{induction}
 \end{proof}
 
 \begin{lemma}[Correction du sous-typage]
   \label{correct-subtyping}
-  Si $`G \subta t : U \sub V$ alors $`G \typed t : U "=>" `G
-  \typed t : V$.
+  Si $U \suba V$ alors $U \subd V$
 \end{lemma}
 
 \begin{proof}
   \begin{induction}[subtyping-decl]
-    \case{SubConv} On a $T \eqbi U$ et l'on suppose 
-    $`G \typed x : T$. On a donc bien $`G \typed x : U$ par \irule{SubConv}.
+    \case{SubTrans} On a $T \eqbi U$ et l'on suppose 
+    $`G \typed t : T$. On a donc bien $`G \typed t : U$ par \irule{Conv}.
     
     \case{SubProd} On a
+    \def\seq{\suba}
     \begin{prooftree}
       \SubProd
     \end{prooftree}
     
-    Par induction, $`G \typed x : U "=>" `G \typed x : T$, 
-    $`G, x : U \typed v : V "=>" `G, x : U \typed v : W$.
-    On suppose $`G \typed \lambda x : T.v : \Pi x : T.V$.
+    Par induction 
+
+    Par induction, $`G \typed t : U "=>" `G \typed t : T$, 
+    $`G, t : U \typed v : V "=>" `G, t : U \typed v : W$.
+    On suppose $`G \typed t : \Pi x : T.V$, par inversion du produit: 
+    $`G \typed \lambda x : T.v : \Pi x : T.V$.
     Par inversion du typage, on a $`G, x : T \typed v : V$.
-    \bf{Renforcement ?}
     Par \irule{Abs}, $`G \typed \lambda x : U.v : \Pi x : U.W$.
     
     \case{SubSigma} On a 
@@ -569,32 +610,48 @@ convertibilité.
   $`G \typea t : T "=>" `G \typed t : T$
 \end{lemma}
 
+\setboolean{displayLabels}{false}
 \begin{proof}
   \begin{induction}[typing-algo]
-  \item[\irule{WfAtom},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
-    \irule{LetIn}, \irule{Sigma}, \irule{Sum}, \irule{LetSum}:] règles inchangées.
-
-    \case{App} On a
-    \def\fCenter{\typea}
+  \item[\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
+    \irule{LetIn}, \irule{Sigma}, \irule{Sum}:] règles inchangées.
+    
+    \case{LetSum}
+    On a 
     \begin{prooftree}
-      \AppI
+      \LetSumA
     \end{prooftree}
     
-    Par induction, $`G \typed f : \Pi x : V. W $.
+    Par induction, $`G \typed t : S$, et $S \subd \Sigma x : T. U$.
+    On peut donc dériver $`G \typed t : \Sigma x : T.U$ à l'aide de la
+    subsumption.
+    On peut directement appliquer \irule{LetSum} à cette prémisse et à
+    l'hypothèse d'induction $`G, x : T, y : U \typed v : V$.
+    
+    \case{App} On a:
+    \def\fCenter{\typea}
+    \begin{prooftree}
+      \AppA
+    \end{prooftree}
+    
+    Par induction, $`G \typed f : T$, et $T \subd \Pi x : V. W$.
+    On peut donc dériver $`G \typed f : \Pi x : V.W$ à l'aide de la
+    subsumption.
     Par le lemme \ref{correct-subtyping}, et l'hypothèse $`G \typed u : U$, 
     $`G \typed u : V$. Donc, par \irule{App}, on a bien $`G \typed f u :
     W[u/x]$.
   \end{induction}  
 \end{proof}
 
+\setboolean{displayLabels}{true}
 \begin{lemma}[Complétude du typage]
   \label{complete-typing}
-  $`G \typed t : T "=>" `E U, `G \typea t : U `^ `G \subta t : U \sub T$
+  $`G \typed t : T "=>" `E U, `G \subta t : U \sub T$
 \end{lemma}
 
 \begin{proof}
   \begin{induction}[typing-decl]
-  \item[\irule{WfAtom},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
+  \item[\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
     \irule{LetIn}, \irule{Sigma}, \irule{Sum}, \irule{LetSum}:] règles inchangées.
     
     \case{App} On a 
@@ -602,16 +659,15 @@ convertibilité.
       \App
     \end{prooftree}
     
-    Par induction, $`E X, Y, `G \typea f : \Pi x : X. Y `^ 
-    `G \subta f : \Pi x : X. Y \sub \Pi x : V. W$ et
-    $`E U, `G \typea u : U `^ `G \subta u : U \sub V$.
+    Par induction, $`E X, Y, `G \typea f : \Pi x : X. Y \suba \Pi x : V. W$ et
+    $`E U, G \subta u : U \sub V$.
     
     Si $`G \subta f : \Pi x : X.Y \sub \Pi x : V.W$, alors 
-    $f$ est de la forme $\lambda x : X.v$ et par inversion (lemme
-    \ref{inversion-subtyping}) $`G \subta x : V \sub X$.
+    $f$ est de la forme $\lambda x : X.v$ et par inversion du sous-typage
+    (lemme \ref{inversion-subtyping}) $V \sub X$.
     Par substitutivité du sous-typage (lemme
     \ref{substitutive-term-subtyping}), on a donc $`G \subta u : V
-    \sub X$. Par transitivité du sous-typage \ref{refl-trans-subtyping}, 
+    \sub X$. Par transitivité du sous-typage \ref{trans-subtyping}, 
     $`G \subta u : U \sub X$. On peut donc appliquer \irule{App} pour
     obtenir $`G \typea f u : Y[u/x]$. 
     
@@ -626,7 +682,7 @@ convertibilité.
       \Subset
     \end{prooftree}
     
-    Par induction, $`E T, `G \typea x : T `^ `G \subta x : T \sub U$.
+    Par induction, $`E T, `G \subta x : T \sub U$.
     
 
     \case{LetSub}
@@ -636,6 +692,27 @@ convertibilité.
   \end{induction}
   
 \end{proof}
+
+On a la propriété suivante entre les deux systèmes:
+\begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
+  $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \suba T$.
+\end{lemma}
+
+Ici $`=$ est l'équivalence syntaxique.
+La nouvelle règle d'application est intéressante pour deux raisons.
+Primo, c'est là qu'aura lieu le test de coercion, qui générera une
+coercion explicite dans le système final. Secundo, on est forcé de
+faire une opération supplémentaire pour la fonctionnelle que l'on
+applique puisqu'il est possible qu'elle ait un type sous-ensemble,
+auquel cas il faut effacer les types sous-ensemble pour trouver son type
+fonctionnel (c'est le rôle de la fonction $\mu$, qui fait une mise en
+forme normale de tête en effaçant les types sous-ensemble qu'elle
+rencontre).
+
+\begin{lemma}[Décidabilité de $\typea$]
+  La relation de typage $`G \typea t : T$ est décidable.
+\end{lemma}
+
 
 %%% Local Variables: 
 %%% mode: latex

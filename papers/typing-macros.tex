@@ -74,7 +74,7 @@
 \def\even{\matht{even}}
 \def\odd{\matht{odd}}
 
-\def\WfAtomRule{Wf-Atom}
+\def\WfEmptyRule{Wf-Empty}
 \def\WfVarRule{Wf-Var}
 \def\PropSetRule{PropSet}
 \def\TypeRule{Type}
@@ -97,6 +97,7 @@
 \def\SubReflRule{Sub-Refl}
 \def\SubTransRule{Sub-Trans} 
 \def\SubConvRule{Sub-Conv}
+\def\SubEqRule{Sub-Eq}
 \def\SubProdRule{Sub-Prod}
 \def\SubSigmaRule{Sub-Sigma}
 \def\SubLeftRule{Sub-Left}
@@ -119,17 +120,16 @@
     sous-typage dans le système algorithmique.}
   \else\ifstreq{#1}{subtyping-impl}{Par induction sur la dérivation de
     sous-typage.}
-  \fi
-}
+  \fi}
 
 \newenvironment{induction}[1][text=\empty]{
-  \if#1\empty\else\inductionon{#1}
+  \if#1\empty\text\else\inductionon{#1}
   \begin{list}{Unset default item}{}}
   {\end{list}}
 
 %% Should be able to work with \else...
 \newcommand{\inductionrule}[1]
-{\ifstreq{#1}{WfAtom}{\WfAtomRule}
+{\ifstreq{#1}{WfEmpty}{\WfEmptyRule}
 \fi\ifstreq{#1}{WfVar}\WfVarRule
 \fi\ifstreq{#1}{PropSet}\PropSetRule
 \fi\ifstreq{#1}{Type}\TypeRule
@@ -151,6 +151,7 @@
 \fi\ifstreq{#1}{SubRefl}\SubReflRule
 \fi\ifstreq{#1}{SubTrans}\SubTransRule
 \fi\ifstreq{#1}{SubConv}\SubConvRule
+\fi\ifstreq{#1}{SubEq}\SubEqRule
 \fi\ifstreq{#1}{SubProd}\SubProdRule
 \fi\ifstreq{#1}{SubSigma}\SubSigmaRule
 \fi\ifstreq{#1}{SubLeft}\SubLeftRule

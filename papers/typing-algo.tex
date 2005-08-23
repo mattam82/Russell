@@ -1,11 +1,21 @@
 \def\AppA{
 \TAX{App}
-{$`G \seq f : T \quad \mualgo(T) `= \Pi x : V. W$}
-{$`G \seq u : U$}
+{$`G \seq f : T \quad \mualgo(T) \eqbi \Pi x : V. W$}
+{$`G \seq u : U \quad `G \seq U, V : s$}
 {$U \sub V $}
 {$`G \seq (f u) : W [ u / x ]$}
 {}
 }
+
+\def\LetSumA{
+  \TAX{LetSum}
+  {$`G \seq t : T$}
+  {$\mualgo(T) \eqbi `S x : T. U $}
+  {$`G, x : T, u : U \seq v : V $}
+  {$`G \seq \letml~(x, u) = t~\inml~v : V$}
+  {}
+}
+
 
 \def\SumInfA{
   \TAX{SumInf}
@@ -21,7 +31,7 @@
   {$`G \seq t : T $}
   {$`G \seq u : U[t/x] $}
   {$`G \seq \Sigma x : T.U : s$}
-  {$`G \seq (t, u : U) : \Sigma x : T.U$}
+  {$`G \seq (x \coloneqq~t, u : U) : \Sigma x : T.U$}
   {}
 }
 
@@ -33,7 +43,7 @@
     \def\subt{\subta}
     \def\sub{\suba}
     
-    \WfAtom\DP    
+    \WfEmpty\DP    
     \WfVar\DP
     
     \def\fCenter{\typea}
@@ -65,7 +75,7 @@
     \SumDepA\DP
     
     \vspace{\infvspace}
-    \LetSum\DP
+    \LetSumA\DP
     
     \vspace{\infvspace}
     \Subset\DP

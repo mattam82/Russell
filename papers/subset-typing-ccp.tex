@@ -10,7 +10,7 @@ dans \CCI{} en laissant des ``trous'' dans les termes et enfin \Coq{} se
 charge de générer les obligations correspondant à ces trous.
 
 
-\setboolean{displayLabels}{false}
+\setboolean{displayLabels}{true}
 \def\setproptype{\{ \Set, \Prop, \Type(i) \}}
 \def\nf{\downarrow~}
 
@@ -19,6 +19,7 @@ On utilise dans la suite les notations et abbréviations suivantes:
 \begin{list}{}{}
 \item $`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
 \item $\_ \nf `= \text{forme normale}$
+\item $`G \typei t : S \subi T `= `G \typei t : S `^{} S \subi T$
 \end{list}
 
 
@@ -42,8 +43,8 @@ Enfin on peut appliquer un type à un terme ($`t~`a$). Dans la suite, les règles 
 qu'on fait les réductions de tête nécessaires pour obtenir un type
 d'une certaine forme (produit, somme, sous-ensemble, etc \ldots).
 
-%impossible d'inférer le type $`t$ désiré car il peut dépendre de
-%$`a$. Par exemple $(x \Coloneq 1, f x)$
+\TODO{Finitude!, pbs de contextes/nommage (ajouter des conditions)}
+
 %\vspace{-0.5cm}
 \begin{figure}[ht]
   \begin{center}
