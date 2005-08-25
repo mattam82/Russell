@@ -1,0 +1,85 @@
+\newpage
+\section{La tactique \Subtac}
+Nous avons d\'evelopp\'e la tactique \Subtac{} disponible dans la version
+\CVS{}~courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
+cr\'eer un programme, le typer et g\'en\'erer un terme incomplet
+correspondant (voir annexe \ref{fig:euclid-subtac}). 
+
+\subsection{Existentielles}
+La g\'en\'eration des buts correspondant aux variables existentielles et la
+formation du terme final devaient originellement \^etre laiss\'ees \`a la
+tactique \Refine~et au syst\`eme de gestion des existentielles de \Coq. Certaines limitations 
+dans l'impl\'ementation du raffinement (le m\'ecanisme permettant de manipuler
+des termes ``\`a trous'') nous ont emp\^ech\'e d'utiliser \Refine. En
+particulier, la gestion des d\'efinitions r\'ecursives et la pr\'esence de
+variables existentielles dans les types d'autres existentielles
+ n'\'etaient pas support\'ees. En
+cons\'equence, nous avons d\'evelopp\'e une nouvelle tactique \Coq{}
+permettant de g\'erer les termes avec existentielles de fa\c con plus
+g\'en\'erale. 
+
+\subsubsection{La tactique \eterm}
+L'id\'ee de d\'epart de la tactique \Refine{} est de prendre un terme \`a
+trous et d'en faire une traduction en une s\'equence de tactiques. Par
+exemple, lorsque \Refine{} rencontre une abstraction, il fait une
+introduction, lorsque c'est un cast, on applique l'identit\'e et ainsi de
+suite. Intuitivement, la s\'equence de tactiques engendr\'ee va construire
+le terme de d\'epart implicitement. 
+
+La tactique \eterm{} fonctionne diff\'erement. \`A partir d'un terme $t$ contenant des existentielles, \eterm{} va g\'en\'eraliser le terme par
+rapport \`a celles-ci, cr\'eant ainsi un objet $\lambda ex_1 : T_1, \ldots, ex_n :
+T_n, t[?_1 := ex_1, \ldots, ?_n := ex_n]$. 
+Habituellement, on propose $t$ comme habitant d'un type $T$ donn\'e (le
+but), par exemple on peut proposer $\lambda x : \nat.x$ comme preuve du
+but $\nat "->" \nat$.
+Plut\^ot que de donner directement $t$, on applique le nouveau
+terme, et \Coq{} va automatiquement nous demander d'instancier les
+arguments $ex_1 \ldots ex_n$ correspondants aux existentielles du terme 
+$t$. Cette technique permet d'avoir des d\'ependances entre existentielles
+(par exemple, $ex_1$ peut apparaitre dans tout les types $T_2 \ldots
+T_n$) et de ne pas reposer sur la gestion des existentielles de \Coq{}
+qui n'est pas tr\`es flexible \`a l'heure actuelle.
+
+Il nous faut nous pencher un peu plus avant sur la g\'en\'eralisation des
+existentielles pour comprendre le m\'ecanisme d'\eterm.
+Puisqu'on veut pouvoir avoir des d\'ependances entres les $n$
+existentielles d'un termes et qu'on s\'erialise celles-ci en un produit
+$n$-aire, il nous faut \^etre tr\`es attentifs \`a l'ordre dans lequel on
+g\'en\'eralise les variables existentielles. Si $?_3 : T_3$ o\`u $T_3$
+r\'ef\'erence $?_4$, il faut que l'existentielle $ex_4$ apparaisse
+\emph{avant} $ex_3$ dans notre produit. Il est toujours possible de
+trouver un ordre compatible avec ces d\'ependances puisqu'il est
+impossible de cr\'eer un cycle o\`u $?_i$ r\'ef\'erencerait $?_j$ et vice-versa
+(ceci est assur\'e par le caract\`ere fonctionnel des objets impl\'ementants
+les existentielles dans \Coq). La tactique actuelle est cod\'ee avec
+l'hypoth\`ese que toute existentielle $?_i$ ne d\'epend pas des
+existentielles d'indice sup\'erieur \`a $i$. Il est cependant envisagable de
+r\'eecrire tout terme contenant des existentielles comme un terme
+\'equivalent avec des indices respectant cet ordre.
+
+\subsection{Traitement de la r\'ecursion}
+Lorsque l'on d\'eveloppe un programme r\'ecursif dans un syst\`eme tel que
+\Coq, on est forc\'e de fournir une preuve de terminaison de son
+algorithme. Pour cela, on montre g\'en\'eralement qu'on a un ordre bien
+fond\'e sur le type de l'argument de r\'ecursion et que chaque appel respecte
+cet ordre. Nous avons ajout\'e des facilit\'es d'\'ecriture de fonctions
+r\'ecursives \`a notre langage ; on ajoute les existentielles
+correspondant aux preuves que l'ordre est bien fond\'e ou qu'il est bien
+respect\'e par les termes. Ainsi lors du raffinement on obtient naturellement
+les buts correspondants \`a prouver.
+
+\subsection{Traitement des inductifs}
+Notre langage ne prend pas encore en compte les d\'efinitions inductives g\'en\'erales.
+Au-del\`a du traitement des types sous-ensemble, on a un support minimal
+pour les inductifs \`a deux constructeurs qui correspondent \`a des bool\'eens
+annot\'es par des propri\'et\'es logiques (voir traitement de la
+conditionnelle figure \ref{fig:euclid-subtac}). A long terme on devrait
+pouvoir traiter les inductifs dans $\Set$ pr\'edicatif, qui ne peuvent 
+embarquer des propositions qu'en utilisant des types sous-ensemble avec
+le m\^eme m\'ecanisme de coercion et conserver l'inf\'erence.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 

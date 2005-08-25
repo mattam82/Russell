@@ -10,23 +10,28 @@ C'est presque le cas pour la coercion, il y a juste la règle
 \subsubsection*{Conversion}
 On note $\suba$ le même système que figure \ref{subtyping-decl-rules} mais
 où l'on n'applique \irule{SubConv} seulement si aucune autre règle ne
-s'applique.
+s'applique et sans la rêgle \irule{SubTrans}.
+On va montrer que les deux systèmes de coercion sont équivalents vis à
+vis de la conversion. On montrera plus tard pourquoi on peut éliminer la
+règle de transitivité.
 
-On montre que les deux systèmes de coercion sont équivalents: 
-
-Il nous faut tout d'abord un lemme sur la conversion:
+Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
 \begin{lemma}
   \label{conversion-pi}
   Si $\Pi T U \eqbi S$ alors $S \eqbi \Pi T' U'$ avec $T \eqbi T'$ et $U
   \eqbi U'$.
 \end{lemma}
+\begin{lemma}
+  \label{conversion-sigma}
+  Si $\Sigma T U \eqbi S$ alors $S \eqbi \Sigma T' U'$ avec $T \eqbi T'$ et $U
+  \eqbi U'$.
+\end{lemma}
 
-Le seul cas intéressant est si les deux termes sont dans la relation de $\beta$-équivalence:
+On peut maintenant montrer:
 \begin{lemma}[Conservation de la conversion par sous-typage]
   \label{conversion-coercion}
   Si $`G \typea T, U : s$ et $T \eqbi U$ alors $T \suba U$.
 \end{lemma}
-
 \begin{proof}
   Par induction sur la forme de $T$.
   
@@ -60,7 +65,6 @@ Le seul cas intéressant est si les deux termes sont dans la relation de $\beta$-
   \end{itemize}
 \end{proof}
 
-
 Il faut cependant s'assurer que deux types de sortes
 différentes ne peuvent être identifiés. En effet dans notre système
 la $\beta$-convertibilité n'assure pas que deux termes ont la même
@@ -91,16 +95,6 @@ algorithmique. En particulier, on va utiliser la fonction $\mu0$ de \PVS{}
 sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
   "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela va nous permettre de
 restreindre l'utilisation du jugement du sous-typage à l'application.
-
-\TODO{bof}
-\begin{remark}
-  En pratique, les types du Calcul des Constructions ne sont pas
-  toujours en forme normale et il peut donc être nécessaire de les
-  réduire pour vérifier des jugements du genre: 
-  $`G \seq t : \Pi x : T.V$. On pourrait voir $\mu$ comme une
-  extension de la relation de $\beta$-équivalence avec la réduction
-  $\subset{x}{U}{P} "->"_\mu U$. 
-\end{remark}
 
 \subsection*{Sommes dépendantes}
 En inspectant la règle \irule{Sum}, on remarque qu'il n'est pas possible
@@ -197,7 +191,8 @@ On a besoin de quelques lemmes auparavant:
 
 Le renforcement montre que notre notion de sous-typage est correcte
 vis-à-vis du typage. On peut dériver les mêmes jugements dans des
-contextes où les variables ont des types plus précis.
+contextes où les variables ont des types plus précis, on le démontre de
+nouveau pour le système algorithmique.
 
 \begin{lemma}[Renforcement]
   \label{narrowing-a}
@@ -567,15 +562,6 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
   Par le lemme précédent $T[u/x] \suba U[u/x]$.
 \end{proof}
 
-\begin{lemma}[Inversion de la coercion]
-  \label{inversion-coercion}
-  Si $`G \subta \lambda x : T. M : \Pi x : T.U \sub \Pi x : V.W$ 
-  alors $`G, x : T \typea M : U$.
-\end{lemma}
-\begin{proof}
-  \TODO{pas utilisé ?}
-\end{proof}
-
 \begin{fact}[Symétrie de la coercion]
   La relation $\sub$ est symétrique.
 \end{fact}
@@ -685,7 +671,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
   Les règles des deux systèmes sont les mêmes excepté \irule{SubTrans}
   qu'on peut éliminer dans le système algorithmique. De plus
   l'application restreinte de la conversion ne change pas les jugements
-  dérivables (lemme \label{conversion-sub}).
+  dérivables (lemme \ref{conversion-coercion}).
 \end{proof}
 
 \begin{theorem}[Correction de la coercion]

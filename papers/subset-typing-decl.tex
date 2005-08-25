@@ -1,7 +1,6 @@
 \subsection{Sémantique}
 \typenvd
 
-\TODO{Figures plus compactes ?}
 \typedFig
 \subtdFig
 
@@ -14,6 +13,13 @@ l'on peut utiliser un terme de type $T$ à la place d'un terme de type
 $U$ si $T$ et $U$ sont dans une certaine relation. 
 Le jugement $\Gamma \typed t : T$ se lit: dans l'environnement $\Gamma$,
 $t$ est de type $T$.
+
+\begin{remark}
+  En pratique, les types du Calcul des Constructions ne sont pas
+  toujours en forme normale et il peut donc être nécessaire de les
+  réduire pour vérifier des jugements du genre: 
+  $`G \seq t : \Pi x : T.V$.
+\end{remark}
 
 \CCI{} contient une règle de typage
 similaire, la conversion (\irule{Conv}), qui dit essentiellement que deux types

@@ -19,9 +19,8 @@ On utilise dans la suite les notations et abbréviations suivantes:
 \begin{list}{}{}
 \item $`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
 \item $\_ \nf `= \text{forme normale}$
-\item $`G \typei t : S \subi T `= `G \typei t : S `^{} S \subi T$
+\item $`G \typea t : S \suba T `= `G \typea t : S `^{} S \suba T$
 \end{list}
-
 
 \section{Langage}
 Le langage que nous voulons est très proche de \ML, plus les annotations
@@ -43,8 +42,6 @@ Enfin on peut appliquer un type à un terme ($`t~`a$). Dans la suite, les règles 
 qu'on fait les réductions de tête nécessaires pour obtenir un type
 d'une certaine forme (produit, somme, sous-ensemble, etc \ldots).
 
-\TODO{Finitude!, pbs de contextes/nommage (ajouter des conditions)}
-
 %\vspace{-0.5cm}
 \begin{figure}[ht]
   \begin{center}
@@ -59,39 +56,7 @@ d'une certaine forme (produit, somme, sous-ensemble, etc \ldots).
 \input{subset-typing-decl}
 \input{subset-typing-algo}
 \input{subset-typing-impl}
-
-\section{La tactique \Subtac}
-Nous avons développé la tactique \Subtac{} disponible dans la version
-\CVS{}~courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
-créer un programme, le typer et générer un terme incomplet
-correspondant (voir annexe \ref{fig:euclid-subtac}). 
-
-\subsection{Existentielles}
-La génération des buts correspondant aux variables existentielles et la
-formation du terme final sont laissées à la tactique \Refine~et au
-système de gestion des existentielles de \Coq. Certaines limitations 
-dans l'implémentation du raffinement (le mécanisme permettant de manipuler
-des termes ``à trous'') devront être dépassées pour obtenir
-une contribution totalement fonctionnelle. On peut cependant espérer
-résoudre ces problèmes de façon satisfaisante dans un futur proche.
-
-\subsection{Traitement de la récursion}
-Lorsque l'on développe un programme récursif dans un système tel que
-\Coq, on est forcé de fournir une preuve de terminaison de son
-algorithme. Pour cela, on montre généralement qu'on a un ordre bien
-fondé sur le type de l'argument de récursion et que chaque appel respecte
-cet ordre. Nous avons ajouté des facilités d'écriture de fonctions
-récursives à notre langage ; on ajoute les existentielles
-correspondant aux preuves que l'ordre est bien fondé ou qu'il est bien
-respecté par les termes. Ainsi lors du raffinement on obtient naturellement
-les buts correspondants à prouver.
-
-\subsection{Traitement des inductifs}
-Notre langage ne prend pas encore en compte les définitions inductives générales.
-Au-delà du traitement des types sous-ensemble, on a un support minimal
-pour les inductifs à deux constructeurs qui correspondent à des booléens
-annotés par des propriétés logiques (voir traitement de la
-conditionnelle figure \ref{fig:euclid-subtac}). 
+\input{subset-typing-subtac}
 
 %%% Local Variables: 
 %%% mode: latex
