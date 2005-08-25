@@ -1,4 +1,5 @@
 \subsection{Élaboration du système algorithmique \& propriétés}
+\typenva
 
 Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
 syntaxe. 
@@ -15,14 +16,14 @@ On montre que les deux systèmes de coercion sont équivalents:
 
 Il nous faut tout d'abord un lemme sur la conversion:
 \begin{lemma}
-  \label{conv-prod}
+  \label{conversion-pi}
   Si $\Pi T U \eqbi S$ alors $S \eqbi \Pi T' U'$ avec $T \eqbi T'$ et $U
   \eqbi U'$.
 \end{lemma}
 
 Le seul cas intéressant est si les deux termes sont dans la relation de $\beta$-équivalence:
 \begin{lemma}[Conservation de la conversion par sous-typage]
-  \label{conv-sub}
+  \label{conversion-coercion}
   Si $`G \typea T, U : s$ et $T \eqbi U$ alors $T \suba U$.
 \end{lemma}
 
@@ -37,7 +38,7 @@ Le seul cas intéressant est si les deux termes sont dans la relation de $\beta$-
     
   \item[$T `= \Pi X.Y$:]
     Alors $U `= \Pi V.W$ et $X \eqbi V$, $Y \eqbi W$
-    d'après le lemme \ref{conv-prod}.
+    d'après le lemme \ref{conversion-pi}.
     Par induction $X \sub Y$ et $V \sub W$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
@@ -69,7 +70,7 @@ $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
 
 Le fait que les arguments sont tout deux sortés avec la même sorte
 avant de dériver le jugement de coercion nous assure que l'on ne fera
-pas d'identification erronée. 
+pas d'identification erronée dans les autres règles que \irule{SubConv}.
 
 En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
 d'inférence de $\suba$ donne donc un algorithme pour décider de la relation
@@ -133,7 +134,7 @@ paire non-dépendante (\irule{SumInf}).
 
 On a besoin de quelques lemmes auparavant:
 
-\begin{lemma}[$\beta$-equivalences et $\mu$]
+\begin{lemma}[$\beta$-equivalence et $\mu$]
   \label{beta-mu}
   Si $X \sub Y$ et $\mu~Y \eqbi \Sigma x : T.U$ alors $\mu X \eqbi \Sigma x : T'.U'$
   et $T' \sub T$, $U' \sub U$.
@@ -161,6 +162,117 @@ On a besoin de quelques lemmes auparavant:
   \end{induction}
 \end{proof}
 
+\begin{lemma}[Bonne formation des contextes]
+  \label{wf-contexts-a}
+  Si $`G \type t : T$ alors $\typewf `G$.
+\end{lemma}
+\begin{proof}
+  \inductionon{typing-decl}
+\end{proof}
+
+\begin{fact}[Inversion du jugement de bonne formation]
+  \label{inversion-wf-a}
+  Si $\typewf `G, x : U$ alors $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
+\end{fact}
+
+\begin{lemma}[Affaiblissement]
+  \label{weakening-a}
+  Si $`G, `D \type t : T$ alors pour tout $x : S `; `G, `D$ tel que
+  $\wf `G, x : S, `D$, $`G, x : S, `D \type t : T$
+\end{lemma}
+
+\begin{proof}
+  \begin{induction}[typing-decl]
+    \casetwo{PropSet}{Type} Trivial.
+
+    \case{Var}
+    On a $x : S `; `G, `D$, donc $`G, x : S, `D \type y : T$ est toujours dérivable.
+    
+    \case{Prod}
+    Par induction $`G, x : S, `D \type T : s1$ et $`G, x : S, `D,
+    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+    $`G, x : S, `D \type \Pi x : T.U : s2$. De même pour le reste des règles.
+  \end{induction}
+\end{proof}  
+
+Le renforcement montre que notre notion de sous-typage est correcte
+vis-à-vis du typage. On peut dériver les mêmes jugements dans des
+contextes où les variables ont des types plus précis.
+
+\begin{lemma}[Renforcement]
+  \label{narrowing-a}
+  \[ `G \seq S, S' : s, S' \sub S "=>" 
+  \left\{ \begin{array}{lcl}
+      \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
+      & `^{} & \\
+      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T
+    \end{array}
+  \right. \]
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la taille de la dérivation de typage ou de bonne formation.
+    
+  \begin{induction}
+    \case{WfEmpty} Trivial.
+    
+    \case{WfVar} 
+    La conclusion est $\typewf `G, x : S, `D$
+    
+    \begin{induction}[text=Par induction sur la taille de $`D$]
+    \item[\protect{$`D = []$}]
+      La racine de la dérivation est de la forme:
+      \begin{prooftree}
+        \UAX{WfVar}
+        {$`G \type S : s$}
+        {$\wf `G, x : S$}
+        {$s `: \{ \Set, \Prop, \Type(i) \}$}
+      \end{prooftree}
+      On a $`G \type S' : s$, donc par \irule{WfVar}, $\typewf `G, x : S'$.  
+      
+    \item[\protect{$`D `= `D', y : U$}]
+      La racine de la dérivation est de la forme:
+      \begin{prooftree}
+        \UAX{WfVar}
+        {$`G, x : S, `D' \type U : t$}
+        {$\wf `G, x : S, `D', y : U$}
+        {$s `: \{ \Set, \Prop, \Type(i) \}$}
+      \end{prooftree}
+      Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : t$,
+      on a donc bien $\typewf `G, x : S', `D', y : U$ par \irule{WfVar}.
+    \end{induction}
+    
+    \casetwo{PropSet}{Type} 
+    Par induction, $\typewf `G, x : S', `D$, on applique simplement la règle.
+    
+    \case{Var}
+    Par induction, $\typewf `G, x : S', `D$. La seule différence avec le
+    contexte précedent est le type associé à $x$, donc si $t \not= x$, on
+    peut simplement réappliquer \irule{Var}. Si $t `= x$ on construit la
+    dérivation:
+
+    \begin{prooftree}
+      \BAX{Var}
+      {$\wf `G, x : S', `D$}
+      {$x : S' `: `G$}
+      {$`G, x : S', `D \seq x : S'$}
+      {}
+      \AXC{$`G, x : S', `D \type S,S' : s$}
+      \AXC{$S' \sub S$} % `G \subt 
+      \TIC{$`G, x : S', `D \type x : S$}
+    \end{prooftree}
+    
+    Par l'affaiblissement (lemme \ref{weakening-a}) et $`G \type S,S' : s$,
+    on obtient la prémisse $`G, x : S', `D \type S,S' : s$.
+    
+    \case{Prod} 
+    Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
+    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+    $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
+  \end{induction}
+\end{proof}
+
+On peut maintenant montrer notre proposition:
 \begin{proof}
   On inspecte les dérivations possibles utilisant \irule{Coerce} juste avant
   une autre règle.
@@ -252,7 +364,7 @@ On a besoin de quelques lemmes auparavant:
     
     Par le lemme \ref{beta-mu}, on a $\mu~S \eqbi \Sigma x : T'.U'$,
     $T' \suba T$ et $U' \suba U$. Par renforcement (lemme
-    \ref{narrowing-i}) on a:
+    \ref{narrowing-a}) on a:
 
     \begin{prooftree}
       \AXC{\vdots}        
@@ -335,42 +447,19 @@ on fera de toute façon un test de coercion entre le type inféré et le
 type spécifié juste avant la réécriture. On considère maintenant le
 système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 
-\begin{lemma}[Substitutivité du typage]
-  \label{substitutive-typing}
-  Si $`G, x : U \typea t : T$ et $`G \typea u : U$ alors
-  $`G \typea t[u/x] : T[u/x]$.
+\begin{lemma}[Substitutivité de $\mualgo$]
+  \label{substitutive-mu}
+  Si $\mualgo(T) = U$ alors $\mualgo(T[u/x]) = U[u/x]$.
 \end{lemma}
 
 \begin{proof}
-  \typenva
-  Par induction sur la dérivation de typage $`G, x : U \typea t : T$.
-  
-  \begin{induction}
-    \casetwo{PropSet}{Type} 
-    La substitution n'a aucun effet et $`G$ est bien
-    formé.
-
-    \case{Var}
-    Si $t `= x$ alors on a $T = U$ et $T[u/x] = U$ puisque $x$
-    n'apparait pas dans $U$. On a donc bien $`G \typea t[u/x] = u :
-    T[u/x] = U$.
-    
-    \case{Prod}
-    Par induction  $`G \typea (\Pi x : T.U)[u/x] : s[u/x]$ et
-    
-
-    \case{Abs}
-    \case{App}
-    \case{LetIn}
-    \case{Sigma}
-    \case{Sum}
-    \case{LetSum}
-    \case{Subset}
-
-  \end{induction}
-  
+  Il suffit de suivre la définition de $\mualgo$.
+  Si $T$ est de la forme $\sub{y}{V}{P}$ alors $\mualgo(T) =
+  \mualgo(V)$ et $T[u/x]$ est de la forme
+  $\sub{y}{V[u/x]}{P[u/x]}$. Par induction, $\mualgo(T[u/x]) =
+  \mualgo(V[u/x]) = \mualgo(V)[u/x] = \mualgo(T)[u/x]$.
+  Sinon c'est trivial.
 \end{proof}
-
 
 \begin{lemma}[Substitutivité de la coercion]
   \label{substitutive-coercion}
@@ -378,7 +467,6 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 \end{lemma}
 
 \begin{proof}
-  
   \begin{induction}[subtyping-algo]
     \case{SubConv}
     Direct par préservation de l'équivalence $\eqbi$ par substitution.
@@ -397,6 +485,77 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
   \end{induction}
 \end{proof}
 
+\begin{lemma}[Substitutivité du typage]
+  \label{substitutive-typing}
+  Si $`G \typea u : U$ alors
+  \[ \left\{ \begin{array}{lcl}
+      `G, x : U, `D \typea t : T & "=>" & `G, `D[u/x] \typea t[u/x] :
+      T[u/x] \\
+      \wf `G, x : U, `D & "=>" & \wf `G, `D[u/x]
+    \end{array}\right. \]
+\end{lemma}
+
+\begin{proof}
+  \typenva
+  Par induction mutuelle sur la dérivation de typage $`G, x : U, `D
+  \typea t : T$ ou $\wf `G, x : U, `D$.
+  
+  \begin{induction}
+    \case{WfEmpty} Trivial.
+
+    \case{WfVar}
+    Par induction sur $`D$.
+    \begin{itemize}
+    \item[\protect{$`D = []$}]
+      On a alors $`G \typea U : s$ donc $\wf `G$ et triviallement, $\wf
+      `G, `D[u/x]$.
+
+    \item[\protect{$`D = `D', y : T$}]
+      On a alors $`G, x : U, `D' \typea T : s$ et par induction
+      $`G, `D'[u/x] \typea T[u/x] : s[u/x]$. Donc on peut appliquer
+      \irule{WfVar} pour obtenir $\wf `G, `D'[u/x], T[u/x]$ soit
+      $\wf `G, `D[u/x]$
+    \end{itemize}
+    
+    \casetwo{PropSet}{Type} 
+    La substitution n'a aucun effet et $`G, `D[u/x]$ est bien
+    formé par induction.
+    
+    \case{Var}
+    Par induction, $\wf `G, `D[u/x]$.
+    Si $t `= x$ alors on a $T = U$ et $T[u/x] = U$ puisque $x$
+    n'apparait pas dans $U$. On a donc bien $`G, `D[u/x] \typea t[u/x] = u :
+    T[u/x] = U$. 
+    Si $y : T `: `G$ alors on applique simplement \irule{Var}.
+    Si $y : T `: `G$ alors $y : T[u/x] `: `D[u/x]$ et on obtient
+    $`G, `D[u/x] \typea y[u/x] :  T[u/x]$ par \irule{Var}.
+    
+    \case{Prod}
+    Par induction  $`G, `D[u/x] \typea T[u/x] : s_1[u/x]$ et
+    $`G, `D[u/x], y : T[u/x] \typea M[u/x] : s_2[u/x]$. 
+    On peut appliquer \irule{Prod} pour obtenir $`G, `D[u/x] \typea \Pi
+    y : T[u/x].M[u/x] : s_2[u/x]$ soit $`G, `D[u/x] \typea (\Pi y :
+    T.M)[u/x] : s_2[u/x]$.
+    De façon similaire pour les autres cas.
+
+    \case{App}
+    On étudie le cas de l'application qui requiert un lemme supplémentaire.
+    Par induction, $`G, `D[u/x] \typea f[u/x] : T[u/x]$ et
+    $`G, `D[u/x] \typea a[u/x] : A[u/x]$. Si $\mualgo(T) \eqbi \Pi y :
+    V.W$ alors $\mualgo(T[u/x]) \eqbi \Pi y : V[u/x].W[u/x]$ (lemme
+    \ref{substitutive-mu}). Par induction, on a aussi $`G, `D[u/x] \typea
+    A[u/x],V[u/x] : s$. Enfin, par substitutivité de la coercion on a $A[u/x]
+    \suba V[u/x]$. On peut donc appliquer \irule{App} pour obtenir 
+    $`G, `D[u/x] \typea (f[u/x] a[u/x]) : W[u/x][a[u/x]/y]$. Or $W[u/x][a[u/x]/y] =
+    W[a/y][u/x]$. On a donc bien $`G, `D[u/x] \typea (f a)[u/x] :
+    (W[a/y])[u/x]$.
+    On a un raisonnement similaire pour \irule{LetSum}.
+
+
+  \end{induction}
+  
+\end{proof}
+
 \begin{lemma}[Substitutivité du typage avec coercion]
   \label{substitutive-typing-coercion}
   Si $`G, x : V \typea t : T \sub U$, $G \typea u : V$
@@ -409,7 +568,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 \end{proof}
 
 \begin{lemma}[Inversion de la coercion]
-  \label{inversion-subtyping}
+  \label{inversion-coercion}
   Si $`G \subta \lambda x : T. M : \Pi x : T.U \sub \Pi x : V.W$ 
   alors $`G, x : T \typea M : U$.
 \end{lemma}
@@ -434,7 +593,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 \end{proof}
 
 \begin{lemma}[Coercion et conversion]
-  \label{coercion-conv}
+  \label{coercion-conversion}
   Si $S \eqbi T$ et $T \sub U$ alors $S \sub U$
 \end{lemma}
 
@@ -444,7 +603,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 \end{proof}
 
 \begin{lemma}[Transitivité de la coercion]
-  \label{trans-subtyping}
+  \label{transitive-coercion}
   Pour tout $S, T, U$,  si $S \sub T$ et $T \sub U$ alors $S \sub U$.
 \end{lemma}
 
@@ -526,7 +685,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
   Les règles des deux systèmes sont les mêmes excepté \irule{SubTrans}
   qu'on peut éliminer dans le système algorithmique. De plus
   l'application restreinte de la conversion ne change pas les jugements
-  dérivables (lemme \label{conv-sub}).
+  dérivables (lemme \label{conversion-sub}).
 \end{proof}
 
 \begin{theorem}[Correction de la coercion]
@@ -611,7 +770,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
     \end{prooftree}
     
     Par substitutivité de la coercion (lemme
-    \ref{substitutive-subtyping}), $W'[u/x] \suba W[u/x]$, la propriété
+    \ref{substitutive-coercion}), $W'[u/x] \suba W[u/x]$, la propriété
     est donc bien vérifiée.
 
     \case{LetSum} On a
@@ -642,7 +801,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
     \casetwo{Conv}{Subsum}
     Dans les deux cas on a inductivement $`E T', `G \typea t : T'
     \suba T$. Avec \irule{Conv} on a $T \eqbi S$, donc $T' \suba S$ par
-    le lemme \ref{sub-conv}. Pour \irule{Subsum} on a $T \subd S$.
+    le lemme \ref{coercion-conversion}. Pour \irule{Subsum} on a $T \subd S$.
     Par complétude de la coercion, $T \suba S$ et par transitivité de la
     coercion, $T' \suba S$. La propriété est donc bien vérifiée dans les
     deux cas.

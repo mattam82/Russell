@@ -6,8 +6,8 @@
 \subtdFig
 
 La sémantique du langage nous est donnée par un système de typage, qu'on
-formalise par un ensemble de règles d'inférence. Dans notre cas ce
-sont les règles de \CCI{} auquelles on a ajouté une règle de
+formalise inductivement par un ensemble de règles d'inférence. Dans
+notre cas ce sont les règles de \CCI{} auquelles on a ajouté une règle de
 coercion (\irule{Coerce}) que l'on trouve classiquement dans les systèmes avec
 sous-typage avec le nom de subsumption. Cette règle formalise l'idée que 
 l'on peut utiliser un terme de type $T$ à la place d'un terme de type
@@ -126,32 +126,31 @@ système décidable.
 %   des sortes principales dans notre système.
 % \end{proof}
 
-\begin{lemma}[Unicité du sortage]
-  Si $`G \typed T : s_1$ et $`G \typed T : s_2$ alors $s_1 = s_2$.
-\end{lemma}
+% \begin{lemma}[Unicité du sortage]
+%   Si $`G \typed T : s_1$ et $`G \typed T : s_2$ alors $s_1 = s_2$.
+% \end{lemma}
 
-\begin{proof}
-  \begin{induction}{typing-decl}
-    \casetwo{PropSet}{Type}
-    Aucune autre règle ne peut typer $T$, donc $s_1 = s_2$
+% \begin{proof}
+%   \begin{induction}{typing-decl}
+%     \casetwo{PropSet}{Type}
+%     Aucune autre règle ne peut typer $T$, donc $s_1 = s_2$
     
-    \case{Var} 
-    Les règles de conversion et de subsumption ne permettent pas de
-    typer $s1$...
+%     \case{Var} 
+%     Les règles de conversion et de subsumption ne permettent pas de
+%     typer $s1$...
+    
+%     \case{Prod}
+%     \case{Abs}
+%     \case{App}
+%     \case{LetIn}
+%     \case{Sigma}
+%     \case{Sum}
+%     \case{LetSum}
+%     \case{Subset}
+%     \case{Subsum}
+%   \end{induction}
+% \end{proof}
 
-    \case{Prod}
-    \case{Abs}
-    \case{App}
-    \case{LetIn}
-    \case{Sigma}
-    \case{Sum}
-    \case{LetSum}
-    \case{Subset}
-    \case{Subsum}
-  \end{induction} 
-
-
-\end{proof}
 
 % \begin{lemma}[Sous-typage bien sorté]
 %   \label{subtyping-sorts-d}
@@ -192,6 +191,7 @@ renforcement. Il établit que tout jugement peut être dérivé dans un
 contexte étendu par de nouvelles déclarations.
 
 \begin{lemma}[Affaiblissement]
+  \label{weakening-d}
   Si $`G, `D \type t : T$ alors pour tout $x : S `; `G, `D$ tel que
   $\wf `G, x : S, `D$, $`G, x : S, `D \type t : T$
 \end{lemma}
@@ -226,6 +226,7 @@ vis-à-vis du typage. On peut dériver les mêmes jugements dans des
 contextes où les variables ont des types plus précis.
 
 \begin{lemma}[Renforcement]
+  \label{narrowing-d}
   \[ `G \seq S, S' : s, S' \sub S "=>" 
   \left\{ \begin{array}{lcl}
       \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
@@ -300,6 +301,11 @@ contextes où les variables ont des types plus précis.
 Maintenant que nous avons montré que ce système a bien les
 propriétés que l'ont veut pour la coercion par prédicats, on va le
 raffiner pour obtenir un algorithme de typage.
+
+
+%$list nat \sub list {n:nat|n \neq 0}$ ?
+%$list : Set -> Set$
+
 
 %%% Local Variables: 
 %%% mode: latex
