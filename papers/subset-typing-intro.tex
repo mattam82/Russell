@@ -45,11 +45,13 @@ en appliquant l'hypoth\`ese $H$ on prouve le but directement.
 Ces tactiques peuvent \^etre d'une complexit\'e arbitraire (r\'e\'ecritures,
 proc\'edures de d\'ecision pour l'arithm\'etique, etc \ldots).
 
-Les tactiques utilis\'ees pour cr\'eer des preuves ne sont en fait qu'une
-sorte de sucre au-dessus du noyau de \Coq{} qui se r\'eduit \`a un typeur
+Les tactiques utilis\'ees pour cr\'eer des preuves ne sont en fait
+qu'une interface au-dessus du noyau de \Coq{} qui se r\'eduit \`a un typeur
 pour \CCI. A la fin d'une preuve, on a en effet construit un terme 
 ($\lambda x : A. x$ dans notre exemple) que l'on va soumettre au typeur
-dont le but est de v\'erifier qu'il est bien de type $A "->" A$.
+dont le but est de v\'erifier qu'il est bien de type $A "->" A$. Les
+tactiques peuvent cependant être arbitrairement complexes (résolution
+d'équations de l'arithmétique, réecritures, etc...).
 
 \subsection{Programmes}
 D'un point de vue preuve de programmes, on a donc un environnement qui

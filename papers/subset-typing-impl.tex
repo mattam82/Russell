@@ -80,8 +80,188 @@ On trouve ici l'essence du mécanisme de coercion par prédicats.
 \subsection{Propriétés}
 On veut montrer que si l'on a une dérivation dans notre système
 algorithmique, alors son image par la réécriture est une dérivation
-valide de \CCI{} (par induction sur la dérivation dans le système
-algorithmique). 
+valide de \CCI{}. On rappelle que \CCI{} est équivalent au premier
+calcul présenté moins la règle de subsumption.
+
+\begin{theorem}
+  Si $`G \typea t : T$ et $\timpl{`G}{t}{T}{`G'}{t'}{T'}$ alors $`G'
+  \typec t' : T'$.
+\end{theorem}
+\setboolean{displayLabels}{false}
+
+\begin{proof}
+  Notre traduction est un homomorphisme, il est donc direct que le
+  typage soit conservé. Il faut juste s'assurer que l'on ne modifie pas
+  la forme des termes et des types par la réecriture. C'est possible
+  uniquement pour les règles \irule{App} et \irule{LetSum}, on va donc
+  les étudier plus en détail.
+
+  \begin{prooftree}
+    \QAX{App}
+    {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
+    {$\muimpl~T' `= (\pi, \Pi x : V'. W')$}
+    {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
+    {$\subimpl{`G'}{c}{U'}{V'}$}
+    {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
+    {}
+  \end{prooftree}
+  
+  Par induction, on sait que $\muimpl(T') `= (\pi, \Pi x : V'. W')$ puisque
+  la réecriture ne change pas la forme des types.
+  Par définition de $\muimpl$ on a $\pi~f' : \Pi x : V'.W'$.
+  On assure donc la forme fonctionelle de $f$ par la réecriture.
+  La définition de la coercion nous assure que $c u' : V'$. On obtient
+  donc 
+  
+
+
+\end{proof}
+
+
+\begin{proof}
+  Par induction sur la réecriture de la dérivation.
+  
+  \begin{induction}
+
+    \case{WfEmpty}% \quad
+%     \begin{prooftree}
+%       \UAX{Wf-Atom}
+%       {}
+%       {$\wf [] "~>"~\wf []$}
+%       {}
+%     \end{prooftree}
+    Trivial.
+    
+    \case{WfVar}
+%     \begin{prooftree}
+%       \UAX{Wf-Var}
+%       {$\timpl{`G}{A}{s}{`G'}{A'}{s}$}
+%       {$\wf `G, x : A "~>"~\wf `G', x : A'$}
+%       {$s `: \{ \Set, \Prop, \Type(i) \}$}
+%     \end{prooftree}
+    Par induction $`G' \typec A' : s$, on applique simplement \irule{WfVar}.
+    
+    \casetwo{PropSet}{Type}
+%     \begin{prooftree}
+%       \UAX{PropSet}
+%       {$\wf `G "~>" ~\wf `G'$}
+%       {$\timpl{`G}{s}{\Type(0)}{`G'}{s}{\Type(0)}$}
+%       {$s `: \{ \Prop, \Set \}$} 
+%     \end{prooftree}
+    Direct par induction.
+
+%     \case{Type}\quad
+%     \begin{prooftree}
+%       \UAX{Type}
+%       {$\wf `G "~>" \wf `G$}
+%       {$\timpl{`G}{\Type(i)}{\Type(i + 1)}{`G'}{\Type(i)}{\Type(i + 1)}$}
+%       {}
+%     \end{prooftree}
+
+    \case{Var}\quad
+    \begin{prooftree}
+      \BAX{Var}
+      {$\wf `G "~>"~\wf `G'$}
+      {$x : A `: `G "~>" x : A' `: `G'$}
+      {$\timpl{`G}{x}{A}{`G'}{x}{A'}$}
+      {}
+    \end{prooftree}
+    La réecriture ne change pas le domaine des contextes, c'est donc
+    direct par induction.
+
+    \case{Prod}\quad
+    \begin{prooftree}
+      \BAX{Prod}
+      {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
+      {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
+      {$\timpl{`G}{\Pi x : T.U}{s2}{`G'}{\Pi x : T'.U'}{s2}$}
+      {$(s1, s2) `: \mathcal{R}$}
+    \end{prooftree}
+    
+
+
+    \case{Abs}\quad
+    \begin{prooftree}
+      \BAX{Abs}
+      {$\timpl{`G}{\Pi x : T. U}{s}{`G'}{\Pi x : T'. U'}{s}$}
+      {$\timpl{`G, x : T}{M}{U}{`G', x : T'}{M'}{U'}$}
+      {$\timpl{`G}{\lambda x : T. M}{\Pi x : T.U}
+        {`G'}{\lambda x : T'. M'}{\Pi x : T'.U'}$}
+      {}
+    \end{prooftree}
+
+    \case{App}\quad
+    \begin{prooftree}
+      \QAX{App}
+      {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
+      {$\mu~T' `= (\pi, \Pi x : V'. W')$}
+      {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
+      {$\subimpl{`G'}{c}{U'}{V'}$}
+      {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
+      {}
+    \end{prooftree}
+
+    \case{LetIn}\quad
+    \begin{prooftree}
+      \BAX{LetIn}
+      {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
+      {$\timpl{`G, x : T}{v}{V}{`G', x : T'}{v'}{V'}$}
+      {$\timpl{`G}{\letml~x = t~\inml~v}{V[t / x]}
+        {`G'}{\letml~x = t'~\inml~v'}{V'[t' / x]}$}
+      {}
+    \end{prooftree}
+
+    \case{SigmaR}\quad
+    \begin{prooftree}
+      \BAX{Sigma}
+      {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
+      {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
+      {$\timpl{`G}{\Sigma x : T.U}{s2}{`G'}{\Sigma x : T'.U'}{s2} $}
+      {$(s1, s2) `: \mathcal{R}$}
+    \end{prooftree}
+
+
+    \case{SumInf}\quad
+    \begin{prooftree}
+      \TAXWide{SumInf}
+      {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
+      {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
+      {$\timpl{`G}{\Sigma \_ : T.U}{s}{`G'}{\Sigma \_ : T'.U'}{s}$}
+      {$\timpl{`G}{(t, u)}{\Sigma \_ : T.U}{`G'}{(t', u')}{\Sigma \_ : T'.U'}$}
+      {}
+    \end{prooftree}
+
+    \case{SumDep}\quad
+    \begin{prooftree}
+      \TAXWide{SumDep}
+      {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
+      {$\timpl{`G}{u}{U[t/x]}{`G'}{u'}{U'[t'/x]}$}
+      {$\timpl{`G}{\Sigma x : T.U}{s}{`G'}{\Sigma x : T'.U'}{s}$}
+      {$\timpl{`G}{(t, u : U)}{\Sigma x : T.U}{`G'}{(t', u')}{\Sigma x : T'.U'}$}
+      {}
+    \end{prooftree}
+    
+    \case{LetSum}\quad
+    \begin{prooftree}
+      \BAX{LetSum}
+      {$\timpl{`G}{t}{\Sigma x : T. U}{`G'}{t'}{\Sigma x : T'.U'}$}
+      {$\timpl{`G, x : T, u : U}{v}{V}{`G, x : T', u : U'}{v'}{V'}$}
+      {$\timpl{`G}{\letml~(x, u) = t~\inml~v}{V}
+        {`G'}{\letml~(x, u) = t'~\inml~v'}{V'}$}
+      {}
+    \end{prooftree}
+
+    \case{Subset}\quad
+    \begin{prooftree}
+      \BAX{Subset}
+      {$\timpl{`G}{U}{\Type}{`G'}{U'}{\Type}$}
+      {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop} $}
+      {$\timpl{`G}{\subset{x}{U}{P}}{\Type}{`G'}{\subset{x}{U'}{P'}}{\Type}$}
+      {$$}
+    \end{prooftree}
+  \end{induction}
+\end{proof}
+
 
 
 % Ce travail est en cours à ce jour, nous nous sommes

@@ -2,14 +2,14 @@
 \newcommand{\subimpl}[4]{#1 \typec #2 : #3 \sub #4}
 
 \def\WfAtomI{
-  \UAX{Wf-Atom}
+  \UAX{WfEmpty}
   {}
   {$\wf [] "~>"~\wf []$}
   {}
 }  
   
 \def\WfVarI{
-  \UAX{Wf-Var}
+  \UAX{WfVar}
   {$\timpl{`G}{A}{s}{`G'}{A'}{s}$}
   {$\wf `G, x : A "~>"~\wf `G', x : A'$}
   {$s `: \{ \Set, \Prop, \Type(i) \}$}
@@ -42,7 +42,7 @@
   {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
   {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
   {$\timpl{`G}{\Pi x : T.U}{s2}{`G'}{\Pi x : T'.U'}{s2}$}
-  {$(s1, s2) `: \text{{\sc Sort}}$}
+  {$(s1, s2) `: \mathcal{R}$}
 }
 
 \def\AbsI{
@@ -68,8 +68,8 @@
   \BAX{LetIn}
   {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
   {$\timpl{`G, x : T}{v}{V}{`G', x : T'}{v'}{V'}$}
-  {$\timpl{`G}{\letml x = t \inml v}{V[t / x]}
-    {`G'}{\letml x = t' \inml v'}{V'[t' / x]}$}
+  {$\timpl{`G}{\letml~x = t~\inml~v}{V[t / x]}
+    {`G'}{\letml~x = t'~\inml~v'}{V'[t' / x]}$}
   {}
 }
 
@@ -78,7 +78,7 @@
   {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
   {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
   {$\timpl{`G}{\Sigma x : T.U}{s2}{`G'}{\Sigma x : T'.U'}{s2} $}
-  {$(s1, s2) `: \matht{Sort}$}
+  {$(s1, s2) `: \mathcal{R}$}
 }
 
 
@@ -104,16 +104,16 @@
   \BAX{LetSum}
   {$\timpl{`G}{t}{\Sigma x : T. U}{`G'}{t'}{\Sigma x : T'.U'}$}
   {$\timpl{`G, x : T, u : U}{v}{V}{`G, x : T', u : U'}{v'}{V'}$}
-  {$\timpl{`G}{\letml (x, u) = t \inml v}{V}
-    {`G'}{\letml (x, u) = t' \inml v'}{V'}$}
+  {$\timpl{`G}{\letml~(x, u) = t~\inml~v}{V}
+    {`G'}{\letml~(x, u) = t'~\inml~v'}{V'}$}
   {}
 }
 
 \def\SubsetI{
   \BAX{Subset}
-  {$\timpl{`G}{U}{\Type}{`G'}{U'}{\Type}$}
+  {$\timpl{`G}{U}{\Set}{`G'}{U'}{\Set}$}
   {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop} $}
-  {$\timpl{`G}{\subset{x}{U}{P}}{\Type}{`G'}{\subset{x}{U'}{P'}}{\Type}$}
+  {$\timpl{`G}{\subset{x}{U}{P}}{\Set}{`G'}{\subset{x}{U'}{P'}}{\Set}$}
   {$$}
 }
 
@@ -172,7 +172,7 @@
 \def\typemuiFig{
 \begin{figure}[h]
   \begin{eqnarray*}
-    (f, \subset{x}{U}{P}))   & "=>" & \letml (f, t) = \muimpl~(f, U) \inml (f `o
+    (f, \subset{x}{U}{P})   & "=>" & \letml~(f, t) = \muimpl~(f, U)~\inml~(f `o
     \pi_1, t) \\
     x                        & "=>"  & x
   \end{eqnarray*}

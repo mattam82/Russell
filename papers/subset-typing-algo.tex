@@ -28,7 +28,7 @@ Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
 \end{lemma}
 
 On peut maintenant montrer:
-\begin{lemma}[Conservation de la conversion par sous-typage]
+\begin{lemma}[Conservation de la conversion par coercion]
   \label{conversion-coercion}
   Si $`G \typea T, U : s$ et $T \eqbi U$ alors $T \suba U$.
 \end{lemma}
@@ -94,7 +94,7 @@ algorithmique. En particulier, on va utiliser la fonction $\mu0$ de \PVS{}
 \emph{décompréhension}. Cette fonction efface les constructeurs de type
 sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
   "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela va nous permettre de
-restreindre l'utilisation du jugement du sous-typage à l'application.
+restreindre l'utilisation du jugement de coercion à l'application.
 
 \subsection*{Sommes dépendantes}
 En inspectant la règle \irule{Sum}, on remarque qu'il n'est pas possible
@@ -189,12 +189,12 @@ On a besoin de quelques lemmes auparavant:
   \end{induction}
 \end{proof}  
 
-Le renforcement montre que notre notion de sous-typage est correcte
+La restriction montre que notre notion de coercion est correcte
 vis-à-vis du typage. On peut dériver les mêmes jugements dans des
 contextes où les variables ont des types plus précis, on le démontre de
 nouveau pour le système algorithmique.
 
-\begin{lemma}[Renforcement]
+\begin{lemma}[Restriction]
   \label{narrowing-a}
   \[ `G \seq S, S' : s, S' \sub S "=>" 
   \left\{ \begin{array}{lcl}
@@ -328,7 +328,7 @@ On peut maintenant montrer notre proposition:
     Comme $S \sub T$, on a bien $\Sigma x : S.U \sub \Sigma x : T.U$
     par \irule{SubSigma}. On sait de plus que $\Sigma x : S.U$ est bien
     sorté de sorte $s$. En effet, par inversion de $`G \seq \Sigma x :
-    T.U : s$ on a $`G, x : T \seq U : s$ et par renforcement ($S \sub T$), $`G, x : S \seq
+    T.U : s$ on a $`G, x : T \seq U : s$ et par restriction ($S \sub T$), $`G, x : S \seq
     U : s$. On peut donc dériver:
 
     \begin{prooftree}
@@ -358,7 +358,7 @@ On peut maintenant montrer notre proposition:
     \end{prooftree}
     
     Par le lemme \ref{beta-mu}, on a $\mu~S \eqbi \Sigma x : T'.U'$,
-    $T' \suba T$ et $U' \suba U$. Par renforcement (lemme
+    $T' \suba T$ et $U' \suba U$. Par restriction (lemme
     \ref{narrowing-a}) on a:
 
     \begin{prooftree}
@@ -373,7 +373,7 @@ On peut maintenant montrer notre proposition:
     Si l'on applique la subsumption à droite c'est direct ($V' \sub V$).
     
     \case{LetIn}
-    De façon similaire, par renforcement on obtient la dérivation sans \irule{Coerce}.
+    De façon similaire, par restriction on obtient la dérivation sans \irule{Coerce}.
     
     \case{App}\quad    
     \begin{prooftree}
@@ -769,7 +769,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
     Par induction, $`E S, `G \typea t : S \suba \Sigma x : T.U$ et 
     $`E V', `G, x: T, y : U \typea v : V' \suba V$.
     On a $\mualgo(S) \eqbi \Sigma x : T'.U'$ avec $T' \suba T$ et $U'
-    \suba U$. Par renforcement on peut donc dériver $`G, x : T', y : U'
+    \suba U$. Par restriction on peut donc dériver $`G, x : T', y : U'
     \seq v : V'$.
     
     On a donc la dérivation suivante dans le système algorithmique:
