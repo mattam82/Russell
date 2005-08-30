@@ -110,9 +110,21 @@ calcul présenté moins la règle de subsumption.
   la réecriture ne change pas la forme des types.
   Par définition de $\muimpl$ on a $\pi~f' : \Pi x : V'.W'$.
   On assure donc la forme fonctionelle de $f$ par la réecriture.
-  La définition de la coercion nous assure que $c u' : V'$. On obtient
-  donc 
+  La définition de la coercion nous assure que $c~u' : V'$. On obtient
+  donc $(\pi~f) (c~u') : W'[c~u'/x]$. 
+  Ici, la coercion pourrait changer la forme du type, par exemple si 
+  $W `= x$, on aurait $W'[c~u'/x] = c~u'$. Nous allons montrer que cela
+  ne change pas la forme du type.
+  Si $W = x$, alors $V'$ ne peut être qu'une sorte. En effet, il n'est
+  pas possible de former des produits ayant un terme en membre droit, la
+  syntaxe même nous assure que les termes ne peuvent figurer qu'en
+  position interne, c'est-à-dire appliqués à un type. Or si $V'$ est une
+  sorte, la forme de $W$ et donc de $W'$ n'est pas changé par la
+  substitution puisque $x$ n'apparait pas dedans.
+  Si $V'$ n'est pas une sorte, il peut être par exemple un produit.
   
+  La règle de formation du produit nous assure que si $x$ apparait dans
+  $W'$ alors c'est en position interne.
 
 
 \end{proof}

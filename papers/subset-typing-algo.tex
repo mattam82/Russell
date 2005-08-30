@@ -163,9 +163,8 @@ On a besoin de quelques lemmes auparavant:
   T'.U'$ et $T \sub T'$, $U' \sub U$.
 \end{lemma}
 \begin{proof}
-  \begin{induction}
-    Par induction sur la dérivation de coercion, on fait le cas pour $\Sigma$.
-    
+  Par induction sur la dérivation de coercion, on fait le cas pour $\Sigma$.
+  \begin{induction}  
     \case{SubConv} Trivial, puisqu'on aura $\mu~X = \mu~Y$.
 
     \case{SubProd} Impossible, $\mu$ ne traversant pas les produits.
