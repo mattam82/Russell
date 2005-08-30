@@ -3,9 +3,10 @@
 
 Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
 syntaxe. 
-C'est presque le cas pour la coercion, il y a juste la règle
-\irule{SubConv} qu'on peut appliquer à n'importe quel moment. 
-
+Pour la coercion, il y a juste la règle
+\irule{SubConv} qu'on peut appliquer à n'importe quel moment et la règle
+\irule{SubTrans} qui n'est pas dirigée par la syntaxe (il faut
+``deviner'' un type $T$). 
 
 \subsubsection*{Conversion}
 On note $\suba$ le même système que figure \ref{subtyping-decl-rules} mais
@@ -16,16 +17,31 @@ vis de la conversion. On montrera plus tard pourquoi on peut éliminer la
 règle de transitivité.
 
 Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
+
+On note $"->>"_\beta$ la $\beta$-normalisation de tête. On rappelle qu'on
+considère qu'on peut appliquer la normalisation de tête avant tout
+application d'une règle de typage ou coercion. Ainsi on peut très bien
+dériver $((\lambda x : \Set.x)~\nat) \suba \subset{x}{\nat}{P}$ puisque 
+$((\lambda x : \Set.x)~\nat) "->>"_\beta \nat$ et $\nat \suba
+\subset{x}{\nat}{P}$ par \irule{SubProof} et \irule{SubConv}.
+On note $\typea$ le jugement de typage algorithmique. Le système
+algorithmique correspond au système déclaratif où l'on a enlevé la règle
+de coercion et changé certaines règles pour obtenir un système décidable
+(voir figure \ref{fig:typing-algo-rules}).
+
 \begin{lemma}
   \label{conversion-pi}
-  Si $\Pi T U \eqbi S$ alors $S \eqbi \Pi T' U'$ avec $T \eqbi T'$ et $U
+  Si $\Pi x : T. U \eqbi S$ alors $S "->>"_\beta \Pi x : T'. U'$ avec $T \eqbi T'$ et $U
   \eqbi U'$.
 \end{lemma}
 \begin{lemma}
   \label{conversion-sigma}
-  Si $\Sigma T U \eqbi S$ alors $S \eqbi \Sigma T' U'$ avec $T \eqbi T'$ et $U
+  Si $\Sigma x : T. U \eqbi S$ alors $S "->>"_\beta \Sigma x : T'. U'$ avec $T \eqbi T'$ et $U
   \eqbi U'$.
 \end{lemma}
+
+On introduit la notation $`G \typea T, U : s$ pour $`G \typea T : s_1 `^
+`G \typea U : s_2 `^ s_1 = s_2 = s$.
 
 On peut maintenant montrer:
 \begin{lemma}[Conservation de la conversion par coercion]
@@ -38,21 +54,18 @@ On peut maintenant montrer:
   \def\seq{\suba}.
   
   \begin{itemize}
-  \item[$T$ atomique:]
-    On a alors $U = T$, trivial.
-    
-  \item[$T `= \Pi X.Y$:]
-    Alors $U `= \Pi V.W$ et $X \eqbi V$, $Y \eqbi W$
+  \item[$T `= \Pi x : X.Y$:]
+    Alors $U "->>"_\beta \Pi y : V.W$ et $X \eqbi V$, $Y \eqbi W$
     d'après le lemme \ref{conversion-pi}.
     Par induction $X \sub Y$ et $V \sub W$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
-  \item[$T `= \Sigma X.Y$:]
-    $U$ est de la forme $\Sigma V.W$, avec $X \eqbi V$ et $Y \eqbi
+  \item[$T `= \Sigma x : X.Y$:]
+    Alors $U "->>"_\beta \Sigma y : V.W$, avec $X \eqbi V$ et $Y \eqbi
     W$. Par induction et application de \irule{SubSigma}.
     
   \item[$T `= \subset{x}{X}{P}$:] 
-    On a alors $U `= \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
+    On a alors $U "->>"_\beta \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
     \begin{prooftree}
@@ -62,6 +75,10 @@ On peut maintenant montrer:
       \LeftLabel{\SubRightRule}
       \UIC{$\subset{x}{X}{P} \sub \subset{x}{X'}{P'}$}
     \end{prooftree}
+
+  \item[Sinon:]
+    On applique obligatoirement \irule{SubConv} et l'on a la prémisse $T
+    \eqbi U$, c'est donc direct.
   \end{itemize}
 \end{proof}
 
@@ -72,7 +89,7 @@ sorte, par exemple:
 $\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
 \TODO{Dans mon système, on ne peut pas faire la coercion de nat à Set}
 
-Le fait que les arguments sont tout deux sortés avec la même sorte
+Le fait que les arguments sont tous les deux sortés avec la même sorte
 avant de dériver le jugement de coercion nous assure que l'on ne fera
 pas d'identification erronée dans les autres règles que \irule{SubConv}.
 
@@ -90,7 +107,7 @@ une dérivation n'utilisant cette règle qu'à sa racine.
 \def\subs{\subset{x}{U}{P}}
 Il nous faut changer quelque peu les règles pour obtenir le système
 algorithmique. En particulier, on va utiliser la fonction $\mu0$ de \PVS{}
-\cite{PVS-Semantics:TR} renomée $\mu$ ici pour opèrer des
+\cite{PVS-Semantics:TR} renommée $\mu$ ici pour opèrer des
 \emph{décompréhension}. Cette fonction efface les constructeurs de type
 sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
   "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela va nous permettre de
@@ -119,6 +136,14 @@ paire non-dépendante (\irule{SumInf}).
 % d'application \irule{App} de la figure \ref{typing-decl-rules}.
 % On note $\typea$ le système de typage obtenu. 
 
+La technique que nous allons utiliser pour montrer l'équivalence entre
+les deux systèmes est la suivante: on considère le système algorithmique
+auquel on ajoute la règle de subsumption. On montre que toute dérivation
+de ce système se réecrit dans une dérivation du système algorithmique
+sans la règle \irule{Coerce} et on montre ensuite que toute dérivation
+du système déclaratif a une dérivation correspondante dans le système
+algorithmique.
+
 \begin{proposition}[Passage de la subsumption à l'application]
   \label{subsum-elim}
   On peut réecrire toute dérivation $`G \typea t : T$ utilisant la
@@ -126,6 +151,8 @@ paire non-dépendante (\irule{SumInf}).
   U$ avec $U \suba T$.
 \end{proposition}
 
+On utilisera l'abbréviation $`G \typea t : S \suba T$ pour $`G \typea t
+: S `^{} S \suba T$ dans la suite.
 On a besoin de quelques lemmes auparavant:
 
 \begin{lemma}[$\beta$-equivalence et $\mu$]
@@ -444,16 +471,27 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 
 \begin{lemma}[Substitutivité de $\mualgo$]
   \label{substitutive-mu}
-  Si $\mualgo(T) = U$ alors $\mualgo(T[u/x]) = U[u/x]$.
+  Si $\mualgo(T) \eqbi \Pi y : U.V$ alors $\mualgo(T[u/x]) \eqbi \Pi y :
+  U[u/x].V[u/x]$.
+  Si $\mualgo(T) \eqbi \Sigma y : U.V$ alors $\mualgo(T[u/x]) \eqbi \Sigma y : U[u/x].V[u/x]$.
 \end{lemma}
 
 \begin{proof}
+  On montre la propriété pour les produits, la preuve est similaire pour
+  les sommes.
+
   Il suffit de suivre la définition de $\mualgo$.
-  Si $T$ est de la forme $\sub{y}{V}{P}$ alors $\mualgo(T) =
-  \mualgo(V)$ et $T[u/x]$ est de la forme
-  $\sub{y}{V[u/x]}{P[u/x]}$. Par induction, $\mualgo(T[u/x]) =
-  \mualgo(V[u/x]) = \mualgo(V)[u/x] = \mualgo(T)[u/x]$.
-  Sinon c'est trivial.
+  Si $T$ est de la forme $\subset{y}{V}{P}$ alors
+  on a $\mualgo(V) \eqbi \Pi y : U.V$ et par induction
+  $\mualgo(V[u/x]) \eqbi \Pi y : U[u/x].V[u/x]$.
+  Il s'ensuit directement que $\mualgo(T[u/x]) \eqbi \Pi y :
+  U[u/x].V[u/x]$.
+
+  Si $T$ est différent d'un type sous-ensemble alors $\mualgo(T) = T$.
+  Donc $T \eqbi \Pi y : U.V$. Il s'ensuit que $T$ est de la forme $\Pi y
+  : U'.W'$ et donc $T[u/x] = \Pi y : U'[u/x].V'[u/x] =
+  \mualgo(T[u/x])$. Par substitutivité de la conversion, il s'ensuit que 
+  $\Pi y : U'[u/x].V'[u/x] \eqbi \Pi y : U[u/x].V[u/x]$.
 \end{proof}
 
 \begin{lemma}[Substitutivité de la coercion]
@@ -474,7 +512,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
     \case{SubSigma} Direct par induction.
     
     \case{SubSub} Par induction, $U'[u/x] \suba V[u/x]$. On applique
-    \irule{SubLeft} pour obtenir $\sub{y}{U'[u/x]}{P} \suba V[u/x]$. 
+    \irule{SubLeft} pour obtenir $\subset{y}{U'[u/x]}{P} \suba V[u/x]$. 
     
     \case{SubRight} Direct par induction.
   \end{induction}
@@ -545,15 +583,13 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
     W[a/y][u/x]$. On a donc bien $`G, `D[u/x] \typea (f a)[u/x] :
     (W[a/y])[u/x]$.
     On a un raisonnement similaire pour \irule{LetSum}.
-
-
   \end{induction}
   
 \end{proof}
 
 \begin{lemma}[Substitutivité du typage avec coercion]
   \label{substitutive-typing-coercion}
-  Si $`G, x : V \typea t : T \sub U$, $G \typea u : V$
+  Si $`G, x : V \typea t : T \sub U$ et $`G \typea u : V$
   alors $`G \typed t[u/x] : T[u/x] \sub U[u/x]$.
 \end{lemma}
 
@@ -585,7 +621,8 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 
 \begin{proof}
   Par simple inspection des règles on voit que le jugement ne peut
-  distinguer deux termes $\beta$-équivalents.
+  distinguer deux termes $\beta$-équivalents (ils ont forcement les
+  mêmes formes normales de tête). \TODO{Check}
 \end{proof}
 
 \begin{lemma}[Transitivité de la coercion]
@@ -815,7 +852,7 @@ vérifie une application $f u : T$ on doit inférer le type de $f$.
 On montre donc les théorêmes suivants:
 
 \begin{theorem}[Décidabilité de l'inférence dans le système algorithmique]
-  Le problème d'inférence $`G \typea t : ?$ est décidable.
+  Le problème d'inférence $`G \typea t :~?$ est décidable.
 \end{theorem}
 
 \begin{proof}
@@ -831,6 +868,12 @@ On montre donc les théorêmes suivants:
 \begin{proof}
   Direct. On utilise le théorême précédent pour le cas de l'application.
 \end{proof}
+
+On a désormais un algorithme de typage pour notre système avec
+coercions. Ce système est très libéral puisqu'il permet de considérer
+des objets comme vérifiant des propriétés arbitraires sans les
+montrer. Il nous faut maintenant remettre de la logique dans nos termes
+pour s'assurer qu'ils sont corrects.
 
 %%% Local Variables: 
 %%% mode: latex

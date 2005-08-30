@@ -13,7 +13,7 @@
   {$\mualgo(S) \eqbi `S x : T. U $}
   {$`G, x : T, u : U \seq v : V $}
   {$`G \seq \letml~(x, u) = t~\inml~v : V$}
-  {}
+  {$x,y `; `G$}
 }
 
 
@@ -43,12 +43,15 @@
     \def\subt{\subta}
     \def\sub{\suba}
     
-    \WfEmpty\DP    
+    \WfEmpty\DP
+    \quad
     \WfVar\DP
     
     \def\fCenter{\typea}
     \vspace{\infvspace}
     \PropSet\DP
+    \quad
+    \TypeType\DP
     
     \vspace{\infvspace}
     \Var\DP

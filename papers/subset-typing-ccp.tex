@@ -2,29 +2,23 @@
 Nous avons développé un langage supportant le \ps{} utilisable dans
 \Coq. L'utilisateur peut définir des programmes dans un langage plus
 souple puis prouver certains buts pour obtenir finalement un terme de
-\CCI{} complet vérifiable par le noyau. On peut finalement utiliser les types dépendants comme des types
+\CCI{} complet vérifiable par le noyau. On peut finalement utiliser 
+les types dépendants comme des types
 simples et s'en occuper dans un deuxième temps (pour la preuve).
 L'architecture est la suivante:
 on type le programme dans notre langage, puis l'on réécrit le terme typé
 dans \CCI{} en laissant des ``trous'' dans les termes et enfin \Coq{} se
 charge de générer les obligations correspondant à ces trous.
 
-
 \setboolean{displayLabels}{true}
 \def\setproptype{\{ \Set, \Prop, \Type(i) \}}
 \def\nf{\downarrow~}
 
-\section{Notations}
-On utilise dans la suite les notations et abbréviations suivantes:
-\begin{list}{}{}
-\item $`G \typed x : T : s `= `G \typed x : T `^ `G \typed T : s$.
-\item $\_ \nf `= \text{forme normale}$
-\item $`G \typea t : S \suba T `= `G \typea t : S `^{} S \suba T$
-\end{list}
-
 \section{Langage}
 Le langage que nous voulons est très proche de \ML, plus les annotations
-nécessaires pour avoir un typage précis et décidable.
+nécessaires pour avoir un typage précis et décidable. On étudie ici une
+restriction de \ML, purement fonctionnelle et sans filtrage, qu'on
+étendra dans la suite de notre travail.
 
 \subsection{Syntaxe}
 La syntaxe (figure \ref{fig:syntax}) est directement inspirée des langages fonctionnels.
@@ -37,8 +31,10 @@ Du côté des types, on a tout d'abord les types simples (constantes,
 flèche, produit cartésien) qui sont des cas particuliers du produit ($\Pi$) et
 de la somme ($\Sigma$) dépendants. Les variables introduites par ces
 types peuvent être utilisées lors des applications de types. On
-peut de plus abstraire sur les types avec le $\lambda$ (polymorphisme). 
-Enfin on peut appliquer un type à un terme ($`t~`a$). Dans la suite, les règles sont données avec l'idée
+peut de plus abstraire sur les types avec le $\lambda$ (polymorphisme)
+et les sortes.
+Enfin on peut appliquer un type à un terme ($`t~`a$). Dans la suite, 
+les règles sont données avec l'idée
 qu'on fait les réductions de tête nécessaires pour obtenir un type
 d'une certaine forme (produit, somme, sous-ensemble, etc \ldots).
 

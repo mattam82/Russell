@@ -4,11 +4,31 @@
 \typedFig
 \subtdFig
 
-La sémantique du langage nous est donnée par un système de typage, qu'on
-formalise inductivement par un ensemble de règles d'inférence. Dans
-notre cas ce sont les règles de \CCI{} auquelles on a ajouté une règle de
-coercion (\irule{Coerce}) que l'on trouve classiquement dans les systèmes avec
-sous-typage avec le nom de subsumption. Cette règle formalise l'idée que 
+La sémantique du langage nous est donnée par un système de typage. Le
+jugement de typage est défini inductivement par un ensemble de règles
+d'inférence. Dans
+notre cas ce sont les règles du Calcul de Constructions (\CC{})
+étendu avec les $\Sigma$-types auxquelles on a ajouté une règle de
+coercion (\irule{Coerce}, figure \ref{fig:typing-decl-rules}) que l'on trouve classiquement dans les systèmes avec
+sous-typage avec le nom de subsumption. 
+La relation $\mathcal{R}$ définissant les produits et sommes formables
+dans le système est définie inductivement par les règles suivantes:
+\[\begin{array}{cccll}
+  s_1 & s_2 & s_3 & \text{Habitants} & \text{Exemple} \\
+  \hline
+  \Prop & \Prop & \Prop & \text{Implication logique} & x <= 0 "->" x = 0  \\
+  \Set & \Set & \Set & \text{Fonctions} & \Pi x : \nat. \nat \\
+  \Type & \Set & \Type & \text{Fonctions polymorphes} & \Pi A : \Set, A "->" A \\
+  \Set & \Prop & \Prop & \text{Termes dans les propositions} & 
+  \Pi n : \nat. \Pi l : \text{list}~n. \text{length}~l = n \\
+  \Prop & \Set & \Set & \text{Fonctions dépendants de propositions} &
+  \Pi n : \nat, n > 0 "->" \Pi l : \text{list}~n "->" A \\
+  \Type(i) & \Prop & \Prop & \text{Imprédicativité de } \Prop & \Pi x : Prop. x `V `! x \\
+  \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
+    \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
+\end{array}\]
+
+La règle \irule{Coerce} formalise l'idée que 
 l'on peut utiliser un terme de type $T$ à la place d'un terme de type
 $U$ si $T$ et $U$ sont dans une certaine relation. 
 Le jugement $\Gamma \typed t : T$ se lit: dans l'environnement $\Gamma$,
@@ -21,8 +41,9 @@ $t$ est de type $T$.
   $`G \seq t : \Pi x : T.V$.
 \end{remark}
 
-\CCI{} contient une règle de typage
-similaire, la conversion (\irule{Conv}), qui dit essentiellement que deux types
+\CC{} contient une règle de typage
+similaire à \irule{Coerce}, la règle de conversion (\irule{Conv}), qui
+dit essentiellement que deux types
 $`b$-convertibles (on rappelle que l'on peut calculer dans les types
 puisqu'on a l'abstraction, l'application, etc...) sont équivalents.
 On peut directement intégrer cette relation de $`b$-convertibilité à notre
@@ -30,12 +51,21 @@ système de coercion comme montré figure \ref{subtyping-decl-rules}
 (\irule{SubConv}), à condition d'avoir l'inclusion
 $`=_\beta~\subseteq~\subd + \text{\irule{SubConv}}$.
 
+\subsubsection{Jugement de coercion}
 Notre système de coercion par prédicats permet à l'utilisateur
 d'utiliser une valeur de type $U$ là où l'on attend une valeur de type
 $\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
 A l'inverse, on permet aussi d'utiliser une valeur de type
 $\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
-$V$ si $U$ est coercible vers $V$. 
+$V$ si $U$ est coercible vers $V$. Notre jugement de coercion est donc
+symétrique et laisse beaucoup de liberté au moment du codage. Par
+exemple, si l'on avait le filtrage dans notre système, on pourrait
+aisément dériver l'absurde:
+$x : \nat \typed \matchml~x~:~\subset{x}{\nat}{`_}~\withml~\textbf{elt}~\_~\_~p "=>" p :
+`_$. Seulement, lors de la traduction de la dérivation de coercion $\nat
+\subd \subset{x}{\nat}{`_}$, l'utilisateur aura a résoudre une obligation
+de preuve de $`_$. On repose donc toujours sur la cohérence du Calcul
+des Constructions.
 
 Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire des
 coercions dans les types composites. Classiquement, la règle pour le 
@@ -43,15 +73,21 @@ produit fonctionnel est contravariante (une fonction sous-type d'une
 autre accepte plus d'entrées mais donne une sortie plus fine, voir
  \cite{journals/toplas/Castagna95}) et la règle pour le 
 produit cartésien covariante (une paire est coercible en une autre si 
-leurs composantes sont coercibles deux-à-deux). 
+leurs composantes sont coercibles deux-à-deux). Le sens des coercions
+n'a pas d'importance dans le système déclaratif puisqu'il est symétrique
+mais il est essentiel lors de la création des coercions que nous
+décrirons plus tard.
 
 Une première propriété montrée habituellement sur le sous-typage est
 qu'il est transitif, c'est-à-dire:
-\begin{lemma}[Transitivité de la coercion]
+\begin{fact}[Transitivité de la coercion]
   Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
-\end{lemma}
+\end{fact}
+\begin{proof}
+  Par \irule{SubTrans}
+\end{proof}
 
-Cette règle assure que l'on a un système compositionel. Il y a ici une
+La règle \irule{SubTrans} assure que l'on a un système compositionel. Il y a ici une
 analogie avec l'élimination des coupures dans les systèmes logiques, où
 l'on montre que toute dérivation utilisant la règle de \emph{modus ponens} ($A "=>" B$ et $B "=>" C$ implique
 $A "=>" C$) peut se réécrire en une dérivation ne l'utilisant
@@ -59,20 +95,26 @@ jamais. Dans les systèmes à sous-typage, on montre de façon équivalente
 que l'on peut éliminer la règle de transitivité ; première étape vers un
 système décidable.
 
-\section*{Propriétés élementaires}
+On ne vas pas faire la métathéorie du système déclaratif ici, puisque
+c'est une extension très simple du Calcul des Constructions. Pour une
+étude complète de ce système, se référer à \cite{Barras99,Luo90}. On va
+plutôt s'intéresser à la construction d'un algorithme de typage
+correspondant à ce système.
 
-\begin{fact}[Inversion du typage]
-  \label{inversion-typing-d}
-  On a les propriétés suivantes sur le jugement de typage:
-  \begin{enumerate}
-  \item Si $`G \type \lambda x : T.v : \Pi x : T.U : s$ alors $`G, x : T \type
-    v : U : s$.
-  \item Si $`G \type (t, v) : \Sigma x : T.U$ alors $`G, x : T \type U
-    : s1$ et $`G \type v : U[t/x]$.
-  \item Si $`G \type t : \subset{x}{U}{P}$ alors $`G \type t : U$ et
-    $`G, x : U \type P : \Prop$.
-  \end{enumerate}
-\end{fact}
+% \section*{Propriétés élementaires}
+
+% \begin{fact}[Inversion du typage]
+%   \label{inversion-typing-d}
+%   On a les propriétés suivantes sur le jugement de typage:
+%   \begin{enumerate}
+%   \item Si $`G \type \lambda x : T.v : \Pi x : T.U : s$ alors $`G, x : T \type
+%     v : U : s$.
+%   \item Si $`G \type (t, v) : \Sigma x : T.U$ alors $`G, x : T \type U
+%     : s1$ et $`G \type v : U[t/x]$.
+%   \item Si $`G \type t : \subset{x}{U}{P}$ alors $`G \type t : U$ et
+%     $`G, x : U \type P : \Prop$.
+%   \end{enumerate}
+% \end{fact}
 
 % \begin{fact}[Convertibilité]
 %   \label{type-convertibility}
@@ -179,134 +221,134 @@ système décidable.
 %   \end{induction}
 % \end{proof}
 
-\begin{lemma}[Bonne formation des contextes]
-  \label{wf-contexts-d}
-  Si $`G \type t : T$ alors $\typewf `G$.
-\end{lemma}
-\begin{proof}
-  \inductionon{typing-decl}
-\end{proof}
+% \begin{lemma}[Bonne formation des contextes]
+%   \label{wf-contexts-d}
+%   Si $`G \type t : T$ alors $\typewf `G$.
+% \end{lemma}
+% \begin{proof}
+%   \inductionon{typing-decl}
+% \end{proof}
 
-\begin{fact}[Inversion du jugement de bonne formation]
-  \label{inversion-wf-d}
-  Si $\typewf `G, x : U$ alors $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
-\end{fact}
+% \begin{fact}[Inversion du jugement de bonne formation]
+%   \label{inversion-wf-d}
+%   Si $\typewf `G, x : U$ alors $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
+% \end{fact}
 
-L'affaiblissement est nécessaire pour montre le lemme de
-renforcement. Il établit que tout jugement peut être dérivé dans un
-contexte étendu par de nouvelles déclarations.
+% L'affaiblissement est nécessaire pour montre le lemme de
+% renforcement. Il établit que tout jugement peut être dérivé dans un
+% contexte étendu par de nouvelles déclarations.
 
-\begin{lemma}[Affaiblissement]
-  \label{weakening-d}
-  Si $`G, `D \type t : T$ alors pour tout $x : S `; `G, `D$ tel que
-  $\wf `G, x : S, `D$, $`G, x : S, `D \type t : T$
-\end{lemma}
+% \begin{lemma}[Affaiblissement]
+%   \label{weakening-d}
+%   Si $`G, `D \type t : T$ alors pour tout $x : S `; `G, `D$ tel que
+%   $\wf `G, x : S, `D$, $`G, x : S, `D \type t : T$
+% \end{lemma}
 
-\begin{proof}
-  \begin{induction}[typing-decl]
-    \casetwo{PropSet}{Type} Trivial.
+% \begin{proof}
+%   \begin{induction}[typing-decl]
+%     \casetwo{PropSet}{Type} Trivial.
 
-    \case{Var}
-    On a $x : S `; `G, `D$, donc $`G, x : S, `D \type y : T$ est toujours dérivable.
+%     \case{Var}
+%     On a $x : S `; `G, `D$, donc $`G, x : S, `D \type y : T$ est toujours dérivable.
     
-    \case{Prod}
-    Par induction $`G, x : S, `D \type T : s1$ et $`G, x : S, `D,
-    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
-    $`G, x : S, `D \type \Pi x : T.U : s2$. De même pour le reste des règles.
+%     \case{Prod}
+%     Par induction $`G, x : S, `D \type T : s1$ et $`G, x : S, `D,
+%     y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+%     $`G, x : S, `D \type \Pi x : T.U : s2$. De même pour le reste des règles.
 
-%     \case{Abs}
-%     \case{App}
-%     \case{LetIn}
-%     \case{Sigma}
-%     \case{Sum}
-%     \case{LetSum}
-%     \case{Subset}
-%     \case{Subsum}
+% %     \case{Abs}
+% %     \case{App}
+% %     \case{LetIn}
+% %     \case{Sigma}
+% %     \case{Sum}
+% %     \case{LetSum}
+% %     \case{Subset}
+% %     \case{Subsum}
     
 
-  \end{induction}
-\end{proof}  
+%   \end{induction}
+% \end{proof}  
 
-Le renforcement montre que notre notion de sous-typage est correcte
-vis-à-vis du typage. On peut dériver les mêmes jugements dans des
-contextes où les variables ont des types plus précis.
+% Le renforcement montre que notre notion de sous-typage est correcte
+% vis-à-vis du typage. On peut dériver les mêmes jugements dans des
+% contextes où les variables ont des types plus précis.
 
-\begin{lemma}[Renforcement]
-  \label{narrowing-d}
-  \[ `G \seq S, S' : s, S' \sub S "=>" 
-  \left\{ \begin{array}{lcl}
-      \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
-      & `^{} & \\
-      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T
-    \end{array}
-  \right. \]
-\end{lemma}
+% \begin{lemma}[Renforcement]
+%   \label{narrowing-d}
+%   \[ `G \seq S, S' : s, S' \sub S "=>" 
+%   \left\{ \begin{array}{lcl}
+%       \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
+%       & `^{} & \\
+%       `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T
+%     \end{array}
+%   \right. \]
+% \end{lemma}
 
-\begin{proof}
-  Par induction sur la taille de la dérivation de typage ou de bonne formation.
+% \begin{proof}
+%   Par induction sur la taille de la dérivation de typage ou de bonne formation.
     
-  \begin{induction}
-    \case{WfEmpty} Trivial.
+%   \begin{induction}
+%     \case{WfEmpty} Trivial.
     
-    \case{WfVar} 
-    La conclusion est $\typewf `G, x : S, `D$
+%     \case{WfVar} 
+%     La conclusion est $\typewf `G, x : S, `D$
     
-    \begin{induction}[text=Par induction sur la taille de $`D$]
-    \item[\protect{$`D = []$}]
-      La racine de la dérivation est de la forme:
-      \begin{prooftree}
-        \UAX{WfVar}
-        {$`G \type S : s$}
-        {$\wf `G, x : S$}
-        {$s `: \{ \Set, \Prop, \Type(i) \}$}
-      \end{prooftree}
-      On a $`G \type S' : s$, donc par \irule{WfVar}, $\typewf `G, x : S'$.  
+%     \begin{induction}[text=Par induction sur la taille de $`D$]
+%     \item[\protect{$`D = []$}]
+%       La racine de la dérivation est de la forme:
+%       \begin{prooftree}
+%         \UAX{WfVar}
+%         {$`G \type S : s$}
+%         {$\wf `G, x : S$}
+%         {$s `: \{ \Set, \Prop, \Type(i) \}$}
+%       \end{prooftree}
+%       On a $`G \type S' : s$, donc par \irule{WfVar}, $\typewf `G, x : S'$.  
 
-    \item[\protect{$`D `= `D', y : U$}]
-      La racine de la dérivation est de la forme:
-      \begin{prooftree}
-        \UAX{WfVar}
-        {$`G, x : S, `D' \type U : t$}
-        {$\wf `G, x : S, `D', y : U$}
-        {$s `: \{ \Set, \Prop, \Type(i) \}$}
-      \end{prooftree}
-      Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : t$,
-      on a donc bien $\typewf `G, x : S', `D', y : U$ par \irule{WfVar}.
-    \end{induction}
+%     \item[\protect{$`D `= `D', y : U$}]
+%       La racine de la dérivation est de la forme:
+%       \begin{prooftree}
+%         \UAX{WfVar}
+%         {$`G, x : S, `D' \type U : t$}
+%         {$\wf `G, x : S, `D', y : U$}
+%         {$s `: \{ \Set, \Prop, \Type(i) \}$}
+%       \end{prooftree}
+%       Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : t$,
+%       on a donc bien $\typewf `G, x : S', `D', y : U$ par \irule{WfVar}.
+%     \end{induction}
     
-    \casetwo{PropSet}{Type} 
-    Par induction, $\typewf `G, x : S', `D$, on applique simplement la règle.
+%     \casetwo{PropSet}{Type} 
+%     Par induction, $\typewf `G, x : S', `D$, on applique simplement la règle.
     
-    \case{Var}
-    Par induction, $\typewf `G, x : S', `D$. La seule différence avec le
-    contexte précedent est le type associé à $x$, donc si $t \not= x$, on
-    peut simplement réappliquer \irule{Var}. Si $t `= x$ on construit la
-    dérivation:
+%     \case{Var}
+%     Par induction, $\typewf `G, x : S', `D$. La seule différence avec le
+%     contexte précedent est le type associé à $x$, donc si $t \not= x$, on
+%     peut simplement réappliquer \irule{Var}. Si $t `= x$ on construit la
+%     dérivation:
 
-    \begin{prooftree}
-      \BAX{Var}
-      {$\wf `G, x : S', `D$}
-      {$x : S' `: `G$}
-      {$`G, x : S', `D \seq x : S'$}
-      {}
-      \AXC{$`G, x : S', `D \type S : s$}
-      \AXC{$S' \sub S$} % `G \subt 
-      \TIC{$`G, x : S', `D \type x : S$}
-    \end{prooftree}
+%     \begin{prooftree}
+%       \BAX{Var}
+%       {$\wf `G, x : S', `D$}
+%       {$x : S' `: `G$}
+%       {$`G, x : S', `D \seq x : S'$}
+%       {}
+%       \AXC{$`G, x : S', `D \type S : s$}
+%       \AXC{$S' \sub S$} % `G \subt 
+%       \TIC{$`G, x : S', `D \type x : S$}
+%     \end{prooftree}
     
-    Par l'affaiblissement (lemme \ref{weakening-d}) et $`G \type S : s$,
-    on obtient la prémisse $`G, x : S', `D \type S : s$.
+%     Par l'affaiblissement (lemme \ref{weakening-d}) et $`G \type S : s$,
+%     on obtient la prémisse $`G, x : S', `D \type S : s$.
     
-    \case{Prod} 
-    Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
-    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
-    $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
-  \end{induction}
-\end{proof}
+%     \case{Prod} 
+%     Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
+%     y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+%     $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
+%   \end{induction}
+% \end{proof}
 
-Maintenant que nous avons montré que ce système a bien les
-propriétés que l'ont veut pour la coercion par prédicats, on va le
-raffiner pour obtenir un algorithme de typage.
+% Maintenant que nous avons montré que ce système a bien les
+% propriétés que l'ont veut pour la coercion par prédicats, on va le
+% raffiner pour obtenir un algorithme de typage.
 
 
 %$list nat \sub list {n:nat|n \neq 0}$ ?

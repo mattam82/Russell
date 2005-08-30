@@ -1,52 +1,52 @@
 \chapter{Introduction}
-Nous nous pla\c cons dans le cadre du syst\`eme d'aide \`a la preuve \Coq{},
+Nous nous pla\c cons dans le cadre du système d'aide à la preuve \Coq{},
 auquel nous souhaitons int\'egrer un langage de programmation plus souple
 que le langage actuellement utilis\'e.
 
 \section{Pr\'esentation de \Coq}
 
-\Coq~est un assistant de preuve dont la premi\`ere version date de 1985,
+\Coq~est un assistant de preuve dont la première version date de 1985,
 et qui est aujourd'hui d\'evelopp\'e dans le projet \PCRI{} \LogiCal{} (INRIA, LIX,
 LRI, CNRS). Originellement bas\'e sur le Calcul des Constructions (\CoC),
 il a \'et\'e \'etendu au \CCIfull~(\CCI) et contient aujourd'hui de
-nombreuses am\'eliorations telles qu'un syst\`eme sophistiqu\'e d'extraction
+nombreuses am\'eliorations telles qu'un système sophistiqu\'e d'extraction
 de programmes ou encore des proc\'edures de d\'ecision pour automatiser la
 preuve.
 
-Le d\'eveloppement de \Coq~est intimement li\'e \`a l'isomorphisme de {\sc
+Le d\'eveloppement de \Coq~est intimement li\'e à l'isomorphisme de {\sc
 Curry-Howard} qui montre le lien entre logique intuitionniste et calcul. Cet
 isomorphisme \'etablit qu'\'elaborer une preuve du calcul propositionnel
-intuitionniste est \'equivalent \`a \'ecrire un terme du
+intuitionniste est \'equivalent à \'ecrire un terme du
 \lc~simplement typ\'e (\lcst). Par exemple, montrer que $A "=>" A$ pour un
-certain $A$ revient \`a \'ecrire la fonction identit\'e $\lambda x : A. x$ qui
+certain $A$ revient à \'ecrire la fonction identit\'e $\lambda x : A. x$ qui
 a bien pour type $A "->" A$. Chaque logique constructive est donc
-associ\'ee \`a un \lc{} particulier. Dans \Coq{}, on utilise cet
+associ\'ee à un \lc{} particulier. Dans \Coq{}, on utilise cet
 isomorphisme pour v\'erifier les preuves. Le noyau est simplement un
 typeur pour \CCI{}. Si on peut typer un terme $t$ de type $T$, alors on est
 assur\'e d'avoir trouv\'e une preuve constructive $t$ de la formule $T$.
-Cette dualit\'e se refl\`ete aussi \`a l'utilisation de \Coq{} o\`u l'on a 
+Cette dualit\'e se reflète aussi à l'utilisation de \Coq{} o\`u l'on a 
 les deux visions: logique (d\'eveloppement math\'ematique, preuve) et 
 calcul (d\'eveloppement informatique, programme).
 
 \subsection{Preuve}
 \Coq{} est utilis\'e le plus souvent pour \'elaborer des th\'eories
 math\'ematiques prouv\'ees m\'ecaniquement. Dans cette optique, l'utilisateur 
-mod\'elise un probl\`eme par des structures math\'ematiques et veut prouver
-certaines propri\'et\'es sur ce mod\`ele (par exemple la preuve du th\'eor\`eme
+mod\'elise un problème par des structures math\'ematiques et veut prouver
+certaines propri\'et\'es sur ce modèle (par exemple la preuve du th\'eorème
 des quatres couleurs r\'ecemment termin\'ee \cite{Gonthier4col} utilisait 
 des r\'esultats de g\'eom\'etrie alg\'ebrique).
 
-Pour prouver un but sous certaines hypoth\`eses, on utilise des
+Pour prouver un but sous certaines hypothèses, on utilise des
 tactiques qui simulent un raisonnement d\'eductif pour l'utilisateur.
-Celles-ci permettent par exemple d'introduire une hypoth\`ese: pour le but
-$A "=>" A$ on peut introduire l'hypoth\`ese $H : A$ pour obtenir le but
-$A$ ; ou bien d'en appliquer une (ou tout autre r\'esultat d\'ej\`a \'etabli): 
-en appliquant l'hypoth\`ese $H$ on prouve le but directement. 
+Celles-ci permettent par exemple d'introduire une hypothèse: pour le but
+$A "=>" A$ on peut introduire l'hypothèse $H : A$ pour obtenir le but
+$A$ ; ou bien d'en appliquer une (ou tout autre r\'esultat d\'ejà \'etabli): 
+en appliquant l'hypothèse $H$ on prouve le but directement. 
 Ces tactiques peuvent \^etre d'une complexit\'e arbitraire (r\'e\'ecritures,
 proc\'edures de d\'ecision pour l'arithm\'etique, etc \ldots).
 
 Les tactiques utilis\'ees pour cr\'eer des preuves ne sont en fait
-qu'une interface au-dessus du noyau de \Coq{} qui se r\'eduit \`a un typeur
+qu'une interface au-dessus du noyau de \Coq{} qui se r\'eduit à un typeur
 pour \CCI. A la fin d'une preuve, on a en effet construit un terme 
 ($\lambda x : A. x$ dans notre exemple) que l'on va soumettre au typeur
 dont le but est de v\'erifier qu'il est bien de type $A "->" A$. Les
@@ -58,8 +58,9 @@ D'un point de vue preuve de programmes, on a donc un environnement qui
 permet de v\'erifier qu'un programme (un terme du calcul) v\'erifie une
 certaine sp\'ecification (son type). Les types d\'ependants permettent de
 sp\'ecifier fortement les termes. Par exemple, la fonction $\sdef{div} :
-\nat "->" \nat "->" \nat$ de \ML{} est plus fortement sp\'ecifi\'ee en 
-\Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat$.
+\nat "->" \nat "->" \nat * \nat$ de \ML{} est plus fortement sp\'ecifi\'ee en 
+\Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat
+* \nat$.
 Seulement, on ne peut pas \'ecrire simplement un programme \ML{} et
 donner sa sp\'ecification forte. Comme on a enrichi les types, on doit 
 aussi enrichir les termes avec des termes de preuve, inutiles au 
@@ -68,10 +69,22 @@ correction logique du programme et le fait que la machine puisse
 v\'erifier m\'ecaniquement la correction (annotations,...). Par exemple,
  si l'on veut appeler $\sref{div}$ sur $1$ et $n$ (pour $n : \nat$), il
 faut construire un terme $\sref{div}~1~(\sref{elt}~(\lambda x : \nat
-"->" x \neq 0)~x~p)$ o\`u $p$ est une preuve de $n \neq 0$. La
-fonctionnelle est n\'ecessaire pour la d\'ecidabilit\'e du syst\`eme (on ne peut
-pas inf\'erer le type de $P$ \`a partir de $p$ puisqu'il est de type
-$P[n/x]$), et la preuve $p$ pour la correction logique.
+"->" x \neq 0)~x~p)$ o\`u $p$ est une preuve de $n \neq 0$. 
+En effet, en \Coq~on a:
+\begin{definition}[Type sous-ensemble]
+  \label{subset-type-def}
+  $\subset{x}{T}{P}$ est le type des termes de type $T$ v\'erifiant la
+  propri\'et\'e $P$.
+\end{definition}
+
+Un objet de type $\subset{x}{T}{P}$ peut être vu comme une paire
+$(x,p)$ ou $x$ est un objet de type $T$ (le témoin) et $p$ une preuve
+de $P[t/x]$. Seulement, le typeur a besoin de plus d'information,
+l'annotation $\lambda x : \nat "->" x \neq 0$ est nécessaire pour avoir
+un système d'inférence décidable (on ne peut
+pas inf\'erer la propriété $P$ à partir de sa preuve $p$ puisqu'il est de type
+$P[t/x]$). On voit donc ici que l'on doit rajouter de nombreuses
+informations d'ordre logique à nos termes.
 
 A l'inverse, on peut extraire un programme de toute preuve en \'eliminant les
 parties logiques et en ne conservant que la partie calculatoire d'un terme.
@@ -82,7 +95,7 @@ parties logiques et en ne conservant que la partie calculatoire d'un terme.
 de leur donner des sp\'ecifications fortes et de les v\'erifier
 automatiquement. On peut m\^eme extraire de ces d\'eveloppements des
 programmes corrects par construction. Il y a cependant certaines
-difficult\'es \`a d\'evelopper en \Coq{} que nous allons \'etudier maintenant.
+difficult\'es à d\'evelopper en \Coq{} que nous allons \'etudier maintenant.
 
 \subsection{Un langage trop expressif?} 
 
@@ -96,10 +109,10 @@ b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r~\} \}\]
 Les types d\'ependants permettent de bien relier les entr\'ees aux sorties
 et donc de sp\'ecifier les programmes aussi fortement que l'on d\'esire, 
 mais aussi de fa\c con concise. En revanche, le terme de preuve 
-correspondant \`a \sref{div} est nettement plus long (de l'ordre de 60 lignes), 
+correspondant à \sref{div} est nettement plus long (de l'ordre de 60 lignes), 
 et ne peut simplement pas \^etre \'ecrit d'une traite 
-sans une expertise approfondie. Pour rem\'edier \`a ce
-probl\`eme, on utilise des tactiques qui permettent d'\'ecrire la preuve/programme
+sans une expertise approfondie. Pour rem\'edier à ce
+problème, on utilise des tactiques qui permettent d'\'ecrire la preuve/programme
 incr\'ementalement (\note{figure ici?}voir figure \ref{fig:euclid-script}
 page \pageref{fig:euclid-script}). L'inconv\'enient de cette
 m\'ethode est que l'on n'obtient pas toujours le programme d\'esir\'e
@@ -107,28 +120,28 @@ au d\'epart, puisque les tactiques cachent profond\'ement leur effet sur le
 terme de preuve. Certaines techniques de r\'e\'ecriture peuvent aussi
 g\'en\'erer des termes de complexit\'e algorithmique bien moins optimale que
 ce que l'utilisateur \'ecrirait. Cependant ce mode de fonctionnement est
-utile et utilis\'e par la majorit\'e des utilisateurs de \Coq{} avec succ\`es
-(certification d'un compilateur \C, th\'eor\`eme des quatres couleurs
+utile et utilis\'e par la majorit\'e des utilisateurs de \Coq{} avec succès
+(certification d'un compilateur \C, th\'eorème des quatres couleurs
 \cite{Gonthier4col}, \ldots).
 
 \subsection{M\'elange logique et calcul}
-Une difficult\'e essentielle lorsque l'on veut permettre \`a des
+Une difficult\'e essentielle lorsque l'on veut permettre à des
 utilisateurs non experts de d\'evelopper dans \Coq{} est le ``m\'elange
 des genres'' permanent entre logique et calcul. Pour appliquer une
 fonction division qui attend un d\'enominateur diff\'erent de $0$ par
-exemple, il faut passer \`a la fois l'argument lui m\^eme, mais aussi une
+exemple, il faut passer à la fois l'argument lui m\^eme, mais aussi une
 preuve de sa non-nullit\'e. Lorsque l'on a l'habitude de programmer, \c ca
 n'est pas la chose la plus naturelle et l'on aimerait pouvoir d\'ecoupler
-les parties codage et preuve pour simplement diviser le probl\`eme. Les
+les parties codage et preuve pour simplement diviser le problème. Les
 parties logiques pourront souvent \^etre r\'esolues automatiquement par des
 tactiques.
 
 \subsection{Objectif}
-A long terme, on souhaite permettre \`a un utilisateur de programmer dans
-un langage proche de \ML{} et de prouver ses programmes dans un deuxi\`eme
-temps \`a l'aide de \Coq{} et ses tactiques. Une fois les preuves
+A long terme, on souhaite permettre à un utilisateur de programmer dans
+un langage proche de \ML{} et de prouver ses programmes dans un deuxième
+temps à l'aide de \Coq{} et ses tactiques. Une fois les preuves
 termin\'ees, on peut extraire un programme correct par construction et
-essentiellement \'equivalent \`a celui de d\'epart ou le r\'eutiliser facilement
+essentiellement \'equivalent à celui de d\'epart ou le r\'eutiliser facilement
 dans l'environnement \Coq{}.
 
 \section{Travaux Connexes}
@@ -138,80 +151,87 @@ actif. L'id\'ee d'\'etendre les langages \ML{} avec des types d\'ependants a
 \'et\'e d\'evelopp\'ee dans \DML{} \cite{XiPfenning1999DTP}, \Cayenne{}
 \cite{Augustsson99} et \Omegapdx{} \cite{Omega}. Il
 s'agit dans ces travaux de faire un langage dont l'inf\'erence est d\'ecidable, donc
-de restreindre les types d\'ependants \`a des domaines o\`u l'on peut faire de
-la preuve automatique (\DML{}) ou bien d'affaiblir la puissance du langage
+de restreindre les types d\'ependants à des domaines o\`u l'on peut faire de
+la preuve automatique (\DML{}) ou bien d'accroître la puissance du langage
 pour rendre l'utilisation des types d\'ependants plus ais\'ee (\Cayenne{}
-n'a pas la r\'ecursivit\'e g\'en\'erale par exemple). Nous prenons le
+a la r\'ecursivit\'e g\'en\'erale par exemple) mais en perdant l'idée de
+correction (et en perdant même la décidabilité du typage pour
+\Cayenne{}). 
+
+Nous prenons le
 contre-pied de ces travaux en acceptant de g\'en\'erer des obligations de
 preuve et en essayant de trouver un langage le plus proche de \ML{}
 possible tout en retenant la puissance de \Coq{} et des types
-d\'ependants. Nous pr\'esentons maintenant des travaux directement li\'es \`a
+d\'ependants. Nous pr\'esentons maintenant des travaux directement li\'es à
 notre contribution.
 
 
 \subsection{La tactique \Program}
 Il existe un travail r\'ealis\'e dans \Coq{} couvrant une partie de nos objectifs.
 D\'evelopp\'ee par Catherine Parent \cite{conf/mpc/Parent95}, 
-la tactique \Program{} permettait de synth\'etiser des preuves \`a partir de
+la tactique \Program{} permettait de synth\'etiser des preuves à partir de
 programmes. L'id\'ee \'etait de trouver un langage de programmation
 suffisamment restrictif pour r\'ealiser une inversion de l'extraction, 
-c'est-\`a-dire, \`a partir d'un terme essentiellement calculatoire
+c'est-à-dire, à partir d'un terme essentiellement calculatoire
 (des annotations \'etaient n\'ecessaires), retrouver un terme de preuve
 r\'ealisant la sp\'ecification donn\'ee. 
-A partir de l\`a, on \'etait assur\'e que le programme extrait serait
-identique \`a celui que l'on \'ecrivait pour sa partie informative. Cette
+A partir de là, on \'etait assur\'e que le programme extrait serait
+identique à celui que l'on \'ecrivait pour sa partie informative. Cette
 m\'ethode g\'en\'erale avait l'inconv\'enient d'\^etre peu intuitive et de ne pas
-s'int\'egrer \`a l'environnement \Coq. Li\'ee \`a l'extraction interne qui
-a disparu dans les derni\`eres versions de \Coq{} (remplac\'ee par la
+s'int\'egrer à l'environnement \Coq. En particulier, appeler une fonction
+définie avec \Program{} est aussi difficile qu'avec n'importe quelle
+définition \Coq{}. Il n'existe pas de mécanisme permettant de faire la
+distinction de phase codage/preuve, qui permettrait de faire de simples
+appels et de vérifier ensuite que les arguments sont valides, ce qui est
+beaucoup plus naturel lorsque l'on programme.
+Li\'ee à l'extraction interne qui
+a disparu dans les dernières versions de \Coq{} (remplac\'ee par la
 contribution de Pierre Letouzey \cite{LetouzeyPhD}), elle n'est plus 
 maintenue aujourd'hui.
 
 \subsection{Types sous-ensemble}
 Plut\^ot que de continuer dans la m\^eme direction, nous avons 
-cherch\'e \`a assouplir le syst\`eme. L'assistant de preuve \PVS{}
-\cite{PVS-Semantics:TR} aux capacit\'es similaires \`a \Coq{}, int\`egre un
+cherch\'e à assouplir le système. L'assistant de preuve \PVS{}
+\cite{PVS-Semantics:TR} aux capacit\'es similaires à \Coq{}, intègre un
 m\'ecanisme d\'enomm\'e \ps{} que nous allons pr\'esenter maintenant.
-Tout d'abord une d\'efinition:
-\begin{definition}[Type sous-ensemble]
-  $\subset{x}{T}{P}$ est le type des termes de type $T$ v\'erifiant la
-  propri\'et\'e $P$.
-\end{definition}
 
-Les types sous-ensembles sont d'une grande utilit\'e pour la sp\'ecification
+Les types sous-ensembles (définition \ref{subset-type-def}) sont d'une
+grande utilit\'e pour la sp\'ecification
 de programmes, par exemple pour les pr\'e-conditions:
 $\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat
-`* \nat$.
+* \nat$.
 
 L'id\'ee du \ps{} impl\'ement\'e dans \PVS{}
 \cite{Shankar&Owre:WADT99,Rushby98:TSE} est de consid\'erer tout objet de
 type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne v\'erifie pas forc\'ement la
-propri\'et\'e $P$, on g\'en\`ere des ``\emph{Type-checking conditions}'' (\TCC), c'est
-\`a dire que l'on demande \`a l'utilisateur de prouver $P[t/x]$ pour assurer
+propri\'et\'e $P$, on g\'enère des ``\emph{Type-checking conditions}'' (\TCC), c'est
+à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer
 que le programme est correct.
 
 \subsection{Coercions}
 \PVS{} n'a pas la m\^eme architecture que \Coq{}, en particulier il n'y a
 pas de termes de preuve et de noyau pour v\'erifier ces termes. Il faut
-donc faire confiance \`a la quasi-totalit\'e du code pour croire en la
-correction des programmes v\'erifi\'es. Le crit\`ere de {\sc De Bruijn},
-qui dit en substance qu'un petit noyau (et celui de \Coq~a m\^eme \'et\'e
-formellement v\'erifi\'e \cite{Barras96a}) est plus s\^ur n'est pas respect\'e.
+donc faire confiance à la quasi-totalit\'e du code pour croire en la
+correction des programmes v\'erifi\'es. Le critère de {\sc De Bruijn},
+qui dit en substance qu'un petit noyau est plus s\^ur n'est pas
+respect\'e, alors que celui de \Coq~a m\^eme \'et\'e
+formellement v\'erifi\'e \cite{Barras96a}.
  
 Dans notre cas, il faut g\'en\'erer des termes de preuve et donc le code 
-correspondant \`a ce ``sous-typage''. Une litt\'erature importante
+correspondant à ce ``sous-typage''. Une litt\'erature importante
 \cite{conf/popl/Chen03,conf/csl/Luo96} existe
-autour des syst\`emes \`a coercions explicites dont nous nous sommes
-inspir\'es pour r\'ealiser la g\'en\'eration des termes. Dans un syst\`eme \`a
+autour des systèmes à coercions explicites dont nous nous sommes
+inspir\'es pour r\'ealiser la g\'en\'eration des termes. Dans un système à
 coercions explicites, on peut faire des abus de notations tels que
-utiliser un objet de type $T$ \`a la place d'un de type $U$, mais
-on applique une coercion qui am\`ene l'objet vers le type $U$ avant 
-de retyper dans un syst\`eme sans coercions. G\'en\'eralement les coercions
-sont tr\`es similaires \`a des identit\'es, c'est-\`a-dire qu'elles sont calculatoirement
+utiliser un objet de type $T$ à la place d'un de type $U$, mais
+on applique une coercion qui amène l'objet vers le type $U$ avant 
+de retyper dans un système sans coercions. G\'en\'eralement les coercions
+sont très similaires à des identit\'es, c'est-à-dire qu'elles sont calculatoirement
 insignifiantes mais leur utilisation facilite le d\'eveloppement. Dans
-\Coq{} par exemple le syst\`eme de coercions \cite{saibi97inheritance} a
+\Coq{} par exemple le système de coercions \cite{saibi97inheritance} a
 permis de d\'evelopper des th\'eories alg\'ebriques r\'eutilisables sur
-plusieurs structures instantan\'ement (un th\'eor\`eme sur les corps pouvant s'appliquer aux
+plusieurs structures instantan\'ement (un th\'eorème sur les corps pouvant s'appliquer aux
 anneaux).
 
 Les extensions du Calcul des Constructions avec des notions de
@@ -219,7 +239,7 @@ sous-typage comme $\lambda C_\leq$ de Chen ne sont cependant pas
 dans la m\^eme cat\'egorie que notre travail. En particulier, nous ne
 nous int\'eressons pas aux propri\'et\'es de normalisation, pr\'eservation du
 typage ou encore au fait d'avoir des sous-types minimaux dans notre
-syst\`eme. On peut le voir plut\^ot comme un syst\`eme syntaxique intelligent
+système. On peut le voir plut\^ot comme un système syntaxique intelligent
 au-dessus du Calcul des Constructions.
 
 %%% Local Variables: 

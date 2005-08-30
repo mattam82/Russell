@@ -7,8 +7,8 @@
     & | & (`a,~`a) \\
     & | & (x \coloneqq `a,~`a~: `t) \\
     & | & \letml~x = `a ~\inml~`a \\
-    & | & \letml~(x, y) = `a ~\inml~ `a \\
-    & | & \ifml~`a~\thenml~`a~\elseml~`a
+    & | & \letml~(x, y) = `a ~\inml~ `a
+%    & | & \ifml~`a~\thenml~`a~\elseml~`a
   \end{array}$}
 
 \newcommand{\typegrammarOrig}
@@ -34,7 +34,10 @@
     & | & \Sigma x : `t. `t \\
     & | & `t * `t \\
     & | & \subset{x}{`t}{`t} \\
-    & | & \text{{\tt Inductive}} \\
-    & & \\
-    \text{{\tt Inductive}} & \Coloneqq & ident
+    & | & \Set \\
+    & | & \Prop \\
+    & | & \Type \\
+    & | & \text{{\tt constante}} 
+%    & & \\
+%    \text{{\tt Inductive}} & \Coloneqq & ident
   \end{array}$}
