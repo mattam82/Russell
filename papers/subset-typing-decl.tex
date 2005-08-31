@@ -12,7 +12,7 @@ On part du \lc{} (variables, abstraction et application) puis l'on
 ajoute des constantes (pour les entiers, booléens, etc...) ainsi que les
 couples. La syntaxe $(x := `a, t : `t)$ permet de
 créer des paires dépendantes, de type $\Sigma x : `t. `t$. On peut aussi
-appliquer un type à un terme pour instancier une fonction polymorphe par exemple.
+appliquer un terme à un type pour instancier une fonction polymorphe par exemple.
 
 Du côté des types, on a tout d'abord les types simples (constantes,
 flèche, produit cartésien) qui sont des cas particuliers du produit ($\Pi$) et
@@ -70,26 +70,33 @@ dans le système est définie par les règles suivantes:
   \Type & \Set & \Type & \text{Fonctions polymorphes} & \Pi A : \Set, A "->" A \\
   \Set & \Prop & \Prop & \text{Termes dans les propositions} & 
   \Pi n : \nat. \Pi l : \text{list}~n. \text{length}~l = n \\
-  \Prop & \Set & \Set & \text{Fonctions dépendants de propositions} &
-  \Pi n : \nat, n > 0 "->" \Pi l : \text{list}~n "->" A \\
   \Type & \Prop & \Prop & \text{Imprédicativité de } \Prop & \Pi x : Prop. x `V `! x \\
 %  \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
 %    \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
 \end{array}\]
 
-La relation $\mathcal{S}$ définissant les sommes formables
-dans le système est définie inductivement par les règles suivantes:
-\[\begin{array}{cccll}
-  s_1 & s_2 & s_3 & \text{Habitants} & \text{Exemple} \\
-  \hline
-  \Prop & \Prop & \Prop & \text{Couples de propositions} & \Sigma x :  "->" x = 0  \\
-  \Set & \Set & \Set & \text{Couples d'objets} & \nat * \nat \\
-\end{array}
-\]
+On n'a pas $(\Prop,\Set,\Set)$ dans notre relation $\mathcal{R}$ pour
+une bonne raison. Cela permet de créer des fonctions dépendants de
+propositions, par exemple $\Pi n : \nat, n > 0 "->" \Pi l :
+\text{list}~A~n "->" A$. Or on veut à tout prix éviter d'introduire des
+termes de preuve dans notre langage, et l'on voit que
+cette fonction pourrait naturellement s'écrire $\Pi n : subset{n}{\nat}{n > 0} "->" \Pi l :
+\text{list}~A~n "->" A$. Encore une fois le type sous-ensemble nous
+permet d'éviter d'avoir à passer des termes de preuve directement. 
 
+Les sommes formables dans le système sont définient de la façon suivante:
+$(s, s, s)$ pour tout $s `: \{ \Prop, \Set \}$.
+Dans le premier cas les habitants sont les couples de propositions
+(codage du $`^$), dans le second ce sont les couples d'objets, soit les
+paires de \ML.
 Intuitivement, c'est le type sous-ensemble $\subset{x}{T}{P}$ qui permet
 de faire des couples $\Set,\Prop,\Set$. Les types $\Sigma x : U.V$ où $U
-: \Prop$ et $V : \Set$ n'ont pas d'intérêt.
+: \Prop$ et $V : \Set$ n'ont pas d'intérêt dans notre cas puisqu'ils
+représentent des objets de type $U `^ V$ mais on ne peut
+pas utiliser $U$ dans notre système. On préfère coder ces objets par des
+objets de type $\subset{x}{B}{U}$ (on n'est pas intéressés par la preuve
+de $U$ pour programmer).
+
 
 La règle \irule{Coerce} formalise l'idée que 
 l'on peut utiliser un terme de type $T$ à la place d'un terme de type
@@ -112,6 +119,12 @@ du typage (on peut inférer le type de $t$), mais sont inessentielles au
 niveau du calcul. La première est équivalente au redex $(\lambda x.v)~t$
 et la deuxième à $(\lambda~x.\lambda~y.v)~(\pi_1~t)~(\pi_2~t)$.
 
+On considère les constantes comme des variables prédéfinies 
+dans nos contextes, par exemple on a la constante $\Pi_1 : \Sigma x :
+T. P "->" T$. L'ajout d'une constante à un contexte ne doit pas altérer
+sa bonne formation comme pour le cas des variables, donc son type doit
+être bien formé.
+
 \subsubsection{Jugement de coercion}
 Notre système de coercion par prédicats permet à l'utilisateur
 d'utiliser une valeur de type $U$ là où l'on attend une valeur de type
@@ -119,7 +132,7 @@ $\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
 A l'inverse, on permet aussi d'utiliser une valeur de type
 $\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
 $V$ si $U$ est coercible vers $V$. Notre jugement de coercion est donc
-symétrique et laisse beaucoup de liberté au moment du codage. Par
+symétrique et laisse beaucoup de liberté à l'utilisateur au moment du codage. Par
 exemple, si l'on avait le filtrage dans notre langage \lng{}, on pourrait
 aisément dériver l'absurde:
 $x : \nat \typed \matchml~x~:~\subset{x}{\nat}{`_}~\withml~\textbf{elt}~\_~\_~p "=>" p :
@@ -148,11 +161,31 @@ jamais. Dans les systèmes à sous-typage, on montre de façon équivalente
 que l'on peut éliminer la règle de transitivité ; première étape vers un
 système décidable.
 
+
+Notre jugement de coercion identifie les types $U$ et $\subset{x}{U}{P}$
+mais notre système de typage ne permet pas d'éliminer (prendre la partie
+preuve) ou d'introduire (créer un couple témoin,preuve) des objets de
+type sous-ensemble. Cela nous assure une certaine cohérence, puisque
+même si l'on ne vérifie pas qu'un objet de type $U$ a bien la propriété
+$P$, on ne pas raisonner sur le fait que $U$ a la propriété dans le
+langage.
+
+
 On ne vas pas faire la métathéorie du système déclaratif ici, puisque
-c'est une extension très simple du Calcul des Constructions. Pour une
-étude complète de ce système, se référer à \cite{Barras99,Luo90}. On va
-plutôt s'intéresser à la construction d'un algorithme de typage
-correspondant à ce système.
+c'est une extension conservative du Calcul des Constructions et l'on
+étudiera en détail le système algorithmique. Notre preuve de conservativité
+est simple: si l'on oublie les utilisations des types sous-ensemble de
+notre système de typage (\irule{Subset}) et de coercion
+(\irule{SubProof} et \irule{SubSub}), alors le jugement de coercion est 
+juste la $\beta$-convertibilité et donc \irule{Coerce} et \irule{Conv} 
+sont équivalentes. Comme les autres règles de notre système déclaratif
+proviennent directement de \CC{}, on arrive à un système strictement
+égal au système du calcul des constructions.
+
+Pour une étude complète du \CCfull{}, se référer à
+\cite{Barras99,Luo90}.
+On va plutôt s'intéresser à la construction d'un algorithme de typage
+correspondant à notre système déclaratif.
 
 % \section*{Propriétés élementaires}
 

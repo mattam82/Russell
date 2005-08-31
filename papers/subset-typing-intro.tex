@@ -83,19 +83,19 @@ ce type.
 \begin{definition}[Type sous-ensemble]
   \label{subset-type-def}
   En \Coq{}, $\subset{x}{T}{P}$ est le type des termes de type $T$ v\'erifiant la
-  propri\'et\'e $P$.
+  propri\'et\'e $P$. C'est un type inductif avec un unique constructeur $\sref{elt}$ prenant en arguments
+  le type du témoin $T$, la propriété $P$ puis le témoin $t$ et la preuve
+  $p$: $\sref{elt} : `A T : \Set, `A P : T "->" \Prop, `A x : T, P~x "->" \subset{x}{T}{P}$.
 \end{definition}
 
 Informellement, un objet de type $\subset{x}{T}{P}$ peut être vu comme
 une paire $(x,p)$ où $x$ est un objet de type $T$ (le témoin) et $p$ une preuve
-de $P[t/x]$. Seulement, en \Coq{}, le type sous-ensemble est codé par
-inductif avec un unique constructeur $\sref{elt}$ prenant en arguments
-le type du témoin $T$, la propriété $P$ puis le témoin $t$ et la preuve
-$p$. 
+de $P[t/x]$.  
 Le typeur a besoin de plus d'information, l'annotation $\lambda x : \nat
-"->" x \neq 0$ de notre exemple est nécessaire pour avoir
+"->" x \neq 0$ de notre exemple peut être nécessaire (en fait, dans ce cas précis, on
+peut reposer sur le système d'arguments implicites de \Coq{}) pour avoir
 un système d'inférence décidable (on ne peut
-pas inf\'erer la propriété $P$ à partir de sa preuve $p$ puisqu'il est de type
+pas toujours inf\'erer la propriété $P$ à partir de sa preuve $p$ puisqu'il est de type
 $P[t/x]$). On voit donc ici que l'on doit rajouter de nombreuses
 informations d'ordre logique à nos termes.
 

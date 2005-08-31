@@ -3,18 +3,18 @@
 
 Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
 syntaxe. Ce n'est pas le cas du système déclaratif, aussi bien pour le
-typage que pour la correction. On va donc rafiner ces systèmes dans
+typage que pour la coercion. On va donc rafiner ces systèmes dans
 l'optique d'en extraire un algorithme. On note $\typea$ le jugement de
 typage algorithmique défini figure \ref{fig:typing-algo-rules} et
 $\suba$ le jugement de coercion algorithmique présenté figure
 \ref{fig:subtyping-algo-rules}. Ces deux systèmes sont quelque peu
-éloigné des originaux, néanmoins nous allons montrer qu'ils sont
+éloignés des originaux, néanmoins nous allons montrer qu'ils sont
 corrects et complets vis-à-vis de leur géniteurs. La correction (si l'on
 a une dérivation d'un jugement dans le système algorithmique, alors
 c'est un jugement valide du système déclaratif) est le
 sens le plus facile à montrer, nous allons donc commencer par là. On
 décrira ensuite la méthode de construction des systèmes algorithmiques
-pour aboutir d'une part au théorême de complétude qui montre qu'on peut dériver les
+pour aboutir d'une part au théorème de complétude qui montre qu'on peut dériver les
 mêmes jugements (à coercion près) dans le système algorithmique que dans
 le sytème déclaratif et d'autre part à la décidabilité du jugement de
 typage algorithmique.
@@ -354,13 +354,14 @@ auquel on ajoute la règle de coercion. On montre que toute dérivation
 de ce système se réecrit dans une dérivation du système algorithmique
 sans la règle \irule{Coerce} et on montre ensuite que toute dérivation
 du système déclaratif a une dérivation correspondante dans le système
-algorithmique.
+algorithmique avec \irule{Coerce}. En composant les deux preuves on
+obtient que toute dérivation du système déclaratif a une dérivation dans
+le système algorithmique (sans \irule{Coerce} donc).
 
 \begin{proposition}[Passage de la coercion à l'application]
   \label{subsum-elim}
   On peut réecrire toute dérivation $`G \typea t : T$ utilisant la
-  coercion ailleurs qu'à sa racine vers une dérivation $`G \type t :
-  U$ avec $U \suba T$.
+  coercion vers une dérivation $`G \type t : U$ avec $U \suba T$.
 \end{proposition}
 
 On utilisera l'abbréviation $`G \typea t : S \suba T$ pour $`G \typea t
@@ -369,15 +370,15 @@ On a besoin de quelques lemmes auparavant:
 
 \begin{lemma}[$\beta$-equivalence et $\mualgo$]
   \label{beta-mu}
-  Si $X \sub Y$ et $\mualgo~Y \eqbi \Sigma x : T.U$ alors $\mualgo X \eqbi \Sigma x : T'.U'$
+  Si $X \sub Y$ et $\mualgo(Y) \eqbi \Sigma x : T.U$ alors $\mualgo(X) \eqbi \Sigma x : T'.U'$
   et $T' \sub T$, $U' \sub U$.
-  Si $X \sub Y$ et $\mualgo~Y \eqbi \Pi x : T.U$ alors $\mualgo X \eqbi \Pi x :
+  Si $X \sub Y$ et $\mualgo(Y) \eqbi \Pi x : T.U$ alors $\mualgo(X) \eqbi \Pi x :
   T'.U'$ et $T \sub T'$, $U' \sub U$.
 \end{lemma}
 \begin{proof}
   Par induction sur la dérivation de coercion, on fait le cas pour $\Sigma$.
   \begin{induction}  
-    \case{SubConv} Trivial, puisqu'on aura $\mualgo~X = \mualgo~Y$.
+    \case{SubConv} Trivial, puisqu'on aura $\mualgo(X) = \mualgo(Y)$.
 
     \case{SubProd} Impossible, $\mualgo$ ne traversant pas les produits.
 
@@ -385,12 +386,12 @@ On a besoin de quelques lemmes auparavant:
     \sub \Sigma x : T.U$.
     
     \case{SubLeft} Ici, $Y `= \subset{x}{V}{P}$, on peut donc déduire que
-    $\mualgo~Y = \mualgo~V \eqbi \Sigma x : T.U$. On 
+    $\mualgo(Y) = \mualgo(V) \eqbi \Sigma x : T.U$. On 
     applique l'hypothèse de récurence avec $X \sub V$ et on obtient:
-    $\mualgo~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo(X) \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
 
     \case{SubRight} Ici, $X `= \subset{x}{V}{P}$. Par induction, 
-    $\mualgo~V = \mualgo~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo(V) = \mualgo(X) \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
   \end{induction}
 \end{proof}
 
@@ -507,7 +508,7 @@ contextes où les variables ont des types équivalents.
 On peut maintenant montrer notre proposition:
 \begin{proof}
   On inspecte les dérivations possibles utilisant \irule{Coerce} juste avant
-  une autre règle.
+  une autre règle. Si \irule{Coerce} est utilisé juste en racine c'est trivial.
   
   \typenva
   \begin{induction}
@@ -551,15 +552,15 @@ On peut maintenant montrer notre proposition:
     
     \begin{prooftree}
       \AXC{\vdots}
-      \UIC{$`G \seq \Sigma x : T.U : s $}
-      \AXC{\vdots}
       \UIC{$`G \seq t : S$}
       \AXC{\vdots}
       \UIC{$S \sub T$}
       \BIC{$`G \seq t : T $}
       \AXC{\vdots}
-      \UIC{$`G \seq u : U[t/x]$}
-      \TIC{$`G \seq (t,u) : \Sigma x : T.U$}
+      \UIC{$`G \seq u : U' \suba U[t/x]$}
+      \AXC{\vdots}
+      \UIC{$`G \seq \Sigma x : T.U : s $}
+      \TIC{$`G \seq (x \coloneqq t, u : U) : \Sigma x : T.U$}
     \end{prooftree}
     
     Comme $S \sub T$, on a bien $\Sigma x : S.U \sub \Sigma x : T.U$
@@ -570,17 +571,21 @@ On peut maintenant montrer notre proposition:
 
     \begin{prooftree}
       \AXC{\vdots}
-      \UIC{$`G \seq \Sigma x : S.U : s $}
-      \AXC{\vdots}
       \UIC{$`G \seq t : S$}
       \AXC{\vdots}
-      \UIC{$`G \seq u : U[t/x]$}
-      \TIC{$`G \seq (t,u) : \Sigma x : S.U$}
+      \UIC{$`G \seq u : U' \suba U[t/x]$}
+      \AXC{\vdots}
+      \UIC{$`G \seq \Sigma x : S.U : s $}
+      \TIC{$`G \seq (x \coloneqq t, u : U) : \Sigma x : S.U$}
       \AXC{\vdots}
       \UIC{$\Sigma x : S.U \sub \Sigma x : T.U$}
-      \BIC{$`G \seq (t,u) : \Sigma x : T.U$}
+      \BIC{$`G \seq (x \coloneqq t, u : U) : \Sigma x : T.U$}
     \end{prooftree}
-    
+
+    Si on utilise la coercion pour la prémisse $`G \type u : U'$ alors
+    on a $`G \type u : U'' \suba U'$. Or par transitivité de la
+    coercion $`G \type u : U'' \suba U[t/x]$, le jugement ne change donc pas.
+     
     \case{LetSum}\quad
     \begin{prooftree}
       \AXC{\vdots}        
@@ -588,20 +593,20 @@ On peut maintenant montrer notre proposition:
       \AXC{\vdots}
       \UIC{$S \sub V$}
       \BIC{$`G \seq t : V$}
-      \AXC{$\mualgo~V \eqbi \Sigma x : T.U$}
+      \AXC{$\mualgo(V) \eqbi \Sigma x : T.U$}
       \AXC{\vdots}
       \UIC{$`G, x : T, u : U \seq v : V $}
       \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
     \end{prooftree}
     
-    Par le lemme \ref{beta-mu}, on a $\mualgo~S \eqbi \Sigma x : T'.U'$,
+    Par le lemme \ref{beta-mu}, on a $\mualgo(S) \eqbi \Sigma x : T'.U'$,
     $T' \suba T$ et $U' \suba U$. Par restriction (lemme
     \ref{narrowing-a}) on a:
 
     \begin{prooftree}
       \AXC{\vdots}        
       \UIC{$`G \seq t : S $}
-      \AXC{$\mualgo~S \eqbi \Sigma x : T'.U'$}
+      \AXC{$\mualgo(S) \eqbi \Sigma x : T'.U'$}
       \AXC{\vdots}
       \UIC{$`G, x : T', u : U' \seq v : V $}
       \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}

@@ -1,0 +1,28 @@
+\chapter{Conclusion}
+Nous avons développé un langage de programmation plus souple que le
+langage de \Coq{} mais conservant sa richesse d'expression (types
+dépendants). Il permet de découpler la description algorithmique de la
+vérification. La correction des termes engendrés est
+garantie par le système sous-jacent qui offre ensuite la possibilité
+d'extraire un programme correct par construction dans un langage de type
+\ML. D'autre part, cette méthode s'intègre bien dans l'environnement
+\Coq{} et ouvre la voie à la réalisation de travaux plus complexes par
+des utilisateurs non-experts. Cela constitue la première étape vers un
+environnement de programmation sûre utilisable dans \Coq. 
+
+\section*{Travaux futurs}
+Nous avons de multiples directions dans lesquelles étendre notre
+système. Le support des inductifs, de la récursion interne, des univers cumulatifs
+et des définitions dans les contextes semblent des problèmes techniques
+abordables. 
+La possibilité d'utiliser \lng{} dans
+d'autres parties de \Coq{} (énoncés de lemmes, termes de tactiques) est
+aussi un objectif intéressant. Modifier \Coq{} pour qu'il gère mieux les
+existentielles est aussi un problème crucial dont nous avons fait
+l'expérience durant le développement de \Subtac{}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 

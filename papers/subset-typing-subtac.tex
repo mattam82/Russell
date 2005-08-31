@@ -1,11 +1,10 @@
-\newpage
-\section{La tactique \Subtac}
+\chapter{La tactique \Subtac}
 Nous avons d\'evelopp\'e la tactique \Subtac{} disponible dans la version
 \CVS{}~courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
 cr\'eer un programme, le typer et g\'en\'erer un terme incomplet
 correspondant (voir annexe \ref{fig:euclid-subtac}). 
 
-\subsection{Existentielles}
+\section{Existentielles}
 La g\'en\'eration des buts correspondant aux variables existentielles et la
 formation du terme final devaient originellement \^etre laiss\'ees \`a la
 tactique \Refine~et au syst\`eme de gestion des existentielles de \Coq. Certaines limitations 
@@ -18,7 +17,7 @@ cons\'equence, nous avons d\'evelopp\'e une nouvelle tactique \Coq{}
 permettant de g\'erer les termes avec existentielles de fa\c con plus
 g\'en\'erale. 
 
-\subsubsection{La tactique \eterm}
+\subsection{La tactique \eterm}
 L'id\'ee de d\'epart de la tactique \Refine{} est de prendre un terme \`a
 trous et d'en faire une traduction en une s\'equence de tactiques. Par
 exemple, lorsque \Refine{} rencontre une abstraction, il fait une
@@ -60,7 +59,7 @@ existentielles d'indice sup\'erieur \`a $i$. Il est cependant envisagable de
 r\'eecrire tout terme contenant des existentielles comme un terme
 \'equivalent avec des indices respectant cet ordre.
 
-\subsection{Traitement de la r\'ecursion}
+\section{Traitement de la r\'ecursion}
 Lorsque l'on d\'eveloppe un programme r\'ecursif dans un syst\`eme tel que
 \Coq, on est forc\'e de fournir une preuve de sa terminaison. Pour cela,
 on montre g\'en\'eralement qu'on a un ordre bien
@@ -71,7 +70,17 @@ correspondant aux preuves que l'ordre est bien fond\'e ou qu'il est bien
 respect\'e par les termes. Ainsi lors du raffinement on obtient naturellement
 les buts correspondants \`a prouver.
 
-\subsection{Traitement des inductifs}
+
+La possibilité de faire des fonctions récursives à
+l'intérieur des termes devraient être facile à introduire, il suffit
+d'avoir un combinateur $\sref{fix}$ comme constante avec une forme
+pratique pour le langage: par exemple la fonction utilisable pour
+l'appel récursif devrait avoir un type de la forme:
+$\subset{x}{T}{R~x~a} "->" B$ ou $R$ est la relation bien fondée et $T$ le type de
+l'argument de récursion ainsi on génera les obligations automatiquement
+lors des appels récursifs.
+
+\section{Traitement des inductifs}
 Notre langage ne prend pas encore en compte les d\'efinitions inductives g\'en\'erales.
 Au-del\`a du traitement des types sous-ensemble, on a un support minimal
 pour les inductifs \`a deux constructeurs qui correspondent \`a des bool\'eens
