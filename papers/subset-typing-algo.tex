@@ -193,17 +193,18 @@ On va maintenant montrer que la règle \irule{SubTrans} est admissible
 dans notre système algorithmique. On montre ceci en l'éliminant de toute
 dérivation possible la faisant intervenir.
 
+\typenva
 Tout d'abord quelques lemmes nécessaires pour la preuve:
-\begin{lemma}[Coercion et $\mu$]
+\begin{lemma}[Coercion et $\mualgo$]
   \label{coercion-mu}
-  Si $\Pi x : X.Y \sub U$ alors $\mu(U) \eqbi \Pi x : X'.Y'$ et $X' \sub
+  Si $\Pi x : X.Y \sub U$ alors $\mualgo(U) \eqbi \Pi x : X'.Y'$ et $X' \sub
   X$, $Y \sub Y'$.
-  Si $\Sigma x : X.Y \sub U$ alors $\mu(U) \eqbi \Sigma x : X'.Y'$ et $X \sub
+  Si $\Sigma x : X.Y \sub U$ alors $\mualgo(U) \eqbi \Sigma x : X'.Y'$ et $X \sub
   X'$, $Y \sub Y'$.
-  Pour tout $U$, $U \sub \mu(U)$.
+  Pour tout $U$, $U \sub \mualgo(U)$.
 \end{lemma}
 \begin{proof}
-  Par induction sur les dérivations de $\suba$ et la définition de $\mu$.
+  Par induction sur les dérivations de $\suba$ et la définition de $\mualgo$.
 \end{proof}
 
 \begin{lemma}[Coercion et conversion]
@@ -223,7 +224,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
   Pour tout $S, T, U$,  si $S \sub T$ et $T \sub U$ alors $S \sub U$.
 \end{lemma}
 
-\begin{proof}  
+\begin{proof} 
   %\TODO{Dans \cite{Pierce:TypeSystems}, voir p. 420}
   On procède par élimination de la règle \irule{SubTrans} dans toute
   dérivation de $S \sub U$.
@@ -249,7 +250,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
       \BIC{$\Pi~X~Y \sub U$}
     \end{prooftree}
     
-    Si $\Pi~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
+    Si $\Pi~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
     \eqbi \Pi~S~T$ et $S \sub X'$, $Y' \sub T$.
     Par induction, $S \sub X$ et $Y \sub T$ donc $\Pi~X~Y \sub \Pi~S~T$ 
     et enfin $\Pi~X~Y \sub U$.
@@ -265,7 +266,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
       \BIC{$\Sigma~X~Y \sub U$}
     \end{prooftree}
     
-    Si $\Sigma~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
+    Si $\Sigma~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
     \eqbi \Sigma~S~T$ et $X' \sub S$, $Y' \sub T$.
     Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma~X~Y \sub
     \Sigma~S~T$ et enfin $\Sigma~X~Y \sub U$ (lemme \ref{coercion-mu}).
@@ -280,8 +281,8 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
       \BIC{$S \sub U$}
     \end{prooftree}
     
-    Si $\subset{x}{V}{P} \sub U$ alors $\mu(U) \eqbi V$.
-    Comme $S \sub V$, par induction, $S \sub \mu(U)$ donc
+    Si $\subset{x}{V}{P} \sub U$ alors $\mualgo(U) \eqbi V$.
+    Comme $S \sub V$, par induction, $S \sub \mualgo(U)$ donc
     $S \sub U$.
     
     De façon équivalente pour le second cas.
@@ -322,8 +323,8 @@ une dérivation n'utilisant cette règle qu'à sa racine.
 
 \def\subs{\subset{x}{U}{P}}
 Il nous a fallut changer quelque peu les règles pour obtenir le système
-algorithmique. En particulier, on a utilisé la fonction $\mu0$ de \PVS{}
-\cite{PVS-Semantics:TR} renommée $\mu$ ici pour opèrer des
+algorithmique. En particulier, on a utilisé la fonction $\mu_0$ de \PVS{}
+\cite{PVS-Semantics:TR} renommée $\mualgo$ ici pour opèrer des
 \emph{décompréhensions}. Cette fonction efface les constructeurs de type
 sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
   "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela nous permet de
@@ -340,7 +341,7 @@ auquel il n'y a pas de solution la plus générale.
 On a donc dans le système algorithmique deux règles pour les sommes, 
 dont une (\irule{SumDep}) permettant d'annoter le terme avec le type $U$ recherché. 
 
-\subsubsection{Subsumption}
+\subsubsection{\'Elimination de la coercion}
 \typenva
 
 % On enlève \irule{Coerce} du système et on change la règle 
@@ -355,10 +356,10 @@ sans la règle \irule{Coerce} et on montre ensuite que toute dérivation
 du système déclaratif a une dérivation correspondante dans le système
 algorithmique.
 
-\begin{proposition}[Passage de la subsumption à l'application]
+\begin{proposition}[Passage de la coercion à l'application]
   \label{subsum-elim}
   On peut réecrire toute dérivation $`G \typea t : T$ utilisant la
-  subsumption ailleurs qu'à sa racine vers une dérivation $`G \type t :
+  coercion ailleurs qu'à sa racine vers une dérivation $`G \type t :
   U$ avec $U \suba T$.
 \end{proposition}
 
@@ -366,30 +367,30 @@ On utilisera l'abbréviation $`G \typea t : S \suba T$ pour $`G \typea t
 : S `^{} S \suba T$ dans la suite.
 On a besoin de quelques lemmes auparavant:
 
-\begin{lemma}[$\beta$-equivalence et $\mu$]
+\begin{lemma}[$\beta$-equivalence et $\mualgo$]
   \label{beta-mu}
-  Si $X \sub Y$ et $\mu~Y \eqbi \Sigma x : T.U$ alors $\mu X \eqbi \Sigma x : T'.U'$
+  Si $X \sub Y$ et $\mualgo~Y \eqbi \Sigma x : T.U$ alors $\mualgo X \eqbi \Sigma x : T'.U'$
   et $T' \sub T$, $U' \sub U$.
-  Si $X \sub Y$ et $\mu~Y \eqbi \Pi x : T.U$ alors $\mu X \eqbi \Pi x :
+  Si $X \sub Y$ et $\mualgo~Y \eqbi \Pi x : T.U$ alors $\mualgo X \eqbi \Pi x :
   T'.U'$ et $T \sub T'$, $U' \sub U$.
 \end{lemma}
 \begin{proof}
   Par induction sur la dérivation de coercion, on fait le cas pour $\Sigma$.
   \begin{induction}  
-    \case{SubConv} Trivial, puisqu'on aura $\mu~X = \mu~Y$.
+    \case{SubConv} Trivial, puisqu'on aura $\mualgo~X = \mualgo~Y$.
 
-    \case{SubProd} Impossible, $\mu$ ne traversant pas les produits.
+    \case{SubProd} Impossible, $\mualgo$ ne traversant pas les produits.
 
     \case{SubSigma} Direct, on a une dérivation de $\Sigma x : T'. U'
     \sub \Sigma x : T.U$.
     
     \case{SubLeft} Ici, $Y `= \subset{x}{V}{P}$, on peut donc déduire que
-    $\mu~Y = \mu~V \eqbi \Sigma x : T.U$. On 
+    $\mualgo~Y = \mualgo~V \eqbi \Sigma x : T.U$. On 
     applique l'hypothèse de récurence avec $X \sub V$ et on obtient:
-    $\mu~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
 
     \case{SubRight} Ici, $X `= \subset{x}{V}{P}$. Par induction, 
-    $\mu~V = \mu~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo~V = \mualgo~X \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
   \end{induction}
 \end{proof}
 
@@ -403,7 +404,7 @@ On a besoin de quelques lemmes auparavant:
 
 \begin{fact}[Inversion du jugement de bonne formation]
   \label{inversion-wf-a}
-  Si $\typewf `G, x : U$ alors il existe $s$, $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
+  Si $\typewf `G, x : U$ alors il existe $s$, $`G \type U : s$ et $s `: \setproptype$.
 \end{fact}
 
 \begin{lemma}[Affaiblissement]
@@ -414,7 +415,7 @@ On a besoin de quelques lemmes auparavant:
 
 \begin{proof}
   \begin{induction}[typing-decl]
-    \casetwo{PropSet}{Type} Trivial.
+    \case{PropSet} Trivial.
 
     \case{Var}
     On a $x : S `; `G, `D$, donc $`G, x : S, `D \type y : T$ est toujours dérivable.
@@ -457,7 +458,7 @@ contextes où les variables ont des types équivalents.
         \UAX{WfVar}
         {$`G \type S : s$}
         {$\wf `G, x : S$}
-        {$s `: \{ \Set, \Prop, \Type(i) \}$}
+        {$s `: \setproptype$}
       \end{prooftree}
       On a $`G \type S' : s$, donc par \irule{WfVar}, $\typewf `G, x : S'$.  
       
@@ -467,13 +468,13 @@ contextes où les variables ont des types équivalents.
         \UAX{WfVar}
         {$`G, x : S, `D' \type U : t$}
         {$\wf `G, x : S, `D', y : U$}
-        {$s `: \{ \Set, \Prop, \Type(i) \}$}
+        {$s `: \setproptype$}
       \end{prooftree}
       Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : t$,
       on a donc bien $\typewf `G, x : S', `D', y : U$ par \irule{WfVar}.
     \end{induction}
     
-    \casetwo{PropSet}{Type} 
+    \case{PropSet}
     Par induction, $\typewf `G, x : S', `D$, on applique simplement la règle.
     
     \case{Var}
@@ -511,7 +512,7 @@ On peut maintenant montrer notre proposition:
   \typenva
   \begin{induction}
     \case{Var} Pas de prémisse de la forme $`G \type t : T$, donc
-    pas d'application de \irule{Subsum} possible.
+    pas d'application de \irule{Coerce} possible.
     
     \case{Abs} \quad
     
@@ -587,20 +588,20 @@ On peut maintenant montrer notre proposition:
       \AXC{\vdots}
       \UIC{$S \sub V$}
       \BIC{$`G \seq t : V$}
-      \AXC{$\mu~V \eqbi \Sigma x : T.U$}
+      \AXC{$\mualgo~V \eqbi \Sigma x : T.U$}
       \AXC{\vdots}
       \UIC{$`G, x : T, u : U \seq v : V $}
       \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
     \end{prooftree}
     
-    Par le lemme \ref{beta-mu}, on a $\mu~S \eqbi \Sigma x : T'.U'$,
+    Par le lemme \ref{beta-mu}, on a $\mualgo~S \eqbi \Sigma x : T'.U'$,
     $T' \suba T$ et $U' \suba U$. Par restriction (lemme
     \ref{narrowing-a}) on a:
 
     \begin{prooftree}
       \AXC{\vdots}        
       \UIC{$`G \seq t : S $}
-      \AXC{$\mu~S \eqbi \Sigma x : T'.U'$}
+      \AXC{$\mualgo~S \eqbi \Sigma x : T'.U'$}
       \AXC{\vdots}
       \UIC{$`G, x : T', u : U' \seq v : V $}
       \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
@@ -627,7 +628,7 @@ On peut maintenant montrer notre proposition:
       \TIC{$`G \seq f u : W [ u / x ]$}
     \end{prooftree}
     
-    Par le lemme \ref{beta-mu} on a $\mu(T) \eqbi \Pi x : V'.W'$ avec
+    Par le lemme \ref{beta-mu} on a $\mualgo(T) \eqbi \Pi x : V'.W'$ avec
     $V \suba V'$ et $W' \suba W$. Par la transitivité de la coercion on
     a: $U \suba V `^ V \suba V' "=>" U \suba V'$.
     On peut donc dériver:
@@ -644,7 +645,7 @@ On peut maintenant montrer notre proposition:
       \TIC{$`G \seq f u : W [ u / x ]$}
     \end{prooftree}
     
-    \case{Subsum}\quad
+    \case{Coerce}\quad
 
     Dans le cas où l'on a un enchainement de règles \irule{Coerce}:
     \begin{prooftree}
@@ -761,7 +762,7 @@ pouvoir prouver la complétude.
       $\wf `G, `D[u/x]$
     \end{itemize}
     
-    \casetwo{PropSet}{Type} 
+    \casetwo{PropSet} 
     La substitution n'a aucun effet et $`G, `D[u/x]$ est bien
     formé par induction.
     
@@ -876,10 +877,10 @@ système de typage vis-à-vis du système déclaratif.
     
     Comme $V' \suba V$, la propriété est vraie.
 
-    \casetwo{Conv}{Subsum}
+    \casetwo{Conv}{Coerce}
     Dans les deux cas on a inductivement $`E T', `G \typea t : T'
     \suba T$. Avec \irule{Conv} on a $T \eqbi S$, donc $T' \suba S$ par
-    le lemme \ref{coercion-conversion}. Pour \irule{Subsum} on a $T \subd S$.
+    le lemme \ref{coercion-conversion}. Pour \irule{Coerce} on a $T \subd S$.
     Par complétude de la coercion, $T \suba S$ et par transitivité de la
     coercion, $T' \suba S$. La propriété est donc bien vérifiée dans les
     deux cas.
