@@ -13,6 +13,16 @@ des trous dont on ne connait que le type des habitants) pour traduire le
 fait qu'il est de la responsabilité de l'utilisateur de prouver que son
 utilisation de la coercion n'était pas incorrecte.
 
+\newcommand{\ip}[2]{\llbracket #1 \rrbracket_{#2}}
+On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
+\begin{itemize}
+\item $\ip{x}{`G} = x, `G(x)$
+\item $\ip{\lambda x : T.v}{`G} = \lambda x : \ip{T}{`G}. \ip{v}{`G, x :
+    \ip{T}{`G}}$
+\item $\ip{f~u}{`G} = \ip{f}{`G}~\ip{u}{`G}$.
+\end{itemize}
+
+
 \subsection{Définition de la réécriture vers \Coq}
 \typenvi
 La traduction transforme une dérivation dans notre système algorithmique
