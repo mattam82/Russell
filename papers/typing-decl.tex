@@ -9,13 +9,13 @@
   \UAX{WfVar}
   {$`G \type A : s$}
   {$\seq `G, x : A$}
-  {$s `: \{ \Set, \Prop, \Type(i) \} `^{} x `; `G$}
+  {$s `: \setproptype{} `^{} x `; `G$}
 }
 
 \def\PropSet{
   \UAX{PropSet}
   {$\wf `G$}
-  {$`G \seq s : \Type(0)$}
+  {$`G \seq s : \Type$}
   {$s `: \{ \Prop, \Set \}$} 
 }
 
@@ -71,7 +71,7 @@
   {$`G \seq T : s_1 $}
   {$`G, x : T \seq U : s_2 $}
   {$`G \seq \Sigma x : T.U : s_3 $}
-  {$(s_1, s_2, s_3) `: \mathcal{R} `^{} x `; `G$} 
+  {$(s_1, s_2, s_3) `: \mathcal{S} `^{} x `; `G$} 
 }
 
 \def\Sum{
@@ -79,7 +79,7 @@
   {$`G \seq \Sigma x : T.U : s$}
   {$`G \seq t : T $}
   {$`G \seq u : U[t/x] $}
-  {$`G \seq (t, u) : \Sigma x : T.U$}
+  {$`G \seq (x := t, u : U) : \Sigma x : T.U$}
   {}
 }
  
@@ -138,8 +138,8 @@
     \vspace{\infvspace}
     \PropSet\DP
 
-    \vspace{\infvspace}
-    \TypeType\DP
+%    \vspace{\infvspace}
+%    \TypeType\DP
 
     \vspace{\infvspace}
     \Var\DP
@@ -178,8 +178,8 @@
 %%    \Conv\DP
     
   \end{center}
-  \label{fig:typing-decl-rules}
   \caption{Calcul de coercion par prédicats - version déclarative}
+  \label{fig:typing-decl-rules}
 \end{figure}
 }
 

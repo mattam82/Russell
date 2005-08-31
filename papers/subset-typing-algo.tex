@@ -1,47 +1,147 @@
-\subsection{Élaboration du système algorithmique \& propriétés}
+\section{Élaboration du système algorithmique \& propriétés}
 \typenva
 
 Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
-syntaxe. 
-Pour la coercion, il y a juste la règle
+syntaxe. Ce n'est pas le cas du système déclaratif, aussi bien pour le
+typage que pour la correction. On va donc rafiner ces systèmes dans
+l'optique d'en extraire un algorithme. On note $\typea$ le jugement de
+typage algorithmique défini figure \ref{fig:typing-algo-rules} et
+$\suba$ le jugement de coercion algorithmique présenté figure
+\ref{fig:subtyping-algo-rules}. Ces deux systèmes sont quelque peu
+éloigné des originaux, néanmoins nous allons montrer qu'ils sont
+corrects et complets vis-à-vis de leur géniteurs. La correction (si l'on
+a une dérivation d'un jugement dans le système algorithmique, alors
+c'est un jugement valide du système déclaratif) est le
+sens le plus facile à montrer, nous allons donc commencer par là. On
+décrira ensuite la méthode de construction des systèmes algorithmiques
+pour aboutir d'une part au théorême de complétude qui montre qu'on peut dériver les
+mêmes jugements (à coercion près) dans le système algorithmique que dans
+le sytème déclaratif et d'autre part à la décidabilité du jugement de
+typage algorithmique.
+
+\subsection{Notations}
+On note $\hnf{x}$ la mise en forme normale de tête de $x$ selon la
+réduction définie précédemment. 
+
+\setboolean{displayLabels}{true}
+\typenva
+\typeaFig
+\typemuaFig
+\subtaFig
+
+\subsection{Correction}
+On montre tout d'abord la correction de la coercion algorithmique qui
+sera nécessaire pour la correction du typage:
+
+\begin{theorem}[Correction de la coercion]
+  \label{correct-coercion}
+  Si $U \suba V$ alors $U \subd V$.
+\end{theorem}
+
+\begin{proof}
+  Les règles du système algorithmique sont un sous-ensemble des règles
+  du système déclaratif.
+\end{proof}
+
+On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
+\ref{fig:mualgo-definition}.
+
+\begin{lemma}[$\mualgo$ et coercion]
+  \label{mu-coercion}
+  Si $\mualgo(T) \eqbi U$ alors $T \suba U$.
+\end{lemma}
+
+\begin{proof}
+  Il suffit de suivre la définition de $\mualgo$. La mise en forme
+  normale de tête est implicite dans notre jugement de
+  coercion. $\mualgo$ est en fait l'application répétée de la règle \irule{SubSub}.
+\end{proof}
+
+\begin{theorem}[Correction du typage]
+  \label{correct-typing}
+  Si $`G \typea t : T$ alors $`G \typed t : T$
+\end{theorem}
+
+\setboolean{displayLabels}{false}
+\begin{proof}
+  \begin{induction}[typing-algo]
+  \item[- \irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
+    \irule{LetIn}, \irule{Sigma}, \irule{Sum}:] règles inchangées.
+    
+    \case{LetSum}
+    On a 
+    \begin{prooftree}
+      \LetSumA
+    \end{prooftree}
+    
+    Par induction, $`G \typed t : S$, et par le lemme \ref{mu-coercion}
+    et la correction de la coercion $S \subd \Sigma x : T. U$.
+    On peut donc dériver $`G \typed t : \Sigma x : T.U$ à l'aide de \irule{Coerce}.
+    On peut directement appliquer \irule{LetSum} à cette prémisse et à
+    l'hypothèse d'induction $`G, x : T, y : U \typed v : V$.
+    
+    \case{App} On a:
+    \def\fCenter{\typea}
+    \begin{prooftree}
+      \AppA
+    \end{prooftree}
+    
+    Par induction, $`G \typed f : T$, et $T \subd \Pi x : V. W$ par le
+    lemme \ref{mu-coercion} et la correction de la coercion.
+    On peut donc dériver $`G \typed f : \Pi x : V.W$ à l'aide de la
+    \irule{Coerce}.
+    Par le lemme \ref{correct-coercion}, et l'hypothèse $`G \typed u :
+    U$, on obtient $`G \typed u : V$ par \irule{Coerce}.
+    Donc, par \irule{App}, on a bien $`G \typed f u : W[u/x]$.
+  \end{induction}  
+\end{proof}
+
+On a prouvé que notre système algorithmique était correct, c'est à dire
+que ses jugements valides sont bien inclus dans ceux du système
+déclaratif, il faut maintenant montrer qu'il les inclus tous (ou presque!).
+
+\begin{subsubsection}{Notations}
+On introduit la notation $`G \typea T, U : s$ pour $`G \typea T : s_1 `^
+`G \typea U : s_2 `^ s_1 = s_2 = s$.
+\end{subsubsection}
+
+\subsection{Complétude et décidabilité}
+On va maintenant repartir des systèmes déclaratifs pour montrer comment
+l'on a construit les systèmes algorithmiques. 
+
+
+On s'intéresse tout d'abord au jugement de coercion.
+Pour rendre le jugement de coercion décidable, il faut traiter la règle
 \irule{SubConv} qu'on peut appliquer à n'importe quel moment et la règle
 \irule{SubTrans} qui n'est pas dirigée par la syntaxe (il faut
-``deviner'' un type $T$). 
+``deviner'' un type $T$). Le système de coercion algorithmique (figure
+\ref{fig:subtyping-algo-rules}) est le même que le système
+déclaratif (figure \ref{fig:subtyping-decl-rules}) mais où l'on n'applique 
+\irule{SubConv} seulement si aucune autre règle ne
+s'applique et sans la rêgle \irule{SubTrans}. 
 
-\subsubsection*{Conversion}
-On note $\suba$ le même système que figure \ref{subtyping-decl-rules} mais
-où l'on n'applique \irule{SubConv} seulement si aucune autre règle ne
-s'applique et sans la rêgle \irule{SubTrans}.
+\subsubsection{Décidabilité et complétude de la coercion}
 On va montrer que les deux systèmes de coercion sont équivalents vis à
 vis de la conversion. On montrera plus tard pourquoi on peut éliminer la
 règle de transitivité.
 
-Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
-
-On note $"->>"_\beta$ la $\beta$-normalisation de tête. On rappelle qu'on
-considère qu'on peut appliquer la normalisation de tête avant tout
+On rappelle qu'on considère qu'on peut appliquer la normalisation de tête avant tout
 application d'une règle de typage ou coercion. Ainsi on peut très bien
 dériver $((\lambda x : \Set.x)~\nat) \suba \subset{x}{\nat}{P}$ puisque 
-$((\lambda x : \Set.x)~\nat) "->>"_\beta \nat$ et $\nat \suba
+$\hnf{((\lambda x : \Set.x)~\nat)} = \nat$ et $\nat \suba
 \subset{x}{\nat}{P}$ par \irule{SubProof} et \irule{SubConv}.
-On note $\typea$ le jugement de typage algorithmique. Le système
-algorithmique correspond au système déclaratif où l'on a enlevé la règle
-de coercion et changé certaines règles pour obtenir un système décidable
-(voir figure \ref{fig:typing-algo-rules}).
 
+Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
 \begin{lemma}
   \label{conversion-pi}
-  Si $\Pi x : T. U \eqbi S$ alors $S "->>"_\beta \Pi x : T'. U'$ avec $T \eqbi T'$ et $U
+  Si $\Pi x : T. U \eqbi S$ alors $\hnf{S} = \Pi x : T'. U'$ avec $T \eqbi T'$ et $U
   \eqbi U'$.
 \end{lemma}
 \begin{lemma}
   \label{conversion-sigma}
-  Si $\Sigma x : T. U \eqbi S$ alors $S "->>"_\beta \Sigma x : T'. U'$ avec $T \eqbi T'$ et $U
+  Si $\Sigma x : T. U \eqbi S$ alors $\hnf{S} = \Sigma x : T'. U'$ avec $T \eqbi T'$ et $U
   \eqbi U'$.
 \end{lemma}
-
-On introduit la notation $`G \typea T, U : s$ pour $`G \typea T : s_1 `^
-`G \typea U : s_2 `^ s_1 = s_2 = s$.
 
 On peut maintenant montrer:
 \begin{lemma}[Conservation de la conversion par coercion]
@@ -55,17 +155,17 @@ On peut maintenant montrer:
   
   \begin{itemize}
   \item[$T `= \Pi x : X.Y$:]
-    Alors $U "->>"_\beta \Pi y : V.W$ et $X \eqbi V$, $Y \eqbi W$
+    Alors $\hnf{U} = \Pi y : V.W$ et $X \eqbi V$, $Y \eqbi W$
     d'après le lemme \ref{conversion-pi}.
     Par induction $X \sub Y$ et $V \sub W$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
   \item[$T `= \Sigma x : X.Y$:]
-    Alors $U "->>"_\beta \Sigma y : V.W$, avec $X \eqbi V$ et $Y \eqbi
+    Alors $\hnf{U} = \Sigma y : V.W$, avec $X \eqbi V$ et $Y \eqbi
     W$. Par induction et application de \irule{SubSigma}.
     
   \item[$T `= \subset{x}{X}{P}$:] 
-    On a alors $U "->>"_\beta \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
+    On a alors $\hnf{U} \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
     \begin{prooftree}
@@ -82,16 +182,127 @@ On peut maintenant montrer:
   \end{itemize}
 \end{proof}
 
-Il faut cependant s'assurer que deux types de sortes
-différentes ne peuvent être identifiés. En effet dans notre système
-la $\beta$-convertibilité n'assure pas que deux termes ont la même
-sorte, par exemple:
-$\typed (\lambda x : \Type. x)~(\nat:\Set) : \Type "->"_\beta \nat : \Set$.
-\TODO{Dans mon système, on ne peut pas faire la coercion de nat à Set}
-
-Le fait que les arguments sont tous les deux sortés avec la même sorte
+Il n'y a pas de problème d'identification de sortes dans ce système,
+contrairement au système $\lambda~C_\leq$ de Gang Chen \cite{ChenPhD},
+puisqu'on a pas de cumulativité. Le seul fait que les arguments sont
+tous les deux sortés avec la même sorte
 avant de dériver le jugement de coercion nous assure que l'on ne fera
-pas d'identification erronée dans les autres règles que \irule{SubConv}.
+pas d'identification erronée.
+
+On va maintenant montrer que la règle \irule{SubTrans} est admissible
+dans notre système algorithmique. On montre ceci en l'éliminant de toute
+dérivation possible la faisant intervenir.
+
+Tout d'abord quelques lemmes nécessaires pour la preuve:
+\begin{lemma}[Coercion et $\mu$]
+  \label{coercion-mu}
+  Si $\Pi x : X.Y \sub U$ alors $\mu(U) \eqbi \Pi x : X'.Y'$ et $X' \sub
+  X$, $Y \sub Y'$.
+  Si $\Sigma x : X.Y \sub U$ alors $\mu(U) \eqbi \Sigma x : X'.Y'$ et $X \sub
+  X'$, $Y \sub Y'$.
+  Pour tout $U$, $U \sub \mu(U)$.
+\end{lemma}
+\begin{proof}
+  Par induction sur les dérivations de $\suba$ et la définition de $\mu$.
+\end{proof}
+
+\begin{lemma}[Coercion et conversion]
+  \label{coercion-conversion}
+  Si $S \eqbi T$ et $T \sub U$ alors $S \sub U$
+\end{lemma}
+
+\begin{proof}
+  Par simple inspection des règles on voit que le jugement ne peut
+  distinguer deux termes $\beta$-équivalents (ils ont forcement les
+  mêmes formes normales de tête).
+\end{proof}
+
+
+\begin{lemma}[Transitivité de la coercion]
+  \label{transitive-coercion}
+  Pour tout $S, T, U$,  si $S \sub T$ et $T \sub U$ alors $S \sub U$.
+\end{lemma}
+
+\begin{proof}  
+  %\TODO{Dans \cite{Pierce:TypeSystems}, voir p. 420}
+  On procède par élimination de la règle \irule{SubTrans} dans toute
+  dérivation de $S \sub U$.
+  
+  \begin{induction}[subtyping-decl]
+
+    \case{SubConv}\quad
+    \begin{prooftree}
+      \AXC{$S \eqbi T$}
+      \UIC{$S \sub T$}
+      \AXC{$T \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+    
+    Par le lemme précédent, on élimine trivialement \irule{SubTrans}.
+
+    \case{SubProd}\quad
+    \begin{prooftree}
+      \AXC{$X' \sub X$}
+      \AXC{$Y \sub Y'$}
+      \BIC{$\Pi~X~Y \sub \Pi~X'~Y'$}
+      \AXC{$\Pi~X'~Y' \sub U$}
+      \BIC{$\Pi~X~Y \sub U$}
+    \end{prooftree}
+    
+    Si $\Pi~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
+    \eqbi \Pi~S~T$ et $S \sub X'$, $Y' \sub T$.
+    Par induction, $S \sub X$ et $Y \sub T$ donc $\Pi~X~Y \sub \Pi~S~T$ 
+    et enfin $\Pi~X~Y \sub U$.
+
+    De facon équivalente pour le second cas.
+
+    \case{SubSigma}\quad
+    \begin{prooftree}
+      \AXC{$X \sub X'$}
+      \AXC{$Y \sub Y'$}
+      \BIC{$\Sigma~X~Y \sub \Sigma~ X'~Y'$}
+      \AXC{$\Sigma~X'~Y' \sub U$}
+      \BIC{$\Sigma~X~Y \sub U$}
+    \end{prooftree}
+    
+    Si $\Sigma~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
+    \eqbi \Sigma~S~T$ et $X' \sub S$, $Y' \sub T$.
+    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma~X~Y \sub
+    \Sigma~S~T$ et enfin $\Sigma~X~Y \sub U$ (lemme \ref{coercion-mu}).
+    
+    De façon équivalente pour le second cas.
+
+    \case{SubProof}\quad
+    \begin{prooftree}
+      \AXC{$S \sub V$}
+      \UIC{$S \sub \subset{x}{V}{P}$}
+      \AXC{$\subset{x}{V}{P} \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+    
+    Si $\subset{x}{V}{P} \sub U$ alors $\mu(U) \eqbi V$.
+    Comme $S \sub V$, par induction, $S \sub \mu(U)$ donc
+    $S \sub U$.
+    
+    De façon équivalente pour le second cas.
+
+    \case{SubSub}
+    Cas identique à \irule{SubProof}
+    
+  \end{induction}
+\end{proof}
+
+\begin{corrolary}[Complétude de la coercion]
+  \label{complete-coercion}
+  Si $U \subd V$ alors $U \suba V$.
+\end{corrolary}
+
+\begin{proof}
+  Les règles des deux systèmes sont les mêmes excepté \irule{SubTrans}
+  qu'on peut éliminer dans le système algorithmique. De plus
+  l'application restreinte de la conversion ne change pas les jugements
+  dérivables (lemme \ref{conversion-coercion}).
+\end{proof}
 
 En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
 d'inférence de $\suba$ donne donc un algorithme pour décider de la relation
@@ -99,37 +310,37 @@ de coercion. L'indéterminisme entre les règles \irule{SubProof} et
 \irule{SubSub} ne pose pas de problème: on peut laisser le choix à 
 l'implémentation puisque le système est confluent.
 
-Cependant, il reste une source importante d'indécidabilité dans le
-système de typage, c'est la règle de coercion. On va l'éliminer du
-système algorithmique après avoir montré que
+\subsubsection{Décidabilité et complétude du typage}
+Le système algorithmique correspond au système déclaratif où l'on a enlevé la règle
+de coercion \irule{Coerce} et changé certaines règles pour obtenir un système décidable
+(voir figure \ref{fig:typing-algo-rules}).
+On va procéder de façon similaire à l'élimination de la transitivité
+pour montrer que la règle \irule{Coerce} n'est plus nécessaire dans le
+système algorithmique. On va montrer en fait que
 toute dérivation de typage utilisant \irule{Coerce} peut se réécrire en
 une dérivation n'utilisant cette règle qu'à sa racine.
+
 \def\subs{\subset{x}{U}{P}}
-Il nous faut changer quelque peu les règles pour obtenir le système
-algorithmique. En particulier, on va utiliser la fonction $\mu0$ de \PVS{}
+Il nous a fallut changer quelque peu les règles pour obtenir le système
+algorithmique. En particulier, on a utilisé la fonction $\mu0$ de \PVS{}
 \cite{PVS-Semantics:TR} renommée $\mu$ ici pour opèrer des
-\emph{décompréhension}. Cette fonction efface les constructeurs de type
+\emph{décompréhensions}. Cette fonction efface les constructeurs de type
 sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
-  "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela va nous permettre de
+  "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela nous permet de
 restreindre l'utilisation du jugement de coercion à l'application.
 
-\subsection*{Sommes dépendantes}
-En inspectant la règle \irule{Sum}, on remarque qu'il n'est pas possible
-d'inférer le type $U$ à partir du seul terme $(t, u)$. Cela
+\subsubsection{Sommes dépendantes}
+On veut pouvoir faire le plus d'inférence possible dans notre sytème
+algorithmique, on a donc introduit une règle \irule{SumInf} qui ne force
+pas à annoter les paires. Dans le cas ou le terme n'est pas annoté, on
+considère donc que la somme n'est pas dépendante. En effet on remarque
+ qu'il n'est pas possible d'inférer le type $U$ à partir du seul terme $(t, u)$. Cela
 nécessiterait de résoudre un problème d'unification d'ordre supérieur
-auquel il n'y a pas de solution la plus générale. On introduit donc dans
-le système algorithmique deux nouvelles règles, dont une (\irule{SumDep})
-permettant d'annoter le terme avec le type $U$ recherché. On considère
-que c'est à l'utilisateur d'annoter suffisament les termes. Par défaut,
-si le terme n'est pas annoté on considère l'objet $(u, v)$ comme une
-paire non-dépendante (\irule{SumInf}).
+auquel il n'y a pas de solution la plus générale. 
+On a donc dans le système algorithmique deux règles pour les sommes, 
+dont une (\irule{SumDep}) permettant d'annoter le terme avec le type $U$ recherché. 
 
-\typenva
-\typeaFig
-\typemuaFig
-\subtaFig
-
-\subsection*{Subsumption}
+\subsubsection{Subsumption}
 \typenva
 
 % On enlève \irule{Coerce} du système et on change la règle 
@@ -137,8 +348,8 @@ paire non-dépendante (\irule{SumInf}).
 % On note $\typea$ le système de typage obtenu. 
 
 La technique que nous allons utiliser pour montrer l'équivalence entre
-les deux systèmes est la suivante: on considère le système algorithmique
-auquel on ajoute la règle de subsumption. On montre que toute dérivation
+les deux systèmes de typage est la suivante: on considère le système algorithmique
+auquel on ajoute la règle de coercion. On montre que toute dérivation
 de ce système se réecrit dans une dérivation du système algorithmique
 sans la règle \irule{Coerce} et on montre ensuite que toute dérivation
 du système déclaratif a une dérivation correspondante dans le système
@@ -192,7 +403,7 @@ On a besoin de quelques lemmes auparavant:
 
 \begin{fact}[Inversion du jugement de bonne formation]
   \label{inversion-wf-a}
-  Si $\typewf `G, x : U$ alors $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
+  Si $\typewf `G, x : U$ alors il existe $s$, $`G \type U : s$ et $s `: \{ \Set, \Prop, \Type(i) \}$.
 \end{fact}
 
 \begin{lemma}[Affaiblissement]
@@ -210,15 +421,14 @@ On a besoin de quelques lemmes auparavant:
     
     \case{Prod}
     Par induction $`G, x : S, `D \type T : s1$ et $`G, x : S, `D,
-    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+    y : T \type U : s2$. On applique \irule{Prod} pour obtenir 
     $`G, x : S, `D \type \Pi x : T.U : s2$. De même pour le reste des règles.
   \end{induction}
 \end{proof}  
 
 La restriction montre que notre notion de coercion est correcte
 vis-à-vis du typage. On peut dériver les mêmes jugements dans des
-contextes où les variables ont des types plus précis, on le démontre de
-nouveau pour le système algorithmique.
+contextes où les variables ont des types équivalents.
 
 \begin{lemma}[Restriction]
   \label{narrowing-a}
@@ -300,7 +510,7 @@ On peut maintenant montrer notre proposition:
   
   \typenva
   \begin{induction}
-    \case{Var} Par de prémisse de la forme $`G \type t : T$, donc
+    \case{Var} Pas de prémisse de la forme $`G \type t : T$, donc
     pas d'application de \irule{Subsum} possible.
     
     \case{Abs} \quad
@@ -396,7 +606,7 @@ On peut maintenant montrer notre proposition:
       \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
     \end{prooftree}
 
-    Si l'on applique la subsumption à droite c'est direct ($V' \sub V$).
+    Si l'on applique la coercion à droite c'est direct ($V' \sub V$).
     
     \case{LetIn}
     De façon similaire, par restriction on obtient la dérivation sans \irule{Coerce}.
@@ -462,12 +672,14 @@ On peut maintenant montrer notre proposition:
 \end{proof}
 
 Par induction, on a donc montré que l'on peut réduire l'utilisation de la règle de
-subsumption à la racine d'une dérivation. On peut ignorer sans perte de généralité 
-l'utilisation de la coercion à la racine de la dérivation, 
+coercion à la racine d'une dérivation. 
+On peut pratiquement ignorer l'utilisation de la coercion à la racine de la dérivation, 
 on fera de toute façon un test de coercion entre le type inféré et le
-type spécifié juste avant la réécriture. On considère maintenant le
-système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
+type spécifié juste avant la réécriture. 
+On considère maintenant le système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 
+Il nous faut montrer des lemmes faisant intervenir la substitution pour
+pouvoir prouver la complétude.
 \begin{lemma}[Substitutivité de $\mualgo$]
   \label{substitutive-mu}
   Si $\mualgo(T) \eqbi \Pi y : U.V$ alors $\mualgo(T[u/x]) \eqbi \Pi y :
@@ -477,7 +689,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
 
 \begin{proof}
   On montre la propriété pour les produits, la preuve est similaire pour
-  les sommes.
+  les sommes. Par induction sur la taille de $T$.
 
   Il suffit de suivre la définition de $\mualgo$.
   Si $T$ est de la forme $\subset{y}{V}{P}$ alors
@@ -539,7 +751,7 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
     Par induction sur $`D$.
     \begin{itemize}
     \item[\protect{$`D = []$}]
-      On a alors $`G \typea U : s$ donc $\wf `G$ et triviallement, $\wf
+      On a alors $`G \typea U : s$ donc $\wf `G$ et trivialement, $\wf
       `G, `D[u/x]$.
 
     \item[\protect{$`D = `D', y : T$}]
@@ -597,165 +809,9 @@ système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
   Par le lemme précédent $T[u/x] \suba U[u/x]$.
 \end{proof}
 
-\begin{fact}[Symétrie de la coercion]
-  La relation $\sub$ est symétrique.
-\end{fact}
 
-\begin{lemma}[Coercion et $\mu$]
-  \label{coercion-mu}
-  Si $\Pi x : X.Y \sub U$ alors $\mu(U) \eqbi \Pi x : X'.Y'$ et $X' \sub
-  X$, $Y \sub Y'$.
-  Si $\Sigma x : X.Y \sub U$ alors $\mu(U) \eqbi \Sigma x : X'.Y'$ et $X \sub
-  X'$, $Y \sub Y'$.
-  Pour tout $U$, $U \sub \mu(U)$.
-\end{lemma}
-\begin{proof}
-  Par induction sur les dérivations de $\suba$ et la définition de $\mu$.
-\end{proof}
-
-\begin{lemma}[Coercion et conversion]
-  \label{coercion-conversion}
-  Si $S \eqbi T$ et $T \sub U$ alors $S \sub U$
-\end{lemma}
-
-\begin{proof}
-  Par simple inspection des règles on voit que le jugement ne peut
-  distinguer deux termes $\beta$-équivalents (ils ont forcement les
-  mêmes formes normales de tête). \TODO{Check}
-\end{proof}
-
-\begin{lemma}[Transitivité de la coercion]
-  \label{transitive-coercion}
-  Pour tout $S, T, U$,  si $S \sub T$ et $T \sub U$ alors $S \sub U$.
-\end{lemma}
-
-\begin{proof}  
-  \TODO{Dans \cite{Pierce:TypeSystems}, voir p. 420}
-  On procède par élimination de la règle \irule{SubTrans} dans toute
-  dérivation de $S \sub U$.
-  
-  \begin{induction}[subtyping-decl]
-
-    \case{SubConv}\quad
-    \begin{prooftree}
-      \AXC{$S \eqbi T$}
-      \UIC{$S \sub T$}
-      \AXC{$T \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-    
-    Par le lemme précédent, on élimine trivialement \irule{SubTrans}.
-
-    \case{SubProd}\quad
-    \begin{prooftree}
-      \AXC{$X' \sub X$}
-      \AXC{$Y \sub Y'$}
-      \BIC{$\Pi~X~Y \sub \Pi~X'~Y'$}
-      \AXC{$\Pi~X'~Y' \sub U$}
-      \BIC{$\Pi~X~Y \sub U$}
-    \end{prooftree}
-    
-    Si $\Pi~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
-    \eqbi \Pi~S~T$ et $S \sub X'$, $Y' \sub T$.
-    Par induction, $S \sub X$ et $Y \sub T$ donc $\Pi~X~Y \sub \Pi~S~T$ 
-    et enfin $\Pi~X~Y \sub U$.
-
-    De facon équivalente pour le second cas.
-
-    \case{SubSigma}\quad
-    \begin{prooftree}
-      \AXC{$X \sub X'$}
-      \AXC{$Y \sub Y'$}
-      \BIC{$\Sigma~X~Y \sub \Sigma~ X'~Y'$}
-      \AXC{$\Sigma~X'~Y' \sub U$}
-      \BIC{$\Sigma~X~Y \sub U$}
-    \end{prooftree}
-    
-    Si $\Sigma~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mu(U)
-    \eqbi \Sigma~S~T$ et $X' \sub S$, $Y' \sub T$.
-    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma~X~Y \sub
-    \Sigma~S~T$ et enfin $\Sigma~X~Y \sub U$ (lemme \ref{coercion-mu}).
-    
-    De façon équivalente pour le second cas.
-
-    \case{SubProof}\quad
-    \begin{prooftree}
-      \AXC{$S \seq V$}
-      \UIC{$S \seq \subset{x}{V}{P}$}
-      \AXC{$\subset{x}{V}{P} \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-    
-    Si $\subset{x}{V}{P} \sub U$ alors $\mu(U) \eqbi V$.
-    Comme $S \seq V$, par induction, $S \seq \mu(U)$ donc
-    $S \sub U$.
-    
-    De façon équivalente pour le second cas.
-
-    \case{SubSub}
-    Cas identique à \irule{SubProof}
-    
-  \end{induction}
-\end{proof}
-
-\begin{corrolary}[Complétude de la coercion]
-  \label{complete-coercion}
-  Si $U \subd V$ alors $U \suba V$.
-\end{corrolary}
-
-\begin{proof}
-  Les règles des deux systèmes sont les mêmes excepté \irule{SubTrans}
-  qu'on peut éliminer dans le système algorithmique. De plus
-  l'application restreinte de la conversion ne change pas les jugements
-  dérivables (lemme \ref{conversion-coercion}).
-\end{proof}
-
-\begin{theorem}[Correction de la coercion]
-  \label{correct-coercion}
-  Si $U \suba V$ alors $U \subd V$.
-\end{theorem}
-
-\begin{proof}
-  Les règles du système algorithmique sont un sous-ensemble des règles
-  du système déclaratif.
-\end{proof}
-
-\begin{theorem}[Correction du typage]
-  \label{correct-typing}
-  Si $`G \typea t : T$ alors $`G \typed t : T$
-\end{theorem}
-
-\setboolean{displayLabels}{false}
-\begin{proof}
-  \begin{induction}[typing-algo]
-  \item[\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
-    \irule{LetIn}, \irule{Sigma}, \irule{Sum}:] règles inchangées.
-    
-    \case{LetSum}
-    On a 
-    \begin{prooftree}
-      \LetSumA
-    \end{prooftree}
-    
-    Par induction, $`G \typed t : S$, et par correction de la coercion $S \subd \Sigma x : T. U$.
-    On peut donc dériver $`G \typed t : \Sigma x : T.U$ à l'aide de \irule{Coerce}.
-    On peut directement appliquer \irule{LetSum} à cette prémisse et à
-    l'hypothèse d'induction $`G, x : T, y : U \typed v : V$.
-    
-    \case{App} On a:
-    \def\fCenter{\typea}
-    \begin{prooftree}
-      \AppA
-    \end{prooftree}
-    
-    Par induction, $`G \typed f : T$, et $T \subd \Pi x : V. W$.
-    On peut donc dériver $`G \typed f : \Pi x : V.W$ à l'aide de la
-    subsumption.
-    Par le lemme \ref{correct-coercion}, et l'hypothèse $`G \typed u :
-    U$, on obtient $`G \typed u : V$ par \irule{Subsum}.
-    Donc, par \irule{App}, on a bien $`G \typed f u : W[u/x]$.
-  \end{induction}  
-\end{proof}
+On a maintenant tout les ingrédients pour montrer la complétude de notre
+système de typage vis-à-vis du système déclaratif.
 
 \setboolean{displayLabels}{true}
 \begin{lemma}[Complétude du typage]

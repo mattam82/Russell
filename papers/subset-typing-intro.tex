@@ -4,7 +4,6 @@ auquel nous souhaitons int\'egrer un langage de programmation plus souple
 que le langage actuellement utilis\'e.
 
 \section{Pr\'esentation de \Coq}
-
 \Coq~est un assistant de preuve dont la première version date de 1985,
 et qui est aujourd'hui d\'evelopp\'e dans le projet \PCRI{} \LogiCal{} (INRIA, LIX,
 LRI, CNRS). Originellement bas\'e sur le Calcul des Constructions (\CoC),
@@ -14,8 +13,8 @@ de programmes ou encore des proc\'edures de d\'ecision pour automatiser la
 preuve.
 
 Le d\'eveloppement de \Coq~est intimement li\'e à l'isomorphisme de {\sc
-Curry-Howard} qui montre le lien entre logique intuitionniste et calcul. Cet
-isomorphisme \'etablit qu'\'elaborer une preuve du calcul propositionnel
+Curry-Howard} qui montre le lien entre logique intuitionniste et
+calcul. De cet isomorphisme, on peut déduire qu'\'elaborer une preuve du calcul propositionnel
 intuitionniste est \'equivalent à \'ecrire un terme du
 \lc~simplement typ\'e (\lcst). Par exemple, montrer que $A "=>" A$ pour un
 certain $A$ revient à \'ecrire la fonction identit\'e $\lambda x : A. x$ qui
@@ -48,7 +47,7 @@ proc\'edures de d\'ecision pour l'arithm\'etique, etc \ldots).
 Les tactiques utilis\'ees pour cr\'eer des preuves ne sont en fait
 qu'une interface au-dessus du noyau de \Coq{} qui se r\'eduit à un typeur
 pour \CCI. A la fin d'une preuve, on a en effet construit un terme 
-($\lambda x : A. x$ dans notre exemple) que l'on va soumettre au typeur
+($\lambda H : A. H$ dans notre exemple) que l'on va soumettre au typeur
 dont le but est de v\'erifier qu'il est bien de type $A "->" A$. Les
 tactiques peuvent cependant être arbitrairement complexes (résolution
 d'équations de l'arithmétique, réecritures, etc...).
@@ -57,9 +56,10 @@ d'équations de l'arithmétique, réecritures, etc...).
 D'un point de vue preuve de programmes, on a donc un environnement qui
 permet de v\'erifier qu'un programme (un terme du calcul) v\'erifie une
 certaine sp\'ecification (son type). Les types d\'ependants permettent de
-sp\'ecifier fortement les termes. Par exemple, la fonction $\sdef{div} :
-\nat "->" \nat "->" \nat * \nat$ de \ML{} est plus fortement sp\'ecifi\'ee en 
-\Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat
+sp\'ecifier fortement les termes. Par exemple, la fonction de division
+euclidienne (qui renvoie le quotient et le reste de la division de son
+premier argument par son second) $\sdef{div} : \nat "->" \nat "->" \nat * \nat$ de \ML{} est 
+plus fortement sp\'ecifi\'ee en \Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat
 * \nat$.
 Seulement, on ne peut pas \'ecrire simplement un programme \ML{} et
 donner sa sp\'ecification forte. Comme on a enrichi les types, on doit 
@@ -70,17 +70,30 @@ v\'erifier m\'ecaniquement la correction (annotations,...). Par exemple,
  si l'on veut appeler $\sref{div}$ sur $1$ et $n$ (pour $n : \nat$), il
 faut construire un terme $\sref{div}~1~(\sref{elt}~(\lambda x : \nat
 "->" x \neq 0)~x~p)$ o\`u $p$ est une preuve de $n \neq 0$. 
-En effet, en \Coq~on a:
+
+Nous allons nous intéresser particulièrement dans la suite au type
+sous-ensemble. Ce type est familier du mathématicien puisqu'on le
+retrouve partout en théorie des ensembles, et il est tristement célèbre
+puisque c'est en l'utilisant que Bertrand Russell à découvert le
+paradoxe éponyme en considérant le sous-ensemble particulier $\{x `| x
+`; x\}$ (il a ensuite étudié la première théorie des types en
+mathématiques !). Un type sous-ensemble est composé d'un type pour
+l'ensemble de départ et d'une propriété pouvant porter sur les objets de
+ce type.
 \begin{definition}[Type sous-ensemble]
   \label{subset-type-def}
-  $\subset{x}{T}{P}$ est le type des termes de type $T$ v\'erifiant la
+  En \Coq{}, $\subset{x}{T}{P}$ est le type des termes de type $T$ v\'erifiant la
   propri\'et\'e $P$.
 \end{definition}
 
-Un objet de type $\subset{x}{T}{P}$ peut être vu comme une paire
-$(x,p)$ ou $x$ est un objet de type $T$ (le témoin) et $p$ une preuve
-de $P[t/x]$. Seulement, le typeur a besoin de plus d'information,
-l'annotation $\lambda x : \nat "->" x \neq 0$ est nécessaire pour avoir
+Informellement, un objet de type $\subset{x}{T}{P}$ peut être vu comme
+une paire $(x,p)$ où $x$ est un objet de type $T$ (le témoin) et $p$ une preuve
+de $P[t/x]$. Seulement, en \Coq{}, le type sous-ensemble est codé par
+inductif avec un unique constructeur $\sref{elt}$ prenant en arguments
+le type du témoin $T$, la propriété $P$ puis le témoin $t$ et la preuve
+$p$. 
+Le typeur a besoin de plus d'information, l'annotation $\lambda x : \nat
+"->" x \neq 0$ de notre exemple est nécessaire pour avoir
 un système d'inférence décidable (on ne peut
 pas inf\'erer la propriété $P$ à partir de sa preuve $p$ puisqu'il est de type
 $P[t/x]$). On voit donc ici que l'on doit rajouter de nombreuses
@@ -100,9 +113,7 @@ difficult\'es à d\'evelopper en \Coq{} que nous allons \'etudier maintenant.
 \subsection{Un langage trop expressif?} 
 
 Le langage de \CCI{} permet de bien sp\'ecifier des fonctions non
-triviales, par exemple, si l'on d\'efinit une fonction de division
-euclidienne en \ML{} elle aurait le type: $  \valml~\sdef{div} : \nat "->" \nat "->"
-\nat * \nat$. En \Coq, on peut d\'efinir:
+triviales, par exemple, on peut spécifier très fortement notre division euclidienne:
 \[\Definition~\sdef{div} : \forall a : \nat, \forall b : \nat,
 b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r~\} \}\]
 
@@ -113,16 +124,14 @@ correspondant à \sref{div} est nettement plus long (de l'ordre de 60 lignes),
 et ne peut simplement pas \^etre \'ecrit d'une traite 
 sans une expertise approfondie. Pour rem\'edier à ce
 problème, on utilise des tactiques qui permettent d'\'ecrire la preuve/programme
-incr\'ementalement (\note{figure ici?}voir figure \ref{fig:euclid-script}
+incr\'ementalement (voir figure \ref{fig:euclid-script}
 page \pageref{fig:euclid-script}). L'inconv\'enient de cette
 m\'ethode est que l'on n'obtient pas toujours le programme d\'esir\'e
 au d\'epart, puisque les tactiques cachent profond\'ement leur effet sur le
-terme de preuve. Certaines techniques de r\'e\'ecriture peuvent aussi
-g\'en\'erer des termes de complexit\'e algorithmique bien moins optimale que
-ce que l'utilisateur \'ecrirait. Cependant ce mode de fonctionnement est
+terme de preuve et donc le programme extrait. Cependant ce mode de fonctionnement est
 utile et utilis\'e par la majorit\'e des utilisateurs de \Coq{} avec succès
-(certification d'un compilateur \C, th\'eorème des quatres couleurs
-\cite{Gonthier4col}, \ldots).
+(certification d'un compilateur (en partant de code faiblement
+spécifié) \cite{LeroyCertCompDraft}, th\'eorème des quatres couleurs \cite{Gonthier4col}, \ldots).
 
 \subsection{M\'elange logique et calcul}
 Une difficult\'e essentielle lorsque l'on veut permettre à des
@@ -154,7 +163,8 @@ s'agit dans ces travaux de faire un langage dont l'inf\'erence est d\'ecidable, 
 de restreindre les types d\'ependants à des domaines o\`u l'on peut faire de
 la preuve automatique (\DML{}) ou bien d'accroître la puissance du langage
 pour rendre l'utilisation des types d\'ependants plus ais\'ee (\Cayenne{}
-a la r\'ecursivit\'e g\'en\'erale par exemple) mais en perdant l'idée de
+a la r\'ecursivit\'e g\'en\'erale par exemple, comme n'importe quel
+langage de programmation usuel) mais en perdant l'idée de
 correction (et en perdant même la décidabilité du typage pour
 \Cayenne{}). 
 
@@ -186,7 +196,7 @@ appels et de vérifier ensuite que les arguments sont valides, ce qui est
 beaucoup plus naturel lorsque l'on programme.
 Li\'ee à l'extraction interne qui
 a disparu dans les dernières versions de \Coq{} (remplac\'ee par la
-contribution de Pierre Letouzey \cite{LetouzeyPhD}), elle n'est plus 
+contribution de Pierre Letouzey \cite{LetouzeyPhD}), la tactique \Program{} n'est plus 
 maintenue aujourd'hui.
 
 \subsection{Types sous-ensemble}

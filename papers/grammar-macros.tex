@@ -3,11 +3,13 @@
     `a & \Coloneqq & x \\
     & | & \funml{}~x~:~`t "=>" `a \\
     & | & `a~`a \\ 
+    & | & `a~`t \\
     & | & \text{\emph{constante}} \\
-    & | & (`a,~`a) \\
+% & | & (`a,~`a) \\
     & | & (x \coloneqq `a,~`a~: `t) \\
     & | & \letml~x = `a ~\inml~`a \\
     & | & \letml~(x, y) = `a ~\inml~ `a
+
 %    & | & \ifml~`a~\thenml~`a~\elseml~`a
   \end{array}$}
 
@@ -30,14 +32,15 @@
     `t & \Coloneqq & x \\
     & | & `t~`t \\
     & | & `t~`a \\
+    & | & \lambda{}~x~:~`t "=>" `t \\
     & | & \Pi x : `t. `t \\
     & | & \Sigma x : `t. `t \\
-    & | & `t * `t \\
+%    & | & `t * `t \\
     & | & \subset{x}{`t}{`t} \\
     & | & \Set \\
     & | & \Prop \\
     & | & \Type \\
-    & | & \text{{\tt constante}} 
+    & | & \text{\emph{constante}} 
 %    & & \\
 %    \text{{\tt Inductive}} & \Coloneqq & ident
   \end{array}$}

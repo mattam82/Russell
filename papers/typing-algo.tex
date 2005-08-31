@@ -36,7 +36,7 @@
 }
 
 \def\typeaFig{
-\begin{figure}[ht]
+\begin{figure}[t]
   \begin{center}
     \def\fCenter{\wf}
     \def\type{\typea}
@@ -50,8 +50,8 @@
     \def\fCenter{\typea}
     \vspace{\infvspace}
     \PropSet\DP
-    \quad
-    \TypeType\DP
+%    \quad
+%    \TypeType\DP
     
     \vspace{\infvspace}
     \Var\DP
@@ -71,8 +71,8 @@
     \vspace{\infvspace}
     \SigmaR\DP
 
-    \vspace{\infvspace}
-    \SumInfA\DP
+%    \vspace{\infvspace}
+%    \SumInfA\DP
 
     \vspace{\infvspace}
     \SumDepA\DP
@@ -83,19 +83,21 @@
     \vspace{\infvspace}
     \Subset\DP
   \end{center}
-  \label{fig:typing-algo-rules}
   \caption{Calcul de coercion par prédicats - version algorithmique}
+  \label{fig:typing-algo-rules}
 \end{figure}
 }
 
 \def\typemuaFig{
-\begin{figure}[ht]
-  \begin{eqnarray*}
-    \subset{x}{U}{P} & "=>" & \mualgo~U \\
-    x                & "=>" & x
-  \end{eqnarray*}
-  \label{fig:mualgo-definition}
-  \caption{Définition de $\mualgo$}
+  \begin{figure}[ht]
+    \begin{eqnarray*}
+      \mualgo'(\subset{x}{U}{P}) & "=>" & \mualgo'(\downarrow{U}) \\
+      \mualgo'(x)                & "=>" & x \\
+      \\
+      \mualgo(x) & "=>" & \mualgo' (\downarrow{x})
+    \end{eqnarray*}
+    \caption{Définition de $\mualgo$}
+    \label{fig:mualgo-definition}
 \end{figure}
 }
 

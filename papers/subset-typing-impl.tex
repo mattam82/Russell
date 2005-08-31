@@ -1,14 +1,26 @@
 \section{Génération des obligations de preuve}
-On a maintenant un système de typage décidable et l'on veut désormais
-traduire ses dérivations dans \CCI{} dont le jugement de typage est $\typec$. 
+On veut désormais traduire les dérivations du système algorithmiques
+dans \CCI{} (modifiant aussi les termes de \lng{}) dont le jugement 
+de typage est $\typec$. 
+Les termes de \lng{} ne sont pas directement typables dans \CCI{}
+puisque nous avons permis d'utiliser des objets comme s'ils avaint des
+types différents de leurs types originaux avec la règle de coercion. Il
+va donc falloir maintenant expliciter ces coercions pour obtenir des
+termes typables dans \CCI{}. Cependant, on ne peut pas créer un terme
+complet à partir de notre dérivation, puisqu'on ne peut pas inférer des
+preuves arbitraires. On utilise donc des existentielles (intuitivement
+des trous dont on ne connait que le type des habitants) pour traduire le
+fait qu'il est de la responsabilité de l'utilisateur de prouver que son
+utilisation de la coercion n'était pas incorrecte.
 
 \subsection{Définition de la réécriture vers \Coq}
 \typenvi
 La traduction transforme une dérivation dans notre système algorithmique
-vers une dérivation de \CCI{} valide. Le jugement 
+vers une dérivation de \CCI{} valide (figure \ref{fig:typing-impl-rules}). Le jugement 
 $\timpl{`G}{t}{T}{`G'}{t'}{T'}$ se lit: on transforme le séquent
 $`G \typea t : T$ (système algorithmique) en $`G' \typec t' : T'$
-(\Coq). Le jugement $\subimpl{`G}{c}{T}{U}$ se lit: la coercion de $T$ à
+(\Coq). Le jugement $\subimpl{`G}{c}{T}{U}$ (figure
+\ref{fig:subtyping-impl-rules}) se lit: la coercion de $T$ à
 $U$ est $c$ et on construit le séquent $`G \typec c : T "->" U$.
 La traduction est un homomorphisme (elle conserve la structure de la
 dérivation et se rappelle récursivement) excepté pour l'application, ce qui
@@ -32,7 +44,7 @@ objets de type sous-ensemble $\subset{x}{T}{P}$ sont codés par un terme
 de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
 (un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
  (de type $P[t/x]$). Il faut donc faire exactement
-une projection pour atteindre par exemple la fonction d'un objet de type
+une projection pour atteindre par exemple la fonction à partir d'un objet de type
  $\subset{f}{\nat "->" \nat}{f~0 \neq 0}$.
 
 Le jugement de coercion $U \suba V$ nous assure qu'il est possible de

@@ -1,18 +1,67 @@
+\section{Le langage \lng{}}
+Le langage que nous voulons est très proche de \ML{}, plus les annotations
+nécessaires pour avoir un typage précis et décidable. On étudie ici une
+restriction de \ML{}, purement fonctionnelle et sans filtrage, qu'on
+étendra dans la suite de notre travail. On n'a donc pas de types
+inductifs mais on considère les types $\Sigma$, généralisation des
+tuples de \ML{} formés par l'opérateur $*$.
+
+\subsection{Syntaxe}
+La syntaxe (figure \ref{fig:syntax}) est directement inspirée des langages fonctionnels.
+On part du \lc{} (variables, abstraction et application) puis l'on
+ajoute des constantes (pour les entiers, booléens, etc...) ainsi que les
+couples. La syntaxe $(x := `a, t : `t)$ permet de
+créer des paires dépendantes, de type $\Sigma x : `t. `t$. On peut aussi
+appliquer un type à un terme pour instancier une fonction polymorphe par exemple.
+
+Du côté des types, on a tout d'abord les types simples (constantes,
+flèche, produit cartésien) qui sont des cas particuliers du produit ($\Pi$) et
+de la somme ($\Sigma$) dépendants. Les variables introduites par ces
+types peuvent être utilisées lors des applications de types. On
+peut de plus abstraire sur les types avec le $\lambda$ (polymorphisme)
+et les sortes.
+Enfin on peut appliquer un type à un terme ($`t~`a$). Dans la suite, 
+les règles sont données avec l'idée
+qu'on fait les réductions de tête nécessaires pour obtenir un type
+d'une certaine forme (produit, somme, sous-ensemble, etc \ldots).
+
+%\vspace{-0.5cm}
+\begin{figure}[ht]
+  \begin{center}
+    \subfigure[Termes]{\termgrammar}\quad
+    \subfigure[Types]{\typegrammar}
+  \end{center}
+  \caption{Syntaxe}
+  \label{fig:syntax}
+\end{figure}
+% \vspace{-1cm}
+
 \subsection{Sémantique}
 \typenvd
 
 \typedFig
 \subtdFig
 
-La sémantique du langage nous est donnée par un système de typage. Le
+La sémantique du langage nous est donnée par un système de typage
+(figure \ref{fig:typing-decl-rules} page \pageref{fig:typing-decl-rules}). Le
 jugement de typage est défini inductivement par un ensemble de règles
-d'inférence. Dans
-notre cas ce sont les règles du Calcul de Constructions (\CC{})
+d'inférence. 
+Dans notre cas ce sont les règles du \CCfull{} (\CC{})
 étendu avec les $\Sigma$-types auxquelles on a ajouté une règle de
 coercion (\irule{Coerce}, figure \ref{fig:typing-decl-rules}) que l'on trouve classiquement dans les systèmes avec
 sous-typage avec le nom de subsumption. 
-La relation $\mathcal{R}$ définissant les produits et sommes formables
-dans le système est définie inductivement par les règles suivantes:
+Le jugement $\Gamma \typed t : T$ se lit: dans l'environnement $\Gamma$,
+$t$ est de type $T$.
+
+\begin{remark}
+  En pratique, les types du Calcul des Constructions ne sont pas
+  toujours en forme normale et il peut donc être nécessaire de les
+  réduire (en tête seulement) pour vérifier des jugements du genre: 
+  $`G \seq t : \Pi x : T.V$.
+\end{remark}
+
+La relation $\mathcal{R}$ définissant les produits formables
+dans le système est définie par les règles suivantes:
 \[\begin{array}{cccll}
   s_1 & s_2 & s_3 & \text{Habitants} & \text{Exemple} \\
   \hline
@@ -23,33 +72,45 @@ dans le système est définie inductivement par les règles suivantes:
   \Pi n : \nat. \Pi l : \text{list}~n. \text{length}~l = n \\
   \Prop & \Set & \Set & \text{Fonctions dépendants de propositions} &
   \Pi n : \nat, n > 0 "->" \Pi l : \text{list}~n "->" A \\
-  \Type(i) & \Prop & \Prop & \text{Imprédicativité de } \Prop & \Pi x : Prop. x `V `! x \\
-  \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
-    \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
+  \Type & \Prop & \Prop & \text{Imprédicativité de } \Prop & \Pi x : Prop. x `V `! x \\
+%  \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
+%    \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
 \end{array}\]
+
+La relation $\mathcal{S}$ définissant les sommes formables
+dans le système est définie inductivement par les règles suivantes:
+\[\begin{array}{cccll}
+  s_1 & s_2 & s_3 & \text{Habitants} & \text{Exemple} \\
+  \hline
+  \Prop & \Prop & \Prop & \text{Couples de propositions} & \Sigma x :  "->" x = 0  \\
+  \Set & \Set & \Set & \text{Couples d'objets} & \nat * \nat \\
+\end{array}
+\]
+
+Intuitivement, c'est le type sous-ensemble $\subset{x}{T}{P}$ qui permet
+de faire des couples $\Set,\Prop,\Set$. Les types $\Sigma x : U.V$ où $U
+: \Prop$ et $V : \Set$ n'ont pas d'intérêt.
 
 La règle \irule{Coerce} formalise l'idée que 
 l'on peut utiliser un terme de type $T$ à la place d'un terme de type
-$U$ si $T$ et $U$ sont dans une certaine relation. 
-Le jugement $\Gamma \typed t : T$ se lit: dans l'environnement $\Gamma$,
-$t$ est de type $T$.
-
-\begin{remark}
-  En pratique, les types du Calcul des Constructions ne sont pas
-  toujours en forme normale et il peut donc être nécessaire de les
-  réduire pour vérifier des jugements du genre: 
-  $`G \seq t : \Pi x : T.V$.
-\end{remark}
-
-\CC{} contient une règle de typage
+$U$ si $T$ et $U$ sont dans une certaine relation. C'est là
+qu'interviendront les types sous-ensemble. \CC{} contient une règle de typage
 similaire à \irule{Coerce}, la règle de conversion (\irule{Conv}), qui
 dit essentiellement que deux types
 $`b$-convertibles (on rappelle que l'on peut calculer dans les types
 puisqu'on a l'abstraction, l'application, etc...) sont équivalents.
 On peut directement intégrer cette relation de $`b$-convertibilité à notre
-système de coercion comme montré figure \ref{subtyping-decl-rules}
+système de coercion comme montré figure \ref{fig:subtyping-decl-rules}
 (\irule{SubConv}), à condition d'avoir l'inclusion
 $`=_\beta~\subseteq~\subd + \text{\irule{SubConv}}$.
+En fait notre notion de réduction est un peu plus large que $\beta$
+puisqu'on peut réduire les $\sref{let}$:
+$\letml~x = t~\inml~v$ se réduit en $v[t/x]$ et 
+$\letml~(x,y) = t~\inml~v$ se réduit en $v[\pi_1~t/x][\pi_2~t/y]$. En
+pratique ces constructions sont du sucre syntaxique pratiques au niveau
+du typage (on peut inférer le type de $t$), mais sont inessentielles au
+niveau du calcul. La première est équivalente au redex $(\lambda x.v)~t$
+et la deuxième à $(\lambda~x.\lambda~y.v)~(\pi_1~t)~(\pi_2~t)$.
 
 \subsubsection{Jugement de coercion}
 Notre système de coercion par prédicats permet à l'utilisateur
@@ -59,13 +120,14 @@ A l'inverse, on permet aussi d'utiliser une valeur de type
 $\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
 $V$ si $U$ est coercible vers $V$. Notre jugement de coercion est donc
 symétrique et laisse beaucoup de liberté au moment du codage. Par
-exemple, si l'on avait le filtrage dans notre système, on pourrait
+exemple, si l'on avait le filtrage dans notre langage \lng{}, on pourrait
 aisément dériver l'absurde:
 $x : \nat \typed \matchml~x~:~\subset{x}{\nat}{`_}~\withml~\textbf{elt}~\_~\_~p "=>" p :
 `_$. Seulement, lors de la traduction de la dérivation de coercion $\nat
-\subd \subset{x}{\nat}{`_}$, l'utilisateur aura a résoudre une obligation
+\subd \subset{x}{\nat}{`_}$ (nécessaire pour traduire l'abus de notation
+$x : \subset{x}{\nat}{`_}$), l'utilisateur aura a résoudre une obligation
 de preuve de $`_$. On repose donc toujours sur la cohérence du Calcul
-des Constructions.
+des Constructions. 
 
 Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire des
 coercions dans les types composites. Classiquement, la règle pour le 
@@ -77,15 +139,6 @@ leurs composantes sont coercibles deux-à-deux). Le sens des coercions
 n'a pas d'importance dans le système déclaratif puisqu'il est symétrique
 mais il est essentiel lors de la création des coercions que nous
 décrirons plus tard.
-
-Une première propriété montrée habituellement sur le sous-typage est
-qu'il est transitif, c'est-à-dire:
-\begin{fact}[Transitivité de la coercion]
-  Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
-\end{fact}
-\begin{proof}
-  Par \irule{SubTrans}
-\end{proof}
 
 La règle \irule{SubTrans} assure que l'on a un système compositionel. Il y a ici une
 analogie avec l'élimination des coupures dans les systèmes logiques, où

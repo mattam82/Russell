@@ -26,9 +26,12 @@ introduction, lorsque c'est un cast, on applique l'identit\'e et ainsi de
 suite. Intuitivement, la s\'equence de tactiques engendr\'ee va construire
 le terme de d\'epart implicitement. 
 
-La tactique \eterm{} fonctionne diff\'erement. \`A partir d'un terme $t$ contenant des existentielles, \eterm{} va g\'en\'eraliser le terme par
-rapport \`a celles-ci, cr\'eant ainsi un objet $\lambda ex_1 : T_1, \ldots, ex_n :
-T_n, t[?_1 := ex_1, \ldots, ?_n := ex_n]$. 
+La tactique \eterm{} fonctionne diff\'erement. \`A partir d'un terme $t$
+contenant des existentielles, \eterm{} va g\'en\'eraliser le terme par
+rapport \`a celles-ci, et généraliser chaque existentielle par rapport à
+son contexte, cr\'eant ainsi un objet $(\lambda ex_1 : T_1, \ldots, ex_n :
+T_n, t[?_1 := ex_1, \ldots, ?_n := ex_n])$, ou chaque $ex_i$ est appliqué
+aux variables introduites dans son contexte par les abstractions.
 Habituellement, on propose $t$ comme habitant d'un type $T$ donn\'e (le
 but), par exemple on peut proposer $\lambda x : \nat.x$ comme preuve du
 but $\nat "->" \nat$.
@@ -59,8 +62,8 @@ r\'eecrire tout terme contenant des existentielles comme un terme
 
 \subsection{Traitement de la r\'ecursion}
 Lorsque l'on d\'eveloppe un programme r\'ecursif dans un syst\`eme tel que
-\Coq, on est forc\'e de fournir une preuve de terminaison de son
-algorithme. Pour cela, on montre g\'en\'eralement qu'on a un ordre bien
+\Coq, on est forc\'e de fournir une preuve de sa terminaison. Pour cela,
+on montre g\'en\'eralement qu'on a un ordre bien
 fond\'e sur le type de l'argument de r\'ecursion et que chaque appel respecte
 cet ordre. Nous avons ajout\'e des facilit\'es d'\'ecriture de fonctions
 r\'ecursives \`a notre langage ; on ajoute les existentielles
@@ -77,6 +80,8 @@ conditionnelle figure \ref{fig:euclid-subtac}). A long terme on devrait
 pouvoir traiter les inductifs dans $\Set$ pr\'edicatif, qui ne peuvent 
 embarquer des propositions qu'en utilisant des types sous-ensemble avec
 le m\^eme m\'ecanisme de coercion et conserver l'inf\'erence.
+
+\TODO{langage de Subtac}
 
 %%% Local Variables: 
 %%% mode: latex

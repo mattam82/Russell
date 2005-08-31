@@ -25,7 +25,7 @@
   programmes sont plus difficiles à écrire et maintenir que dans un pur
   langage de programmation de type \ML, puisqu'ils mélangent les parties
   logiques et calculatoires. Pour remédier à
-  ce problème, on propose un nouveau langage de description de programes,
+  ce problème, on propose un nouveau langage de description de programmes,
   s'intégrant parfaitement à l'environnement de développement existant,
   qui permet de donner dans un premier temps le code et la spécification
   du programme et d'engendrer ensuite ses conditions de correction.
@@ -49,6 +49,16 @@ d'extraire un programme correct par construction dans un langage de type
 \Coq{} et ouvre la voie à la réalisation de travaux plus complexes par
 des utilisateurs non-experts. Cela constitue la première étape vers un
 environnement de programmation sûre utilisable dans \Coq. 
+
+\section*{Travaux futurs}
+Nous avons de multiples directions dans lesquelles étendre notre
+système. Le support des inductifs, des univers cumulatifs
+et des définitions dans les contextes semblent des problèmes techniques
+abordables. La possibilité d'utiliser \lng{} dans
+d'autres parties de \Coq{} (énoncés de lemmes, termes de tactiques) est
+aussi un objectif intéressant. Modifier \Coq{} pour qu'il gère mieux les
+existentielles est aussi un problème crucial dont nous avons fait
+l'expérience durant le développement de \Subtac{}.
 
 \ifthenelse{\boolean{showlog}}{
 \clearpage
