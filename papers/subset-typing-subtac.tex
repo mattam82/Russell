@@ -1,7 +1,8 @@
-\chapter{La tactique \Subtac}
-Nous avons d\'evelopp\'e la tactique \Subtac{} disponible dans la version
+\chapter{\Subtac}
+Nous avons d\'evelopp\'e la contribution \Subtac{} (pour
+``subset-tactics'') disponible dans la version
 \CVS{}~courante de \Coq{} (\url{http://coq.inria.fr}). Elle permet de
-cr\'eer un programme, le typer et g\'en\'erer un terme incomplet
+typer un programme en \lng{} et g\'en\'erer un terme incomplet
 correspondant (voir annexe \ref{fig:euclid-subtac}). 
 
 \section{Existentielles}
@@ -90,7 +91,39 @@ pouvoir traiter les inductifs dans $\Set$ pr\'edicatif, qui ne peuvent
 embarquer des propositions qu'en utilisant des types sous-ensemble avec
 le m\^eme m\'ecanisme de coercion et conserver l'inf\'erence.
 
-\TODO{langage de Subtac}
+\section{La tactique \Program}
+On peut utiliser notre contribution à l'aide des deux tactiques
+\verb|Program| et \verb|Recursive Program|. 
+
+\subsubsection{\texttt{Program}}
+La syntaxe pour l'appel de cette tactique est la suivante:
+$\texttt{Program}~\sref{name}~:~`t := `a.$ où $`t, `a$ dénottent les
+catégories syntaxiques des types et des termes respectivement.
+La tactique fonctionne ainsi:
+On infère le type du terme, on applique la coercion du terme vers le
+type spécifié puis on réecrit le terme obtenu dans \CCI{}. On réecrit
+ensuite le type spécifié dans \CCI{} et on le pose comme but. On utilise
+\eterm{} qui va s'occuper du terme à trous et l'appliquer au but. On
+obtient alors automatiquement les obligations de preuves. 
+
+\subsubsection{\texttt{Recursive Program}}
+Cette deuxième permet d'écrire des définitions récursives, on va donc demander
+plus d'informations à l'utilisateur lors de la définition:
+$\texttt{Program}~\sref{name}~(a : `t_a) { \sref{wf}~R~(\sref{auto} `|
+  \sref{proof} p)? } : ~`t := `a.$.
+L'argument $a$ de type $`t_a$ est l'argument de récursion, $R$ est la
+relation d'ordre qu'on doit montrer bien fondée. Si l'on utilise
+$\sref{auto}$ la tactique va chercher dans une base une preuve de bonne
+fondation. Si l'on utilise $\sref{proof}$ alors $p$ doit référencer une
+preuve de la bonne fondation de $R$ dans l'environnement courant. Sinon
+on génère une obligation de preuve que $R$ est bien fondé.
+La tactique fait ensuite à peu près la même chose que \verb|Program|.
+Le typage et la réecriture se font dans un contexte où la
+fonction $name : \Pi a : `t_a.`t$ apparaît et
+l'on vérifie à l'application si l'on fait un appel récursif auquel cas on
+insère une existentielle correspondant à la preuve que l'ordre est bien
+respecté (dans \Coq, la fonction permettant de faire la récursion aura
+un type de la forme $\Pi x : `t_a. R~x~a "->" `t$). 
 
 %%% Local Variables: 
 %%% mode: latex
