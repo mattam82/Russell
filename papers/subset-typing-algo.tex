@@ -822,14 +822,25 @@ système de typage vis-à-vis du système déclaratif.
 \setboolean{displayLabels}{true}
 \begin{lemma}[Complétude du typage]
   \label{complete-typing}
-  $`G \typed t : T "=>" `E U, `G \subta t : U \sub T$
+  $`G \typed t : T "=>" `E U, `G \typea t : U \sub T$
 \end{lemma}
 
 \begin{proof}
+  On a montré que l'on pouvait éliminer la règle coerce (proposition
+  \ref{subsum-elim}), on a donc une dérivation du système algorithmique
+  correspondante à chaque dérivation du système déclaratif. On peut donc
+  raisonner sur des dérivations où 
+
   \begin{induction}[typing-decl]
   \item[\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
-    \irule{LetIn}, \irule{Sigma}, \irule{Sum}, \irule{Subset}:] règles inchangées.
-    
+    \irule{LetIn}, \irule{Sigma}, \irule{Sum}, \irule{Subset}:] règles
+    inchangées. Dans chaque cas la dernière règle appliqué n'est pas
+    \irule{Coerce} mais \irule{Coerce} peut apparaître dans la
+    dérivation. Or on sait par \ref{subsum-elim} que l'on peut réecrire
+    toute dérivation utilisant \irule{Coerce} vers une dérivation ne
+    l'utilisant qu'à sa racine (soit vers une dérivation de $`G \typea t
+    : U$ avec $U \suba T$. \TODO{fix}
+        
     \case{App} On a 
     \typenvd
     \begin{prooftree}
