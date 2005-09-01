@@ -1,6 +1,6 @@
 \def\AppA{
 \TAX{App}
-{$`G \seq f : T \quad \mualgo(T) \eqbi \Pi x : V. W$}
+{$`G \seq f : T \quad \mualgo(T) = \Pi x : V. W$}
 {$`G \seq u : U \quad `G \seq U, V : s$}
 {$U \sub V $}
 {$`G \seq (f u) : W [ u / x ]$}
@@ -10,7 +10,7 @@
 \def\LetSumA{
   \TAX{LetSum}
   {$`G \seq t : S$}
-  {$\mualgo(S) \eqbi `S x : T. U $}
+  {$\mualgo(S) = `S x : T. U $}
   {$`G, x : T, u : U \seq v : V $}
   {$`G \seq \letml~(x, u) = t~\inml~v : V$}
   {$x,y `; `G$}
@@ -66,14 +66,14 @@
     \vspace{\infvspace}
     \AppA\DP
 
-    \vspace{\infvspace}
-    \LetIn\DP
+%    \vspace{\infvspace}
+%    \LetIn\DP
     
     \vspace{\infvspace}
     \SigmaR\DP
 
-    \vspace{\infvspace}
-    \SumInfA\DP
+%    \vspace{\infvspace}
+%    \SumInfA\DP
 
     \vspace{\infvspace}
     \SumDepA\DP

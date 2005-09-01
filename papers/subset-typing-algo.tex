@@ -19,6 +19,14 @@ mêmes jugements (à coercion près) dans le système algorithmique que dans
 le sytème déclaratif et d'autre part à la décidabilité du jugement de
 typage algorithmique.
 
+Il nous a fallut changer quelque peu les règles pour obtenir le système
+algorithmique. En particulier, on a utilisé la fonction $\mu_0$ de \PVS{}
+\cite{PVS-Semantics:TR} renommée $\mualgo$ (figure \ref{fig:mualgo-definition})
+ici pour opèrer des
+\emph{décompréhensions}. Cette fonction efface les constructeurs de type
+sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
+"->" \nat}{f~0 = 0}) = \nat "->" \nat$. On verra son utilité dans la suite.
+
 \subsection{Notations}
 On note $\hnf{x}$ la mise en forme normale de tête de $x$ selon la
 réduction définie précédemment. 
@@ -48,7 +56,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 
 \begin{lemma}[$\mualgo$ et coercion]
   \label{mu-coercion}
-  Si $\mualgo(T) \eqbi U$ alors $T \suba U$.
+  Si $\mualgo(T) = U$ alors $T \suba U$.
 \end{lemma}
 
 \begin{proof}
@@ -165,7 +173,7 @@ On peut maintenant montrer:
     W$. Par induction et application de \irule{SubSigma}.
     
   \item[$T `= \subset{x}{X}{P}$:] 
-    On a alors $\hnf{U} \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
+    On a alors $\hnf{U} = \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
     \begin{prooftree}
@@ -197,19 +205,34 @@ dérivation possible la faisant intervenir.
 Tout d'abord quelques lemmes nécessaires pour la preuve:
 \begin{lemma}[Coercion et $\mualgo$]
   \label{coercion-mu}
-  Si $\Pi x : X.Y \sub U$ alors $\mualgo(U) \eqbi \Pi x : X'.Y'$ et $X' \sub
-  X$, $Y \sub Y'$.
-  Si $\Sigma x : X.Y \sub U$ alors $\mualgo(U) \eqbi \Sigma x : X'.Y'$ et $X \sub
-  X'$, $Y \sub Y'$.
-  Pour tout $U$, $U \sub \mualgo(U)$.
+  \quad
+  \begin{itemize}
+  \item Si $\Pi x : X.Y \sub U$ alors $\mualgo(U) = \Pi x : X'.Y'$ et $X' \sub
+    X$, $Y \sub Y'$.
+  \item Si $\Sigma x : X.Y \sub U$ alors $\mualgo(U) = \Sigma x : X'.Y'$ et $X \sub
+    X'$, $Y \sub Y'$.
+  \item Pour tout $U$, $U \sub \mualgo(U)$.
+  \item Pour tout $S,U$, $S \sub \mualgo(U)$ \ssi $S \sub U$.
+  \end{itemize}
 \end{lemma}
 \begin{proof}
   Par induction sur les dérivations de $\suba$ et la définition de $\mualgo$.
+
+  Dans le dernier cas, de gauche a droite on construit la dérivation en
+  ajoutant des applications de \irule{SubProof} et dans l'autre sens on
+  est assuré de trouver la preuve dans la dérivation même de $S \sub U$:
+  si $U$ n'est pas de la forme sous-ensemble c'est direct. Sinon, on
+  peut trouver dans la preuve (en partant de la racine) la première
+  utilisation de la règle \irule{SubProof}. A partir de là, on cherche
+  la première utilisation d'une règle autre que \irule{SubProof} ou 
+  \irule{SubSub}. On a une dérivation de $S' \suba \mualgo(U)$, on
+  peut réappliquer les règles \irule{SubSub} oubliées précédemment 
+  pour obtenir la preuve de $S \suba \mualgo(U)$.
 \end{proof}
 
 \begin{lemma}[Coercion et conversion]
   \label{coercion-conversion}
-  Si $S \eqbi T$ et $T \sub U$ alors $S \sub U$
+  Si $`G \type S,T,U : s$, $S \eqbi T$ et $T \sub U$ alors $S \sub U$
 \end{lemma}
 
 \begin{proof}
@@ -218,10 +241,10 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
   mêmes formes normales de tête).
 \end{proof}
 
-
 \begin{lemma}[Transitivité de la coercion]
   \label{transitive-coercion}
-  Pour tout $S, T, U$,  si $S \sub T$ et $T \sub U$ alors $S \sub U$.
+  Pour tout $S, T, U$ tel que $`G \type S,T,U : s$ si
+  $S \sub T$ et $T \sub U$ alors $S \sub U$.
 \end{lemma}
 
 \begin{proof} 
@@ -251,9 +274,10 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
     \end{prooftree}
     
     Si $\Pi~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    \eqbi \Pi~S~T$ et $S \sub X'$, $Y' \sub T$.
-    Par induction, $S \sub X$ et $Y \sub T$ donc $\Pi~X~Y \sub \Pi~S~T$ 
-    et enfin $\Pi~X~Y \sub U$.
+    = \Pi~S~T$ et $S \sub X'$, $Y' \sub T$.
+    Par induction (les dérivations sont plus petites que la dérivation
+    $\Pi~X'~Y' \sub U$), $S \sub X$ et $Y \sub T$ donc $\Pi~X~Y \sub \Pi~S~T$ 
+    et enfin $\Pi~X~Y \sub U$ par le lemme \ref{coercion-mu}.
 
     De facon équivalente pour le second cas.
 
@@ -267,7 +291,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
     \end{prooftree}
     
     Si $\Sigma~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    \eqbi \Sigma~S~T$ et $X' \sub S$, $Y' \sub T$.
+    = \Sigma~S~T$ et $X' \sub S$, $Y' \sub T$.
     Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma~X~Y \sub
     \Sigma~S~T$ et enfin $\Sigma~X~Y \sub U$ (lemme \ref{coercion-mu}).
     
@@ -281,9 +305,9 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
       \BIC{$S \sub U$}
     \end{prooftree}
     
-    Si $\subset{x}{V}{P} \sub U$ alors $\mualgo(U) \eqbi V$.
-    Comme $S \sub V$, par induction, $S \sub \mualgo(U)$ donc
-    $S \sub U$.
+    Si $\subset{x}{V}{P} \sub U$ alors $\mualgo(U) = \mualgo(V)$.
+    Comme $S \sub V$ on a $S \sub \mualgo(V)$ par une dérivation plus
+    petite ou égale, donc par induction, $S \sub \mualgo(U)$. Donc $S \sub U$.
     
     De façon équivalente pour le second cas.
 
@@ -300,7 +324,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 
 \begin{proof}
   Les règles des deux systèmes sont les mêmes excepté \irule{SubTrans}
-  qu'on peut éliminer dans le système algorithmique. De plus
+  qui est admissible dans le système algorithmique. De plus
   l'application restreinte de la conversion ne change pas les jugements
   dérivables (lemme \ref{conversion-coercion}).
 \end{proof}
@@ -320,15 +344,6 @@ pour montrer que la règle \irule{Coerce} n'est plus nécessaire dans le
 système algorithmique. On va montrer en fait que
 toute dérivation de typage utilisant \irule{Coerce} peut se réécrire en
 une dérivation n'utilisant cette règle qu'à sa racine.
-
-\def\subs{\subset{x}{U}{P}}
-Il nous a fallut changer quelque peu les règles pour obtenir le système
-algorithmique. En particulier, on a utilisé la fonction $\mu_0$ de \PVS{}
-\cite{PVS-Semantics:TR} renommée $\mualgo$ ici pour opèrer des
-\emph{décompréhensions}. Cette fonction efface les constructeurs de type
-sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
-  "->" \nat}{f~0 = 0}) = \nat "->" \nat$. Cela nous permet de
-restreindre l'utilisation du jugement de coercion à l'application.
 
 \subsubsection{Sommes dépendantes}
 On veut pouvoir faire le plus d'inférence possible dans notre sytème
@@ -351,17 +366,68 @@ dont une (\irule{SumDep}) permettant d'annoter le terme avec le type $U$ recherc
 La technique que nous allons utiliser pour montrer l'équivalence entre
 les deux systèmes de typage est la suivante: on considère le système algorithmique
 auquel on ajoute la règle de coercion. On montre que toute dérivation
-de ce système se réecrit dans une dérivation du système algorithmique
-sans la règle \irule{Coerce} et on montre ensuite que toute dérivation
 du système déclaratif a une dérivation correspondante dans le système
-algorithmique avec \irule{Coerce}. En composant les deux preuves on
+algorithmique avec \irule{Coerce}.
+On montre ensuite que toute dérivation de ce système se réecrit dans
+une dérivation du système algorithmique sans la règle \irule{Coerce}.
+En composant les deux preuves on
 obtient que toute dérivation du système déclaratif a une dérivation dans
 le système algorithmique (sans \irule{Coerce} donc).
+
+La première étape est directe: les deux systèmes ont les mêmes règles,
+il y a juste \irule{App} et \irule{LetSum} qui ont changé.
+
+\begin{theorem}
+  \label{typed-typea-coerce}
+  Si $`G \typed t : T$ alors $`G \typea t : T$ où $\typea$ inclut la
+  règle \irule{Coerce}.
+\end{theorem}
+\begin{proof}
+  \begin{induction}{typing-decl}
+    \case{App} On a 
+    \typenvd
+    \begin{prooftree}
+      \App
+    \end{prooftree}
+    
+    \typenva
+    On suppose qu'on a $`G \type f : \Pi x : V.W$ et $`G \type v : V$. 
+    on peut donc dériver 
+    \begin{prooftree}
+      \TAX{App}
+      {$`G \seq f : \Pi x : V.W \quad \mualgo(\Pi x : T.U) = \Pi x : T. U$}
+      {$`G \seq v : V \quad `G \seq V, V : s$}
+      {$V \suba V$}
+      {$`G \seq (f u) : W [ u / x ]$}
+      {}
+    \end{prooftree}
+    
+    \case{LetSum}
+    On a
+    \typenvd
+    \begin{prooftree}
+      \LetSum
+    \end{prooftree}
+    
+    \typenva
+    De même on peut dériver:
+    \begin{prooftree}
+      \TAX{LetSum}
+      {$`G \seq t : \Sigma x : T.U$}
+      {$\mualgo(\Sigma x : T.U) = `S x : T. U$}
+      {$`G, x : T, y : U \seq v : V$}
+      {$`G \seq \letml~(x, u) = t~\inml~v : V$}
+      {}
+    \end{prooftree}
+    
+  \item[- Autres règles:] identiques.
+  \end{induction}
+\end{proof}
 
 \begin{proposition}[Passage de la coercion à l'application]
   \label{subsum-elim}
   On peut réecrire toute dérivation $`G \typea t : T$ utilisant la
-  coercion vers une dérivation $`G \type t : U$ avec $U \suba T$.
+  coercion vers une dérivation $`G \typea t : U$ avec $U \suba T$.
 \end{proposition}
 
 On utilisera l'abbréviation $`G \typea t : S \suba T$ pour $`G \typea t
@@ -370,9 +436,9 @@ On a besoin de quelques lemmes auparavant:
 
 \begin{lemma}[$\beta$-equivalence et $\mualgo$]
   \label{beta-mu}
-  Si $X \sub Y$ et $\mualgo(Y) \eqbi \Sigma x : T.U$ alors $\mualgo(X) \eqbi \Sigma x : T'.U'$
+  Si $X \sub Y$ et $\mualgo(Y) = \Sigma x : T.U$ alors $\mualgo(X) = \Sigma x : T'.U'$
   et $T' \sub T$, $U' \sub U$.
-  Si $X \sub Y$ et $\mualgo(Y) \eqbi \Pi x : T.U$ alors $\mualgo(X) \eqbi \Pi x :
+  Si $X \sub Y$ et $\mualgo(Y) = \Pi x : T.U$ alors $\mualgo(X) = \Pi x :
   T'.U'$ et $T \sub T'$, $U' \sub U$.
 \end{lemma}
 \begin{proof}
@@ -386,12 +452,12 @@ On a besoin de quelques lemmes auparavant:
     \sub \Sigma x : T.U$.
     
     \case{SubLeft} Ici, $Y `= \subset{x}{V}{P}$, on peut donc déduire que
-    $\mualgo(Y) = \mualgo(V) \eqbi \Sigma x : T.U$. On 
+    $\mualgo(Y) = \mualgo(V) = \Sigma x : T.U$. On 
     applique l'hypothèse de récurence avec $X \sub V$ et on obtient:
-    $\mualgo(X) \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo(X) = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
 
     \case{SubRight} Ici, $X `= \subset{x}{V}{P}$. Par induction, 
-    $\mualgo(V) = \mualgo(X) \eqbi \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo(V) = \mualgo(X) = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
   \end{induction}
 \end{proof}
 
@@ -511,12 +577,29 @@ On peut maintenant montrer notre proposition:
   une autre règle. Si \irule{Coerce} est utilisé juste en racine c'est trivial.
   
   \typenva
+  Par induction mutuelle sur les dérivations de typage et bonne formation.
   \begin{induction}
-    \case{Var} Pas de prémisse de la forme $`G \type t : T$, donc
-    pas d'application de \irule{Coerce} possible.
+    \case{WfEmpty} Trivial.
     
+    \case{WfVar} 
+    Par induction $`E s' `G', `G' \typea A : s' \sub s$ (cela implique $s'
+    = s$). On applique \irule{WfVar} pour obtenir $\typewf `G, x : A$.
+    
+    \case{PropSet} Trivial.
+
+    \case{Var} Par induction $\typewf `G'$ et $x : A `: `G'$ , direct par
+    \irule{Var}.
+    
+    \case{Prod} 
+    Direct par induction et le fait qu'un sorte ne peut être en relation
+    qu'avec elle même (on ne peut introduire le type $\subset{x}{s}{P}$
+    pour une sorte $s$).
+        
     \case{Abs} \quad
+    Par induction $`E U', `G, x : T \typea M : U' \suba U$.
+    Or cela implique $`G, x : T \typea U' : s$, donc on a le produit 
     
+
     \begin{prooftree}
       \AXC{\vdots}
       \UIC{$`G \seq \Pi x : T. U : s $}
@@ -593,20 +676,20 @@ On peut maintenant montrer notre proposition:
       \AXC{\vdots}
       \UIC{$S \sub V$}
       \BIC{$`G \seq t : V$}
-      \AXC{$\mualgo(V) \eqbi \Sigma x : T.U$}
+      \AXC{$\mualgo(V) = \Sigma x : T.U$}
       \AXC{\vdots}
       \UIC{$`G, x : T, u : U \seq v : V $}
       \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
     \end{prooftree}
     
-    Par le lemme \ref{beta-mu}, on a $\mualgo(S) \eqbi \Sigma x : T'.U'$,
+    Par le lemme \ref{beta-mu}, on a $\mualgo(S) = \Sigma x : T'.U'$,
     $T' \suba T$ et $U' \suba U$. Par restriction (lemme
     \ref{narrowing-a}) on a:
 
     \begin{prooftree}
       \AXC{\vdots}        
       \UIC{$`G \seq t : S $}
-      \AXC{$\mualgo(S) \eqbi \Sigma x : T'.U'$}
+      \AXC{$\mualgo(S) = \Sigma x : T'.U'$}
       \AXC{\vdots}
       \UIC{$`G, x : T', u : U' \seq v : V $}
       \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
@@ -625,7 +708,7 @@ On peut maintenant montrer notre proposition:
       \UIC{$ T \sub \Pi x : V. W$}
       \BIC{$`G \seq f : \Pi x : V. W $}
       \noLine
-      \UIC{$\mualgo(\Pi x : V.W) \eqbi \Pi x : V.W$}
+      \UIC{$\mualgo(\Pi x : V.W) = \Pi x : V.W$}
       \AXC{\vdots}
       \UIC{$`G \seq u : U $}
       \AXC{\vdots}
@@ -633,7 +716,7 @@ On peut maintenant montrer notre proposition:
       \TIC{$`G \seq f u : W [ u / x ]$}
     \end{prooftree}
     
-    Par le lemme \ref{beta-mu} on a $\mualgo(T) \eqbi \Pi x : V'.W'$ avec
+    Par le lemme \ref{beta-mu} on a $\mualgo(T) = \Pi x : V'.W'$ avec
     $V \suba V'$ et $W' \suba W$. Par la transitivité de la coercion on
     a: $U \suba V `^ V \suba V' "=>" U \suba V'$.
     On peut donc dériver:
@@ -642,7 +725,7 @@ On peut maintenant montrer notre proposition:
       \AXC{\vdots}
       \UIC{$`G \seq f : T $}
       \noLine
-      \UIC{$\mualgo(T) \eqbi \Pi x : V'.W'$}
+      \UIC{$\mualgo(T) = \Pi x : V'.W'$}
       \AXC{\vdots}
       \UIC{$`G \seq u : U $}
       \AXC{\vdots}
@@ -672,9 +755,7 @@ On peut maintenant montrer notre proposition:
       \UIC{$S \sub U$}
       \BIC{$`G \seq t : U$}
     \end{prooftree}
-
   \end{induction}
-  
 \end{proof}
 
 Par induction, on a donc montré que l'on peut réduire l'utilisation de la règle de
@@ -688,9 +769,9 @@ Il nous faut montrer des lemmes faisant intervenir la substitution pour
 pouvoir prouver la complétude.
 \begin{lemma}[Substitutivité de $\mualgo$]
   \label{substitutive-mu}
-  Si $\mualgo(T) \eqbi \Pi y : U.V$ alors $\mualgo(T[u/x]) \eqbi \Pi y :
+  Si $\mualgo(T) = \Pi y : U.V$ alors $\mualgo(T[u/x]) = \Pi y :
   U[u/x].V[u/x]$.
-  Si $\mualgo(T) \eqbi \Sigma y : U.V$ alors $\mualgo(T[u/x]) \eqbi \Sigma y : U[u/x].V[u/x]$.
+  Si $\mualgo(T) = \Sigma y : U.V$ alors $\mualgo(T[u/x]) = \Sigma y : U[u/x].V[u/x]$.
 \end{lemma}
 
 \begin{proof}
@@ -699,9 +780,9 @@ pouvoir prouver la complétude.
 
   Il suffit de suivre la définition de $\mualgo$.
   Si $T$ est de la forme $\subset{y}{V}{P}$ alors
-  on a $\mualgo(V) \eqbi \Pi y : U.V$ et par induction
-  $\mualgo(V[u/x]) \eqbi \Pi y : U[u/x].V[u/x]$.
-  Il s'ensuit directement que $\mualgo(T[u/x]) \eqbi \Pi y :
+  on a $\mualgo(V) = \Pi y : U.V$ et par induction
+  $\mualgo(V[u/x]) = \Pi y : U[u/x].V[u/x]$.
+  Il s'ensuit directement que $\mualgo(T[u/x]) = \Pi y :
   U[u/x].V[u/x]$.
 
   Si $T$ est différent d'un type sous-ensemble alors $\mualgo(T) = T$.
@@ -791,8 +872,8 @@ pouvoir prouver la complétude.
     \case{App}
     On étudie le cas de l'application qui requiert un lemme supplémentaire.
     Par induction, $`G, `D[u/x] \typea f[u/x] : T[u/x]$ et
-    $`G, `D[u/x] \typea a[u/x] : A[u/x]$. Si $\mualgo(T) \eqbi \Pi y :
-    V.W$ alors $\mualgo(T[u/x]) \eqbi \Pi y : V[u/x].W[u/x]$ (lemme
+    $`G, `D[u/x] \typea a[u/x] : A[u/x]$. Si $\mualgo(T) = \Pi y :
+    V.W$ alors $\mualgo(T[u/x]) = \Pi y : V[u/x].W[u/x]$ (lemme
     \ref{substitutive-mu}). Par induction, on a aussi $`G, `D[u/x] \typea
     A[u/x],V[u/x] : s$. Enfin, par substitutivité de la coercion on a $A[u/x]
     \suba V[u/x]$. On peut donc appliquer \irule{App} pour obtenir 
@@ -815,25 +896,19 @@ pouvoir prouver la complétude.
   Par le lemme précédent $T[u/x] \suba U[u/x]$.
 \end{proof}
 
-
 On a maintenant tout les ingrédients pour montrer la complétude de notre
 système de typage vis-à-vis du système déclaratif.
 
 \setboolean{displayLabels}{true}
 \begin{lemma}[Complétude du typage]
   \label{complete-typing}
-  $`G \typed t : T "=>" `E U, `G \typea t : U \sub T$
+  Si $`G \typed t : T$ alors $`E U, `G \typea t : U \sub T$.
 \end{lemma}
 
 \begin{proof}
-  On a montré que l'on pouvait éliminer la règle coerce (proposition
-  \ref{subsum-elim}), on a donc une dérivation du système algorithmique
-  correspondante à chaque dérivation du système déclaratif. On peut donc
-  raisonner sur des dérivations où 
-
   \begin{induction}[typing-decl]
   \item[\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
-    \irule{LetIn}, \irule{Sigma}, \irule{Sum}, \irule{Subset}:] règles
+    \irule{LetIn}, \irule{Sigma}, \irule{Subset}:] règles
     inchangées. Dans chaque cas la dernière règle appliqué n'est pas
     \irule{Coerce} mais \irule{Coerce} peut apparaître dans la
     dérivation. Or on sait par \ref{subsum-elim} que l'on peut réecrire
@@ -851,13 +926,13 @@ système de typage vis-à-vis du système déclaratif.
     Par induction, $`E T, `G \typea f : T \suba \Pi x : V. W$ et
     $`E U, `G \subta u : U \sub V$.
     
-    Si $T \suba \Pi x : V.W$ alors $\mualgo(T) \eqbi \Pi x : V'.W'$ avec
+    Si $T \suba \Pi x : V.W$ alors $\mualgo(T) = \Pi x : V'.W'$ avec
     $V \suba V'$ et $W' \suba W$.
 
     Par transivité de la coercion: $U \suba V'$, on peut donc dériver 
     \begin{prooftree}
       \TAX{App}
-      {$`G \seq f : T \quad \mualgo(T) \eqbi \Pi x : V'. W'$}
+      {$`G \seq f : T \quad \mualgo(T) = \Pi x : V'. W'$}
       {$`G \seq u : U \quad `G \seq U, V' : s$}
       {$U \suba V'$}
       {$`G \seq (f u) : W' [ u / x ]$}
@@ -877,7 +952,7 @@ système de typage vis-à-vis du système déclaratif.
     \typenva
     Par induction, $`E S, `G \typea t : S \suba \Sigma x : T.U$ et 
     $`E V', `G, x: T, y : U \typea v : V' \suba V$.
-    On a $\mualgo(S) \eqbi \Sigma x : T'.U'$ avec $T' \suba T$ et $U'
+    On a $\mualgo(S) = \Sigma x : T'.U'$ avec $T' \suba T$ et $U'
     \suba U$. Par restriction on peut donc dériver $`G, x : T', y : U'
     \seq v : V'$.
     
@@ -885,7 +960,7 @@ système de typage vis-à-vis du système déclaratif.
     \begin{prooftree}
       \TAX{LetSum}
       {$`G \seq t : S$}
-      {$\mualgo(S) \eqbi `S x : T'. U'$}
+      {$\mualgo(S) = `S x : T'. U'$}
       {$`G, x : T', y : U' \seq v : V'$}
       {$`G \seq \letml~(x, u) = t~\inml~v : V'$}
       {}
@@ -901,8 +976,8 @@ système de typage vis-à-vis du système déclaratif.
     coercion, $T' \suba S$. La propriété est donc bien vérifiée dans les
     deux cas.
     
+    \case{Sum}\quad
   \end{induction}
-  
 \end{proof}
 
 On combine les théorêmes de correction et complétude pour obtenir la propriété suivante entre les deux systèmes:
