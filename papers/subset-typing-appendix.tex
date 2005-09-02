@@ -1,50 +1,5 @@
+\appendix
 \chapter{Exemples}
-\begin{figure}[ht]
-\begin{verbatim}
-(* Subtac ne gère pas encore les notations de Coq *)
-Definition neq (A : Type) (x y : A) : Prop := x <> y.
-Definition div_prop (a b q r : nat) := a = (b * q) + r /\ r < b. 
-Definition lt_ge_dec (x y : nat) : { x < y } + { x >= y }.
-Proof.
-  intros ; elim (le_lt_dec y x) ; intros ; auto with arith.
-Defined.
-
-Recursive program mydiv (a : nat) { well_founded lt a lt_wf } : { b : nat | neq nat b O } ->
-  [ q : nat ] { r : nat | div_prop a b q r } :=
-  fun { y : nat | neq nat y O } =>
-    if lt_ge_dec a y
-    then (q := O, a : { r : nat | div_prop a y q r })
-    else let (q', r) = mydiv (minus a y) y in 
-        (q := S q', r : { r : nat | div_prop a y q r }).
-
-(* Dans Coq, mydiv aura le type:
-forall a : nat, forall b : { b : nat | b <> 0 },
- { q : nat & { r : nat | div_prop a (proj1_sig b) q r } } *)
-
-(* Obligations de preuves engendrées *)
-(* Hypothèses communes: *)
-a : nat
-mydiv : (n : nat) n < a -> forall b : { b : nat | b <> 0 },
- { q : nat & { r : nat | div_prop n (proj1_sig b) q r } }
-y : { b : nat | b <> 0 }
-
-(* (q := 0, a ...)
-[ H : a < proj1_sig y,
-|- div_prop a (proj1_sig y) 0 a]
-
-(* Argument de récursion *)
-[H : a >= proj1_sig y |- a - proj1_sig y < a]
-
-(* (q := S q', r) *)
-[ H : a >= proj1_sig y
-  q' : nat
-  r : { r : nat | div_prop (a - proj1_sig y) (proj1_sig y) q' r }
-|- div_prop a (proj1_sig y) (S q')  (proj1_sig r)]
-\end{verbatim}
-  \caption{La division euclidienne avec \Subtac}
-  \label{fig:euclid-subtac}
-\end{figure}
-
 \begin{figure}[ht]
 \begin{verbatim}
 Definition div : forall a : nat, forall b : nat, 
@@ -78,7 +33,79 @@ Qed.
   \label{fig:euclid-script}
 \end{figure}
 
+\begin{figure}[h]
+\begin{verbatim}
+(* Subtac ne gère pas encore les notations de Coq *)
+Definition neq (A : Type) (x y : A) : Prop := x <> y.
+Definition div_prop (a b q r : nat) := a = (b * q) + r /\ r < b. 
+Definition lt_ge_dec (x y : nat) : { x < y } + { x >= y }.
+Proof.
+  intros ; elim (le_lt_dec y x) ; intros ; auto with arith.
+Defined.
+
+Recursive program mydiv (a : nat) { well_founded lt a lt_wf } : { b : nat | neq nat b O } ->
+  [ q : nat ] { r : nat | div_prop a b q r } :=
+  fun { y : nat | neq nat y O } =>
+    if lt_ge_dec a y
+    then (q := O, a : { r : nat | div_prop a y q r })
+    else let (q', r) = mydiv (minus a y) y in 
+        (q := S q', r : { r : nat | div_prop a y q r }).
+
+(* Dans Coq, mydiv aura le type:
+forall a : nat, forall b : { b : nat | b <> 0 },
+{ q : nat & { r : nat | div_prop a (proj1_sig b) q r } } *)
+
+(* Obligations de preuves engendrées *)
+(* Hypothèses communes: *)
+a : nat
+mydiv : (n : nat) n < a -> forall b : { b : nat | b <> 0 },
+ { q : nat & { r : nat | div_prop n (proj1_sig b) q r } }
+y : { b : nat | b <> 0 }
+
+(* (q := 0, a ...)
+[ H : a < proj1_sig y, |- div_prop a (proj1_sig y) 0 a]
+
+(* Argument de récursion *)
+[H : a >= proj1_sig y |- a - proj1_sig y < a]
+
+(* (q := S q', r) *)
+[ H : a >= proj1_sig y, q' : nat,
+  r : { r : nat | div_prop (a - proj1_sig y) (proj1_sig y) q' r }
+|- div_prop a (proj1_sig y) (S q')  (proj1_sig r)]
+\end{verbatim}
+  \caption{La division euclidienne avec \Subtac}
+  \label{fig:euclid-subtac}
+\end{figure}
+
+\begin{figure}[h]
+\begin{verbatim}
+Recursive program mydiv (a : nat) using lt proof lt_wf  :
+  { b : nat | neq nat b O } -> [ q : nat ] { r : nat | div_prop a b q r } :=
+  fun { b : nat | neq nat b O } =>
+    if lt_ge_dec a b
+      then (q := O, a : { r : nat | div_prop a b q r })
+      else let (q', r) = mydiv (minus a b) b in
+        (q := S q', r : { r : nat | div_prop a b q r }).
+unfold neq ; simpl ; intros.
+induction b ; simpl ; simpl in H ; omega.
+
+unfold neq, div_prop ; simpl ; intros.
+induction b ; induction r ; simpl ; simpl in H, p0 ; intuition.
+rewrite mult_comm ; simpl.
+rewrite mult_comm ; simpl.
+omega.
+
+unfold neq, div_prop ; simpl ; induction b ; simpl ; intros.
+intuition.
+Qed.
+\end{verbatim}
+  \caption{La division euclidienne avec \Subtac: script}
+  \label{fig:euclid-subtac-script}
+\end{figure}
+
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
 %%% End: 

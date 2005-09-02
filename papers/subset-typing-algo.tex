@@ -74,7 +74,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 \begin{proof}
   \begin{induction}[typing-algo]
   \item[- \irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
-    \irule{LetIn}, \irule{Sigma}, \irule{Sum}:] règles inchangées.
+    \irule{Sigma}, \irule{Sum}:] règles inchangées.
     
     \case{LetSum}
     On a 
@@ -109,8 +109,8 @@ que ses jugements valides sont bien inclus dans ceux du système
 déclaratif, il faut maintenant montrer qu'il les inclus tous (ou presque!).
 
 \begin{subsubsection}{Notations}
-On introduit la notation $`G \typea T, U : s$ pour $`G \typea T : s_1 `^
-`G \typea U : s_2 `^ s_1 = s_2 = s$.
+On introduit la notation $`G \typea T, U : s$ pour $`G \typea T : s `^
+`G \typea U : s$.
 \end{subsubsection}
 
 \subsection{Complétude et décidabilité}
@@ -345,7 +345,7 @@ système algorithmique. On va montrer en fait que
 toute dérivation de typage utilisant \irule{Coerce} peut se réécrire en
 une dérivation n'utilisant cette règle qu'à sa racine.
 
-\subsubsection{Sommes dépendantes}
+\paragraph{Sommes dépendantes}
 On veut pouvoir faire le plus d'inférence possible dans notre sytème
 algorithmique, on a donc introduit une règle \irule{SumInf} qui ne force
 pas à annoter les paires. Dans le cas ou le terme n'est pas annoté, on
@@ -356,83 +356,23 @@ auquel il n'y a pas de solution la plus générale.
 On a donc dans le système algorithmique deux règles pour les sommes, 
 dont une (\irule{SumDep}) permettant d'annoter le terme avec le type $U$ recherché. 
 
-\subsubsection{\'Elimination de la coercion}
+\paragraph{\'Elimination de la coercion}
 \typenva
-
-% On enlève \irule{Coerce} du système et on change la règle 
-% d'application \irule{App} de la figure \ref{typing-decl-rules}.
-% On note $\typea$ le système de typage obtenu. 
-
-La technique que nous allons utiliser pour montrer l'équivalence entre
-les deux systèmes de typage est la suivante: on considère le système algorithmique
-auquel on ajoute la règle de coercion. On montre que toute dérivation
-du système déclaratif a une dérivation correspondante dans le système
-algorithmique avec \irule{Coerce}.
-On montre ensuite que toute dérivation de ce système se réecrit dans
-une dérivation du système algorithmique sans la règle \irule{Coerce}.
-En composant les deux preuves on
-obtient que toute dérivation du système déclaratif a une dérivation dans
-le système algorithmique (sans \irule{Coerce} donc).
-
-La première étape est directe: les deux systèmes ont les mêmes règles,
-il y a juste \irule{App} et \irule{LetSum} qui ont changé.
-
-\begin{theorem}
-  \label{typed-typea-coerce}
-  Si $`G \typed t : T$ alors $`G \typea t : T$ où $\typea$ inclut la
-  règle \irule{Coerce}.
-\end{theorem}
-\begin{proof}
-  \begin{induction}{typing-decl}
-    \case{App} On a 
-    \typenvd
-    \begin{prooftree}
-      \App
-    \end{prooftree}
-    
-    \typenva
-    On suppose qu'on a $`G \type f : \Pi x : V.W$ et $`G \type v : V$. 
-    on peut donc dériver 
-    \begin{prooftree}
-      \TAX{App}
-      {$`G \seq f : \Pi x : V.W \quad \mualgo(\Pi x : T.U) = \Pi x : T. U$}
-      {$`G \seq v : V \quad `G \seq V, V : s$}
-      {$V \suba V$}
-      {$`G \seq (f u) : W [ u / x ]$}
-      {}
-    \end{prooftree}
-    
-    \case{LetSum}
-    On a
-    \typenvd
-    \begin{prooftree}
-      \LetSum
-    \end{prooftree}
-    
-    \typenva
-    De même on peut dériver:
-    \begin{prooftree}
-      \TAX{LetSum}
-      {$`G \seq t : \Sigma x : T.U$}
-      {$\mualgo(\Sigma x : T.U) = `S x : T. U$}
-      {$`G, x : T, y : U \seq v : V$}
-      {$`G \seq \letml~(x, u) = t~\inml~v : V$}
-      {}
-    \end{prooftree}
-    
-  \item[- Autres règles:] identiques.
-  \end{induction}
-\end{proof}
-
-\begin{proposition}[Passage de la coercion à l'application]
-  \label{subsum-elim}
-  On peut réecrire toute dérivation $`G \typea t : T$ utilisant la
-  coercion vers une dérivation $`G \typea t : U$ avec $U \suba T$.
-\end{proposition}
-
-On utilisera l'abbréviation $`G \typea t : S \suba T$ pour $`G \typea t
-: S `^{} S \suba T$ dans la suite.
-On a besoin de quelques lemmes auparavant:
+On veut maintenant montrer la complétude de notre système. Dans un
+système à sous-typage, le théorême correspondant est parfois nommé
+typage minimal ``\emph{minimal typing}'' puisque son énoncé revient à
+dire que tout terme a un type minimal dans les deux systèmes. En effet
+notre théorême est le suivant:
+$`G \typed t : T "=>" `G \typea t : U \suba T$. Le typage algorithmique
+assigne bien un seul type à un terme $t$ mais comme on a des coercions, le
+type inféré $U$ peut être un peu différent du type $T$. Dans notre cas
+particulier $U$ sera certainement un type moins riche que $T$ (par
+exemple $\nat$ par rapport à $\subset{x}{\nat}{P}$. Lorsque l'on
+développera des programmes, on donnera une spécification forte et l'on
+fera une coercion entre le type inféré et la spécification pour obtenir
+au final (après réecriture dans \Coq) un terme du type $T$ le plus riche.
+On a besoin de quelques lemmes pour montrer que notre système où
+\irule{Coerce} a été eliminé est complet:
 
 \begin{lemma}[$\beta$-equivalence et $\mualgo$]
   \label{beta-mu}
@@ -571,200 +511,6 @@ contextes où les variables ont des types équivalents.
   \end{induction}
 \end{proof}
 
-On peut maintenant montrer notre proposition:
-\begin{proof}
-  On inspecte les dérivations possibles utilisant \irule{Coerce} juste avant
-  une autre règle. Si \irule{Coerce} est utilisé juste en racine c'est trivial.
-  
-  \typenva
-  Par induction mutuelle sur les dérivations de typage et bonne formation.
-  \begin{induction}
-    \case{WfEmpty} Trivial.
-    
-    \case{WfVar} 
-    Par induction $`E s' `G', `G' \typea A : s' \sub s$ (cela implique $s'
-    = s$). On applique \irule{WfVar} pour obtenir $\typewf `G, x : A$.
-    
-    \case{PropSet} Trivial.
-
-    \case{Var} Par induction $\typewf `G'$ et $x : A `: `G'$ , direct par
-    \irule{Var}.
-    
-    \case{Prod} 
-    Direct par induction et le fait qu'un sorte ne peut être en relation
-    qu'avec elle même (on ne peut introduire le type $\subset{x}{s}{P}$
-    pour une sorte $s$).
-        
-    \case{Abs} \quad
-    Par induction $`E U', `G, x : T \typea M : U' \suba U$.
-    Or cela implique $`G, x : T \typea U' : s$, donc on a le produit 
-    
-
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Pi x : T. U : s $}
-      \AXC{\vdots}
-      \UIC{$`G, x : T \seq M : U'$}
-      \AXC{\vdots}
-      \UIC{$`G, x : T \seq U', U : s$}
-      \AXC{\vdots}
-      \UIC{$U' \sub U$}
-      \TIC{$`G, x : T \seq M : U $}
-      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
-    \end{prooftree}
-    
-    Comme $`G, x : T \typed U' : s$ on peut former le produit 
-    $`G \typea \Pi x : T. U' : s$.
-    On réecrit donc la dérivation en:     
-    
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Pi x : T. U' : s $}
-      \AXC{\vdots}
-      \UIC{$`G, x : T \seq M : U'$}
-      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U'$}
-      \AXC{$T \eqbi T$}
-      \UIC{$T \sub T$}
-      \AXC{\vdots}
-      \UIC{$U' \sub U$}
-      \BIC{$\Pi x : T.U' \sub \Pi X : T.U$}        
-      \BIC{$`G \seq \lambda x : T. M : \Pi x : T.U$}
-    \end{prooftree}
-    
-    \case{Sum}\quad
-    
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \AXC{\vdots}
-      \UIC{$S \sub T$}
-      \BIC{$`G \seq t : T $}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : U' \suba U[t/x]$}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Sigma x : T.U : s $}
-      \TIC{$`G \seq (x \coloneqq t, u : U) : \Sigma x : T.U$}
-    \end{prooftree}
-    
-    Comme $S \sub T$, on a bien $\Sigma x : S.U \sub \Sigma x : T.U$
-    par \irule{SubSigma}. On sait de plus que $\Sigma x : S.U$ est bien
-    sorté de sorte $s$. En effet, par inversion de $`G \seq \Sigma x :
-    T.U : s$ on a $`G, x : T \seq U : s$ et par restriction ($S \sub T$), $`G, x : S \seq
-    U : s$. On peut donc dériver:
-
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : U' \suba U[t/x]$}
-      \AXC{\vdots}
-      \UIC{$`G \seq \Sigma x : S.U : s $}
-      \TIC{$`G \seq (x \coloneqq t, u : U) : \Sigma x : S.U$}
-      \AXC{\vdots}
-      \UIC{$\Sigma x : S.U \sub \Sigma x : T.U$}
-      \BIC{$`G \seq (x \coloneqq t, u : U) : \Sigma x : T.U$}
-    \end{prooftree}
-
-    Si on utilise la coercion pour la prémisse $`G \type u : U'$ alors
-    on a $`G \type u : U'' \suba U'$. Or par transitivité de la
-    coercion $`G \type u : U'' \suba U[t/x]$, le jugement ne change donc pas.
-     
-    \case{LetSum}\quad
-    \begin{prooftree}
-      \AXC{\vdots}        
-      \UIC{$`G \seq t : S $}
-      \AXC{\vdots}
-      \UIC{$S \sub V$}
-      \BIC{$`G \seq t : V$}
-      \AXC{$\mualgo(V) = \Sigma x : T.U$}
-      \AXC{\vdots}
-      \UIC{$`G, x : T, u : U \seq v : V $}
-      \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
-    \end{prooftree}
-    
-    Par le lemme \ref{beta-mu}, on a $\mualgo(S) = \Sigma x : T'.U'$,
-    $T' \suba T$ et $U' \suba U$. Par restriction (lemme
-    \ref{narrowing-a}) on a:
-
-    \begin{prooftree}
-      \AXC{\vdots}        
-      \UIC{$`G \seq t : S $}
-      \AXC{$\mualgo(S) = \Sigma x : T'.U'$}
-      \AXC{\vdots}
-      \UIC{$`G, x : T', u : U' \seq v : V $}
-      \TIC{$`G \seq \letml~(x, u) = t~\inml~v : V$}
-    \end{prooftree}
-
-    Si l'on applique la coercion à droite c'est direct ($V' \sub V$).
-    
-    \case{LetIn}
-    De façon similaire, par restriction on obtient la dérivation sans \irule{Coerce}.
-    
-    \case{App}\quad    
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq f : T $}
-      \AXC{\vdots}
-      \UIC{$ T \sub \Pi x : V. W$}
-      \BIC{$`G \seq f : \Pi x : V. W $}
-      \noLine
-      \UIC{$\mualgo(\Pi x : V.W) = \Pi x : V.W$}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : U $}
-      \AXC{\vdots}
-      \UIC{$U \sub V$}
-      \TIC{$`G \seq f u : W [ u / x ]$}
-    \end{prooftree}
-    
-    Par le lemme \ref{beta-mu} on a $\mualgo(T) = \Pi x : V'.W'$ avec
-    $V \suba V'$ et $W' \suba W$. Par la transitivité de la coercion on
-    a: $U \suba V `^ V \suba V' "=>" U \suba V'$.
-    On peut donc dériver:
-    
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq f : T $}
-      \noLine
-      \UIC{$\mualgo(T) = \Pi x : V'.W'$}
-      \AXC{\vdots}
-      \UIC{$`G \seq u : U $}
-      \AXC{\vdots}
-      \UIC{$U \sub V'$}
-      \TIC{$`G \seq f u : W [ u / x ]$}
-    \end{prooftree}
-    
-    \case{Coerce}\quad
-
-    Dans le cas où l'on a un enchainement de règles \irule{Coerce}:
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \AXC{\vdots}
-      \UIC{$S \sub T$}
-      \BIC{$`G \seq t : T$}
-      \AXC{\vdots}
-      \UIC{$T \sub U$}
-      \BIC{$`G \seq t : U$}
-    \end{prooftree}
-    
-    En utilisant la transitivité de la coercion on obtient:
-    \begin{prooftree}
-      \AXC{\vdots}
-      \UIC{$`G \seq t : S$}
-      \AXC{\vdots}
-      \UIC{$S \sub U$}
-      \BIC{$`G \seq t : U$}
-    \end{prooftree}
-  \end{induction}
-\end{proof}
-
-Par induction, on a donc montré que l'on peut réduire l'utilisation de la règle de
-coercion à la racine d'une dérivation. 
-On peut pratiquement ignorer l'utilisation de la coercion à la racine de la dérivation, 
-on fera de toute façon un test de coercion entre le type inféré et le
-type spécifié juste avant la réécriture. 
-On considère maintenant le système algorithmique comme présenté figure \ref{fig:typing-algo-rules}.
-
 Il nous faut montrer des lemmes faisant intervenir la substitution pour
 pouvoir prouver la complétude.
 \begin{lemma}[Substitutivité de $\mualgo$]
@@ -900,22 +646,57 @@ On a maintenant tout les ingrédients pour montrer la complétude de notre
 système de typage vis-à-vis du système déclaratif.
 
 \setboolean{displayLabels}{true}
-\begin{lemma}[Complétude du typage]
+\begin{theorem}[Complétude du typage]
   \label{complete-typing}
   Si $`G \typed t : T$ alors $`E U, `G \typea t : U \sub T$.
-\end{lemma}
+  Si $\typewf `G$ dans le système déclaratif alors $\typewf `G$ dans le
+  système algorithmique.
+\end{theorem}
 
 \begin{proof}
-  \begin{induction}[typing-decl]
-  \item[\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
-    \irule{LetIn}, \irule{Sigma}, \irule{Subset}:] règles
-    inchangées. Dans chaque cas la dernière règle appliqué n'est pas
-    \irule{Coerce} mais \irule{Coerce} peut apparaître dans la
-    dérivation. Or on sait par \ref{subsum-elim} que l'on peut réecrire
-    toute dérivation utilisant \irule{Coerce} vers une dérivation ne
-    l'utilisant qu'à sa racine (soit vers une dérivation de $`G \typea t
-    : U$ avec $U \suba T$. \TODO{fix}
+  \typenva
+  Par induction mutuelle sur les dérivations de typage et bonne formation.
+  \begin{induction}
+    \case{WfEmpty} Trivial.
+    
+    \case{WfVar}\quad
+    \typenvd
+    \begin{prooftree}
+      \WfVar
+    \end{prooftree}
+    Par induction $`E s', `G \typea A : s' \sub s$. On a forcément $s' =
+    s$ puisque les sortes ne sont en relation qu'avec elles-mêmes.
+    On applique \irule{WfVar} pour obtenir $\typewf `G, x : A$.
+    
+    \case{PropSet} Trivial.
+
+    \case{Var}\quad
+    \typenvd
+    \begin{prooftree}
+      \Var
+    \end{prooftree}
+    Par induction $\typewf `G$ et $x : A `: `G$ , direct par
+    \irule{Var}.
+    
+    \case{Prod}\quad
+    \typenvd
+    \begin{prooftree}
+      \Prod
+    \end{prooftree}
+    
+    Direct par induction et le fait qu'un sorte ne peut être en relation
+    qu'avec elle même.
         
+    \case{Abs} \quad
+    \typenvd
+    \begin{prooftree}
+      \Abs
+    \end{prooftree}
+    Par induction $`E U', `G, x : T \typea M : U' \suba U$.
+    Or cela implique $`G, x : T \typea U' : s$, donc on peut dériver
+    $`G \typea \Pi x : T.U' : s$. On a donc bien $`G \typea \lambda x :
+    T.M : \Pi x : T.U' \suba \Pi x : T.U$.
+    
     \case{App} On a 
     \typenvd
     \begin{prooftree}
@@ -927,7 +708,7 @@ système de typage vis-à-vis du système déclaratif.
     $`E U, `G \subta u : U \sub V$.
     
     Si $T \suba \Pi x : V.W$ alors $\mualgo(T) = \Pi x : V'.W'$ avec
-    $V \suba V'$ et $W' \suba W$.
+    $V \suba V'$ et $W' \suba W$ (lemme \ref{beta-mu}.
 
     Par transivité de la coercion: $U \suba V'$, on peut donc dériver 
     \begin{prooftree}
@@ -942,7 +723,44 @@ système de typage vis-à-vis du système déclaratif.
     Par substitutivité de la coercion (lemme
     \ref{substitutive-coercion}), $W'[u/x] \suba W[u/x]$, la propriété
     est donc bien vérifiée.
+    
+    \case{Sigma}\quad
+    \typenvd
+    \begin{prooftree}
+      \SigmaR
+    \end{prooftree}
 
+    Par induction $`E s', `G \typea T : s' \sub s$ et $`E s'', `G, x : T 
+    \typea U : s' \suba s$ où $s `: \{ \Prop, \Set \}$. Encore une fois  
+    les sortes $s$, $s'$ et $s''$ doivent être égales. C'est direct
+    par \irule{Sigma}.
+
+    \case{Sum}\quad
+    \typenvd
+    \begin{prooftree}
+      \Sum
+    \end{prooftree}
+    \typenva
+    
+    Ici, l'annotation nous force à utiliser le jugement de coercion.
+    Par induction, $`E s', \Sigma x : T.U : s' \suba s$, $`E T', `G
+    \type t : T' \suba T$ et $`E U', `G \typea u : U' \suba U[t/x]$.
+    On peut montrer $`G \type \Sigma x : T'.U : s$.
+    En effet, par inversion de $`G \seq \Sigma x : T.U : s$ on a
+    $`G, x : T \seq U : s$ et par restriction ($T' \sub T$), $`G, x : T' \seq
+    U : s$.
+    Comme $T' \suba T$ on obtient $\Sigma x : T'.U \suba \Sigma x : T.U$.
+    On peut donc dériver:
+    \begin{prooftree}
+      \QAX{SumDep}
+      {$`G \seq t : T'$}
+      {$`G \seq u : U'$}
+      {$`G \seq U[t/x], U' : s \quad U' \suba U[t/x]$}
+      {$`G \seq \Sigma x : T'.U : s$}
+      {$`G \seq (x \coloneqq~t, u : U) : \Sigma x : T'.U$}
+      {}
+    \end{prooftree} 
+        
     \case{LetSum} On a
     \typenvd
     \begin{prooftree}
@@ -975,8 +793,6 @@ système de typage vis-à-vis du système déclaratif.
     Par complétude de la coercion, $T \suba S$ et par transitivité de la
     coercion, $T' \suba S$. La propriété est donc bien vérifiée dans les
     deux cas.
-    
-    \case{Sum}\quad
   \end{induction}
 \end{proof}
 

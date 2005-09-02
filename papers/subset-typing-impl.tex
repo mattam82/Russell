@@ -1,9 +1,8 @@
 \section{Génération des obligations de preuve}
-On veut désormais traduire les dérivations du système algorithmiques
-dans \CCI{} (modifiant aussi les termes de \lng{}) dont le jugement 
-de typage est $\typec$. 
+On veut désormais traduire les dérivations du système algorithmique
+dans \CCI{} dont le jugement de typage est $\typec$. 
 Les termes de \lng{} ne sont pas directement typables dans \CCI{}
-puisque nous avons permis d'utiliser des objets comme s'ils avaint des
+puisque nous avons permis d'utiliser des objets comme s'ils avaient des
 types différents de leurs types originaux avec la règle de coercion. Il
 va donc falloir maintenant expliciter ces coercions pour obtenir des
 termes typables dans \CCI{}. Cependant, on ne peut pas créer un terme
@@ -13,15 +12,15 @@ des trous dont on ne connait que le type des habitants) pour traduire le
 fait qu'il est de la responsabilité de l'utilisateur de prouver que son
 utilisation de la coercion n'était pas incorrecte.
 
-\newcommand{\ip}[2]{\llbracket #1 \rrbracket_{#2}}
-On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
-\begin{itemize}
-\item $\ip{x}{`G} = x, `G(x)$
-\item $\ip{\lambda x : T.v}{`G} = \lambda x : \ip{T}{`G}. \ip{v}{`G, x :
-    \ip{T}{`G}}$
-\item $\ip{f~u}{`G} = \ip{f}{`G}~\ip{u}{`G}$.
-\end{itemize}
-
+% \newcommand{\ip}[2]{\llbracket #1 \rrbracket_{#2}}
+% On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
+% \begin{itemize}
+% \item $\ip{x}{`G} = x, `G(x)$
+% \item $\ip{\lambda x : T.v}{`G} = \lambda x : \ip{T}{`G}. \ip{v}{`G, x :
+%     \ip{T}{`G}}$
+% \item $\ip{f~u}{`G} = \ip{f}{`G}~\ip{u}{`G}$.
+% \end{itemize}
+ 
 %\input{typing-impl-new}
 %\typeinewFig
 
@@ -146,6 +145,13 @@ On ne peut donc pas simplement faire une induction sur la dérivation de
 typage dans le système algorithmique, il nous faut l'information
 correspondant au coercions appliquées dans la réecriture. 
 
+Nous avons de bonnes raison de penser que la traduction fonctionne: le
+système \PVS{} repose sur système similaire depuis des années, notre
+réecriture fonctionne en pratique et enfin, on voit bien que le système
+déclaratif se plonge dans \CCI{} aisément. Dans ce cas, il suffit de
+voir que la règle de coercion permet toujours de trouver une fonction de
+$U$ à $T$ et qu'elle ne peut modifier que la forme des objets, alors
+qu'aucune règle ne repose dessus.
 
 % \begin{proof}
 %   Notre traduction est un homomorphisme, il est donc direct que le
