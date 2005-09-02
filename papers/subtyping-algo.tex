@@ -14,6 +14,13 @@
 %%   {}
 %% }
 
+\def\SubHnf{
+  \UAX{SubHnf}
+  {$\hnf{T}~\sub \hnf{U}$}
+  {$T \sub U$}
+  {} 
+}
+
 \def\SubLeft{
   \BAX{Sub-Left}
   {$`G \seq U \sub V$}
@@ -38,6 +45,8 @@
     \def\sub{\suba}
 
     \SubConv\DP
+    \quad
+    \SubHnf\DP
     \vspace{\infvspace}
 
     \SubProd\DP

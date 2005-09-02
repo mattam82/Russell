@@ -97,6 +97,7 @@
 \def\SubReflRule{Sub-Refl}
 \def\SubTransRule{Sub-Trans} 
 \def\SubConvRule{Sub-Conv}
+\def\SubHnfRule{Sub-$\downarrow$}
 \def\SubEqRule{Sub-Eq}
 \def\SubProdRule{Sub-Prod}
 \def\SubSigmaRule{Sub-Sigma}
@@ -151,6 +152,7 @@
 \fi\ifstreq{#1}{SubRefl}\SubReflRule
 \fi\ifstreq{#1}{SubTrans}\SubTransRule
 \fi\ifstreq{#1}{SubConv}\SubConvRule
+\fi\ifstreq{#1}{SubHnf}\SubHnfRule
 \fi\ifstreq{#1}{SubEq}\SubEqRule
 \fi\ifstreq{#1}{SubProd}\SubProdRule
 \fi\ifstreq{#1}{SubSigma}\SubSigmaRule

@@ -1,24 +1,24 @@
-\newcommand{\timpl}[6]{#1 \typea #2 : #3 "~>" #4 \typec #5 : #6}
+\newcommand{\timpl}[6]{#4 \typec #5 : #6} %#1 \typea #2 : #3 "~>"
 \newcommand{\subimpl}[4]{#1 \typec #2 : #3 \sub #4}
 
-\def\WfAtomI{
+\def\WfEmptyI{
   \UAX{WfEmpty}
   {}
-  {$\wf [] "~>"~\wf []$}
+  {$\wf []$}
   {}
 }  
   
 \def\WfVarI{
   \UAX{WfVar}
   {$\timpl{`G}{A}{s}{`G'}{A'}{s}$}
-  {$\wf `G, x : A "~>"~\wf `G', x : A'$}
-  {$s `: \{ \Set, \Prop, \Type(i) \}$}
+  {$\wf `G', x : A'$}
+  {$s `: \{ \Set, \Prop, \Type \}$}
 }
 
 \def\PropSetI{
   \UAX{PropSet}
-  {$\wf `G "~>" ~\wf `G'$}
-  {$\timpl{`G}{s}{\Type(0)}{`G'}{s}{\Type(0)}$}
+  {$\wf `G'$}
+  {$\timpl{`G}{s}{\Type(0)}{`G'}{s}{\Type}$}
   {$s `: \{ \Prop, \Set \}$} 
 }
 
@@ -31,18 +31,18 @@
 
 \def\VarI{
   \BAX{Var}
-  {$\wf `G "~>"~\wf `G'$}
-  {$x : A `: `G "~>" x : A' `: `G'$}
+  {$\wf `G'$}
+  {$x : A' `: `G'$}
   {$\timpl{`G}{x}{A}{`G'}{x}{A'}$}
   {}
 }
 
 \def\ProdI{
   \BAX{Prod}
-  {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
-  {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
-  {$\timpl{`G}{\Pi x : T.U}{s2}{`G'}{\Pi x : T'.U'}{s2}$}
-  {$(s1, s2) `: \mathcal{R}$}
+  {$\timpl{`G}{T}{s_1}{`G'}{T'}{s_1}$}
+  {$\timpl{`G, x : T}{U}{s_2}{`G', x : T'}{U'}{s_2}$}
+  {$\timpl{`G}{\Pi x : T.U}{s_3}{`G'}{\Pi x : T'.U'}{s_3}$}
+  {$(s_1, s_2, s_3) `: \mathcal{R}$}
 }
 
 \def\AbsI{
@@ -75,10 +75,10 @@
 
 \def\SigmaRI{
   \BAX{Sigma}
-  {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
-  {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
-  {$\timpl{`G}{\Sigma x : T.U}{s2}{`G'}{\Sigma x : T'.U'}{s2} $}
-  {$(s1, s2) `: \mathcal{R}$}
+  {$\timpl{`G}{T}{s}{`G'}{T'}{s}$}
+  {$\timpl{`G, x : T}{U}{s}{`G', x : T'}{U'}{s}$}
+  {$\timpl{`G}{\Sigma x : T.U}{s}{`G'}{\Sigma x : T'.U'}{s}$}
+  {$s `: \{ \Prop, \Set \} `^ x `; `G$}
 }
 
 
@@ -125,46 +125,86 @@
     \def\fCenter{\wf}
     \def\type{\typec}
     
-    \WfAtomI\DP
+    \WfEmpty\DP
+    \quad$"~>"$\quad
+    \WfEmptyI\DP
 
     \vspace{\infvspace}
+    \WfVar\DP
+    \quad$"~>"$\quad
     \WfVarI\DP
     
     \vspace{\infvspace}
+    \PropSet\DP
+    \quad$"~>"$\quad
     \PropSetI\DP
     
     \vspace{\infvspace}
+    \Var\DP
+    \quad$"~>"$\quad
     \VarI\DP
     
     \vspace{\infvspace}
+    \Prod\DP
+    \quad$"~>"$\quad
     \ProdI\DP
     
     \vspace{\infvspace}
+    \Abs\DP
+    \quad$"~>"$\quad
     \AbsI\DP
     
     \vspace{\infvspace}
+    \App\DP
+    \quad$"~>"$\quad
     \AppI\DP
 
 %     \vspace{\infvspace}
 %     \LetInI\DP
     
     \vspace{\infvspace}
+    \SigmaR\DP
+    \quad$"~>"$\quad
     \SigmaRI\DP
 
 %     \vspace{\infvspace}
 %     \SumInfI\DP
 
     \vspace{\infvspace}
+    \SumDepA\DP
+    \quad$"~>"$\quad
     \SumDepI\DP
     
     \vspace{\infvspace}
+    \LetSum\DP
+    \quad$"~>"$\quad
     \LetSumI\DP
     
     \vspace{\infvspace}
+    \Subset\DP
+    \quad$"~>"$\quad
     \SubsetI\DP
   \end{center}
-  \caption{Réecriture du typage vers \CCI}
+  \caption{Réécriture du typage vers \CCI}
   \label{fig:typing-impl-rules}
+\end{figure}
+}
+
+\def\typeiFigC{
+\begin{figure}
+  \begin{center} 
+    \vspace{\infvspace}
+    \App\DP
+    \quad$"~>"$\quad
+    \AppI\DP
+    
+    \vspace{\infvspace}
+    \SumDepA\DP
+    \quad$"~>"$\quad
+    \SumDepI\DP
+  \end{center}
+  \caption{Réécriture du typage vers \CCI}
+  \label{fig:typing-impl-rules-changed}
 \end{figure}
 }
 

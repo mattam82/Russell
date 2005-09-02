@@ -60,7 +60,7 @@ sp\'ecifier fortement les termes. Par exemple, la fonction de division
 euclidienne (qui renvoie le quotient et le reste de la division de son
 premier argument par son second) $\sdef{div} : \nat "->" \nat "->" \nat * \nat$ de \ML{} est 
 plus fortement sp\'ecifi\'ee en \Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat
-* \nat$.
+* \nat$ qui assure par typage qu'on ne divise pas par 0.
 Seulement, on ne peut pas \'ecrire simplement un programme \ML{} et
 donner sa sp\'ecification forte. Comme on a enrichi les types, on doit 
 aussi enrichir les termes avec des termes de preuve, inutiles au 
@@ -113,7 +113,9 @@ difficult\'es à d\'evelopper en \Coq{} que nous allons \'etudier maintenant.
 \subsection{Un langage trop expressif?} 
 
 Le langage de \CCI{} permet de bien sp\'ecifier des fonctions non
-triviales, par exemple, on peut spécifier très fortement notre division euclidienne:
+triviales, par exemple, on peut spécifier très fortement notre division
+euclidienne (dont on a vu qu'on pouvait la typer $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat
+* \nat$ précédement):
 \[\Definition~\sdef{div} : \forall a : \nat, \forall b : \nat,
 b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r~\} \}\]
 
@@ -207,7 +209,7 @@ m\'ecanisme d\'enomm\'e \ps{} que nous allons pr\'esenter maintenant.
 
 Les types sous-ensembles (définition \ref{subset-type-def}) sont d'une
 grande utilit\'e pour la sp\'ecification
-de programmes, par exemple pour les pr\'e-conditions:
+de programmes, comme nous l'avons vu pour \sref{div} précécement:
 $\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat
 * \nat$.
 
@@ -247,9 +249,8 @@ anneaux).
 Les extensions du Calcul des Constructions avec des notions de
 sous-typage comme $\lambda C_\leq$ de Chen ne sont cependant pas
 dans la m\^eme cat\'egorie que notre travail. En particulier, nous ne
-nous int\'eressons pas aux propri\'et\'es de normalisation, pr\'eservation du
-typage ou encore au fait d'avoir des sous-types minimaux dans notre
-système. On peut le voir plut\^ot comme un système syntaxique intelligent
+nous int\'eressons pas aux propri\'et\'es de normalisation ou de pr\'eservation du
+typage. On peut le voir plut\^ot comme un système syntaxique intelligent
 au-dessus du Calcul des Constructions.
 
 %%% Local Variables: 

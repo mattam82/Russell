@@ -1,4 +1,5 @@
 \section{Le langage \lng{}}
+\label{section:russel}
 Le langage que nous voulons est très proche de \ML{}, plus les annotations
 nécessaires pour avoir un typage précis et décidable. On étudie ici une
 restriction de \ML{}, purement fonctionnelle et sans filtrage, qu'on
@@ -20,10 +21,7 @@ de la somme ($\Sigma$) dépendants. Les variables introduites par ces
 types peuvent être utilisées lors des applications de types. On
 peut de plus abstraire sur les types avec le $\lambda$ (polymorphisme)
 et les sortes.
-Enfin on peut appliquer un type à un terme ($`t~`a$). Dans la suite, 
-les règles sont données avec l'idée
-qu'on fait les réductions de tête nécessaires pour obtenir un type
-d'une certaine forme (produit, somme, sous-ensemble, etc \ldots).
+Enfin on peut appliquer un type à un terme ($`t~`a$). 
 
 %\vspace{-0.5cm}
 \begin{figure}[ht]
@@ -53,12 +51,12 @@ sous-typage avec le nom de subsumption.
 Le jugement $\Gamma \typed t : T$ se lit: dans l'environnement $\Gamma$,
 $t$ est de type $T$.
 
-\begin{remark}
-  En pratique, les types du Calcul des Constructions ne sont pas
-  toujours en forme normale et il peut donc être nécessaire de les
-  réduire (en tête seulement) pour vérifier des jugements du genre: 
-  $`G \seq t : \Pi x : T.V$.
-\end{remark}
+% \begin{remark}
+%   En pratique, les types du Calcul des Constructions ne sont pas
+%   toujours en forme normale et il peut donc être nécessaire de les
+%   réduire (en tête seulement) pour vérifier des jugements du genre: 
+%   $`G \seq t : \Pi x : T.V$.
+% \end{remark}
 
 La relation $\mathcal{R}$ définissant les produits formables
 dans le système est définie par les règles suivantes:
@@ -74,27 +72,28 @@ dans le système est définie par les règles suivantes:
 %  \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
 %    \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
 \end{array}\]
-
+On a un système proche du \CCfull{} avec types $\Sigma$, mais
+avec \Set{} prédicatif (comme dans \Coq{}).
 On n'a pas $(\Prop,\Set,\Set)$ dans notre relation $\mathcal{R}$ pour
-une bonne raison. Cela permet de créer des fonctions dépendants de
+une bonne raison. Cela permet de créer des fonctions dépendant de
 propositions, par exemple $\Pi n : \nat, n > 0 "->" \Pi l :
 \text{list}~A~n "->" A$. Or on veut à tout prix éviter d'introduire des
 termes de preuve dans notre langage, et l'on voit que
-cette fonction pourrait naturellement s'écrire $\Pi n : subset{n}{\nat}{n > 0} "->" \Pi l :
+cette fonction pourrait naturellement s'écrire $\Pi n : \subset{n}{\nat}{n > 0} "->" \Pi l :
 \text{list}~A~n "->" A$. Encore une fois le type sous-ensemble nous
 permet d'éviter d'avoir à passer des termes de preuve directement. 
 
-Les sommes formables dans le système sont définient de la façon suivante:
-$(s, s, s)$ pour tout $s `: \{ \Prop, \Set \}$.
+Les sommes formables dans le système sont réduites au couples d'objets de
+types de même sorte $s `: \{ \Prop, \Set \}$.
 Dans le premier cas les habitants sont les couples de propositions
 (codage du $`^$), dans le second ce sont les couples d'objets, soit les
 paires de \ML.
 Intuitivement, c'est le type sous-ensemble $\subset{x}{T}{P}$ qui permet
-de faire des couples $\Set,\Prop,\Set$. Les types $\Sigma x : U.V$ où $U
+de faire des couples $\Set,\Prop$ habitant $\Set$. Les types $\Sigma x : U.V$ où $U
 : \Prop$ et $V : \Set$ n'ont pas d'intérêt dans notre cas puisqu'ils
 représentent des objets de type $U `^ V$ mais on ne peut
 pas utiliser $U$ dans notre système. On préfère coder ces objets par des
-objets de type $\subset{x}{B}{U}$ (on n'est pas intéressés par la preuve
+objets de type $\subset{x}{V}{U}$ (on n'est pas intéressé par la preuve
 de $U$ pour programmer).
 
 
@@ -112,18 +111,21 @@ système de coercion comme montré figure \ref{fig:subtyping-decl-rules}
 $`=_\beta~\subseteq~\subd + \text{\irule{SubConv}}$.
 En fait notre notion de réduction est un peu plus large que $\beta$
 puisqu'on peut réduire les $\sref{let}$:
-$\letml~x = t~\inml~v$ se réduit en $v[t/x]$ et 
-$\letml~(x,y) = t~\inml~v$ se réduit en $v[\pi_1~t/x][\pi_2~t/y]$. En
-pratique ces constructions sont du sucre syntaxique pratiques au niveau
-du typage (on peut inférer le type de $t$), mais sont inessentielles au
-niveau du calcul. La première est équivalente au redex $(\lambda x.v)~t$
-et la deuxième à $(\lambda~x.\lambda~y.v)~(\pi_1~t)~(\pi_2~t)$.
+$\letml~(x,y) = (u, v)~\inml~t$ se réduit en $t[u/x][v/y]$. En
+pratique cette constructions est du sucre syntaxique pratique au niveau
+du typage (on peut inférer le type de $t$), mais elle est inessentielle au
+niveau du calcul.
+On peut aisément rajouter un $\letml~x=t~\inml~v$ à notre langage de
+façon similaire: c'est équivalent à $(\lambda x : T.v)~t$, mais $T$ peut
+est inféré plutôt que donné par l'utilisateur.
 
 On considère les constantes comme des variables prédéfinies 
-dans nos contextes, par exemple on a la constante $\Pi_1 : \Sigma x :
-T. P "->" T$. L'ajout d'une constante à un contexte ne doit pas altérer
-sa bonne formation comme pour le cas des variables, donc son type doit
-être bien formé.
+dans nos contextes, par exemple on a la constante $\sref{list} : \Pi x :
+nat. \Set$. 
+L'ajout d'une constante à un contexte ne doit pas altérer sa
+bonne formation comme pour le cas des variables, donc son type doit être
+bien formé (en général, toute définition de \Coq~donne lieu à une
+constante dans notre système si elle est bien typée).
 
 \subsubsection{Jugement de coercion}
 Notre système de coercion par prédicats permet à l'utilisateur
@@ -132,16 +134,13 @@ $\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
 A l'inverse, on permet aussi d'utiliser une valeur de type
 $\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
 $V$ si $U$ est coercible vers $V$. Notre jugement de coercion est donc
-symétrique et laisse beaucoup de liberté à l'utilisateur au moment du codage. Par
-exemple, si l'on avait le filtrage dans notre langage \lng{}, on pourrait
-aisément dériver l'absurde:
-$x : \nat \typed \matchml~x~:~\subset{x}{\nat}{`_}~\withml~\textbf{elt}~\_~\_~p "=>" p :
-`_$. Seulement, lors de la traduction de la dérivation de coercion $\nat
+symétrique et laisse beaucoup de liberté à l'utilisateur au moment du
+codage. Par exemple on peut dériver $u : \nat \type u : \subset{x}{\nat}{`_}$
+Seulement, lors de la traduction de la dérivation de coercion $\nat
 \subd \subset{x}{\nat}{`_}$ (nécessaire pour traduire l'abus de notation
-$x : \subset{x}{\nat}{`_}$), l'utilisateur aura a résoudre une obligation
+$x : \subset{x}{\nat}{`_}$), l'utilisateur aura à résoudre une obligation
 de preuve de $`_$. On repose donc toujours sur la cohérence du Calcul
 des Constructions. 
-
 Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire des
 coercions dans les types composites. Classiquement, la règle pour le 
 produit fonctionnel est contravariante (une fonction sous-type d'une
@@ -153,7 +152,7 @@ n'a pas d'importance dans le système déclaratif puisqu'il est symétrique
 mais il est essentiel lors de la création des coercions que nous
 décrirons plus tard.
 
-La règle \irule{SubTrans} assure que l'on a un système compositionel. Il y a ici une
+La règle \irule{SubTrans} assure que l'on a un système compositionnel. Il y a ici une
 analogie avec l'élimination des coupures dans les systèmes logiques, où
 l'on montre que toute dérivation utilisant la règle de \emph{modus ponens} ($A "=>" B$ et $B "=>" C$ implique
 $A "=>" C$) peut se réécrire en une dérivation ne l'utilisant
@@ -167,11 +166,11 @@ mais notre système de typage ne permet pas d'éliminer (prendre la partie
 preuve) ou d'introduire (créer un couple témoin,preuve) des objets de
 type sous-ensemble. Cela nous assure une certaine cohérence, puisque
 même si l'on ne vérifie pas qu'un objet de type $U$ a bien la propriété
-$P$, on ne pas raisonner sur le fait que $U$ a la propriété dans le
+$P$, on ne peut pas raisonner sur le fait que $U$ a la propriété dans le
 langage.
 
 
-On ne vas pas faire la métathéorie du système déclaratif ici, puisque
+On ne fera pas la métathéorie du système déclaratif ici, puisque
 c'est une extension conservative du Calcul des Constructions et l'on
 étudiera en détail le système algorithmique. Notre preuve de conservativité
 est simple: si l'on oublie les utilisations des types sous-ensemble de
@@ -180,7 +179,8 @@ notre système de typage (\irule{Subset}) et de coercion
 juste la $\beta$-convertibilité et donc \irule{Coerce} et \irule{Conv} 
 sont équivalentes. Comme les autres règles de notre système déclaratif
 proviennent directement de \CC{}, on arrive à un système strictement
-égal au système du calcul des constructions.
+égal au système du calcul des constructions. On peut donc s'appuyer sur
+les résultats connus pour \CC{} pour une partie de notre système.
 
 Pour une étude complète du \CCfull{}, se référer à
 \cite{Barras99,Luo90}.

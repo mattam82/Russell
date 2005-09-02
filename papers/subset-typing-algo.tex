@@ -1,15 +1,16 @@
-\section{Élaboration du système algorithmique \& propriétés}
+\section{Élaboration du système algorithmique et propriétés}
 \typenva
 
 Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
 syntaxe. Ce n'est pas le cas du système déclaratif, aussi bien pour le
-typage que pour la coercion. On va donc rafiner ces systèmes dans
+typage que pour la coercion. On va donc raffiner ces systèmes dans
 l'optique d'en extraire un algorithme. On note $\typea$ le jugement de
-typage algorithmique défini figure \ref{fig:typing-algo-rules} et
+typage algorithmique défini figure \ref{fig:typing-algo-rules} page
+\pageref{fig:typing-algo-rules} et
 $\suba$ le jugement de coercion algorithmique présenté figure
 \ref{fig:subtyping-algo-rules}. Ces deux systèmes sont quelque peu
 éloignés des originaux, néanmoins nous allons montrer qu'ils sont
-corrects et complets vis-à-vis de leur géniteurs. La correction (si l'on
+corrects et complets vis-à-vis de leurs géniteurs. La correction (si l'on
 a une dérivation d'un jugement dans le système algorithmique, alors
 c'est un jugement valide du système déclaratif) est le
 sens le plus facile à montrer, nous allons donc commencer par là. On
@@ -19,10 +20,10 @@ mêmes jugements (à coercion près) dans le système algorithmique que dans
 le sytème déclaratif et d'autre part à la décidabilité du jugement de
 typage algorithmique.
 
-Il nous a fallut changer quelque peu les règles pour obtenir le système
+Il nous a fallu changer quelque peu les règles pour obtenir le système
 algorithmique. En particulier, on a utilisé la fonction $\mu_0$ de \PVS{}
 \cite{PVS-Semantics:TR} renommée $\mualgo$ (figure \ref{fig:mualgo-definition})
-ici pour opèrer des
+ici pour opérer des
 \emph{décompréhensions}. Cette fonction efface les constructeurs de type
 sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
 "->" \nat}{f~0 = 0}) = \nat "->" \nat$. On verra son utilité dans la suite.
@@ -48,7 +49,18 @@ sera nécessaire pour la correction du typage:
 
 \begin{proof}
   Les règles du système algorithmique sont un sous-ensemble des règles
-  du système déclaratif.
+  du système déclaratif, excepté pour la règle \irule{SubHnf}.
+  On utilise \irule{SubConv} et \irule{SubTrans} pour montrer son
+  admissibilité dans dans le système déclaratif.
+  \begin{prooftree}
+    \AXC{$U \eqbi \hnf{U}$}  
+    \UIC{$U~\subd \hnf{U}$}
+    \AXC{$\hnf{U}~\subd \hnf{T}$}
+    \AXC{$\hnf{T} \eqbi T$}
+    \UIC{$\hnf{T}~\subd T$}
+    \BIC{$\hnf{U}~\subd T$}
+    \BIC{$U \subd T$}
+  \end{prooftree}
 \end{proof}
 
 On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
@@ -56,13 +68,23 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 
 \begin{lemma}[$\mualgo$ et coercion]
   \label{mu-coercion}
-  Si $\mualgo(T) = U$ alors $T \suba U$.
+  $T \suba \mualgo(T)$.
 \end{lemma}
 
 \begin{proof}
   Il suffit de suivre la définition de $\mualgo$. La mise en forme
-  normale de tête est implicite dans notre jugement de
+  normale de tête est équivalente à l'utilisation de \irule{SubHnf} dans notre jugement de
   coercion. $\mualgo$ est en fait l'application répétée de la règle \irule{SubSub}.
+\end{proof}
+
+\begin{lemma}[Conservation des sortes par $\mu$]
+  \label{mu-sorts}
+  Si $`G \type S : s$ alors $`G \type \mu~S : s$
+\end{lemma}
+
+\begin{proof}
+  Par le simple fait que si $S = \subset{x}{U}{P}$ alors $S : \Set$ et
+  $U : \Set$ (par \irule{Subset}), sinon $S = \mu~S$.
 \end{proof}
 
 \begin{theorem}[Correction du typage]
@@ -96,7 +118,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
     
     Par induction, $`G \typed f : T$, et $T \subd \Pi x : V. W$ par le
     lemme \ref{mu-coercion} et la correction de la coercion.
-    On peut donc dériver $`G \typed f : \Pi x : V.W$ à l'aide de la
+    On peut donc dériver $`G \typed f : \Pi x : V.W$ à l'aide de la règle
     \irule{Coerce}.
     Par le lemme \ref{correct-coercion}, et l'hypothèse $`G \typed u :
     U$, on obtient $`G \typed u : V$ par \irule{Coerce}.
@@ -104,9 +126,9 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
   \end{induction}  
 \end{proof}
 
-On a prouvé que notre système algorithmique était correct, c'est à dire
+On a prouvé que notre système algorithmique était correct, c'est-à-dire
 que ses jugements valides sont bien inclus dans ceux du système
-déclaratif, il faut maintenant montrer qu'il les inclus tous (ou presque!).
+déclaratif, il faut maintenant montrer qu'il les inclut tous (ou presque!).
 
 \begin{subsubsection}{Notations}
 On introduit la notation $`G \typea T, U : s$ pour $`G \typea T : s `^
@@ -119,21 +141,22 @@ l'on a construit les systèmes algorithmiques.
 
 
 On s'intéresse tout d'abord au jugement de coercion.
-Pour rendre le jugement de coercion décidable, il faut traiter la règle
-\irule{SubConv} qu'on peut appliquer à n'importe quel moment et la règle
-\irule{SubTrans} qui n'est pas dirigée par la syntaxe (il faut
+Pour rendre le jugement de coercion décidable, il faut traiter les règles
+\irule{SubConv} et \irule{SubHnf} qu'on peut appliquer à n'importe quel 
+moment et la règle \irule{SubTrans} qui n'est pas dirigée par la syntaxe (il faut
 ``deviner'' un type $T$). Le système de coercion algorithmique (figure
 \ref{fig:subtyping-algo-rules}) est le même que le système
 déclaratif (figure \ref{fig:subtyping-decl-rules}) mais où l'on n'applique 
 \irule{SubConv} seulement si aucune autre règle ne
-s'applique et sans la rêgle \irule{SubTrans}. 
+s'applique après avoir appliqué \irule{SubHnf} 
+et sans la règle \irule{SubTrans}.
 
 \subsubsection{Décidabilité et complétude de la coercion}
-On va montrer que les deux systèmes de coercion sont équivalents vis à
-vis de la conversion. On montrera plus tard pourquoi on peut éliminer la
+On va montrer que les deux systèmes de coercion sont équivalents vis-à-vis de la conversion. On montrera plus tard pourquoi on peut éliminer la
 règle de transitivité.
 
-On rappelle qu'on considère qu'on peut appliquer la normalisation de tête avant tout
+On rappelle qu'on considère qu'on peut appliquer la normalisation de
+tête \irule{ConvHnf} avant toute
 application d'une règle de typage ou coercion. Ainsi on peut très bien
 dériver $((\lambda x : \Set.x)~\nat) \suba \subset{x}{\nat}{P}$ puisque 
 $\hnf{((\lambda x : \Set.x)~\nat)} = \nat$ et $\nat \suba
@@ -157,22 +180,22 @@ On peut maintenant montrer:
   Si $`G \typea T, U : s$ et $T \eqbi U$ alors $T \suba U$.
 \end{lemma}
 \begin{proof}
-  Par induction sur la forme de $T$.
+  Par induction sur la forme de $\hnf{T}$.
   
   \def\seq{\suba}.
   
   \begin{itemize}
-  \item[$T `= \Pi x : X.Y$:]
+  \item[$\hnf{T} = \Pi x : X.Y$:]
     Alors $\hnf{U} = \Pi y : V.W$ et $X \eqbi V$, $Y \eqbi W$
     d'après le lemme \ref{conversion-pi}.
     Par induction $X \sub Y$ et $V \sub W$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
-  \item[$T `= \Sigma x : X.Y$:]
+  \item[$\hnf{T} = \Sigma x : X.Y$:]
     Alors $\hnf{U} = \Sigma y : V.W$, avec $X \eqbi V$ et $Y \eqbi
     W$. Par induction et application de \irule{SubSigma}.
     
-  \item[$T `= \subset{x}{X}{P}$:] 
+  \item[$\hnf{T} `= \subset{x}{X}{P}$:] 
     On a alors $\hnf{U} = \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
@@ -192,7 +215,7 @@ On peut maintenant montrer:
 
 Il n'y a pas de problème d'identification de sortes dans ce système,
 contrairement au système $\lambda~C_\leq$ de Gang Chen \cite{ChenPhD},
-puisqu'on a pas de cumulativité. Le seul fait que les arguments sont
+puisqu'on n'a pas de cumulativité. Le seul fait que les arguments sont
 tous les deux sortés avec la même sorte
 avant de dériver le jugement de coercion nous assure que l'on ne fera
 pas d'identification erronée.
@@ -211,14 +234,13 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
     X$, $Y \sub Y'$.
   \item Si $\Sigma x : X.Y \sub U$ alors $\mualgo(U) = \Sigma x : X'.Y'$ et $X \sub
     X'$, $Y \sub Y'$.
-  \item Pour tout $U$, $U \sub \mualgo(U)$.
-  \item Pour tout $S,U$, $S \sub \mualgo(U)$ \ssi $S \sub U$.
+  \item Pour tout $S,U$, $S \sub \mualgo(U)$ \ssi~$S \sub U$.
   \end{itemize}
 \end{lemma}
 \begin{proof}
   Par induction sur les dérivations de $\suba$ et la définition de $\mualgo$.
 
-  Dans le dernier cas, de gauche a droite on construit la dérivation en
+  Dans le dernier cas, de gauche à droite on construit la dérivation en
   ajoutant des applications de \irule{SubProof} et dans l'autre sens on
   est assuré de trouver la preuve dans la dérivation même de $S \sub U$:
   si $U$ n'est pas de la forme sous-ensemble c'est direct. Sinon, on
@@ -237,8 +259,28 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 
 \begin{proof}
   Par simple inspection des règles on voit que le jugement ne peut
-  distinguer deux termes $\beta$-équivalents (ils ont forcement les
+  distinguer deux termes $\beta$-équivalents (ils ont forcément les
   mêmes formes normales de tête).
+\end{proof}
+
+\begin{lemma}[Coercion et formes normales de tête]
+  \label{coercion-hnf}
+  Si $T \suba U$ alors $\hnf{T}~\suba \hnf{U}$ est dérivable par une
+  dérivation plus petite ou égale.
+\end{lemma}
+
+\begin{proof}
+  \begin{induction}[subtyping-algo]
+
+    \case{SubConv} Trivial.
+    \case{SubHnf} On prend la dérivation en prémisse.
+    \casetwo{SubProd}{SubSigma} $T$ et $U$ sont égaux à leurs formes normales
+    de tête, direct.
+
+    \case{SubProof}
+    Par induction $\hnf{T}~\suba \hnf{V}$, on applique \irule{SubProof}
+    \case{SubSubset} idem.
+  \end{induction}  
 \end{proof}
 
 \begin{lemma}[Transitivité de la coercion]
@@ -264,36 +306,50 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
     
     Par le lemme précédent, on élimine trivialement \irule{SubTrans}.
 
+    \case{SubHnf}\quad
+    \begin{prooftree}
+      \AXC{$\hnf{S}~\sub \hnf{T}$}
+      \UIC{$S \sub T$}
+      \AXC{$T \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+    
+    Si $T \sub U$ alors $\hnf{T}~\suba \hnf{U}$ est dérivable par une
+    dérivation plus petite ou égale (lemme \ref{coercion-hnf}). 
+    Or on a $\hnf{S}~\suba \hnf{T}$. Donc $\hnf{S}~\suba \hnf{U}$ et par
+    \irule{SubHnf}, $S \sub U$.
+    
     \case{SubProd}\quad
     \begin{prooftree}
       \AXC{$X' \sub X$}
       \AXC{$Y \sub Y'$}
-      \BIC{$\Pi~X~Y \sub \Pi~X'~Y'$}
-      \AXC{$\Pi~X'~Y' \sub U$}
-      \BIC{$\Pi~X~Y \sub U$}
+      \BIC{$\Pi x : X.Y \sub \Pi x' : X'.Y'$}
+      \AXC{$\Pi x' : X'.Y' \sub U$}
+      \BIC{$\Pi x : X.Y \sub U$}
     \end{prooftree}
     
-    Si $\Pi~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    = \Pi~S~T$ et $S \sub X'$, $Y' \sub T$.
+    Si $\Pi x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
+    = \Pi y : S.T$ et $S \sub X'$, $Y' \sub T$.
     Par induction (les dérivations sont plus petites que la dérivation
-    $\Pi~X'~Y' \sub U$), $S \sub X$ et $Y \sub T$ donc $\Pi~X~Y \sub \Pi~S~T$ 
-    et enfin $\Pi~X~Y \sub U$ par le lemme \ref{coercion-mu}.
+    $\Pi x' : X'.Y' \sub U$), $S \sub X$ et $Y \sub T$ donc $\Pi x : X.Y
+    \sub \Pi y : S.T$ 
+    et enfin $\Pi x : X.Y \sub U$ par le lemme \ref{coercion-mu}.
 
-    De facon équivalente pour le second cas.
+    De façon équivalente pour le second cas.
 
     \case{SubSigma}\quad
     \begin{prooftree}
       \AXC{$X \sub X'$}
       \AXC{$Y \sub Y'$}
-      \BIC{$\Sigma~X~Y \sub \Sigma~ X'~Y'$}
-      \AXC{$\Sigma~X'~Y' \sub U$}
-      \BIC{$\Sigma~X~Y \sub U$}
+      \BIC{$\Sigma x : X.Y \sub \Sigma x' : X'.Y'$}
+      \AXC{$\Sigma x' : X'.Y' \sub U$}
+      \BIC{$\Sigma x : X.Y \sub U$}
     \end{prooftree}
     
-    Si $\Sigma~X'~Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    = \Sigma~S~T$ et $X' \sub S$, $Y' \sub T$.
-    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma~X~Y \sub
-    \Sigma~S~T$ et enfin $\Sigma~X~Y \sub U$ (lemme \ref{coercion-mu}).
+    Si $\Sigma x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
+    = \Sigma y : S.T$ et $X' \sub S$, $Y' \sub T$.
+    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma x : X.Y \sub
+    \Sigma y : S.T$ et enfin $\Sigma x : X.Y \sub U$ (lemme \ref{coercion-mu}).
     
     De façon équivalente pour le second cas.
 
@@ -333,7 +389,9 @@ En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
 d'inférence de $\suba$ donne donc un algorithme pour décider de la relation
 de coercion. L'indéterminisme entre les règles \irule{SubProof} et
 \irule{SubSub} ne pose pas de problème: on peut laisser le choix à 
-l'implémentation puisque le système est confluent.
+l'implémentation puisque le système est confluent. \irule{SubHnf}
+formalise le fait qu'on peut avoir à réduire en tête avant d'appliquer
+les autres règles (pour obtenir un produit, une somme ou un sous-ensemble).
 
 \subsubsection{Décidabilité et complétude du typage}
 Le système algorithmique correspond au système déclaratif où l'on a enlevé la règle
@@ -345,34 +403,34 @@ système algorithmique. On va montrer en fait que
 toute dérivation de typage utilisant \irule{Coerce} peut se réécrire en
 une dérivation n'utilisant cette règle qu'à sa racine.
 
-\paragraph{Sommes dépendantes}
-On veut pouvoir faire le plus d'inférence possible dans notre sytème
-algorithmique, on a donc introduit une règle \irule{SumInf} qui ne force
-pas à annoter les paires. Dans le cas ou le terme n'est pas annoté, on
-considère donc que la somme n'est pas dépendante. En effet on remarque
- qu'il n'est pas possible d'inférer le type $U$ à partir du seul terme $(t, u)$. Cela
-nécessiterait de résoudre un problème d'unification d'ordre supérieur
-auquel il n'y a pas de solution la plus générale. 
-On a donc dans le système algorithmique deux règles pour les sommes, 
-dont une (\irule{SumDep}) permettant d'annoter le terme avec le type $U$ recherché. 
+% \paragraph{Sommes dépendantes}
+% On veut pouvoir faire le plus d'inférence possible dans notre sytème
+% algorithmique, on a donc introduit une règle \irule{SumInf} qui ne force
+% pas à annoter les paires. Dans le cas ou le terme n'est pas annoté, on
+% considère donc que la somme n'est pas dépendante. En effet on remarque
+%  qu'il n'est pas possible d'inférer le type $U$ à partir du seul terme $(t, u)$. Cela
+% nécessiterait de résoudre un problème d'unification d'ordre supérieur
+% auquel il n'y a pas de solution la plus générale. 
+% On a donc dans le système algorithmique deux règles pour les sommes, 
+% dont une (\irule{SumDep}) permettant d'annoter le terme avec le type $U$ recherché. 
 
 \paragraph{\'Elimination de la coercion}
 \typenva
 On veut maintenant montrer la complétude de notre système. Dans un
-système à sous-typage, le théorême correspondant est parfois nommé
+système à sous-typage, le théorème correspondant est parfois nommé
 typage minimal ``\emph{minimal typing}'' puisque son énoncé revient à
 dire que tout terme a un type minimal dans les deux systèmes. En effet
-notre théorême est le suivant:
+notre théorème est le suivant:
 $`G \typed t : T "=>" `G \typea t : U \suba T$. Le typage algorithmique
 assigne bien un seul type à un terme $t$ mais comme on a des coercions, le
 type inféré $U$ peut être un peu différent du type $T$. Dans notre cas
 particulier $U$ sera certainement un type moins riche que $T$ (par
-exemple $\nat$ par rapport à $\subset{x}{\nat}{P}$. Lorsque l'on
+exemple $\nat$ par rapport à $\subset{x}{\nat}{P}$). Lorsque l'on
 développera des programmes, on donnera une spécification forte et l'on
 fera une coercion entre le type inféré et la spécification pour obtenir
-au final (après réecriture dans \Coq) un terme du type $T$ le plus riche.
+au final (après réécriture dans \Coq) un terme du type $T$ le plus riche.
 On a besoin de quelques lemmes pour montrer que notre système où
-\irule{Coerce} a été eliminé est complet:
+\irule{Coerce} a été éliminé est complet:
 
 \begin{lemma}[$\beta$-equivalence et $\mualgo$]
   \label{beta-mu}
@@ -386,6 +444,9 @@ On a besoin de quelques lemmes pour montrer que notre système où
   \begin{induction}  
     \case{SubConv} Trivial, puisqu'on aura $\mualgo(X) = \mualgo(Y)$.
 
+    \case{SubHnf} Trivial puisque pour tout $x$, $\mualgo(x) =
+    \mualgo(\hnf{x})$.
+    
     \case{SubProd} Impossible, $\mualgo$ ne traversant pas les produits.
 
     \case{SubSigma} Direct, on a une dérivation de $\Sigma x : T'. U'
@@ -393,7 +454,7 @@ On a besoin de quelques lemmes pour montrer que notre système où
     
     \case{SubLeft} Ici, $Y `= \subset{x}{V}{P}$, on peut donc déduire que
     $\mualgo(Y) = \mualgo(V) = \Sigma x : T.U$. On 
-    applique l'hypothèse de récurence avec $X \sub V$ et on obtient:
+    applique l'hypothèse de récurrence avec $X \sub V$ et on obtient:
     $\mualgo(X) = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
 
     \case{SubRight} Ici, $X `= \subset{x}{V}{P}$. Par induction, 
@@ -486,7 +547,7 @@ contextes où les variables ont des types équivalents.
     
     \case{Var}
     Par induction, $\typewf `G, x : S', `D$. La seule différence avec le
-    contexte précedent est le type associé à $x$, donc si $t \not= x$, on
+    contexte précédent est le type associé à $x$, donc si $t \not= x$, on
     peut simplement réappliquer \irule{Var}. Si $t `= x$ on construit la
     dérivation:
 
@@ -548,6 +609,13 @@ pouvoir prouver la complétude.
     \case{SubConv}
     Direct par préservation de l'équivalence $\eqbi$ par substitution.
     
+    \case{SubHnf}
+    Par induction, $(\hnf{U})[u/x] \suba (\hnf{T})[u/x]$. 
+    Par le lemme \ref{coercion-hnf}, $\hnf{((\hnf{U})[u/x])} \suba
+    \hnf{((\hnf{T})[u/x])}$. 
+    Donc $\hnf{U[u/x]}~\suba \hnf{T[u/x]}$ et par \irule{SubHnf}, 
+    $U[u/x] \suba T[u/x]$.
+
     \case{SubProd}
     Par induction $U[u/x] \suba T[u/x]$ et $V[u/x] \suba W[u/x]$, donc
     $\Pi y : T[u/x].V[u/x] \suba \Pi y : U[u/x].W[u/x]$. La propriété
@@ -594,14 +662,14 @@ pouvoir prouver la complétude.
       $\wf `G, `D[u/x]$
     \end{itemize}
     
-    \casetwo{PropSet} 
+    \case{PropSet}
     La substitution n'a aucun effet et $`G, `D[u/x]$ est bien
     formé par induction.
     
     \case{Var}
     Par induction, $\wf `G, `D[u/x]$.
     Si $t `= x$ alors on a $T = U$ et $T[u/x] = U$ puisque $x$
-    n'apparait pas dans $U$. On a donc bien $`G, `D[u/x] \typea t[u/x] = u :
+    n'apparaît pas dans $U$. On a donc bien $`G, `D[u/x] \typea t[u/x] = u :
     T[u/x] = U$. 
     Si $y : T `: `G$ alors on applique simplement \irule{Var}.
     Si $y : T `: `G$ alors $y : T[u/x] `: `D[u/x]$ et on obtient
@@ -684,7 +752,7 @@ système de typage vis-à-vis du système déclaratif.
       \Prod
     \end{prooftree}
     
-    Direct par induction et le fait qu'un sorte ne peut être en relation
+    Direct par induction et le fait qu'une sorte ne peut être en relation
     qu'avec elle même.
         
     \case{Abs} \quad
@@ -710,7 +778,7 @@ système de typage vis-à-vis du système déclaratif.
     Si $T \suba \Pi x : V.W$ alors $\mualgo(T) = \Pi x : V'.W'$ avec
     $V \suba V'$ et $W' \suba W$ (lemme \ref{beta-mu}.
 
-    Par transivité de la coercion: $U \suba V'$, on peut donc dériver 
+    Par transitivité de la coercion: $U \suba V'$, on peut donc dériver 
     \begin{prooftree}
       \TAX{App}
       {$`G \seq f : T \quad \mualgo(T) = \Pi x : V'. W'$}
@@ -796,12 +864,13 @@ système de typage vis-à-vis du système déclaratif.
   \end{induction}
 \end{proof}
 
-On combine les théorêmes de correction et complétude pour obtenir la propriété suivante entre les deux systèmes:
-\begin{corrolary}[Équivalence des systèmes déclaratifs et algorithmiques]
+On combine les théorèmes de correction et de complétude pour obtenir
+ la propriété suivante entre les deux systèmes:
+\begin{corrolary}[Équivalence des systèmes déclaratif et algorithmique]
   $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \suba T$.
 \end{corrolary}
 
-On a maintenant un système raffiné dérivant les même jugements (à
+On a maintenant un système raffiné dérivant les mêmes jugements (à
 coercion près) que le système déclaratif. On veut en extraire un
 algorithme de typage. Pour cela on doit pouvoir résoudre deux problèmes:
 \begin{itemize}
@@ -812,7 +881,7 @@ algorithme de typage. Pour cela on doit pouvoir résoudre deux problèmes:
 \end{itemize}
 En pratique, la vérification a besoin de l'inférence puisque lorsqu'on
 vérifie une application $f u : T$ on doit inférer le type de $f$.
-On montre donc les théorêmes suivants:
+On montre donc les théorèmes suivants:
 
 \begin{theorem}[Décidabilité de l'inférence dans le système algorithmique]
   Le problème d'inférence $`G \typea t :~?$ est décidable.
@@ -829,7 +898,7 @@ On montre donc les théorêmes suivants:
   La relation de typage $`G \typea t : T$ est décidable.
 \end{theorem}
 \begin{proof}
-  Direct. On utilise le théorême précédent pour le cas de l'application.
+  Direct. On utilise le théorème précédent pour le cas de l'application.
 \end{proof}
 
 On a désormais un algorithme de typage pour notre système avec

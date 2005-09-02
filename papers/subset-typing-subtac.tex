@@ -26,38 +26,40 @@ introduction, lorsque c'est un cast, on applique l'identit\'e et ainsi de
 suite. Intuitivement, la s\'equence de tactiques engendr\'ee va construire
 le terme de d\'epart implicitement. 
 
-La tactique \eterm{} fonctionne diff\'erement. \`A partir d'un terme $t$
+La tactique \eterm{} fonctionne diff\'eremment. \`A partir d'un terme $t$
 contenant des existentielles, \eterm{} va g\'en\'eraliser le terme par
 rapport \`a celles-ci, et généraliser chaque existentielle par rapport à
 son contexte, cr\'eant ainsi un objet $(\lambda ex_1 : T_1, \ldots, ex_n :
-T_n, t[?_1 := ex_1, \ldots, ?_n := ex_n])$, ou chaque $ex_i$ est appliqué
+T_n, t[?_1 := ex_1, \ldots, ?_n := ex_n])$, où chaque $ex_i$ est appliqué
 aux variables introduites dans son contexte par les abstractions.
 Habituellement, on propose $t$ comme habitant d'un type $T$ donn\'e (le
 but), par exemple on peut proposer $\lambda x : \nat.x$ comme preuve du
 but $\nat "->" \nat$.
 Plut\^ot que de donner directement $t$, on applique le nouveau
 terme, et \Coq{} va automatiquement nous demander d'instancier les
-arguments $ex_1 \ldots ex_n$ correspondants aux existentielles du terme 
+arguments $ex_1 \ldots ex_n$ correspondant aux existentielles du terme 
 $t$. Cette technique permet d'avoir des d\'ependances entre existentielles
-(par exemple, $ex_1$ peut apparaitre dans tout les types $T_2 \ldots
-T_n$) et de ne pas reposer sur la gestion des existentielles de \Coq{}
-qui n'est pas tr\`es flexible \`a l'heure actuelle.
+(par exemple, $ex_1$ peut apparaître dans tous les types $T_2 \ldots
+T_n$) et de ne pas reposer entièrement sur la gestion des existentielles
+de \Coq{} qui n'est pas tr\`es flexible \`a l'heure actuelle. En
+particulier, si l'on applique une produits où il y a des dépendances
+entre arguments, \Coq{} va recréer des existentielles.
 
 Il nous faut nous pencher un peu plus avant sur la g\'en\'eralisation des
 existentielles pour comprendre le m\'ecanisme d'\eterm.
 Puisqu'on veut pouvoir avoir des d\'ependances entres les $n$
-existentielles d'un termes et qu'on s\'erialise celles-ci en un produit
+existentielles d'un terme et qu'on s\'erialise celles-ci en un produit
 $n$-aire, il nous faut \^etre tr\`es attentifs \`a l'ordre dans lequel on
 g\'en\'eralise les variables existentielles. Si $?_3 : T_3$ o\`u $T_3$
 r\'ef\'erence $?_4$, il faut que l'existentielle $ex_4$ apparaisse
 \emph{avant} $ex_3$ dans notre produit. Il est toujours possible de
 trouver un ordre compatible avec ces d\'ependances puisqu'il est
 impossible de cr\'eer un cycle o\`u $?_i$ r\'ef\'erencerait $?_j$ et vice-versa
-(ceci est assur\'e par le caract\`ere fonctionnel des objets impl\'ementants
+(ceci est assur\'e par le caract\`ere fonctionnel des objets impl\'ementant
 les existentielles dans \Coq). La tactique actuelle est cod\'ee avec
 l'hypoth\`ese que toute existentielle $?_i$ ne d\'epend pas des
-existentielles d'indice sup\'erieur \`a $i$. Il est cependant envisagable de
-r\'eecrire tout terme contenant des existentielles comme un terme
+existentielles d'indice sup\'erieur \`a $i$. Il est cependant envisageable de
+réécrire tout terme contenant des existentielles comme un terme
 \'equivalent avec des indices respectant cet ordre.
 
 \section{Traitement de la r\'ecursion}
@@ -77,8 +79,8 @@ l'intérieur des termes devraient être facile à introduire, il suffit
 d'avoir un combinateur $\sref{fix}$ comme constante avec une forme
 pratique pour le langage: par exemple la fonction utilisable pour
 l'appel récursif devrait avoir un type de la forme:
-$\subset{x}{T}{R~x~a} "->" B$ ou $R$ est la relation bien fondée et $T$ le type de
-l'argument de récursion ainsi on génera les obligations automatiquement
+$\subset{x}{T}{R~x~a} "->" B$ où $R$ est la relation bien fondée et $T$ le type de
+l'argument de récursion ainsi on génèrera les obligations automatiquement
 lors des appels récursifs.
 
 \section{Traitement des inductifs}
@@ -91,25 +93,25 @@ pouvoir traiter les inductifs dans $\Set$ pr\'edicatif, qui ne peuvent
 embarquer des propositions qu'en utilisant des types sous-ensemble avec
 le m\^eme m\'ecanisme de coercion et conserver l'inf\'erence.
 
-\section{La tactique \Program}
+\section{\texttt{Program} et \texttt{Recursive program}}
 On peut utiliser notre contribution à l'aide des deux tactiques
-\verb|Program| et \verb|Recursive Program|. 
+\texttt{Program} et \texttt{Recursive program}. 
 
-\subsubsection{\texttt{Program}}
+\paragraph{\texttt{Program}}
 La syntaxe pour l'appel de cette tactique est la suivante:
 $\texttt{Program}~\sref{name}~:~`t := `a.$ où $`t, `a$ dénottent les
 catégories syntaxiques des types et des termes respectivement.
 La tactique fonctionne ainsi:
 On infère le type du terme, on applique la coercion du terme vers le
-type spécifié puis on réecrit le terme obtenu dans \CCI{}. On réecrit
+type spécifié puis on réécrit le terme obtenu dans \CCI{}. On réécrit
 ensuite le type spécifié dans \CCI{} et on le pose comme but. On utilise
 \eterm{} qui va s'occuper du terme à trous et l'appliquer au but. On
 obtient alors automatiquement les obligations de preuves. 
 
-\subsubsection{\texttt{Recursive program}}
-Cette deuxième permet d'écrire des définitions récursives, on va donc demander
+\paragraph{\texttt{Recursive program}}
+Cette deuxième tactique permet d'écrire des définitions récursives, on va donc demander
 plus d'informations à l'utilisateur lors de la définition:
-$\texttt{Program}~\sref{name}~(a : `t_a) { \sref{wf}~R~(\sref{auto} `|
+$\texttt{Recursive program}~\sref{name}~(a : `t_a) { \sref{wf}~R~(\sref{auto} `|
   \sref{proof} p)? } : ~`t := `a.$.
 L'argument $a$ de type $`t_a$ est l'argument de récursion, $R$ est la
 relation d'ordre qu'on doit montrer bien fondée. Si l'on utilise
@@ -117,13 +119,16 @@ $\sref{auto}$ la tactique va chercher dans une base une preuve de bonne
 fondation. Si l'on utilise $\sref{proof}$ alors $p$ doit référencer une
 preuve de la bonne fondation de $R$ dans l'environnement courant. Sinon
 on génère une obligation de preuve que $R$ est bien fondé.
-La tactique fait ensuite à peu près la même chose que \verb|Program|.
-Le typage et la réecriture se font dans un contexte où la
+La tactique fait ensuite à peu près la même chose que \texttt{Program}.
+Le typage et la réécriture se font dans un contexte où la
 fonction $name : \Pi a : `t_a.`t$ apparaît et
 l'on vérifie à l'application si l'on fait un appel récursif auquel cas on
 insère une existentielle correspondant à la preuve que l'ordre est bien
 respecté (dans \Coq, la fonction permettant de faire la récursion aura
-un type de la forme $\Pi x : `t_a. R~x~a "->" `t$). 
+un type de la forme $\Pi x : `t_a. R~x~a "->" `t$). Un exemple de
+l'utilisation de \texttt{Recursive program} est donné figures
+\ref{fig:euclid-subtac} et \ref{fig:euclid-subtac-script}.
+
 
 %%% Local Variables: 
 %%% mode: latex

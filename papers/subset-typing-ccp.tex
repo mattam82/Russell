@@ -1,6 +1,6 @@
 \chapter{Le calcul de coercion par prédicats}
 Nous avons développé un langage supportant le \ps{} utilisable dans
-\Coq. L'utilisateur peut définir des programmes dans un langage plus
+\Coq. L'utilisateur peut définir des programmes dans un langage 
 souple puis prouver certains buts pour obtenir finalement un terme de
 \CCI{} complet vérifiable par le noyau. On peut finalement utiliser 
 les types dépendants comme des types
@@ -12,7 +12,7 @@ dans \CCI{} en laissant des ``trous'' dans les termes qui désambigüent
 les abus et enfin \Coq{} se charge de générer les obligations correspondant à ces trous.
 
 
-On va donc tout d'abord présenter le langage \lng{}, puis un algorithme
+On va donc tout d'abord présenter le langage \lng{} (section \ref{section:russel}), puis un algorithme
 de typage correct et complet pour les programmes écrits en \lng{}. Ensuite on montrera comment
 plonger ce langage dans \CCI{} en ajoutant les coercions adéquates et
 enfin on expliquera comment se déroule la génération des obligations de

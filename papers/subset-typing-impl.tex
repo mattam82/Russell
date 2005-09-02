@@ -34,7 +34,7 @@ $`G \typea t : T$ (système algorithmique) en $`G' \typec t' : T'$
 \ref{fig:subtyping-impl-rules}) se lit: la coercion de $T$ à
 $U$ est $c$ et on construit le séquent $`G \typec c : T "->" U$.
 La traduction est un homomorphisme (elle conserve la structure de la
-dérivation et se rappelle récursivement) excepté pour l'application, ce qui
+dérivation et se rappelle récursivement) excepté pour \irule{App} et \irule{SumDep}, ce qui
 est normal puisque nous avons un système très proche de \CCI{}. Le fait
 de traduire aussi les environnements $\Gamma$ est dû au fait que nous
 faisons la coercion dans les types,  donc les environnements (listes
@@ -105,6 +105,21 @@ On veut montrer que si l'on a une dérivation dans notre système
 algorithmique, alors son image par la réécriture est une dérivation
 valide de \CCI{}. On rappelle que \CCI{} est équivalent au premier
 calcul présenté moins la règle de subsumption.
+Voici les règles qui ont changé de manière non triviale entre les deux systèmes:
+\vspace{0.2em}
+
+
+\setboolean{displayLabels}{false}
+\hspace{-1cm}
+\App\DP
+\quad$"~>"$\quad
+\AppI\DP
+
+\vspace{\infvspace}
+\hspace{-1cm}
+\SumDepA\DP
+\quad$"~>"$\quad
+\SumDepI\DP
 
 \begin{theorem}
   Si $`G \typea t : T$ et $\timpl{`G}{t}{T}{`G'}{t'}{T'}$ alors $`G'
@@ -119,9 +134,9 @@ suivant:
 
 Dans le système algorithmique, on peut très bien dériver
 $\Pi n : \nat. \sref{list}~n \suba \Pi n :
-\subset{x}{\nat}{P}.\sref{list~n}$ puisque $\subset{x}{\nat}{P} \suba
+\subset{x}{\nat}{P}.\listml~n$ puisque $\subset{x}{\nat}{P} \suba
 \nat$ et $\listml~n \eqbi \listml~n$.
-Si l'on réecrit la dérivation vers \CCI{}, on n'aura plus les même types
+Si l'on réécrit la dérivation vers \CCI{}, on n'aura plus les même types
 de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
 Ici, une coercion a été insérée dans le second type:
 $`G' \typec c : \Pi n : \nat. \listml~n \subi \Pi n :
@@ -143,20 +158,71 @@ dériver ce jugement:
 
 On ne peut donc pas simplement faire une induction sur la dérivation de
 typage dans le système algorithmique, il nous faut l'information
-correspondant au coercions appliquées dans la réecriture. 
+correspondant aux coercions appliquées dans la réécriture. 
 
-Nous avons de bonnes raison de penser que la traduction fonctionne: le
-système \PVS{} repose sur système similaire depuis des années, notre
-réecriture fonctionne en pratique et enfin, on voit bien que le système
-déclaratif se plonge dans \CCI{} aisément. Dans ce cas, il suffit de
-voir que la règle de coercion permet toujours de trouver une fonction de
-$U$ à $T$ et qu'elle ne peut modifier que la forme des objets, alors
-qu'aucune règle ne repose dessus.
+On a cependant des idées sur les propriétées à montrer pour pouvoir
+faire notre preuve. 
+
+\begin{proposition}[Restriction et réécriture]
+  Si $`G, x : U, `D \typea t : T$ et $`G \typea u : V$ avec $V \suba U$
+  alors $`G' \typec c : V' \suba U'$ et $`G', x : u', `D' \typec t' :
+  T'$, $`G' \typec u' : V'$ et $`G', `D'[c~v'/x] \typec t'[c~v'/x] :
+  T'[c~v'/x]$.
+\end{proposition}
+Cette propriété montre que notre réécriture conserve la substitutivité
+et la propriété de restriction.
+
+Dans le cas de l'application, on ne peut obtenir la preuve
+de $(W[u/x])' = W'[c~u'/x]$ si $x : V$, $u : U$ et $U \suba V$ qu'en
+faisant une analyse détaillée de la fonction $'$ (la réécriture peut
+être guidée uniquement par les termes puisque nous partont de
+dérivations du système algorithmique qui est décidable).
+
+On définit l'extension de la coercion aux contextes de la façon
+suivante:
+\begin{itemize}
+\item $[] \suba []$
+\item $`G, x : T \suba `D, x : U$ si $`G \suba `D$,
+  $`G \typea T : s$, $`D \typea U : s$ et $T \suba U$.
+\end{itemize}
+
+On a besoin pour assurer que l'on peut bien dériver une coercion de $U'$
+a $V'$ à partir de $U \suba V$ de formaliser la traduction des
+contextes, puisqu'on les modifie lorsque l'on passe la règle
+\irule{SubProd} ou \irule{SubSigma}, on obtient une hypothèse de 
+récurrence plus forte pour montrer: $U \suba V "=>" `E c, `G' \typec c : U' \subi V'$.
+On définit l'extension de la coercion aux contextes réécrits 
+de la façon suivante:
+\begin{itemize}
+\item $`q : [] "->" []$
+\item $`q, x = c x : `G', x : T' "->" `D', x : U'$ 
+  si $`q : `G' \suba `D'$, $`G' \typec c : T' \subi U'[`q]$ soit 
+  $`G', x : T' \typec c~x : U'[`q]$.
+\end{itemize}
+\begin{proposition}
+  Si $T \suba U$ et $`G \suba T : s$ et $`D \suba U : s$ et $`G \suba
+  `D$ alors on a $`z : `G' "->" `D'$ et $`p : `D' "->" `G'$ et
+  $`G' \typec c_{`G} : T' \subi U'[`z]$ et $`D' \typec c_{`D} : T'[`p]
+  \subi U'$.
+\end{proposition}
+
+Ainsi, à l'application on a la preuve que $`G' \typec c : U' \subi V'$
+puisque la fonction de $`D$ à $`D$ est l'identité.
+Il est à noter que les deux définitions de $`z : `G' "->" `D'$ et 
+$`D' \typec c : T' \subi U'[`z]$ sont mutuellement récursives.
+
+% Nous avons de bonnes raisons de penser que la traduction fonctionne: le
+% système \PVS{} repose sur système similaire depuis des années, notre
+% réécriture fonctionne en pratique et enfin, on voit bien que le système
+% déclaratif se plonge dans \CCI{} aisément. Dans ce cas, il suffit de
+% voir que la règle de coercion permet toujours de trouver une fonction de
+% $U$ à $T$ et qu'elle ne peut modifier que la forme des objets, alors
+% qu'aucune règle ne repose dessus.
 
 % \begin{proof}
 %   Notre traduction est un homomorphisme, il est donc direct que le
 %   typage soit conservé. Il faut juste s'assurer que l'on ne modifie pas
-%   la forme des termes et des types par la réecriture. C'est possible
+%   la forme des termes et des types par la réécriture. C'est possible
 %   uniquement pour les règles \irule{App} et \irule{LetSum}, on va donc
 %   les étudier plus en détail.
 
@@ -171,9 +237,9 @@ qu'aucune règle ne repose dessus.
 %   \end{prooftree}
   
 %   Par induction, on sait que $\muimpl(T') `= (\pi, \Pi x : V'. W')$ puisque
-%   la réecriture ne change pas la forme des types.
+%   la réécriture ne change pas la forme des types.
 %   Par définition de $\muimpl$ on a $\pi~f' : \Pi x : V'.W'$.
-%   On assure donc la forme fonctionelle de $f$ par la réecriture.
+%   On assure donc la forme fonctionelle de $f$ par la réécriture.
 %   La définition de la coercion nous assure que $c~u' : V'$. On obtient
 %   donc $(\pi~f) (c~u') : W'[c~u'/x]$. 
 %   Ici, la coercion pourrait changer la forme du type, par exemple si 
@@ -195,7 +261,7 @@ qu'aucune règle ne repose dessus.
 
 
 % \begin{proof}
-%   Par induction sur la réecriture de la dérivation.
+%   Par induction sur la réécriture de la dérivation.
   
 %   \begin{induction}
 
@@ -242,7 +308,7 @@ qu'aucune règle ne repose dessus.
 %       {$\timpl{`G}{x}{A}{`G'}{x}{A'}$}
 %       {}
 %     \end{prooftree}
-%     La réecriture ne change pas le domaine des contextes, c'est donc
+%     La réécriture ne change pas le domaine des contextes, c'est donc
 %     direct par induction.
 
 %     \case{Prod}\quad
