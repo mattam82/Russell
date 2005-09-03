@@ -12,17 +12,162 @@ des trous dont on ne connait que le type des habitants) pour traduire le
 fait qu'il est de la responsabilité de l'utilisateur de prouver que son
 utilisation de la coercion n'était pas incorrecte.
 
-% \newcommand{\ip}[2]{\llbracket #1 \rrbracket_{#2}}
-% On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
-% \begin{itemize}
-% \item $\ip{x}{`G} = x, `G(x)$
-% \item $\ip{\lambda x : T.v}{`G} = \lambda x : \ip{T}{`G}. \ip{v}{`G, x :
-%     \ip{T}{`G}}$
-% \item $\ip{f~u}{`G} = \ip{f}{`G}~\ip{u}{`G}$.
-% \end{itemize}
- 
-%\input{typing-impl-new}
+\newcommand{\ip}[2]{\llbracket #1 \rrbracket_{#2}}
+\newcommand{\ipG}[1]{\llbracket #1 \rrbracket}
+\newcommand{\ipt}[2]{\llfloor #1 \rrfloor_{#2}}
+\newcommand{\ipT}[2]{\llceil #1 \rrceil_{#2}}
+
+L'interprétation $\ip{t}{`G}$ renvoie à la fois un terme $t'$ réecrit et
+son type dans l'environnement \Coq{} $`G$.
+On utilise les abbréviations suivantes:
+\begin{itemize}
+\item $\ipt{t}{`G} `= \pi_1~ \ip{t}{`G}$, soit le terme réecrit ;
+\item $\ipT{t}{`G} `= \pi_2~ \ip{t}{`G}$, soit le type \Coq{} de $t'$.
+\end{itemize}
+
+On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
+\[\begin{array}{lcll}
+  \ip{x}{`G} & = & x, `G(x) & \\
+  \\
+  \ip{s}{`G} & = & s, \Type & s `: \{ \Prop, \Set \}\\
+  \ip{\Type}{`G} & = & \Type, \Type(1) & \\
+  \\
+  \ip{\Pi x : T.U}{`G} 
+  & = & \letml~(T', s_{1}) = \ip{T}{`G}~\inml & \\
+  & & \letml~(U', s_{2}) = \ip{U}{`G, x : T'}~\inml & \\
+  & & \letml~s_3 = \mathcal{R}~s_1~s_2~\inml & \\
+  & & (\Pi x : T'.U', s_3) & \\
+  & \\
+  \ip{\lambda x : `t.v}{`G} 
+  & = & \letml~(`t', s') = \ip{`t}{`G}~\inml & \\
+  & & \letml~(v', `g) = \ip{v}{`G, x : `t'}~\inml & \\
+  & & (\lambda x : `t'. v'), \Pi x : `t'. `g & \\
+  & \\
+  \ip{f~u}{`G} 
+  & = & \letml~(f', `t) = \ip{f}{`G}~\inml & \\
+  & & \letml~(\pi, \Pi x : V.W) = \muimpl(`t)~\inml & \\
+  & & \letml~(u', U') ` = \ip{u}{`G}~\inml & \\
+  & & \letml~c = \sref{coerce}~U'~V~\inml & \\
+  & & (\pi~f')~(c~u'), W[c~u/x] & \\
+  & \\
+  \ip{\Sigma x : T.U}{`G} 
+  & = & \letml~(T', s) = \ip{T}{`G}~\inml & \\
+  & & \letml~(U', s) = \ip{U}{`G, x : T'}~\inml & \\
+  & & (\Sigma x : T'.U', s) & \\
+  & \\
+  \ip{(x \coloneqq t, u : U)}{`G}
+  & = & \letml~(t', T') = \ip{t}{`G}~\inml & \\
+  & & \letml~(\Sigma x : T'.U', s) = \ip{\Sigma x : T.U}{`G}~\inml& \\
+  & & \letml~(u', U'') = \ip{u}{`G}~\inml & \\
+  & & \letml~c = \sref{coerce}~U''~U'[t'/x]~\inml & \\
+  & & (t', c~u'), \Sigma x : T'.U' & \\
+  & \\
+  \ip{\letml~(x,y) = t~\inml~v}{`G} 
+  & = & \letml~(t', `t) = \ip{t}{`G}~\inml & \\
+  & & \letml~(\pi, \Sigma x : T.U) = \muimpl(`t)~\inml & \\
+  & & \letml~(v', V) = \ip{v}{`G, x : T, y : U}~\inml & \\
+  & & (\letml~(x, y) = t'~\inml~v'), V & \\
+  & \\
+  \ip{\subset{x}{U}{P}}{`G}
+  & = & \letml~(U', \Set) = \ip{U}{`G}~\inml & \\
+  & & \letml~(P', \Prop) = \ip{P}{`G, x : U'}~\inml & \\
+  & & \subset{x}{U'}{P'} : \Set  
+\end{array}\]
+
+On fait l'extension aux contextes de la façon suivante:
+\begin{itemize}
+\item $\ipG{[]} = []$
+\item $\ipG{`G, x : T} =  \ipG{`G}, x : \ipt{T}{\ipG{`G}}$
+\end{itemize}
+
+On peut remarquer plusieurs choses sur notre interprétation:
+\begin{itemize}
+\item[Déterminisme] L'interprétation est déterministe par rapport à la
+  forme des termes. Cela implique que si $\ipG{`G} = `g$ alors $\ipG{`G,
+    x : T} = `g, x : \ipG{T}_{`g}$. On peut aussi en déduire que
+  si $`G \typea x : T$ et $`G \typea \Sigma x : T.U : s$ alors 
+  si $\ipt{T}{\ipG{`G}} = T'$ on a $\ipt{\Sigma x : T.U}{\ipG{`G}} =
+  \Sigma x : T'. U'$.
+  
+
+\item[Conservation de la structure] On voit très clairement que notre
+  interprétation est un homomorphisme, c'est à dire qu'elle préserve la
+  structure. On va montrer que si $\hnf{t} = \Pi x : V.W$ alors
+  il existe $V'$ et $W'$ tels que $\hnf{\ipt{t}{`G}} = \Pi x : V'.W'$.
+
+
+\item[Consevation du typage] Notre interprétation transforme un terme
+  bien typé dans le système algorithmique en un terme bien typé dans
+  \CCI{}. Ce résultat découle du fait que l'on reconstruit implicitement
+  la dérivation de typage du système algorithmique dans notre
+  interprétation en ajoutant les coercions nécessaires.
+\end{itemize}
+
+% \input{typing-impl-new}
 %\typeinewFig
+\setboolean{displayLabels}{false}
+\begin{theorem}[Correction de l'interprétation]
+  \label{correct-interp}
+  Si $`G \typea t : T$ alors on a $\ipG{`G} \typec \ipt{t}{\ipG{`G}} :
+  \ipt{T}{\ipG{`G}}$ avec $\ipT{t}{`G} = \ipt{T}{\ipG{`G}}$.
+  Si $\wf `G$ alors $\wf \ipG{`G}$.
+\end{theorem}
+
+\begin{proof}
+  Par induction mutuelle sur la dérivation de typage ou de bonne
+  formation.
+
+  \begin{induction}
+    \case{WfEmpty} Trivial.
+
+    \case{WfVar}
+    Par induction $\ipG{`G} \typec \ipt{A}{\ipG{`G}} :
+    \ipt{s}{\ipG{`G}}$. Par inversion du jugement de bonne formation
+    dans \CCI{}, $\typewf \ipG{`G}$.
+    Or, $\ipt{s}{\ipG{`G}} = s$ ($s `: \{ \Prop, \Set, \Type \}$), donc 
+    on peut appliquer \irule{WfVar} dans \CCI{} pour obtenir:
+    $\wf \ipG{`G}, x : \ipt{A}{\ipG{`G}}$, soit $\wf \ipG{`G, x : A}$.
+
+    \case{PropSet}
+    Direct par induction, $\ipG{`G} \typec \ipt{s}{\ipG{`G}} = s :
+    \ipt{\Type}{\ipG{`G}} = \Type$. La deuxième condition est directe
+    par définition de l'interprétation.
+    
+    \case{Var} On a:
+    \begin{prooftree}
+      \Var
+    \end{prooftree}
+    Par induction, $\wf \ipG{`G}$ et par simple inspection de la
+    définition de l'interprétation des contextes, si $x : A `: `G$ alors
+    $x : \ipt{A}{`D} `: \ipG{`G}$ pour $`D \subsetmath `G$. Par affaiblissement
+    dans \CCI{}, on obtient aisément $\ipG{`G} \typec x : \ipt{A}{`D}$ 
+    à partir de  $\ipG{`D} \typec x : \ipt{A}{`D}$.
+
+
+
+
+    \case{Prod}
+    \case{Abs}
+    \case{App}
+    \case{LetIn}
+    \case{Sigma}
+    \case{Sum}
+    \case{LetSum}
+    \case{Subset}
+    \case{Subsum}
+
+
+
+  \end{induction}
+\end{proof}
+
+
+
+
+
+
+
+
 
 \subsection{Définition de la réécriture vers \Coq}
 \typenvi
@@ -193,23 +338,72 @@ contextes, puisqu'on les modifie lorsque l'on passe la règle
 récurrence plus forte pour montrer: $U \suba V "=>" `E c, `G' \typec c : U' \subi V'$.
 On définit l'extension de la coercion aux contextes réécrits 
 de la façon suivante:
+\begin{lemma}[Traduction et $\beta$-équivalence]
+  Si $`G \typea T, U : s$, $T \eqbi U$ alors $`G' \typec T', U' : s$ et
+  $T' \eqbi U'$.
+\end{lemma}
+
+
+
+
 \begin{itemize}
 \item $`q : [] "->" []$
 \item $`q, x = c x : `G', x : T' "->" `D', x : U'$ 
-  si $`q : `G' \suba `D'$, $`G' \typec c : T' \subi U'[`q]$ soit 
-  $`G', x : T' \typec c~x : U'[`q]$.
+  si
+  \begin{itemize}
+  \item $`q : `G' \suba `D'$
+  \item $`G' \typec c : T' \subi U'[`q]$, soit $`G', x : T' \typec c~x :
+    U'[`q]$.
+  \end{itemize}
 \end{itemize}
 \begin{proposition}
-  Si $T \suba U$ et $`G \suba T : s$ et $`D \suba U : s$ et $`G \suba
-  `D$ alors on a $`z : `G' "->" `D'$ et $`p : `D' "->" `G'$ et
-  $`G' \typec c_{`G} : T' \subi U'[`z]$ et $`D' \typec c_{`D} : T'[`p]
-  \subi U'$.
+  Si $`G \typea T : s$ et $`D \typea U : s$ et $`G \suba
+  `D$, $T \suba U$ alors on a:
+  \begin{itemize}
+  \item $`q : `G' "->" `D'$ 
+  \item $`r : `D' "->" `G'$
+  \item $`G' \typec c_{`G} : T' \subi U'[`q]$
+  \item $`D' \typec c_{`D} : T'[`r] \subi U'$.
+  \end{itemize}
 \end{proposition}
 
 Ainsi, à l'application on a la preuve que $`G' \typec c : U' \subi V'$
 puisque la fonction de $`D$ à $`D$ est l'identité.
-Il est à noter que les deux définitions de $`z : `G' "->" `D'$ et 
-$`D' \typec c : T' \subi U'[`z]$ sont mutuellement récursives.
+
+\begin{proof}
+  Par induction sur la dérivation de $`G \suba `D$.
+  
+  \begin{itemize}
+  \item $[] \suba []$ On construit $`q$ et $`r$ de façon triviale
+    puisque $`D' = `G' = []$.
+    Il faut maintenant montrer qu'on a une coercion de $T'$ à $U'$ dans
+    l'environnement vide.
+    Si $`G$ est vide alors $T$ est un type clos. 
+    Par induction sur la dérivation de $T \suba U$:
+    \begin{induction}
+      \case{SubConv}. On a $T \eqbi U$. Il faut montrer que la
+      traduction préserve la béta-équivalence.
+      
+    \end{induction}
+  \end{itemize}
+%   \begin{induction}
+%     \case{SubConv} 
+%     On a $T \eqbi U$. 
+%     On procède par induction sur $`G \suba `D$ pour construire $`z$ et
+%     $`p$:
+%     \begin{itemize}
+%     \item $[] \suba []$ Trivial, $`D' = `G' = []$.
+%     \item $`G'', x : V \suba `D'', x : W$: Par induction on a
+%       \begin{itemize}
+%       \item $`G'' \suba `D''$
+%       \item $V \suba W'$
+%       \end{itemize}
+      
+%     \end{itemize}
+    
+%   \end{induction}
+\end{proof}
+
 
 % Nous avons de bonnes raisons de penser que la traduction fonctionne: le
 % système \PVS{} repose sur système similaire depuis des années, notre
