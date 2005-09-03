@@ -25,7 +25,7 @@ algorithmique. En particulier, on a utilisé la fonction $\mu_0$ de \PVS{}
 \cite{PVS-Semantics:TR} renommée $\mualgo$ (figure \ref{fig:mualgo-definition})
 ici pour opérer des
 \emph{décompréhensions}. Cette fonction efface les constructeurs de type
-sous-ensemble en tête d'un type, par exemple: $\mualgo(\subset{f}{\nat
+sous-ensemble en tête d'un type, par exemple: $\mualgo(\mysubset{f}{\nat
 "->" \nat}{f~0 = 0}) = \nat "->" \nat$. On verra son utilité dans la suite.
 
 \subsection{Notations}
@@ -83,7 +83,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 \end{lemma}
 
 \begin{proof}
-  Par le simple fait que si $S = \subset{x}{U}{P}$ alors $S : \Set$ et
+  Par le simple fait que si $S = \mysubset{x}{U}{P}$ alors $S : \Set$ et
   $U : \Set$ (par \irule{Subset}), sinon $S = \mu~S$.
 \end{proof}
 
@@ -158,9 +158,9 @@ règle de transitivité.
 On rappelle qu'on considère qu'on peut appliquer la normalisation de
 tête \irule{ConvHnf} avant toute
 application d'une règle de typage ou coercion. Ainsi on peut très bien
-dériver $((\lambda x : \Set.x)~\nat) \suba \subset{x}{\nat}{P}$ puisque 
+dériver $((\lambda x : \Set.x)~\nat) \suba \mysubset{x}{\nat}{P}$ puisque 
 $\hnf{((\lambda x : \Set.x)~\nat)} = \nat$ et $\nat \suba
-\subset{x}{\nat}{P}$ par \irule{SubProof} et \irule{SubConv}.
+\mysubset{x}{\nat}{P}$ par \irule{SubProof} et \irule{SubConv}.
 
 Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
 \begin{lemma}
@@ -195,16 +195,16 @@ On peut maintenant montrer:
     Alors $\hnf{U} = \Sigma y : V.W$, avec $X \eqbi V$ et $Y \eqbi
     W$. Par induction et application de \irule{SubSigma}.
     
-  \item[$\hnf{T} `= \subset{x}{X}{P}$:] 
-    On a alors $\hnf{U} = \subset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
+  \item[$\hnf{T} `= \mysubset{x}{X}{P}$:] 
+    On a alors $\hnf{U} = \mysubset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
     \begin{prooftree}
       \AXC{$X \sub X'$}
       \LeftLabel{\SubLeftRule}
-      \UIC{$\subset{x}{X}{P} \sub X'$}
+      \UIC{$\mysubset{x}{X}{P} \sub X'$}
       \LeftLabel{\SubRightRule}
-      \UIC{$\subset{x}{X}{P} \sub \subset{x}{X'}{P'}$}
+      \UIC{$\mysubset{x}{X}{P} \sub \mysubset{x}{X'}{P'}$}
     \end{prooftree}
 
   \item[Sinon:]
@@ -356,12 +356,12 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
     \case{SubProof}\quad
     \begin{prooftree}
       \AXC{$S \sub V$}
-      \UIC{$S \sub \subset{x}{V}{P}$}
-      \AXC{$\subset{x}{V}{P} \sub U$}
+      \UIC{$S \sub \mysubset{x}{V}{P}$}
+      \AXC{$\mysubset{x}{V}{P} \sub U$}
       \BIC{$S \sub U$}
     \end{prooftree}
     
-    Si $\subset{x}{V}{P} \sub U$ alors $\mualgo(U) = \mualgo(V)$.
+    Si $\mysubset{x}{V}{P} \sub U$ alors $\mualgo(U) = \mualgo(V)$.
     Comme $S \sub V$ on a $S \sub \mualgo(V)$ par une dérivation plus
     petite ou égale, donc par induction, $S \sub \mualgo(U)$. Donc $S \sub U$.
     
@@ -425,7 +425,7 @@ $`G \typed t : T "=>" `G \typea t : U \suba T$. Le typage algorithmique
 assigne bien un seul type à un terme $t$ mais comme on a des coercions, le
 type inféré $U$ peut être un peu différent du type $T$. Dans notre cas
 particulier $U$ sera certainement un type moins riche que $T$ (par
-exemple $\nat$ par rapport à $\subset{x}{\nat}{P}$). Lorsque l'on
+exemple $\nat$ par rapport à $\mysubset{x}{\nat}{P}$). Lorsque l'on
 développera des programmes, on donnera une spécification forte et l'on
 fera une coercion entre le type inféré et la spécification pour obtenir
 au final (après réécriture dans \Coq) un terme du type $T$ le plus riche.
@@ -452,12 +452,12 @@ On a besoin de quelques lemmes pour montrer que notre système où
     \case{SubSigma} Direct, on a une dérivation de $\Sigma x : T'. U'
     \sub \Sigma x : T.U$.
     
-    \case{SubLeft} Ici, $Y `= \subset{x}{V}{P}$, on peut donc déduire que
+    \case{SubLeft} Ici, $Y `= \mysubset{x}{V}{P}$, on peut donc déduire que
     $\mualgo(Y) = \mualgo(V) = \Sigma x : T.U$. On 
     applique l'hypothèse de récurrence avec $X \sub V$ et on obtient:
     $\mualgo(X) = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
 
-    \case{SubRight} Ici, $X `= \subset{x}{V}{P}$. Par induction, 
+    \case{SubRight} Ici, $X `= \mysubset{x}{V}{P}$. Par induction, 
     $\mualgo(V) = \mualgo(X) = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
   \end{induction}
 \end{proof}
@@ -586,7 +586,7 @@ pouvoir prouver la complétude.
   les sommes. Par induction sur la taille de $T$.
 
   Il suffit de suivre la définition de $\mualgo$.
-  Si $T$ est de la forme $\subset{y}{V}{P}$ alors
+  Si $T$ est de la forme $\mysubset{y}{V}{P}$ alors
   on a $\mualgo(V) = \Pi y : U.V$ et par induction
   $\mualgo(V[u/x]) = \Pi y : U[u/x].V[u/x]$.
   Il s'ensuit directement que $\mualgo(T[u/x]) = \Pi y :
@@ -624,7 +624,7 @@ pouvoir prouver la complétude.
     \case{SubSigma} Direct par induction.
     
     \case{SubSub} Par induction, $U'[u/x] \suba V[u/x]$. On applique
-    \irule{SubLeft} pour obtenir $\subset{y}{U'[u/x]}{P} \suba V[u/x]$. 
+    \irule{SubLeft} pour obtenir $\mysubset{y}{U'[u/x]}{P} \suba V[u/x]$. 
     
     \case{SubRight} Direct par induction.
   \end{induction}

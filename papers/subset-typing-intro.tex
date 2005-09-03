@@ -59,7 +59,7 @@ certaine sp\'ecification (son type). Les types d\'ependants permettent de
 sp\'ecifier fortement les termes. Par exemple, la fonction de division
 euclidienne (qui renvoie le quotient et le reste de la division de son
 premier argument par son second) $\sdef{div} : \nat "->" \nat "->" \nat * \nat$ de \ML{} est 
-plus fortement sp\'ecifi\'ee en \Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat
+plus fortement sp\'ecifi\'ee en \Coq{} par $\sdef{div} : \nat "->" \mysubset{x}{\nat}{x \neq 0} "->" \nat
 * \nat$ qui assure par typage qu'on ne divise pas par 0.
 Seulement, on ne peut pas \'ecrire simplement un programme \ML{} et
 donner sa sp\'ecification forte. Comme on a enrichi les types, on doit 
@@ -82,13 +82,13 @@ l'ensemble de départ et d'une propriété pouvant porter sur les objets de
 ce type.
 \begin{definition}[Type sous-ensemble]
   \label{subset-type-def}
-  En \Coq{}, $\subset{x}{T}{P}$ est le type des termes de type $T$ v\'erifiant la
+  En \Coq{}, $\mysubset{x}{T}{P}$ est le type des termes de type $T$ v\'erifiant la
   propri\'et\'e $P$. C'est un type inductif avec un unique constructeur $\sref{elt}$ prenant en arguments
   le type du témoin $T$, la propriété $P$ puis le témoin $t$ et la preuve
-  $p$: $\sref{elt} : `A T : \Set, `A P : T "->" \Prop, `A x : T, P~x "->" \subset{x}{T}{P}$.
+  $p$: $\sref{elt} : `A T : \Set, `A P : T "->" \Prop, `A x : T, P~x "->" \mysubset{x}{T}{P}$.
 \end{definition}
 
-Informellement, un objet de type $\subset{x}{T}{P}$ peut être vu comme
+Informellement, un objet de type $\mysubset{x}{T}{P}$ peut être vu comme
 une paire $(x,p)$ où $x$ est un objet de type $T$ (le témoin) et $p$ une preuve
 de $P[t/x]$.  
 Le typeur a besoin de plus d'information, l'annotation $\lambda x : \nat
@@ -114,7 +114,7 @@ difficult\'es à d\'evelopper en \Coq{} que nous allons \'etudier maintenant.
 
 Le langage de \CCI{} permet de bien sp\'ecifier des fonctions non
 triviales, par exemple, on peut spécifier très fortement notre division
-euclidienne (dont on a vu qu'on pouvait la typer $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat
+euclidienne (dont on a vu qu'on pouvait la typer $\sdef{div} : \nat "->" \mysubset{x}{\nat}{x \neq 0} "->" \nat
 * \nat$ précédement):
 \[\Definition~\sdef{div} : \forall a : \nat, \forall b : \nat,
 b \neq 0 "->" \{~q : \nat~\&~\{~r : \nat `| r < b `^ a = b * q + r~\} \}\]
@@ -210,12 +210,12 @@ m\'ecanisme d\'enomm\'e \ps{} que nous allons pr\'esenter maintenant.
 Les types sous-ensembles (définition \ref{subset-type-def}) sont d'une
 grande utilit\'e pour la sp\'ecification
 de programmes, comme nous l'avons vu pour \sref{div} précécement:
-$\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat
+$\Definition~\sref{div} : \nat "->" \mysubset{x}{nat}{x \neq 0} "->" \nat
 * \nat$.
 
 L'id\'ee du \ps{} impl\'ement\'e dans \PVS{}
 \cite{Shankar&Owre:WADT99,Rushby98:TSE} est de consid\'erer tout objet de
-type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
+type $T$ comme un objet de type $\mysubset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne v\'erifie pas forc\'ement la
 propri\'et\'e $P$, on g\'enère des ``\emph{Type-checking conditions}'' (\TCC), c'est
 à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer

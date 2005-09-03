@@ -303,7 +303,7 @@
   
   \only<6->{
     $\begin{array}{l}
-      %\pi_1 : \subset{x}{T}{P} "->" T \\
+      %\pi_1 : \mysubset{x}{T}{P} "->" T \\
       \sdef{div} : \forall a~b : \nat, b \neq 0 "->" \ldots...  \\
 %       \{~q : \nat~\&~\{~r : \nat `| r < (\pi_1~b) `^ a = (\pi_1~b) * q +
 %       r ~\} ~\} \\
@@ -333,7 +333,7 @@
       \note<1->{ Définition d'une extraction inversible, nécessite des
         heuristiques (unification).
         Exemple d'impossibilité d'inverser l'extraction
-        avec un \subset{x}{T}{P} (on ne peut pas inférer la preuve)}
+        avec un \mysubset{x}{T}{P} (on ne peut pas inférer la preuve)}
       
     \item Non maintenu (incompatible avec l'extraction actuelle). %, \Refine.
     \end{itemize}
@@ -344,7 +344,7 @@
   \frametitle{Types sous-ensemble}
   
   \begin{block}{Définition}
-    $\subset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
+    $\mysubset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
     propriété $P$. 
   \end{block}
   
@@ -356,7 +356,7 @@
 
   \begin{block}{Idée} 
     Un objet de type $T$ peut être vu comme un objet de
-    type $\subset{x}{T}{P}$ % pour toute propriété $P$ correcte
+    type $\mysubset{x}{T}{P}$ % pour toute propriété $P$ correcte
     et vice-versa.
   \end{block}
   
@@ -369,9 +369,9 @@
   \item Gestion spécifique des types sous-ensemble, génération de
     ``\emph{Type-checking conditions}'' (obligations de preuve).
     \begin{tabular}{lcll}
-      $t : \subset{x}{T}{P}$ & utilisé comme & $t : T$
+      $t : \mysubset{x}{T}{P}$ & utilisé comme & $t : T$
       & ok \\
-      $t : T$ & utilisé comme & $t : \subset{x}{T}{P}$ 
+      $t : T$ & utilisé comme & $t : \mysubset{x}{T}{P}$ 
       & si $P[x/t]$
     \end{tabular}
     \pause
@@ -468,9 +468,9 @@
   \end{itemize}
 
   \begin{tabular}{lclcl}
-    $t : \subset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
+    $t : \mysubset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
     & \only<2->{$"~>"$} & \only<2->{$\pi_1~t$ \\
-      $t : T$ & $"->"$ & $t : \subset{x}{T}{P}$ 
+      $t : T$ & $"->"$ & $t : \mysubset{x}{T}{P}$ 
       & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
   \end{tabular}
   
@@ -506,7 +506,7 @@
           & | & `t * `t \\
           & | & `t "->" `t \\
           & | & \alert{`t~`a} \\
-          & | & \subset{x}{`t}{`t} \\
+          & | & \mysubset{x}{`t}{`t} \\
           \uncover<2->{
             & | & \Sigma x : `t. `t \\
             & | & \Pi x : `t. `t}
@@ -562,7 +562,7 @@
 
     \vspace{0.5cm}
     \uncover<2->{\SubProof\DP
-      \only<2>{$\nat~\sub \subset{x}{\nat}{x \neq 0}$}}
+      \only<2>{$\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}}
     
     \vspace{0.5cm}
     \uncover<3->{\SubProd\DP
@@ -580,7 +580,7 @@
 %     %, essentiellement équivalence en
 %     %réduisant les types sous-ensembles au type de leur objet ;
 %   \item<3-> Produit contravariant en son domaine et covariant en son codomaine:
-%     $\Pi x : \nat, \subset{x}{\nat}{x > 0} \subd \Pi \subset{x}{\nat}{x
+%     $\Pi x : \nat, \mysubset{x}{\nat}{x > 0} \subd \Pi \mysubset{x}{\nat}{x
 %       > 0}, \nat$.    
 %   \item<4-> Cette relation est symétrique ! (différent du sous-typage). % et
 %     % la conversion ?
@@ -615,7 +615,7 @@
     \DP
     
     \begin{eqnarray*}
-      \mu~\subset{x}{U}{P} & "=>" & \mu~U \\
+      \mu~\mysubset{x}{U}{P} & "=>" & \mu~U \\
       \mu~x                & "=>" & x
     \end{eqnarray*}
   }
@@ -653,7 +653,7 @@
       {$\subimpl{`G}{c}{T}{U}$}
       {$\subimpl{`G}
         {\lambda t : T. \sref{elt}~(c~t)~?_{P[c~t/x]}}
-        {T}{\subset{x}{U}{P}}$}
+        {T}{\mysubset{x}{U}{P}}$}
       {}\DP}
       % \SubRightI\DP
       \uncover<5->{
@@ -664,7 +664,7 @@
       \SubSigmaI\DP}
     \end{center}
 
-    \only<4>{$0 : \nat$ et $\nat~\sub \subset{x}{\nat}{x \neq 0}$
+    \only<4>{$0 : \nat$ et $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
       mais $(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]})) 0 
       `= \sref{elt}~0~?_{\alert{0 \neq 0}}$}
 

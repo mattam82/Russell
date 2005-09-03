@@ -68,10 +68,10 @@ On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
   & & \letml~(v', V) = \ip{v}{`G, x : T, y : U}~\inml & \\
   & & (\letml~(x, y) = t'~\inml~v'), V & \\
   & \\
-  \ip{\subset{x}{U}{P}}{`G}
+  \ip{\mysubset{x}{U}{P}}{`G}
   & = & \letml~(U', \Set) = \ip{U}{`G}~\inml & \\
   & & \letml~(P', \Prop) = \ip{P}{`G, x : U'}~\inml & \\
-  & & \subset{x}{U'}{P'} : \Set  
+  & & \mysubset{x}{U'}{P'} : \Set  
 \end{array}\]
 
 On fait l'extension aux contextes de la façon suivante:
@@ -139,14 +139,22 @@ On peut remarquer plusieurs choses sur notre interprétation:
     \end{prooftree}
     Par induction, $\wf \ipG{`G}$ et par simple inspection de la
     définition de l'interprétation des contextes, si $x : A `: `G$ alors
-    $x : \ipt{A}{`D} `: \ipG{`G}$ pour $`D \subsetmath `G$. Par affaiblissement
+    $x : \ipt{A}{`D} `: \ipG{`G}$ pour $`D ``( `G$. Par affaiblissement
     dans \CCI{}, on obtient aisément $\ipG{`G} \typec x : \ipt{A}{`D}$ 
-    à partir de  $\ipG{`D} \typec x : \ipt{A}{`D}$.
-
-
-
-
+    à partir de  $\ipG{`D} \typec x : \ipt{A}{\ipG{`D}}$. Or il est clair par
+    la définition de l'interprétation que $\ipt{A}{`D} = \ipt{A}{`G}$  
+    si $`G$ est une extension de $`D$ puisqu'on utilise l'environnement
+    uniquement au moment de typer les variables et
+    $\ipG{`G}(x) = \ipG{`D}(x)$ pour tout $x$ utilisé dans $A$.
+    On a donc $\ipG{`G} \typec x : \ipt{A}{\ipG{`G}}$.
+    La deuxième condition est montrée par $\ipT{x}{`G} = \ipG{`G}(x) = 
+    \ipt{A}{\ipG{`D}} = \ipt{A}{\ipG{`G}}$.
+      
     \case{Prod}
+    
+    
+
+
     \case{Abs}
     \case{App}
     \case{LetIn}
@@ -196,12 +204,12 @@ introduire des coercions).
 Ici la fonction $\muimpl$ (figure \ref{fig:muimpl-definition}) renvoie à la fois un type (qu'on demande
 équivalent à un produit) et une fonction de coercion qui va faire les
 projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
-objets de type sous-ensemble $\subset{x}{T}{P}$ sont codés par un terme 
+objets de type sous-ensemble $\mysubset{x}{T}{P}$ sont codés par un terme 
 de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
 (un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
  (de type $P[t/x]$). Il faut donc faire exactement
 une projection pour atteindre par exemple la fonction à partir d'un objet de type
- $\subset{f}{\nat "->" \nat}{f~0 \neq 0}$.
+ $\mysubset{f}{\nat "->" \nat}{f~0 \neq 0}$.
 
 Le jugement de coercion $U \suba V$ nous assure qu'il est possible de
 dériver le jugement $`G' \typec U' \subi V'$ et donc de créer une coercion de $U'$
@@ -279,26 +287,26 @@ suivant:
 
 Dans le système algorithmique, on peut très bien dériver
 $\Pi n : \nat. \sref{list}~n \suba \Pi n :
-\subset{x}{\nat}{P}.\listml~n$ puisque $\subset{x}{\nat}{P} \suba
+\mysubset{x}{\nat}{P}.\listml~n$ puisque $\mysubset{x}{\nat}{P} \suba
 \nat$ et $\listml~n \eqbi \listml~n$.
 Si l'on réécrit la dérivation vers \CCI{}, on n'aura plus les même types
 de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
 Ici, une coercion a été insérée dans le second type:
 $`G' \typec c : \Pi n : \nat. \listml~n \subi \Pi n :
-\subset{x}{\nat}{P}.\listml~(\pi_1~n)$. Seulement, et c'est là la
+\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. Seulement, et c'est là la
 preuve que l'intuition de la coercion par prédicats est bonne, on peut
 dériver ce jugement:
 
 \begin{prooftree}
   \AXC{$\nat \eqbi \nat$}
   \UIC{$`G' \typec \lambda x.x : \nat \subi \nat$}
-  \UIC{$`G' \typec (\lambda x.x) `o \pi_1 : \subset{x}{\nat}{P} \subi \nat$}
+  \UIC{$`G' \typec (\lambda x.x) `o \pi_1 : \mysubset{x}{\nat}{P} \subi \nat$}
   \AXC{$(\listml~n)[\pi_1~n/n] \eqbi \listml~(\pi_1~n)$}
-  \UIC{$`G, n : \subset{x}{\nat}{P} \typec c_2 = (\lambda x.x) :
+  \UIC{$`G, n : \mysubset{x}{\nat}{P} \typec c_2 = (\lambda x.x) :
     (\listml~n)[\pi_1~n/n] \subi \listml~(\pi_1~n)$}
   \BIC{$`G' \typec \lambda f.\lambda x.c_2~(f~(\pi_1~x)) : 
     \Pi n : \nat. \listml~n \subi 
-    \Pi n : \subset{x}{\nat}{P}.\listml~(\pi_1~n)$}
+    \Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$}
 \end{prooftree}
 
 On ne peut donc pas simplement faire une induction sur la dérivation de
@@ -592,7 +600,7 @@ puisque la fonction de $`D$ à $`D$ est l'identité.
 %       \BAX{Subset}
 %       {$\timpl{`G}{U}{\Type}{`G'}{U'}{\Type}$}
 %       {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop} $}
-%       {$\timpl{`G}{\subset{x}{U}{P}}{\Type}{`G'}{\subset{x}{U'}{P'}}{\Type}$}
+%       {$\timpl{`G}{\mysubset{x}{U}{P}}{\Type}{`G'}{\mysubset{x}{U'}{P'}}{\Type}$}
 %       {$$}
 %     \end{prooftree}
 %   \end{induction}

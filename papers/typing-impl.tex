@@ -113,7 +113,7 @@
   \BAX{Subset}
   {$\timpl{`G}{U}{\Set}{`G'}{U'}{\Set}$}
   {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop} $}
-  {$\timpl{`G}{\subset{x}{U}{P}}{\Set}{`G'}{\subset{x}{U'}{P'}}{\Set}$}
+  {$\timpl{`G}{\mysubset{x}{U}{P}}{\Set}{`G'}{\mysubset{x}{U'}{P'}}{\Set}$}
   {$$}
 }
 
@@ -212,7 +212,7 @@
 \def\typemuiFig{
 \begin{figure}[h]
   \begin{eqnarray*}
-    \muimpl'~(f, \subset{x}{U}{P})   & "=>" & \letml~(f, t) = \muimpl'~(f, \hnf{U})~\inml~(f `o
+    \muimpl'~(f, \mysubset{x}{U}{P})   & "=>" & \letml~(f, t) = \muimpl'~(f, \hnf{U})~\inml~(f `o
     \pi_1, t) \\
     \muimpl'~x                        & "=>"  & x \\
     \\

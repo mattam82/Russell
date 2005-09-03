@@ -83,7 +83,7 @@ permet de vérifier qu'un programme (un terme du calcul) vérifie une
 certaine spécification (son type). Les types dépendants permettent de
 spécifier fortement les termes. Par exemple, la fonction $\sdef{div} :
 \nat "->" \nat "->" \nat$ de \ML{} est plus fortement spécifiée en 
-\Coq{} par $\sdef{div} : \nat "->" \subset{x}{\nat}{x \neq 0} "->" \nat$.
+\Coq{} par $\sdef{div} : \nat "->" \mysubset{x}{\nat}{x \neq 0} "->" \nat$.
 Seulement, on ne peut pas écrire simplement un programme \ML{} et
 donner sa spécification forte. Comme on a enrichi les types, on doit 
 aussi enrichir les termes avec des termes de preuve, inutiles au 
@@ -205,17 +205,17 @@ cherché à assouplir le système. L'assistant de preuve \PVS{}
 mécanisme dénommé \ps{} que nous allons présenter maintenant.
 Tout d'abord une définition:
 \begin{definition}[Type sous-ensemble]
-  $\subset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
+  $\mysubset{x}{T}{P}$ est le type des termes de type $T$ vérifiant la
   propriété $P$.
 \end{definition}
 
 Les types sous-ensembles sont d'une grande utilité pour la spécification
 de programmes, par exemple pour les pré-conditions:
-$\Definition~\sref{div} : \nat "->" \subset{x}{nat}{x \neq 0} "->" \nat$.
+$\Definition~\sref{div} : \nat "->" \mysubset{x}{nat}{x \neq 0} "->" \nat$.
 
 L'idée du \ps{} implémenté dans \PVS{}
 \cite{ShankarOwreWADT99} est de considérer tout objet de
-type $T$ comme un objet de type $\subset{x}{T}{P}$ pour $P$ vraie et
+type $T$ comme un objet de type $\mysubset{x}{T}{P}$ pour $P$ vraie et
 vice-versa. Comme tout objet $t$ de type $T$ ne vérifie pas forcément la
 propriété $P$, on génère des ``Type-checking conditions'' (\TCC), c'est
 à dire que l'on demande à l'utilisateur de prouver $P[t/x]$ pour assurer
@@ -327,9 +327,9 @@ $`=_\beta~\subseteq~\subd + \text{\irule{SubConv}}$.
 
 Notre système de coercion par prédicats permet à l'utilisateur
 d'utiliser une valeur de type $U$ là où l'on attend une valeur de type
-$\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
+$\mysubset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
 A l'inverse, on permet aussi d'utiliser une valeur de type
-$\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
+$\mysubset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
 $V$ si $U$ est coercible vers $V$. 
 
 Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire des
@@ -447,12 +447,12 @@ introduire des coercions).
 Ici la fonction $\mu$ renvoie à la fois un type (qu'on demande
 équivalent à un produit) et une fonction de coercion qui va faire les
 projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
-objets de type sous-ensemble $\subset{x}{T}{P}$ sont codés par un terme 
+objets de type sous-ensemble $\mysubset{x}{T}{P}$ sont codés par un terme 
 de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
 (un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
  (de type $P[t/x]$). Il faut donc faire exactement
 une projection pour atteindre par exemple la fonction d'un objet de type
- $\subset{f}{\nat "->" \nat}{f~0 \neq 0}$.
+ $\mysubset{f}{\nat "->" \nat}{f~0 \neq 0}$.
 
 Le jugement de coercion $U \suba V$ nous assure qu'il est possible de
 dériver le jugement $`G' \typec U' \subi V'$ et donc de créer une coercion de $U'$

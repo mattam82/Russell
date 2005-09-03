@@ -79,7 +79,7 @@ une bonne raison. Cela permet de créer des fonctions dépendant de
 propositions, par exemple $\Pi n : \nat, n > 0 "->" \Pi l :
 \text{list}~A~n "->" A$. Or on veut à tout prix éviter d'introduire des
 termes de preuve dans notre langage, et l'on voit que
-cette fonction pourrait naturellement s'écrire $\Pi n : \subset{n}{\nat}{n > 0} "->" \Pi l :
+cette fonction pourrait naturellement s'écrire $\Pi n : \mysubset{n}{\nat}{n > 0} "->" \Pi l :
 \text{list}~A~n "->" A$. Encore une fois le type sous-ensemble nous
 permet d'éviter d'avoir à passer des termes de preuve directement. 
 
@@ -88,12 +88,12 @@ types de même sorte $s `: \{ \Prop, \Set \}$.
 Dans le premier cas les habitants sont les couples de propositions
 (codage du $`^$), dans le second ce sont les couples d'objets, soit les
 paires de \ML.
-Intuitivement, c'est le type sous-ensemble $\subset{x}{T}{P}$ qui permet
+Intuitivement, c'est le type sous-ensemble $\mysubset{x}{T}{P}$ qui permet
 de faire des couples $\Set,\Prop$ habitant $\Set$. Les types $\Sigma x : U.V$ où $U
 : \Prop$ et $V : \Set$ n'ont pas d'intérêt dans notre cas puisqu'ils
 représentent des objets de type $U `^ V$ mais on ne peut
 pas utiliser $U$ dans notre système. On préfère coder ces objets par des
-objets de type $\subset{x}{V}{U}$ (on n'est pas intéressé par la preuve
+objets de type $\mysubset{x}{V}{U}$ (on n'est pas intéressé par la preuve
 de $U$ pour programmer).
 
 
@@ -130,15 +130,15 @@ constante dans notre système si elle est bien typée).
 \subsubsection{Jugement de coercion}
 Notre système de coercion par prédicats permet à l'utilisateur
 d'utiliser une valeur de type $U$ là où l'on attend une valeur de type
-$\subset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
+$\mysubset{x}{V}{P}$ (\irule{SubProof}) si $U$ est lui-même coercible en $V$.
 A l'inverse, on permet aussi d'utiliser une valeur de type
-$\subset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
+$\mysubset{x}{U}{P}$ (\irule{SubSub}) à la place d'une valeur de type
 $V$ si $U$ est coercible vers $V$. Notre jugement de coercion est donc
 symétrique et laisse beaucoup de liberté à l'utilisateur au moment du
-codage. Par exemple on peut dériver $u : \nat \type u : \subset{x}{\nat}{`_}$
+codage. Par exemple on peut dériver $u : \nat \type u : \mysubset{x}{\nat}{`_}$
 Seulement, lors de la traduction de la dérivation de coercion $\nat
-\subd \subset{x}{\nat}{`_}$ (nécessaire pour traduire l'abus de notation
-$x : \subset{x}{\nat}{`_}$), l'utilisateur aura à résoudre une obligation
+\subd \mysubset{x}{\nat}{`_}$ (nécessaire pour traduire l'abus de notation
+$x : \mysubset{x}{\nat}{`_}$), l'utilisateur aura à résoudre une obligation
 de preuve de $`_$. On repose donc toujours sur la cohérence du Calcul
 des Constructions. 
 Les règles \irule{SubProd} et \irule{SubSigma} permettent de faire des
@@ -161,7 +161,7 @@ que l'on peut éliminer la règle de transitivité ; première étape vers un
 système décidable.
 
 
-Notre jugement de coercion identifie les types $U$ et $\subset{x}{U}{P}$
+Notre jugement de coercion identifie les types $U$ et $\mysubset{x}{U}{P}$
 mais notre système de typage ne permet pas d'éliminer (prendre la partie
 preuve) ou d'introduire (créer un couple témoin,preuve) des objets de
 type sous-ensemble. Cela nous assure une certaine cohérence, puisque
@@ -197,7 +197,7 @@ correspondant à notre système déclaratif.
 %     v : U : s$.
 %   \item Si $`G \type (t, v) : \Sigma x : T.U$ alors $`G, x : T \type U
 %     : s1$ et $`G \type v : U[t/x]$.
-%   \item Si $`G \type t : \subset{x}{U}{P}$ alors $`G \type t : U$ et
+%   \item Si $`G \type t : \mysubset{x}{U}{P}$ alors $`G \type t : U$ et
 %     $`G, x : U \type P : \Prop$.
 %   \end{enumerate}
 % \end{fact}

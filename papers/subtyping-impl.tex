@@ -29,7 +29,7 @@
 %{$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{U}{V}$}
 {$\subimpl{`G}{c `o \pi_1}
-  {\subset{x}{U}{P}}{V}$}
+  {\mysubset{x}{U}{P}}{V}$}
 {}
 }
     
@@ -40,7 +40,7 @@
 {$\subimpl{`G}{c}{T}{U}$}
 {$\subimpl{`G}
   {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}}
-  {T}{\subset{x}{U}{P}}$}
+  {T}{\mysubset{x}{U}{P}}$}
 {}
 }
 
