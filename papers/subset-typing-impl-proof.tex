@@ -1,0 +1,164 @@
+\def\iG{\ipG{`G}}
+
+\begin{lemma}[Substitutivité de l'interprétation]
+  Si:
+  \begin{itemize}
+  \item $\iG \typec \ipt{u}{\iG} : \ipt{U}{\iG}$, 
+  \item $\ipG{`G, x : V} \typec \ipt{W}{\ipG{`G, x : V}} : s$ 
+  \item $c : \ipt{U}{\iG} \subi \ipt{V}{\iG}$ 
+  \end{itemize}
+  
+  alors $\ipt{W}{\ipG{`G, x : V}}[c~u/x] = \ipt{W[u/x]}{\iG}$.
+\end{lemma}
+\begin{proof}
+  Par induction structurelle sur $W$.
+  
+  \begin{induction}
+  \item[$W `= y$]
+    Si $y = x$, alors on doit montrer:
+    $c~u = \ipt{u}{\iG}$
+    
+
+
+\end{proof}  
+
+
+
+\setboolean{displayLabels}{false}
+\begin{theorem}[Correction de l'interprétation]
+  \label{correct-interp}
+  Si $`G \typea t : T$ alors on a $\iG \typec \ipt{t}{\iG} :
+  \ipt{T}{\iG}$ avec $\ipT{t}{`G} = \ipt{T}{\iG}$.
+  Si $\wf `G$ alors $\wf \iG$.
+\end{theorem}
+
+
+\begin{proof}
+  Par induction mutuelle sur la dérivation de typage ou de bonne
+  formation.
+
+  \begin{induction}
+    \case{WfEmpty} Trivial.
+
+    \case{WfVar}
+    Par induction $\iG \typec \ipt{A}{\iG} :
+    \ipt{s}{\iG}$. Par inversion du jugement de bonne formation
+    dans \CCI{}, $\typewf \iG$.
+    Or, $\ipt{s}{\iG} = s$ ($s `: \{ \Prop, \Set, \Type \}$), donc 
+    on peut appliquer \irule{WfVar} dans \CCI{} pour obtenir:
+    $\wf \iG, x : \ipt{A}{\iG}$, soit $\wf \ipG{`G, x : A}$.
+
+    \case{PropSet}
+    Direct par induction, $\iG \typec \ipt{s}{\iG} = s :
+    \ipt{\Type}{\iG} = \Type$. La deuxième condition est directe
+    par définition de l'interprétation.
+    
+    \case{Var} On a:
+    \begin{prooftree}
+      \Var
+    \end{prooftree}
+    Par induction, $\wf \iG$ et par simple inspection de la
+    définition de l'interprétation des contextes, si $x : A `: `G$ alors
+    $x : \ipt{A}{`D} `: \iG$ pour $`D ``( `G$. Par affaiblissement
+    dans \CCI{}, on obtient aisément $\iG \typec x : \ipt{A}{`D}$ 
+    à partir de  $\ipG{`D} \typec x : \ipt{A}{\ipG{`D}}$. Or il est clair par
+    la définition de l'interprétation que $\ipt{A}{`D} = \ipt{A}{`G}$  
+    si $`G$ est une extension de $`D$ puisqu'on utilise l'environnement
+    uniquement au moment de typer les variables et
+    $\iG(x) = \ipG{`D}(x)$ pour tout $x$ utilisé dans $A$.
+    On a donc $\iG \typec x : \ipt{A}{\iG}$.
+    La deuxième condition est montrée par $\ipT{x}{`G} = \iG(x) = 
+    \ipt{A}{\ipG{`D}} = \ipt{A}{\iG}$.
+      
+    \case{Prod} On a:
+    \begin{prooftree}
+      \Prod
+    \end{prooftree}
+    
+    Par induction $\iG \typec \ipt{T}{\iG} : \ipt{s_1}{\iG}
+    = s_1$ et $\ipG{`G, x : T} \typec \ipt{U}{\ipG{`G, x : T}} :
+    \ipt{s_2}{\ipG{`G, x : T}} = s_2$.
+    On déplie l'interprétation pour obtenir:
+    $\iG, x : \ipt{T}{\iG} \typec \ipt{U}{\iG{}, x : \ipt{T}{\iG}} :
+    s_2$.
+    
+    Par \irule{Prod} dans \CCI, on obtient:
+    $\iG{} \typec \Pi x : \ipt{T}{\iG}. \ipt{U}{\iG{}, x : \ipt{T}{\iG}}
+    : s_3$.
+    Or $\ipt{\Pi x : T.U}{\iG} = \Pi x : \ipt{T}{\iG}. \ipt{U}{\iG{}, x
+      : \ipt{T}{\iG}}$, donc on a bien:
+    $\iG \typec \ipt{\Pi x : T.U}{\iG} : s_3 = \ipt{s_3}{\iG}$.
+    La seconde condition est directe d'après la définition de $\mathcal{R}$ qui
+    est une fonction.
+
+    \case{Abs} On a:
+    \begin{prooftree}
+      \Abs
+    \end{prooftree}
+    
+    Par induction $\iG \typec \ipt{\Pi x : T.U}{\iG} : \ipt{s}{\iG}$
+    et $\ipG{`G, x : T} \typec \ipt{M}{\ipG{`G, x : T}} :
+    \ipt{U}{\ipG{`G, x : T}}$.
+    On déplie l'interprétation pour obtenir:
+    $\iG, x : \ipt{T}{\iG} \typec \ipt{M}{\iG{}, x : \ipt{T}{\iG}} :
+    \ipt{U}{\ipG{`G, x : T}}$.
+    
+    Par \irule{Abs} dans \CCI, on obtient:
+    $\iG{} \typec \lambda x : \ipt{T}{\iG}. \ipt{M}{\iG{}, x : \ipt{T}{\iG}}
+    : \ipt{\Pi x : T.U}{\iG}$.
+    C'est équivalent à:
+    $\iG \typec \ipt{\lambda x : T.U}{\iG} : \ipt{\Pi x : T.U}{\iG}$.
+    La seconde condition se montre ainsi:
+    $\ipT{\lambda x : T.M}{\iG} = \Pi x : \ipt{T}{\iG}. \ipT{M}{\iG, x :
+      \ipt{T}{\iG}}$. Or par induction, 
+    $\ipT{M}{\iG, x : \ipt{T}{\iG}} = \ipt{U}{\iG, x : \ipt{T}{\iG}}$, donc 
+    $\ipT{\lambda x : T.M}{\iG} = \Pi x : \ipt{T}{\iG}. \ipt{U}{\iG, x :
+      \ipt{T}{\iG}} = \ipt{\Pi x : T.U}{\iG}$.
+    
+    \case{App} On a:
+    \begin{prooftree}
+      \AppA
+    \end{prooftree}
+
+    C'est le cas intéressant puisqu'on ajoute ici des coercions.
+    Par induction, $\iG{} \typec \ipt{f}{\iG} : \ipt{T}{\iG}$,
+    $\iG{} \typec \ipt{u}{\iG} : \ipt{U}{\iG}$,
+    $\iG{} \typec \ipt{U}{\iG}, \ipt{V}{\iG} : \ipt{s}{\iG}$.
+    
+    On va procéder par étapes: d'abord la construction d'une fonction
+    $\pi \ipt{f}{\iG} : \ipt{\Pi x : V.W}{\iG}$ puis la construction de
+    l'argument $c \ipt{u}{\iG} : \ipt{V}{\iG}$. On aura plus qu'à les
+    appliquer pour obtenir le jugement:
+    $\iG{} \typec \ipt{f~u}{\iG} : \ipt{W}{\iG, x :
+      \ipt{V}{\iG}}[c~u/x]$.
+    On montrera enfin que $\ipt{W}{\iG, x : \ipt{V}{\iG}}[c~u/x] = 
+    \ipt{W[u/x]}{\iG}$ ce qui nous permettra de déduire:
+    $\iG{} \typec \ipt{f~u}{\iG} : \ipt{W[u/x]}{\iG}$.
+
+
+
+
+    
+
+
+    
+    
+
+
+
+    
+
+    \case{Sigma}
+    \case{Sum}
+    \case{LetSum}
+    \case{Subset}
+
+  \end{induction}
+\end{proof}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 

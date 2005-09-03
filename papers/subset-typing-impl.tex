@@ -105,74 +105,10 @@ On peut remarquer plusieurs choses sur notre interprétation:
 
 % \input{typing-impl-new}
 %\typeinewFig
-\setboolean{displayLabels}{false}
-\begin{theorem}[Correction de l'interprétation]
-  \label{correct-interp}
-  Si $`G \typea t : T$ alors on a $\ipG{`G} \typec \ipt{t}{\ipG{`G}} :
-  \ipt{T}{\ipG{`G}}$ avec $\ipT{t}{`G} = \ipt{T}{\ipG{`G}}$.
-  Si $\wf `G$ alors $\wf \ipG{`G}$.
-\end{theorem}
-
-\begin{proof}
-  Par induction mutuelle sur la dérivation de typage ou de bonne
-  formation.
-
-  \begin{induction}
-    \case{WfEmpty} Trivial.
-
-    \case{WfVar}
-    Par induction $\ipG{`G} \typec \ipt{A}{\ipG{`G}} :
-    \ipt{s}{\ipG{`G}}$. Par inversion du jugement de bonne formation
-    dans \CCI{}, $\typewf \ipG{`G}$.
-    Or, $\ipt{s}{\ipG{`G}} = s$ ($s `: \{ \Prop, \Set, \Type \}$), donc 
-    on peut appliquer \irule{WfVar} dans \CCI{} pour obtenir:
-    $\wf \ipG{`G}, x : \ipt{A}{\ipG{`G}}$, soit $\wf \ipG{`G, x : A}$.
-
-    \case{PropSet}
-    Direct par induction, $\ipG{`G} \typec \ipt{s}{\ipG{`G}} = s :
-    \ipt{\Type}{\ipG{`G}} = \Type$. La deuxième condition est directe
-    par définition de l'interprétation.
-    
-    \case{Var} On a:
-    \begin{prooftree}
-      \Var
-    \end{prooftree}
-    Par induction, $\wf \ipG{`G}$ et par simple inspection de la
-    définition de l'interprétation des contextes, si $x : A `: `G$ alors
-    $x : \ipt{A}{`D} `: \ipG{`G}$ pour $`D ``( `G$. Par affaiblissement
-    dans \CCI{}, on obtient aisément $\ipG{`G} \typec x : \ipt{A}{`D}$ 
-    à partir de  $\ipG{`D} \typec x : \ipt{A}{\ipG{`D}}$. Or il est clair par
-    la définition de l'interprétation que $\ipt{A}{`D} = \ipt{A}{`G}$  
-    si $`G$ est une extension de $`D$ puisqu'on utilise l'environnement
-    uniquement au moment de typer les variables et
-    $\ipG{`G}(x) = \ipG{`D}(x)$ pour tout $x$ utilisé dans $A$.
-    On a donc $\ipG{`G} \typec x : \ipt{A}{\ipG{`G}}$.
-    La deuxième condition est montrée par $\ipT{x}{`G} = \ipG{`G}(x) = 
-    \ipt{A}{\ipG{`D}} = \ipt{A}{\ipG{`G}}$.
-      
-    \case{Prod}
-    
-    
-
-
-    \case{Abs}
-    \case{App}
-    \case{LetIn}
-    \case{Sigma}
-    \case{Sum}
-    \case{LetSum}
-    \case{Subset}
-    \case{Subsum}
 
 
 
-  \end{induction}
-\end{proof}
-
-
-
-
-
+\input{subset-typing-impl-proof}
 
 
 
