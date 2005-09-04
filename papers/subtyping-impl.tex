@@ -44,6 +44,55 @@
 {}
 }
 
+\newcommand{\subimpln}[4]{#1 \typec #2 : \ipt{#3}{{#1}_1} \subi
+  \ipt{#4}{{#1}_2}}
+\newcommand{\subimplndiff}[6]{#1 \typec #2 : \ipt{#3}{#4} \subi \ipt{#5}{#6}}
+\newcommand{\SubConvC}{%
+\UAX{SubConv}
+{$\ipt{T}{`G_1} \eqbi \ipt{U}{`G_2}$}
+{$\subimpln{`G}{(\lambda x. x)}{T}{U}$}
+{} 
+}
+
+\def\SubProdC{%
+\BAX{SubProd}
+{$\subimplndiff{`G}{c_1}{U}{`G_2}{T}{`G_1}$}
+{$`G, x : \ipt{U}{`G} \typec  \subimplndiff{`G, x : U}{c_2}{V}{`G, x \coloneqq c_1~x : U}{W}{`G}$}
+{$\subimpln{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
+{}
+}
+
+\def\SubSigmaC{%
+\BAX{SubSigma}
+{$\subimpln{`G}{c_1}{T}{U}$}
+{$\subimpln{`G, x : T}{c_2}{V}{W[c_1~x/x]}$}
+{$\subimpln{`G}
+  {\lambda (x, y). (c_1~x, c_2~y)}
+  {\Sigma x : T. V}{\Sigma x : U. W}$}
+{}
+}
+
+\def\SubLeftC{\SubSubC}
+\def\SubSubC{%
+\UAX{SubSub}
+%{$`G, x : U \typec P : \Prop$}
+{$\subimpln{`G}{c}{U}{V}$}
+{$\subimpln{`G}{c `o \pi_1}
+  {\mysubset{x}{U}{P}}{V}$}
+{}
+}
+    
+\def\SubRightC{\SubProofC}
+\def\SubProofC{%
+\UAX{SubProof}
+%{$`G, x : U \typec P : \Prop$}
+{$\subimpln{`G}{c}{T}{U}$}
+{$\subimpln{`G}
+  {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}}
+  {T}{\mysubset{x}{U}{P}}$}
+{}
+}
+
 \def\subtiFig{
 \begin{figure}[ht]
   \begin{center}
@@ -63,6 +112,32 @@
     
     \vspace{\infvspace}
     \SubRightI\DP
+    
+  \end{center}
+  \caption{Réécriture de la coercion vers \CCI}
+  \label{fig:subtyping-impl-rules}
+\end{figure}
+}
+
+\def\subticFig{
+\begin{figure}[ht]
+  \begin{center}
+    \def\fCenter{\subtd}
+    
+    \vspace{\infvspace}
+    \SubConvC\DP
+
+    \vspace{\infvspace}
+    \SubProdC\DP
+
+    \vspace{\infvspace}
+    \SubSigmaC\DP
+    
+    \vspace{\infvspace}
+    \SubLeftC\DP
+    
+    \vspace{\infvspace}
+    \SubRightC\DP
     
   \end{center}
   \caption{Réécriture de la coercion vers \CCI}
