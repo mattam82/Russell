@@ -235,7 +235,7 @@
 
   \only<2>{
     $\begin{array}{cl}
-      \text{\Coq} & \Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq := \\
+      \text{\Coq} & \Inductive~\sdef{sumbool}~(A~B:\Prop) : \Set := \\
       & ~|~\sdef{left} : A "->" \{A\} + \{B\} \\
       & ~|~\sdef{right} : B "->" \{A\} + \{B\}. \\
       & \Definition~\sdef{lt\_le\_dec}~: \forall x~y : \nat, \\
@@ -247,7 +247,7 @@
     \end{array}$}
 
 %     $\begin{array}{cl}
-%       \text{\Coq} & \Inductive~\sdef{sumbool}~(A~B:\Prop) : \SetCoq := \\
+%       \text{\Coq} & \Inductive~\sdef{sumbool}~(A~B:\Prop) : \Set := \\
 %       & ~|~\sdef{left} : A "->" \{A\} + \{B\} \\
 %       & ~|~\sdef{right} : B "->" \{A\} + \{B\}. \\
 %       & \\
@@ -317,7 +317,7 @@
         l'essentiel de l'expressivité de \CCI.}
     \end{block}}
   %\note<4->{A long terme, preuve de programmes ML annotés}
-\end{frame}
+\end{frame} 
 
 \subsection{Travaux connexes}
 
@@ -489,13 +489,14 @@
         $\begin{array}{lcl}
           `a & \Coloneqq & \text{\emph{constante}} \\
           & | & x \\
-          & | & (`a,~`a) \\ 
           & | & \funml{}~x~:~`t "=>" `a \\
           & | & `a~`a \\
-          & | & \letml~x = `a ~\inml~`a \\
-          & | & \letml~(x, y) = `a ~\inml~ `a \\
           \uncover<2->{ 
-            & | & (x \coloneqq `a,~`a~: `t)}
+            & | & \letml~(x, y) = `a ~\inml~ `a \\
+            & | & (x \coloneqq `a,~`a~: `t)} \\
+          \uncover<3->{
+            & | & `a~`t
+          }
         \end{array}$
       \end{block}
     \end{column}
@@ -503,17 +504,20 @@
       \begin{block}{Types}
         $\begin{array}{lcl}
           `t & \Coloneqq & \text{\emph{constante}} \\
-          & | & `t * `t \\
-          & | & `t "->" `t \\
+          & | & \Pi x : `t. `t \\
           & | & \alert{`t~`a} \\
           & | & \mysubset{x}{`t}{`t} \\
           \uncover<2->{
             & | & \Sigma x : `t. `t \\
-            & | & \Pi x : `t. `t}
-%          \uncover<3->{
-%             & | &  x \\
-%             & | & `t~`t \\
-%          }
+          }
+          \uncover<3->{
+             & | &  x \\
+             & | & (\lambda x : `t "=>" `t) \\
+             & | & `t~`t \\
+          }
+          \uncover<4->{
+            & | & s `: \setproptype
+          }
         \end{array}$
       \end{block}
     \end{column}
@@ -525,13 +529,10 @@
   
   \typenvd
   \begin{center}
-
-    \vdots
 %    
-%    \vspace{0.5cm}
-%    \Conv\DP
     
     \vspace{0.5cm}
+    
     \BAX{App}
     {$`G \seq f : \Pi x : V. W $}
     {$`G \seq u : V $}
@@ -539,9 +540,14 @@
     {$$}
     \DP
     
-    \pause
-    \vspace{0.5cm}
-    \Coerce\DP  
+    \only<2>{
+      \vspace{0.5cm}
+      \Conv\DP
+    }
+    \only<3>{
+      \vspace{0.5cm}
+      \Coerce\DP
+    }
   \end{center}
 
 %   \pause
@@ -550,14 +556,13 @@
   \hyperlink{sysalgo<2>}{\beamerreturnbutton{}}  
 \end{frame}
 
-\def\eqbi{`=}
-
 \begin{frame}[t,label=subtypingdecl]
   \frametitle{Coercion}
   \begin{center}
     \def\fCenter{\subd}
     
     \SubConv\DP
+    \SubTrans\DP
     \SubSub\DP
 
     \vspace{0.5cm}
@@ -570,9 +575,9 @@
   \end{center}
 
   \uncover<3->
-  {\begin{lemma}[Transitivité de la coercion]
-    Si $T \sub U$ et $U \sub V$, alors $T \sub V$.
-  \end{lemma}}
+  {\begin{fact}[Symétrie de la coercion]
+      Si $T \sub U$ alors $U \sub T$.
+    \end{fact}}
   
   \hyperlink{sysalgo<3>}{\beamerreturnbutton{}}
 %   \begin{itemize}
@@ -602,7 +607,7 @@
   \item<2-> Intégration de la coercion à l'application 
     \hyperlink{typingdecl<2>}{\beamergotobutton{}} ;
     
-  \item<3-> Algorithme de coercion déterministe
+  \item<3-> Algorithme de coercion déterministe (élimination de la transitivité)
     \hyperlink{subtypingdecl<2>}{\beamergotobutton{}} ;
   \end{itemize}
 
@@ -621,9 +626,9 @@
   }
   
   \only<4>{
-    \begin{lemma}[Équivalence des systèmes déclaratifs et algorithmiques]
+    \begin{theorem}[Équivalence des systèmes déclaratifs et algorithmiques]
       $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \subd T$.
-    \end{lemma}
+    \end{theorem}
 %     \begin{fact}[Décidabilité de $\typea$]
 %       Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
 %     \end{fact}
@@ -708,6 +713,7 @@
     \begin{itemize}
     \item Variables existentielles $?_{`t}$ ;
     \item \Refine{}.
+    \item<2->\eterm{}.
     \end{itemize}
   \end{block}
 \end{frame}
@@ -750,7 +756,7 @@
     Développement d'un langage de programmation plus \alert{souple}
     conservant l'expressivité de \CCI ;
   \item
-    Bonne intégration à l'environnement (en cours) ; 
+    Bonne intégration à l'environnement ;
   \item 
     Justification formelle du ``\ps{}''.
   \end{itemize}
@@ -759,10 +765,10 @@
   % The following outlook is optional.
   \vskip0pt plus.5fill
   \begin{itemize}
-  \item[\bf{$"=>"$}] Futur
+  \item[\bf{$"=>"$}] Travaux futurs
     \begin{itemize}
     \item
-      Extension aux autres constructions de \Coq{} (inductifs\ldots) ;
+      Extension aux autres constructions de \Coq{} ((co-)inductifs \ldots) ;
     \item
       Preuve de la correction de la réécriture.
     \end{itemize}
