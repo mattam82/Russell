@@ -10,4 +10,4 @@ Recursive program mydiv (a : nat) { wf lt proof lt_wf } :
   
 (** Dans Coq, mydiv aura le type: *)
 forall a : nat, forall b : { b : nat | b <> 0 },
- { q : nat & { r : nat | div_prop a (proj1_sig b) q r } }
+  { q : nat & { r : nat | div_prop a (pi_1 b) q r } }
