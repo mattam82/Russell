@@ -111,8 +111,8 @@ obtient alors automatiquement les obligations de preuves.
 \paragraph{\texttt{Recursive program}}
 Cette deuxième tactique permet d'écrire des définitions récursives, on va donc demander
 plus d'informations à l'utilisateur lors de la définition:
-$\texttt{Recursive program}~\sref{name}~(a : `t_a) { \sref{wf}~R~(\sref{auto} `|
-  \sref{proof} p)? } : ~`t := `a.$.
+\[\texttt{Recursive program}~\sref{name}~(a : `t_a) \{ \sref{wf}~R~(\sref{auto} `|
+  \sref{proof}~p)? \} : ~`t := `a.\]
 L'argument $a$ de type $`t_a$ est l'argument de récursion, $R$ est la
 relation d'ordre qu'on doit montrer bien fondée. Si l'on utilise
 $\sref{auto}$ la tactique va chercher dans une base une preuve de bonne

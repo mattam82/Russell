@@ -55,16 +55,17 @@
           V}})~(c'~\ipt{a}{\ipG{`G, x : V}})
       = (\pi~x)~(c'~\ipt{a}{\ipG{`G, x : V}})$.
       On a donc après application de la substitution,
-      $(\pi~(c~\ipt{u}{\iG}))~(c'~\ipt{a}{\ipG{`G, x : V}}[\ipt{u}{\iG}/x])$.
+      $(\pi~(c~\ipt{u}{\iG}))~(c'~\ipt{a}{\ipG{`G, x :
+          V}}[c~\ipt{u}{\iG}/x]) : T[c'~\ipt{a}{\ipG{`G, x : V}}/x]$ ($\pi$ et $c'$ sont clos par définition).
       
       Pour le membre droit, on a $\pi' : \ipT{u}{\iG} "->" \Pi x :
       S'.T'$ et $c'' : \ipT{a[u/x]}{\iG} "->" S'$ tel que:
-      $\ipt{u~a[u/x]}{\iG} =
-      (\pi'~\ipt{u}{\iG})~(c''~\ipt{a[u/x]}{\iG})$.
+      $\ip{u~a[u/x]}{\iG} =
+      (\pi'~\ipt{u}{\iG})~(c''~\ipt{a[u/x]}{\iG}) : T'[c''~\ipt{a[u/x]}{\iG}/x]$.
       Il nous faut donc montrer que
-      $(\pi~(c~\ipt{u}{\iG}))~(c'~\ipt{a}{\ipG{`G, x :
+      \[(\pi~(c~\ipt{u}{\iG}))~(c'~\ipt{a}{\ipG{`G, x :
           V}}[\ipt{u}{\iG}/x]) \eqbi (\pi'~\ipt{u}{\iG}) 
-      ~(c''~\ipt{a[u/x]}{\iG})$.
+      ~(c''~\ipt{a[u/x]}{\iG})\].
       
       On a les coercions suivantes: 
       \begin{itemize}
@@ -74,6 +75,32 @@
       \item $\pi' : \ipt{U}{\iG} "->" \Pi x : S'.T'$
       \item $c'' : \ipT{a[u/x]}{\iG} "->" S'$
       \end{itemize}
+      
+      Le problème ici est que $c$ peut être une coercion arbitraire et
+      donc on ne peut s'assurer que $\pi `o c = \pi'$ puisque $S, S'$ et
+      $T,T'$ peuvent effectivement être différents. En fait $T$ et $T'$
+      ne peuvent être différents puisqu'on a $\ipG{`G, x : V} \typec
+      \ipt{W}{\ipG{`G, x : V}} : s$, donc $f~v : s$ par inversion et $T
+      = T' = s$. On 
+
+      
+
+      
+      Supposons qu'on a $U = \Pi n : \nat.\listml~n$ et $V = \Pi n :
+      \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$ et $\ipT{a}{\ipG{`G, x :
+          V}} = \nat$.
+      Alors $S = \mysubset{x}{\nat}{P}$, $T = \listml~(\pi_1~n)$,
+      $S' = \nat$, $T' = \list~n$. Les coercions sont les suivantes:
+      $\pi = \pi' = \lambda x.x$, $c = \lambda x.u~(\pi_1~n)$,
+      $c' = (\lambda x. \sref{elt} x ?_P)$, $c'' = \lambda x.x$.
+      On a alors:
+      $(\lambda x.u~(\pi_1~x))~(\sref{elt} a ?_P[a/x]) \eqbi u~a$, ce
+      qui est vrai.
+      
+
+
+      
+
       $\pi' \eqbi \pi `o c$  
 
 .
@@ -84,7 +111,7 @@
       déterminisme de la coercion on peut en déduire que $\Pi x : S'.T'
       \suba \Pi x : S.T$.
       
-
+      
 
       
     \end{itemize}
