@@ -462,7 +462,7 @@
   \frametitle{Architecture}
   
   \begin{itemize}
-  \item<1-> Écriture dans un langage avec coercions implicites;
+  \item<1-> Écriture dans un langage (\lng{}) avec coercions implicites;
   \item<2-> Réécriture automatique vers \CCI ; 
   \item<3-> Preuve des obligations.
   \end{itemize}
@@ -482,7 +482,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Syntaxe à la \ML}
+  \frametitle{Syntaxe de \lng{}}
   \begin{columns}
     \begin{column}{0.5\textwidth}
       \begin{block}{Termes}
@@ -493,7 +493,7 @@
           & | & `a~`a \\
           \uncover<2->{ 
             & | & \letml~(x, y) = `a ~\inml~ `a \\
-            & | & (x \coloneqq `a,~`a~: `t)} \\
+            & | & (x \coloneqq `a, `a : `t)} \\
           \uncover<3->{
             & | & `a~`t
           }
@@ -505,7 +505,7 @@
         $\begin{array}{lcl}
           `t & \Coloneqq & \text{\emph{constante}} \\
           & | & \Pi x : `t. `t \\
-          & | & \alert{`t~`a} \\
+          & | & `t~`a \\
           & | & \mysubset{x}{`t}{`t} \\
           \uncover<2->{
             & | & \Sigma x : `t. `t \\
@@ -525,7 +525,7 @@
 \end{frame}
 
 \begin{frame}[t,label=typingdecl]
-  \frametitle{Sémantique}
+  \frametitle{Typage}
   
   \typenvd
   \begin{center}
@@ -543,8 +543,8 @@
     \only<2>{
       \vspace{0.5cm}
       \Conv\DP
-    }
-    \only<3>{
+    }   
+    \only<3->{
       \vspace{0.5cm}
       \Coerce\DP
     }
@@ -553,7 +553,7 @@
 %   \pause
 %   Traitement de la conversion (\irule{Conv}).
 
-  \hyperlink{sysalgo<2>}{\beamerreturnbutton{}}  
+  \only<3>{\hyperlink{sysalgo<2>}{\beamerreturnbutton{}}}
 \end{frame}
 
 \begin{frame}[t,label=subtypingdecl]
@@ -563,23 +563,22 @@
     
     \SubConv\DP
     \SubTrans\DP
-    \SubSub\DP
 
     \vspace{0.5cm}
-    \uncover<2->{\SubProof\DP
-      \only<2>{$\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}}
-    
+    \only<2->{\SubSub\DP
+      \SubProof\DP} % $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
+
     \vspace{0.5cm}
-    \uncover<3->{\SubProd\DP
+    \only<3->{\SubProd\DP
       \SubSigma\DP}
   \end{center}
 
-  \uncover<3->
+  \only<3->
   {\begin{fact}[Symétrie de la coercion]
       Si $T \sub U$ alors $U \sub T$.
     \end{fact}}
   
-  \hyperlink{sysalgo<3>}{\beamerreturnbutton{}}
+  \only<3->{\hyperlink{sysalgo<3>}{\beamerreturnbutton{}}}
 %   \begin{itemize}
 %   \item<2-> Environnements non nécessaires.
 %     %, essentiellement équivalence en
@@ -605,10 +604,10 @@
   
   \begin{itemize}
   \item<2-> Intégration de la coercion à l'application 
-    \hyperlink{typingdecl<2>}{\beamergotobutton{}} ;
+    \hyperlink{typingdecl<3>}{\beamergotobutton{}} ;
     
   \item<3-> Algorithme de coercion déterministe (élimination de la transitivité)
-    \hyperlink{subtypingdecl<2>}{\beamergotobutton{}} ;
+    \hyperlink{subtypingdecl<3>}{\beamergotobutton{}} ;
   \end{itemize}
 
   \only<2>{\TAX{App}
@@ -626,8 +625,9 @@
   }
   
   \only<4>{
-    \begin{theorem}[Équivalence des systèmes déclaratifs et algorithmiques]
-      $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$ et $U \subd T$.
+    \begin{theorem}[Équivalence des systèmes]
+      $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$
+      avec $U \suba T$ et $U \suba T$ \ssi{} $U \subd T$.
     \end{theorem}
 %     \begin{fact}[Décidabilité de $\typea$]
 %       Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
@@ -638,6 +638,11 @@
 
 \subsection{Traduction dans \Coq}
 \typenvi
+\begin{frame}<beamer>
+  \frametitle{Plan}
+  \tableofcontents[currentsection,currentsubsection]
+\end{frame}
+
 
 \renewcommand{\subimpl}[4]{{\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
 
@@ -650,10 +655,10 @@
       \SubConvI\DP
       
       \vspace{0.25cm}
-      \uncover<3->{\SubSubI\DP}
+      \only<3->{\SubSubI\DP}
 
       \vspace{0.25cm}
-      \uncover<4->{\UAX{SubProof}
+      \only<4->{\UAX{SubProof}
       % {$`G, x : U \typec P : \Prop$}
       {$\subimpl{`G}{c}{T}{U}$}
       {$\subimpl{`G}
@@ -661,7 +666,7 @@
         {T}{\mysubset{x}{U}{P}}$}
       {}\DP}
       % \SubRightI\DP
-      \uncover<5->{
+      \only<5->{
       \vspace{0.25cm}
       \SubProdI\DP
       
@@ -670,51 +675,76 @@
     \end{center}
 
     \only<4>{$0 : \nat$ et $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
-      mais $(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]})) 0 
-      `= \sref{elt}~0~?_{\alert{0 \neq 0}}$}
+      mais $(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]}))~0 
+      \eqbi \sref{elt}~0~?_{\alert{0 \neq 0}}$}
 
 \end{frame}
 
 \renewcommand{\subimpl}[4]{#2 : #3 \sub #4}
 
-\renewcommand{\timpl}[6]{#1 \typea #2 : #3\uncover<2->{"~>" #4 \typec #5 : #6}}
+\renewcommand{\timpl}[6]{#1 \typea #2 : #3\only<2->{"~>" #4 \typec #5 : #6}}
 
-\newcommand{\QAXII}[7]{\AXC{\uncover<2->{#3}}\noLine\UIC{#2}
-  \AXC{\uncover<2->{#5}}\noLine\UIC{#4}
+\newcommand{\QAXII}[7]{\AXC{\only<2->{#3}}\noLine\UIC{#2}
+  \AXC{\only<2->{#5}}\noLine\UIC{#4}
   \LeftRuleLabel{#1}\BIC{#6}}
+
+\begin{frame}[t]
+  \frametitle{Interprétation}
+  
+  \begin{center}
+    $\ip{t}{`G} = t', T'$. On note $\ipt{t}{`G} = t'$ et $\ipT{t}{`G} = T'$.
+  \end{center}
+  
+  \only<2->{
+  Exemple: 
+  \[\begin{array}{lcll}
+    \ip{f~u}{`G} 
+    & = & \letml~(f', `t) = \ip{f}{`G}~\inml & \\
+    & & \letml~(\pi, \Pi x : V.W) = \muimpl(`t)~\inml & \\
+    & & \letml~(u', U') = \ip{u}{`G}~\inml & \\
+    & & \letml~c = \sref{coerce}~U'~V~\inml & \\
+    & & (\pi~f')~(c~u'), W[c~u'/x] & 
+  \end{array}\]
+ 
+    \setboolean{displayLabels}{false}
+    \AppA\DP
+  }
+   
+  % \item Correspondance code écrit/extrait.
+\end{frame}
 
 \begin{frame}
   \frametitle{Propriétés}
-
+  
+  \begin{conjecture}[Correction de la réécriture]
+    Si $`G \typea t : U$ alors $\ipG{`G} \typec \ipt{t}{\iG} : \ipt{T}{\iG}$.
+  \end{conjecture}
+  
+  \begin{lemma}[Substitutivité]
+    $\ipt{W}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x] \eqbi \ipt{W[u/x]}{\iG}$
+  \end{lemma}
+  
   \begin{center}
-  \QAXII{App}
-  {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
-  {$\mu~T' `= (\pi, \Pi x : V'. W')$}
-  {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
-  {$\subimpl{`G'}{c}{U'}{V'}$}
-  {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
-  {}
-\DP
+    $"=>"$ Commutation des coercions
   \end{center}
-  
-  \pause
-  \begin{theorem}[Correction de la réécriture]
-    Si $`G \typea t : U$ et $\timpl{`G}{t}{U}{`G'}{t'}{U'}$ alors
-    $`G' \typec t' : U'$.
-  \end{theorem}
-  
-  % \item Correspondance code écrit/extrait.
 \end{frame}
 
 \subsection{Implémentation et exemple}
 
-\begin{frame}
-  \begin{block}{Implémentation}
-    \begin{itemize}
-    \item Variables existentielles $?_{`t}$ ;
-    \item \Refine{}.
-    \item<2->\eterm{}.
-    \end{itemize}
+\begin{frame}[t]
+  \frametitle{Implémentation}
+  $`~$ 2000 lignes de code O'Caml.
+  
+  \pause
+  \begin{enumerate}
+  \item Analyse syntaxique ;
+  \item Typage ;
+  \item Interprétation.
+  \end{enumerate}
+
+  \pause
+  \begin{block}{Variables existentielles $?_{`t}$}
+    \only<3>{\Refine{}} \only<4>{$"=>"$ \eterm{}}
   \end{block}
 \end{frame}
 
@@ -768,9 +798,9 @@
   \item[\bf{$"=>"$}] Travaux futurs
     \begin{itemize}
     \item
-      Extension aux autres constructions de \Coq{} ((co-)inductifs \ldots) ;
+      Preuve de la correction de l'interprétation.
     \item
-      Preuve de la correction de la réécriture.
+      Extension aux autres constructions de \Coq{} ((co-)inductifs, univers, \ldots) ;
     \end{itemize}
   \end{itemize}
 \end{frame}
