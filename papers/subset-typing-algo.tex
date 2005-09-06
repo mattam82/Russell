@@ -1,7 +1,7 @@
 \section{Élaboration du système algorithmique et propriétés}
 \typenva
 
-Pour pouvoir implémenter le typeur, il nous faut un système dirigé par la
+Pour pouvoir implanter le typeur, il nous faut un système dirigé par la
 syntaxe. Ce n'est pas le cas du système déclaratif, aussi bien pour le
 typage que pour la coercion. On va donc raffiner ces systèmes dans
 l'optique d'en extraire un algorithme. On note $\typea$ le jugement de
@@ -389,7 +389,7 @@ En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
 d'inférence de $\suba$ donne donc un algorithme pour décider de la relation
 de coercion. L'indéterminisme entre les règles \irule{SubProof} et
 \irule{SubSub} ne pose pas de problème: on peut laisser le choix à 
-l'implémentation puisque le système est confluent. \irule{SubHnf}
+l'implantation puisque le système est confluent. \irule{SubHnf}
 formalise le fait qu'on peut avoir à réduire en tête avant d'appliquer
 les autres règles (pour obtenir un produit, une somme ou un sous-ensemble).
 

@@ -9,7 +9,7 @@ correspondant (voir annexe \ref{fig:euclid-subtac}).
 La g\'en\'eration des buts correspondant aux variables existentielles et la
 formation du terme final devaient originellement \^etre laiss\'ees \`a la
 tactique \Refine~et au syst\`eme de gestion des existentielles de \Coq. Certaines limitations 
-dans l'impl\'ementation du raffinement (le m\'ecanisme permettant de manipuler
+dans l'implantation du raffinement (le m\'ecanisme permettant de manipuler
 des termes ``\`a trous'') nous ont emp\^ech\'e d'utiliser \Refine. En
 particulier, la gestion des d\'efinitions r\'ecursives et la pr\'esence de
 variables existentielles dans les types d'autres existentielles
@@ -55,7 +55,7 @@ r\'ef\'erence $?_4$, il faut que l'existentielle $ex_4$ apparaisse
 \emph{avant} $ex_3$ dans notre produit. Il est toujours possible de
 trouver un ordre compatible avec ces d\'ependances puisqu'il est
 impossible de cr\'eer un cycle o\`u $?_i$ r\'ef\'erencerait $?_j$ et vice-versa
-(ceci est assur\'e par le caract\`ere fonctionnel des objets impl\'ementant
+(ceci est assur\'e par le caract\`ere fonctionnel des objets implantant
 les existentielles dans \Coq). La tactique actuelle est cod\'ee avec
 l'hypoth\`ese que toute existentielle $?_i$ ne d\'epend pas des
 existentielles d'indice sup\'erieur \`a $i$. Il est cependant envisageable de

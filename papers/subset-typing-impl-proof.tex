@@ -1,6 +1,75 @@
+v v v v v v v
 \def\iG{\ipG{`G}}
+\subsection{Propriétés}
+On veut montrer que si l'on a un jugement valide dans notre système
+algorithmique, alors son image par l'interprétation est un jugement
+valide de \CCI{}. On rappelle que \CCI{} est équivalent au premier
+calcul présenté où la règle de coercion est remplacée par la règle de conversion.
 
+\typenvi
+\subsubsection{Remarques sur l'interprétation}
+\begin{itemize}
+\item[{\bf Déterminisme}] L'interprétation est déterministe par rapport à la
+  forme des termes. On peut en déduire que
+  si $`G \typea x : T$ et $`G \typea \Sigma x : T.U : s$ alors 
+  si $\ipt{T}{\ipG{`G}} = T'$ on a $\ipt{\Sigma x : T.U}{\ipG{`G}} =
+  \Sigma x : T'. U'$.  
+  
+\item[{\bf Conservation de la structure}] On voit très clairement que notre
+  interprétation est un homomorphisme module les coercions, 
+  c'est à dire qu'elle préserve globallement la structure des termes et
+  des types.
+
+\item[{\bf Consevation du typage}] Notre interprétation transforme un terme
+  bien typé dans le système algorithmique en un terme bien typé dans
+  \CCI{}. Ce résultat va découler du fait que l'on reconstruit implicitement
+  la dérivation de typage du système algorithmique dans notre
+  interprétation en ajoutant les coercions nécessaires pour être bien
+  typé dans \CCI{}.
+\end{itemize}
+
+\subsubsection{Correction}
+On veut montrer le théorème suivant: si $`G \typea t : T$ alors $\iG
+\typec \ipt{t}{\iG} : \ipt{T}{\iG}$. Nous n'avons pas encore trouvé de
+preuve de ce résultat. En effet le jugement de coercion rend la preuve
+ très difficile à cause de son caractère
+non local. Pour mieux comprendre ce problème, considérons l'exemple
+suivant:
+
+\paragraph{Exemple}
+Dans le système algorithmique, on peut très bien dériver
+$\Pi n : \nat. \sref{list}~n \suba \Pi n :
+\mysubset{x}{\nat}{P}.\listml~n$ puisque $\mysubset{x}{\nat}{P} \suba
+\nat$ et $\listml~n \eqbi \listml~n$.
+Si l'on réécrit vers \CCI{}, on n'aura plus les même types
+de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
+Ici, une coercion a été insérée dans le second type:
+$`G' \typec c : \Pi n : \nat. \listml~n \subi \Pi n :
+\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. Seulement, et c'est là la
+preuve que l'intuition de la coercion par prédicats est bonne, on peut
+dériver ce jugement:
+
+\begin{prooftree}
+  \AXC{$\nat \eqbi \nat$}
+  \UIC{$`G' \typec \lambda x.x : \nat \subi \nat$}
+  \UIC{$`G' \typec (\lambda x.x) `o \pi_1 : \mysubset{x}{\nat}{P} \subi \nat$}
+  \AXC{$(\listml~n)[\pi_1~n/n] \eqbi \listml~(\pi_1~n)$}
+  \UIC{$`G, n : \mysubset{x}{\nat}{P} \typec c_2 = (\lambda x.x) :
+    (\listml~n)[\pi_1~n/n] \subi \listml~(\pi_1~n)$}
+  \BIC{$`G' \typec \lambda f.\lambda x.c_2~(f~(\pi_1~x)) : 
+    \Pi n : \nat. \listml~n \subi 
+    \Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$}
+\end{prooftree}
+
+
+\paragraph{Substitutivité}
+\setboolean{displayLabels}{false}
+Le lemme qui pose problème est la substitutivité de l'interprétation.
+On l'énonce de la façon suivante:
+
+*************
 \subticFig
+^ ^ ^ ^ ^ ^ ^
 \begin{lemma}[Substitutivité de l'interprétation]
   Si:
   \begin{itemize}
