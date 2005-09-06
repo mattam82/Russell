@@ -44,20 +44,22 @@
 {}
 }
 
-\newcommand{\subimpln}[4]{#1 \typec #2 : \ipt{#3}{{#1}_1} \subi
-  \ipt{#4}{{#1}_2}}
-\newcommand{\subimplndiff}[6]{#1 \typec #2 : \ipt{#3}{#4} \subi \ipt{#5}{#6}}
-\newcommand{\SubConvC}{%
+\newcommand{\subimpln}[4]{#1 \typec #2 : \ipt{#3}{{#1}} \subi
+  \ipt{#4}{#1}}
+\newcommand{\subimplndiff}[6]{#1 \typec #2 : \ipt{#3}{#1} #4 \subi
+  \ipt{#5}{#1} #6}
+\newcommand{\SubConvC}{
 \UAX{SubConv}
-{$\ipt{T}{`G_1} \eqbi \ipt{U}{`G_2}$}
+{$\ipt{T}{`G} \eqbi \ipt{U}{`G}$}
 {$\subimpln{`G}{(\lambda x. x)}{T}{U}$}
 {} 
 }
 
 \def\SubProdC{%
 \BAX{SubProd}
-{$\subimplndiff{`G}{c_1}{U}{`G_2}{T}{`G_1}$}
-{$`G, x : \ipt{U}{`G} \typec  \subimplndiff{`G, x : U}{c_2}{V}{`G, x \coloneqq c_1~x : U}{W}{`G}$}
+{$\subimpln{`G}{c_1}{U}{T}$}
+{$`G, x : \ipt{U}{`G} \typec c_2 : \ipt{V}{`G, x :
+  \ipt{T}{`G}}[c_1~x/x] \subi \ipt{W}{`G, x : \ipt{U}{`G}}$}
 {$\subimpln{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
 {}
 }
@@ -65,7 +67,8 @@
 \def\SubSigmaC{%
 \BAX{SubSigma}
 {$\subimpln{`G}{c_1}{T}{U}$}
-{$\subimpln{`G, x : T}{c_2}{V}{W[c_1~x/x]}$}
+{$`G, x : \ipt{T}{`G} \typec c_2 : \ipt{V}{`G, x : \ipt{T}{`G}} \subi
+  \ipt{W}{`G, x : \ipt{T}{`G}}[c_1~x/x]$}
 {$\subimpln{`G}
   {\lambda (x, y). (c_1~x, c_2~y)}
   {\Sigma x : T. V}{\Sigma x : U. W}$}
@@ -120,7 +123,7 @@
 }
 
 \def\subticFig{
-\begin{figure}[ht]
+\begin{figure}[th]
   \begin{center}
     \def\fCenter{\subtd}
     
