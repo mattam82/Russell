@@ -97,15 +97,15 @@
 \institute[LRI] % (optional, but mostly needed)
 {
 %  \inst{1}%
-  Equipe {\sc Démons} \\
+  \'Equipe \Demons{} \\
   Laboratoire de Recherche en Informatique\\
   Université Paris Sud {\uppercase\expandafter{\romannumeral 11}}}
 % - Use the \inst command only if there are several affiliations.
 % - Keep it simple, no one is interested in your street address.
 
 \date % (optional, should be abbreviation of conference name)
-{Pré-soutenance de Master II \\
-5 Juillet 2005}
+{Soutenance de Master II Recherche \\
+7 Septembre 2005}
 % - Either use conference name or its abbreviation.
 % - Not really informative to the audience, more for people (including
 %   yourself) who are reading the slides online
@@ -696,24 +696,23 @@
   \end{center}
   
   \only<2->{
-  Exemple: 
-  \[\begin{array}{lcll}
-    \ip{f~u}{`G} 
-    & = & \letml~(f', `t) = \ip{f}{`G}~\inml & \\
-    & & \letml~(\pi, \Pi x : V.W) = \muimpl(`t)~\inml & \\
-    & & \letml~(u', U') = \ip{u}{`G}~\inml & \\
-    & & \letml~c = \sref{coerce}~U'~V~\inml & \\
-    & & (\pi~f')~(c~u'), W[c~u'/x] & 
-  \end{array}\]
- 
     \setboolean{displayLabels}{false}
     \AppA\DP
+
+    Exemple: 
+    \[\begin{array}{lcll}
+      \ip{f~u}{`G} 
+      & = & \letml~(f', `t) = \ip{f}{`G}~\inml & \\
+      & & \letml~(\pi, \Pi x : V.W) = \muimpl(`t)~\inml & \\
+      & & \letml~(u', U') = \ip{u}{`G}~\inml & \\
+      & & \letml~c = \sref{coerce}~U'~V~\inml & \\
+      & & (\pi~f')~(c~u'), W[c~u'/x] & 
+    \end{array}\]    
   }
    
   % \item Correspondance code écrit/extrait.
 \end{frame}
 
-v v v v v v v
 \begin{frame}
   \frametitle{Propriétés}
   
@@ -730,20 +729,8 @@ v v v v v v v
   \end{center}
 \end{frame}
 
-\subsection{Implémentation et exemple}
-*************
 \subsection{Implantation et exemple}
-^ ^ ^ ^ ^ ^ ^
 
-v v v v v v v
-\begin{frame}
-  \begin{block}{Implantation}
-    \begin{itemize}
-    \item Variables existentielles $?_{`t}$ ;
-    \item \Refine{}.
-    \item<2->\eterm{}.
-    \end{itemize}
-*************
 \begin{frame}[t]
   \frametitle{Implémentation}
   $`~$ 2000 lignes de code O'Caml.
@@ -758,7 +745,6 @@ v v v v v v v
   \pause
   \begin{block}{Variables existentielles $?_{`t}$}
     \only<3>{\Refine{}} \only<4>{$"=>"$ \eterm{}}
-^ ^ ^ ^ ^ ^ ^
   \end{block}
 \end{frame}
 

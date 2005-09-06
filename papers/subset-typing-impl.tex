@@ -12,10 +12,6 @@ des trous dont on ne connait que le type des habitants) pour traduire le
 fait qu'il est de la responsabilité de l'utilisateur de prouver que son
 utilisation de la coercion n'était pas incorrecte.
 
-v v v v v v v
-L'interprétation $\ip{t}{`G}$ renvoie à la fois un terme $t'$ réecrit et
-son type dans l'environnement \Coq{} $`G$.
-*************
 \newcommand{\ip}[2]{\llbracket #1 \rrbracket_{#2}}
 \newcommand{\ipG}[1]{\llbracket #1 \rrbracket}
 \newcommand{\ipt}[2]{\llfloor #1 \rrfloor_{#2}}
@@ -24,63 +20,13 @@ son type dans l'environnement \Coq{} $`G$.
 On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des
 termes (figure \ref{fig:interp}). Cette interprétation renvoie à la fois
 un terme de $t'$ réecrit et son type dans l'environnement \Coq{} $`G$.
-^ ^ ^ ^ ^ ^ ^
+
 On utilise les abbréviations suivantes:
 \begin{itemize}
 \item $\ipt{t}{`G} `= \pi_1~ \ip{t}{`G}$, soit le terme réecrit ;
 \item $\ipT{t}{`G} `= \pi_2~ \ip{t}{`G}$, soit le type \Coq{} de $t'$.
 \end{itemize}
 
-v v v v v v v
-On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
-\[\begin{array}{lcll}
-  \ip{x}{`G} & = & x, `G(x) & \\
-  \\
-  \ip{s}{`G} & = & s, \Type & s `: \{ \Prop, \Set \}\\
-  \ip{\Type}{`G} & = & \Type, \Type(1) & \\
-  \\
-  \ip{\Pi x : T.U}{`G} 
-  & = & \letml~(T', s_{1}) = \ip{T}{`G}~\inml & \\
-  & & \letml~(U', s_{2}) = \ip{U}{`G, x : T'}~\inml & \\
-  & & \letml~s_3 = \mathcal{R}~s_1~s_2~\inml & \\
-  & & (\Pi x : T'.U', s_3) & \\
-  & \\
-  \ip{\lambda x : `t.v}{`G} 
-  & = & \letml~(`t', s') = \ip{`t}{`G}~\inml & \\
-  & & \letml~(v', `g) = \ip{v}{`G, x : `t'}~\inml & \\
-  & & (\lambda x : `t'. v'), \Pi x : `t'. `g & \\
-  & \\
-  \ip{f~u}{`G} 
-  & = & \letml~(f', `t) = \ip{f}{`G}~\inml & \\
-  & & \letml~(\pi, \Pi x : V.W) = \muimpl(`t)~\inml & \\
-  & & \letml~(u', U') = \ip{u}{`G}~\inml & \\
-  & & \letml~c = \sref{coerce}~U'~V~\inml & \\
-  & & (\pi~f')~(c~u'), W[c~u'/x] & \\
-  & \\
-  \ip{\Sigma x : T.U}{`G} 
-  & = & \letml~(T', s) = \ip{T}{`G}~\inml & \\
-  & & \letml~(U', s) = \ip{U}{`G, x : T'}~\inml & \\
-  & & (\Sigma x : T'.U', s) & \\
-  & \\
-  \ip{(x \coloneqq t, u : U)}{`G}
-  & = & \letml~(t', T') = \ip{t}{`G}~\inml & \\
-  & & \letml~(\Sigma x : T'.U', s) = \ip{\Sigma x : T.U}{`G}~\inml& \\
-  & & \letml~(u', U'') = \ip{u}{`G}~\inml & \\
-  & & \letml~c = \sref{coerce}~U''~U'[t'/x]~\inml & \\
-  & & (t', c~u'), \Sigma x : T'.U' & \\
-  & \\
-  \ip{\letml~(x,y) = t~\inml~v}{`G} 
-  & = & \letml~(t', `t) = \ip{t}{`G}~\inml & \\
-  & & \letml~(\pi, \Sigma x : T.U) = \muimpl(`t)~\inml & \\
-  & & \letml~(v', V) = \ip{v}{`G, x : T, y : U}~\inml & \\
-  & & (\letml~(x, y) = t'~\inml~v'), V & \\
-  & \\
-  \ip{\mysubset{x}{U}{P}}{`G}
-  & = & \letml~(U', \Set) = \ip{U}{`G}~\inml & \\
-  & & \letml~(P', \Prop) = \ip{P}{`G, x : U'}~\inml & \\
-  & & \mysubset{x}{U'}{P'} : \Set  
-\end{array}\]
-*************
 \begin{figure}
   \[\begin{array}{lcll}
     \ip{x}{`G} & = & x, `G(x) & \\
@@ -132,7 +78,6 @@ On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des termes:
   \caption{Interprétation dans \CCI{}}
   \label{fig:interp}
 \end{figure}
-^ ^ ^ ^ ^ ^ ^
 
 \typemuiFig
 Ici la fonction $\muimpl$ (figure \ref{fig:muimpl-definition}) renvoie à la fois un type (qu'on demande
