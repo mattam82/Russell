@@ -696,17 +696,21 @@
   \end{center}
   
   \only<2->{
+    Exemple:
     \setboolean{displayLabels}{false}
-    \AppA\DP
-
-    Exemple: 
+    \begin{prooftree}
+      \typenva
+      \AppA
+    \end{prooftree}
+    
+    \typenvi
     \[\begin{array}{lcll}
       \ip{f~u}{`G} 
       & = & \letml~(f', `t) = \ip{f}{`G}~\inml & \\
-      & & \letml~(\pi, \Pi x : V.W) = \muimpl(`t)~\inml & \\
+      & & \letml~(\pi, \Pi x : V'.W') = \muimpl(`t)~\inml & \\
       & & \letml~(u', U') = \ip{u}{`G}~\inml & \\
-      & & \letml~c = \sref{coerce}~U'~V~\inml & \\
-      & & (\pi~f')~(c~u'), W[c~u'/x] & 
+      & & \letml~c = \sref{coerce}~U'~V'~\inml & \\
+      & & (\pi~f')~(c~u'), W'[c~u'/x] & 
     \end{array}\]    
   }
    
@@ -717,11 +721,16 @@
   \frametitle{Propriétés}
   
   \begin{conjecture}[Correction de la réécriture]
-    Si $`G \typea t : U$ alors $\ipG{`G} \typec \ipt{t}{\iG} : \ipt{T}{\iG}$.
+    Si $`G \typea t : T$ alors $\ipG{`G} \typec \ipt{t}{\iG} : \ipt{T}{\iG}$.
   \end{conjecture}
   
   \begin{lemma}[Substitutivité]
-    $\ipt{W}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x] \eqbi \ipt{W[u/x]}{\iG}$
+    Si $\iG \typec \ipt{u}{\iG} : \ipt{U}{\iG}$,
+    $\ipG{`G, x : V} \typec \ipt{W}{\ipG{`G, x : V}} : \ipt{T}{\ipG{`G, x : V}}$,
+    $c : \ipt{U}{\iG} \subi \ipt{V}{\iG}$,
+    alors il existe $`a : \ipt{T}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x] \suba \ipt{T[u/x]}{\iG}$
+    tel que
+    \alert{$(`a~\ipt{W}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x]) \eqbi \ipt{W[u/x]}{\iG}$}
   \end{lemma}
   
   \begin{center}
