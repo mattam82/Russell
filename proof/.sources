@@ -1,1 +1,1 @@
-Calculus.v LiftSubst.v Reduction.v DeclarativeTyping.v Meta.v
+Vector.v Calculus.v LiftSubst.v Reduction.v DeclarativeTyping.v Meta.v

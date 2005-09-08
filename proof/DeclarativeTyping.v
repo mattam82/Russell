@@ -2,6 +2,8 @@ Require Import CCP.Calculus.
 Require Import CCP.LiftSubst.
 Require Import CCP.Reduction.
 
+Require Import CCP.Vector.
+
 (* Coercion judgment *)
 Inductive coerced : term -> term -> Prop :=
   | SubConv : forall A B, conv A B -> coerced A B
@@ -15,8 +17,7 @@ Hint Resolve SubConv SubPi SubSigma SubLeft SubRight SubTrans : CCP.
 
 Inductive wfd : ctx -> Prop :=
   | WfEmpty : wfd nil
-  | WfVar : forall G A s, typed G A (sort s) -> wfd (A :: G)
-
+  | WfVar : forall n, forall G : ctx n, forall A s, typed G A (sort s) -> wfd (A :: G)
 with typed : ctx -> term -> term -> Prop :=
   | Var : forall G, wfd G -> forall i, i < length G -> typed G (rel i) (lift i (nth i G sortS))
 
@@ -51,6 +52,13 @@ with typed : ctx -> term -> term -> Prop :=
   | Subsum : forall G x A, typed G x A -> forall B, coerced A B -> typed G x B.
 
 
+Definition lift_ctx_rec (n k : nat) (G : ctx) :=
+  map (fun t => lift_rec n t k) G.
+
+Definition lift_ctx (n : nat) (G : ctx) := lift_ctx_rec n 0 G.
+
+Hint Unfold lift_ctx lift_ctx_rec : CCP.
+
 Hint Resolve WfEmpty WfVar : CCP.
 Hint Resolve Var Prod Abs SortT App LetIn Sum Pair LetTuple SubsetI Conv Subsum : CCP.
 
@@ -78,12 +86,34 @@ Hint Resolve typed_wf coercion_sym coercion_conversion : CCP.
 
 Ltac eautoc := eauto with arith CCP.
 
-Lemma weakening : forall G G' t T, typed (G' ++ G) t T -> 
-  forall S, wfd (G' ++ (S :: G)) -> typed (G' ++ (S :: G)) (lift_rec 1 t (length G'))
+Lemma weakening : forall G G' t T U, typed (G' ++ G) t T ->
+  wfd (lift_ctx 1 G' ++ (U :: G)) -> 
+  typed (lift_ctx 1 G' ++ (U :: G)) (lift_rec 1 t (length G'))
   (lift_rec 1 T (length G')).
 Proof.
+  intros G G' t T U Ht Hw.
+  induction Ht using typed_mut with (P0 := fun G0 : ctx => fun w : wfd G0 =>
+    G0 = lift_ctx 1 G' ++ G).
   intros.
-  induction H.
+  simpl.
+  elim (le_gt_dec (length G') i) ; intros.
+  unfold lift.
+  rewrite simpl_lift_rec ; autoc.
+  rewrite IHHt.
+  cut(nth i (lift_ctx 1 G' ++ G) sortS = nth (S i) (lift_ctx 1 G' ++ (U :: G)) sortS).
+  intros H ; rewrite H.
+  simpl.
+  pose Var.
+  unfold lift in t.
+  apply t ; autoc.
+  
+
+
+  Check Var.
+
+  simpl.
+  
+  
   
   
 
