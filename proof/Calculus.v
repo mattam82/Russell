@@ -23,8 +23,6 @@ Definition sortS := sort SetS.
 Definition sortP := sort PropS.
 Definition sortT i := sort (TypeS i).
 
-Definition ctx := list term.
-
 Fixpoint lift_rec (n : nat) (T : term) {struct T} : nat -> term :=
   fun k : nat =>
     match T with
