@@ -3,8 +3,6 @@ Require Import Coq.Arith.Arith.
 Section Vector.
   Variable A : Set.
   
-  Set Implicit Arguments.
-
   Inductive vec : nat -> Set :=
     | vnil : vec 0
     | vcons : forall n, A -> vec n -> vec (S n).
@@ -16,6 +14,7 @@ Section Vector.
     assumption.
   Defined.
   
+
   Definition tl : forall n, n > 0 -> vec n -> vec (pred n).
   Proof.
     intros n H v ; induction v.
@@ -30,17 +29,21 @@ Section Vector.
     induction n ; simpl ; auto with arith.
   Qed.
 
-  Definition nth : forall n m, m < n -> vec n -> A.
+  Definition nth : forall m n, m < n -> vec n -> A.
   Proof.
-    intros.
-    induction m.
+    induction m ; intros.
     induction H0.
     elim (lt_n_O _ H).
     assumption.
 
-    apply IHm.
-    apply (Sm_n_lt_m_n H).
+    induction H0.
+    elim (lt_n_O _ H).
+    apply (IHm n).
+    apply lt_S_n ; auto with arith.
+    assumption.
   Defined.
+
+  Implicit Arguments nth [n].
 
   Require Import Omega.
   
@@ -93,7 +96,7 @@ Section Vector.
   Qed.
 
   Lemma vapp_vnil_l : forall n, forall v : vec n,
-    vapp vnil v = v.
+    vapp _ _ vnil v = v.
   Proof.
     intros.
     simpl.
@@ -101,7 +104,7 @@ Section Vector.
   Qed.
 
   Lemma vapp_vnil_dep_l : forall n, forall v : vec n,
-    eq_dep nat vec n (vapp vnil v) n v.
+    eq_dep nat vec n (vapp _ _ vnil v) n v.
   Proof.
     intros.
     simpl.
@@ -109,7 +112,7 @@ Section Vector.
   Qed.
   
   Lemma vapp_vnil_dep_r : forall n, forall v : vec n,
-    eq_dep nat vec (n + 0) (vapp v vnil) n v.
+    eq_dep nat vec (n + 0) (vapp _ _ v vnil) n v.
   Proof.
     intros.
     induction v.
@@ -117,7 +120,7 @@ Section Vector.
 
     simpl.
 
-    pose (proj2 (equiv_eqex_eqdep nat vec (n + 0) n (vapp v vnil) v) IHv).
+    pose (proj2 (equiv_eqex_eqdep nat vec (n + 0) n (vapp _ _ v vnil) v) IHv).
     dependent rewrite -> e.
     simpl.
     auto.
@@ -130,62 +133,32 @@ Proof.
   induction H0.
   exact (vnil B).
 
-  exact (vcons (H a) IHvec).
+  exact (vcons _ _ (H a) IHvec).
 Defined.
-  
-Unset Implicit Arguments.
 
-Lemma cons_nth : forall A : Set, forall i n, forall v : vec A n, forall a : A, forall p : i < n,
-  @nth A n i p v = @nth A (S n) (S i) (lt_n_S _ _ p) (vcons a v).
+Implicit Arguments nth [A].
+Implicit Arguments vcons [A n].
+Implicit Arguments vnil [A].
+
+Axiom proof_irrelevance : forall P : Prop, 
+forall p q : P, p = q.
+
+Lemma cons_nth : forall A : Set, forall n i, forall v : vec A n, forall a : A, forall p : i < n,
+  nth i n p v = nth (S i) (S n) (lt_n_S _ _ p) (vcons a v).
 Proof.
   intros A i.
   induction i.
   intros.
-  unfold nth at 2.
-  simpl.
-
-  simpl.
   elim (lt_n_O _ p).
 
   intros.
   simpl.
-  simpl in IHn.
-  
-  
   simpl.
-  unfold nth ; simpl.
-
-  simpl in IHn.
-  
-
-  assert(S i < n) ; try omega.
-
-  simpl in IHv.
-  simpl.
-  auto.
-
-  simpl.
-  simpl.
-  elim (lt_irrefl _ p).
-  pose (lt_asym _ _ p).
-  elim (n (lt_O_Sn i)).
-
-  simpl.
-  simpl in IHn.
-  induction v.
-  absurd (i < 0) ; try omega.
-  simpl.
-
-  
-  
-  
-  
-  simpl.
-  simpl in IHi.
-  
-
-  simpl.
-
+  cut(p = lt_S_n i0 (S i) (lt_n_S i0 (S i) p)).
+  intros H ; pattern p at 1 ; rewrite H.
+  reflexivity.
+  apply proof_irrelevance.
+Qed. 
 
 
 Infix ":::" := vcons (at level 60, right associativity) : vector_scope.

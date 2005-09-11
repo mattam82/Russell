@@ -1,24 +1,18 @@
-Calculus.vo: Calculus.v
-Calculus.vi: Calculus.v
-DeclarativeTyping.vo: DeclarativeTyping.v Calculus.vo LiftSubst.vo Reduction.vo Vector.vo
-DeclarativeTyping.vi: DeclarativeTyping.v Calculus.vo LiftSubst.vo Reduction.vo Vector.vo
-LiftSubst.vo: LiftSubst.v Calculus.vo
-LiftSubst.vi: LiftSubst.v Calculus.vo
-ListN.vo: ListN.v
-ListN.vi: ListN.v
-Meta.vo: Meta.v Calculus.vo LiftSubst.vo Reduction.vo
-Meta.vi: Meta.v Calculus.vo LiftSubst.vo Reduction.vo
-Reduction.vo: Reduction.v Calculus.vo LiftSubst.vo
-Reduction.vi: Reduction.v Calculus.vo LiftSubst.vo
 Vector.vo: Vector.v
 Vector.vi: Vector.v
-junk.vo: junk.v
-junk.vi: junk.v
-Calculus.html: Calculus.v
-DeclarativeTyping.html: DeclarativeTyping.v Calculus.html LiftSubst.html Reduction.html Vector.html
-LiftSubst.html: LiftSubst.v Calculus.html
-ListN.html: ListN.v
-Meta.html: Meta.v Calculus.html LiftSubst.html Reduction.html
-Reduction.html: Reduction.v Calculus.html LiftSubst.html
+Calculus.vo: Calculus.v
+Calculus.vi: Calculus.v
+LiftSubst.vo: LiftSubst.v Calculus.vo
+LiftSubst.vi: LiftSubst.v Calculus.vo
+Reduction.vo: Reduction.v Calculus.vo LiftSubst.vo
+Reduction.vi: Reduction.v Calculus.vo LiftSubst.vo
+DeclarativeTyping.vo: DeclarativeTyping.v Calculus.vo LiftSubst.vo Reduction.vo Vector.vo
+DeclarativeTyping.vi: DeclarativeTyping.v Calculus.vo LiftSubst.vo Reduction.vo Vector.vo
+Meta.vo: Meta.v Calculus.vo LiftSubst.vo Reduction.vo
+Meta.vi: Meta.v Calculus.vo LiftSubst.vo Reduction.vo
 Vector.html: Vector.v
-junk.html: junk.v
+Calculus.html: Calculus.v
+LiftSubst.html: LiftSubst.v Calculus.html
+Reduction.html: Reduction.v Calculus.html LiftSubst.html
+DeclarativeTyping.html: DeclarativeTyping.v Calculus.html LiftSubst.html Reduction.html Vector.html
+Meta.html: Meta.v Calculus.html LiftSubst.html Reduction.html
