@@ -1,4 +1,3 @@
-v v v v v v v
 \def\iG{\ipG{`G}}
 \subsection{Propriétés}
 On veut montrer que si l'on a un jugement valide dans notre système
@@ -62,37 +61,196 @@ dériver ce jugement:
 \end{prooftree}
 
 
+\begin{lemma}[Correction de l'interprétation des termes]
+  Si $`G \typea t : T$ alors, si $(t', T') = \ip{t}{\iG}$ alors
+  $\iG \typec t' : T'$.
+  Si $\wf G$ alors $\wf \iG$.
+\end{lemma}
+
+\begin{proof}
+  Par induction mutuelle sur les dérivations
+  dans le système algorithmique:
+
+  \begin{induction}
+    \case{Var}
+    Par définition, $t = t'$ et $T' = \iG(t) = \ipt{`G(x)}{`D} =
+    \ipt{T}{`D}$ pour $`D ``( `G$. Par induction, $\wf \iG$. Comme la réecriture des contextes ne
+    change pas leur domaine, on peut appliquer \irule{Var} dans \CCI{}
+    pour obtenir $\iG \typec t' = \ipt{t}{\iG} : T' = \ipt{T}{\iG}$.
+    
+    \case{Prod}
+    Par induction, $\iG \typec \ipt{T}{\iG} : \ipT{T}{\iG}$,
+  \end{induction}
+  
+\end{proof}
+
+
 \paragraph{Substitutivité}
 \setboolean{displayLabels}{false}
 Le lemme qui pose problème est la substitutivité de l'interprétation.
 On l'énonce de la façon suivante:
 
-*************
-\subticFig
-^ ^ ^ ^ ^ ^ ^
-\begin{lemma}[Substitutivité de l'interprétation]
-  Si:
-  \begin{itemize}
-  \item $\iG \typec \ipt{u}{\iG} : \ipt{U}{\iG}$, 
-  \item $\ipG{`G, x : V} \typec \ipt{W}{\ipG{`G, x : V}} :
-    \ipt{T}{\ipG{`G, x : V}}$
-  \item $c : \ipt{U}{\iG} \subi \ipt{V}{\iG}$ 
-  \end{itemize}
-  
-  alors il existe $`a : \ipt{T}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x] \suba
-  \ipt{T[u/x]}{\iG}$ tel que
-  $(`a~\ipt{W}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x]) \eqbi \ipt{W[u/x]}{\iG}$.
+\begin{lemma}[$\mu$ et interprétation]
+  \label{mu-interp}
+  Si $\mualgo(T) = V$ alors soit $(\pi, V') = \muimpl(\ipt{T}{\iG})$. On
+  a $V' = \ipt{\mualgo(T)}{\iG}$.
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la dérivation de $\ipG{`G, x : V} \typec \ipt{W}{\ipG{`G, x : V}} :
-  \ipt{T}{\ipG{`G, x : V}}$.
+  Par induction sur la forme de $T$.
+  \begin{induction}
+  \item[-] Si $T `= \mysubset{x}{U}{P}$ alors $\mualgo(T) = \mualgo(U)$
+    et $\ipt{T}{\iG} = \mysubset{x}{\ipt{U}{\iG}}{\ipt{P}{\ipG{`G, x :
+          T}}}$ donc $\muimpl(\ipt{T}{\iG}) = \muimpl(\ipt{U}{\iG}) =
+    (\pi, U')$.
+    Par induction, $U' = \ipt{\mualgo(U)}{\iG}$ donc
+    $\muimpl(\ipt{T}{\iG}) = (\pi `o \pi_1, \ipt{\mualgo(T)}{\iG})$
+    et la propriété est vérifiée.
+    
+  \item[-] Sinon, $\mualgo(T) = T$, donc $\muimpl(\ipt{T}{\iG}) =
+    \muimpl(\ipt{\mualgo(T)}{\iG})$.
+    L'interprétation est un homomorphisme, donc si $T$ n'est pas un type
+    sous-ensemble, $\ipt{T}{\iG}$ ne peut en être un, on en déduit donc
+    $\muimpl(\ipt{\mualgo(T)}{\iG}) = (\sref{id},
+    \ipt{\mualgo(T)}{\iG})$, soit le résultat désiré.
+  \end{induction}
+\end{proof}
+
+On note dans la suite $`G \typec t : T \subi^c U$ pour 
+$`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
+
+\begin{lemma}[Substitution et coercion]
+  \[\left.\begin{array}{l}
+      \iG \typec \ipt{u}{\iG} : \ipT{u}{\iG} \\
+      `G, x : V, `D \typea W : T \\
+      \ipG{`G, x : V, `D} \typec \ipt{W}{\ipG{`G, x : V, `D}} :
+      \ipt{T}{\ipG{`G, x : V, `D}} \\
+      \iG \typec c : \ipt{U}{\iG} \subi \ipt{V}{\iG}
+  \end{array}
+\right\} "=>"
+  \begin{array}{l}
+    \quad\\
+    \iG \typec \ipt{W[u/x]}{\ipG{`G, `D[u/x]}} :
+    \\
+    \ipT{W[u/x]}{\ipG{`G, `D[u/x]}} \subi^{`a} 
+    \ipt{T}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x]
+    \\
+
+%     \ipG{`G, `D[u/x]} \typec \ipt{W[u/x]}{\ipG{`G, `D[u/x]}} :
+%     \ipt{T[u/x]}{\ipG{`G, `D[u/x]}}    
+    \quad\\
+  \end{array}
+  \]
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation de $`G, x : V \typea W : T$.
+  \begin{induction}
+    \case{Var} 
+    Alors $W `= y$ et $T = `G(y)$.
+    \begin{itemize}
+    \item Si $x "/=" y$ alors \[\ipt{y}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x]) = y =
+      \ipt{y[u/x]}{\iG}\]
+
+      $`a$ est l'identité car \[\ipT{y[u/x]}{\iG} = \iG(y) = 
+      \ipt{`G(y)}{\iG} = \ipt{T}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x]\]
+      ($x$ n'est pas libre dans $T$).      
+      
+    \item Sinon, 
+      \[\ipt{x}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x]) = c~\ipt{u}{\iG}
+      \text{ et }
+      \ipt{x[u/x]}{\iG} = \ipt{u}{\iG}\]
+
+      Il suffit de prendre $`a = c$. En effet on sait que $T = V$, $x `;
+      V$, et $\ipT{x[u/x]}{\iG} = \ipT{u}{\iG} = \ipt{U}{\iG}$, on peut donc appliquer $c : \ipt{U}{\iG} \subi
+      \ipt{T}{\iG}$ à $\ipt{u}{\iG} = \ipT{W[u/x]}{\iG}$.      
+    \end{itemize}
+    
+    \case{App}
+    On a:
+    \typenva
+    \begin{prooftree}
+      \AppA
+    \end{prooftree}
+    \typenvi
+    
+    \def\iGx{\ipG{`G, x : V}}
+    
+    Par induction \[
+    \iGx \typec \ipt{f}{\iGx} : \ipt{T}{\iGx}, \:
+    \iG \typec \ipt{f[u/x]}{\iG} : T' \subi^{c_f} \ipt{T[u/x]}{\iG}\]
+    \[\text{ et } \iG \typec \ipt{e}{\iG} : \ipt{E}{\iG}, \:
+    \iG \typec \ipt{e[u/x]}{\iG} : E' \subi^{c_e} \ipt{E[u/x]}{\iG}
+    \]
+    
+    On veut montrer:  $\iG \typec \ipt{(f~e)[u/x]}{\iG} : W'$ 
+    et $`E c : W' \subi \ipt{W[u/x]}{\iG}$.
+    
+    Par définition de la substitution et de l'interprétation, 
+    \begin{eqnarray*}
+      \ipt{(f~e)[u/x]}{\iG} 
+      & = & \ipt{f[u/x]~e[u/x]}{\iG} \\
+      & = & (\pi~f')~(c'~e') \\
+      \text{ où } & & \\
+      (f', T') & = & \ip{f[u/x]}{\iG} \\
+      (\pi, \Pi y : V'.W') & = & \muimpl~(T') \\
+      (e', E') & = & \ip{e}{\iG} \\
+      c' & = & \sref{coerce}~E'~V'.
+    \end{eqnarray*}
+  
+    
+    A partir de $\mualgo(T) = \Pi y : V.W$ on peut déduire que 
+    $\mualgo(T[u/x]) = \Pi y : V[u/x].W[u/x]$ par substitutivité de
+    $\mualgo$ (lemme \ref{substitutive-mu}) et par le lemme
+    \ref{mu-interp} on obtient $\muimpl(\ipt{T[u/x]}{\iG}) = 
+    (\pi, \ipt{\mualgo(\Pi y : V[u/x].W[u/x])}{\iG}) = 
+    (\pi, \ipt{\Pi y : V[u/x].W[u/x]}{\iG})$.
+
+    
+    On a $`a_1 : T' \subi \ipt{T[u/x]}{\iG}$ et $\pi : \ipt{T[u/x]}{\iG}
+    \subi \ipt{\Pi y : V[u/x].W[u/x]}{\iG}$, on peut donc construire la
+    coercion \[\pi~`o~`a_1 : T' \subi \Pi y :
+    \ipt{V[u/x]}{\iG}.\ipt{W[u/x]}{\ipG{`G, y : V[u/x]}}\]
+    
+    
+
+    $T'$ est nécessairement de la forme $\mysubset{x}{\ldots\Pi x : V'.W'\ldots}{P}$.
+
+    On a $E \suba V$ et l'on veut montrer qu'il existe une coercion $c : 
+    E' \subi V'$. 
+    
+    
+
+    La substitution ne change pas la forme des termes, donc on est
+    assuré que si $\mualgo(T) = \Pi x : V.W$ alors $\muimpl{T'} = (\pi,
+    \Pi y : V'.W')$ où $V' \subi \ipt{V[u/x]}{\iG}$ et
+    $\ipt{W[u/x]}{\ipG{`G, y : V}} \subi W'$.
+    
+    
+
+
+
+
+    
+    
+
+    
+
+
+    
+    
+    
+  \end{induction}
+  
+
+
+
   La difficulté réside dans le fait que l'on doit montrer une certaine
   relation de commutation entre les coercions appliquées des deux cotés.
 \end{proof}
 
 % Par induction structurelle sur $W$.
-  
+
 %   \begin{induction}
 %   \item[$W `= y$]\quad
 %     \begin{itemize}
@@ -206,7 +364,7 @@ Si on a une preuve de ce lemme, alors on peut montrer:
 \begin{theorem}[Correction de l'interprétation]
   \label{correct-interp}
   Si $`G \typea t : T$ alors on a $\iG \typec \ipt{t}{\iG} :
-  \ipt{T}{\iG}$ avec $\ipT{t}{`G} = \ipt{T}{\iG}$.
+  \ipT{t}{\iG}$ et il existe $c : \ipT{t}{`G} \subi \ipt{T}{\iG}$.
   Si $\wf `G$ alors $\wf \iG$.
 \end{theorem}
 

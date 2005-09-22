@@ -22,8 +22,7 @@ Section Vector.
     simpl.
     assumption.
   Defined.  
-  
-  
+    
   Lemma Sm_n_lt_m_n : forall n m, S n < m -> n < m.
   Proof.
     induction n ; simpl ; auto with arith.
@@ -44,9 +43,8 @@ Section Vector.
   Defined.
 
   Implicit Arguments nth [n].
-
   Require Import Omega.
-  
+
   Definition vapp : forall n m, vec n -> vec m -> vec (n + m).
   Proof.
     intros.
@@ -125,28 +123,13 @@ Section Vector.
     simpl.
     auto.
   Qed.
-End Vector.
-  
-Definition vmap : forall n, forall A B : Set, (A ->  B) -> vec A n -> vec B n.
-Proof.
-  intros.
-  induction H0.
-  exact (vnil B).
 
-  exact (vcons _ _ (H a) IHvec).
-Defined.
+  Axiom proof_irrelevance : forall P : Prop, forall p q : P, p = q.
 
-Implicit Arguments nth [A].
-Implicit Arguments vcons [A n].
-Implicit Arguments vnil [A].
-
-Axiom proof_irrelevance : forall P : Prop, 
-forall p q : P, p = q.
-
-Lemma cons_nth : forall A : Set, forall n i, forall v : vec A n, forall a : A, forall p : i < n,
-  nth i n p v = nth (S i) (S n) (lt_n_S _ _ p) (vcons a v).
-Proof.
-  intros A i.
+  Lemma cons_nth : forall n i, forall v : vec n, forall a : A, forall p : i < n,
+  nth i p v = nth (S i) (lt_n_S _ _ p) (vcons n a v).
+  Proof.
+  intros i.
   induction i.
   intros.
   elim (lt_n_O _ p).
@@ -160,9 +143,50 @@ Proof.
   apply proof_irrelevance.
 Qed. 
 
-
 Infix ":::" := vcons (at level 60, right associativity) : vector_scope.
 Infix "+++" := vapp (right associativity, at level 60) : vector_scope.
+
+  Implicit Arguments nth [].
+  Implicit Arguments vapp [].
+
+Lemma nth_proof_irrel : forall i n, forall l : vec n,
+forall p p' : i < n, nth i n p l = nth i n p' l.
+Proof.
+  intros.
+  rewrite (proof_irrelevance (i < n) p p').
+  reflexivity.
+Qed.
+
+Lemma nth_app : forall i n, forall p : S i < S n, forall l : vec n, forall m, forall l' : vec m, 
+  forall x, forall p' : (m + S i) < (m + S n),
+  nth (S i) (S n) p (vcons n x l) = 
+  nth (m + S i) (m + S n) p' (vapp m (S n) l'  (vcons n x l)).
+Proof.
+  intros.
+  simpl.
+  induction l' ; simpl ; intros.
+  auto.
+  apply nth_proof_irrel.
+  simpl.
+  apply IHl'.
+Qed.
+
+End Vector.
+
+Definition vmap : forall n, forall A B : Set, (A ->  B) -> vec A n -> vec B n.
+Proof.
+  intros.
+  induction H0.
+  exact (vnil B).
+
+  exact (vcons _ _ (H a) IHvec).
+Defined.
+
+Implicit Arguments nth [A].
+Implicit Arguments vcons [A n].
+Implicit Arguments vnil [A].
+
+
 
 (* 
  Local Variables:

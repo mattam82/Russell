@@ -2,8 +2,6 @@ Require Import CCP.Calculus.
 Require Import CCP.LiftSubst.
 Require Import CCP.Reduction.
 
-Require Import CCP.Vector.
-
 (* Coercion judgment *)
 Inductive coerced : term -> term -> Prop :=
   | SubConv : forall A B, conv A B -> coerced A B
@@ -15,66 +13,62 @@ Inductive coerced : term -> term -> Prop :=
 
 Hint Resolve SubConv SubPi SubSigma SubLeft SubRight SubTrans : CCP.
 
+Definition ctx := list term.
 
-Definition ctx (n : nat) := @vec term n.
-
-Infix ":::" := vcons (at level 60, right associativity) : vec_scope.
-
-Open Scope vec_scope.
-
-Check (vcons).
-Check nth.
-Inductive wfd : forall n : nat, ctx n -> Prop :=
-  | WfEmpty : wfd 0 vnil 
-  | WfVar : forall n, forall G : ctx n, forall A s, typed n G A (sort s) -> wfd (S n) (A ::: G)
-with typed : forall n : nat, ctx n -> term -> term -> Prop :=
-  | Var : forall n, forall G : ctx n, wfd n G -> 
-    forall i, forall p : i < n, typed n G (rel i) (lift i (nth i n p G))
+Inductive wfd : ctx -> Prop :=
+  | WfEmpty : wfd nil
+  | WfVar : forall G A s, typed G A (sort s) -> wfd (A :: G)
+with typed : ctx -> term -> term -> Prop :=
+  | Var : forall G, wfd G -> 
+    forall i, i < length G -> typed G (rel i) (lift i (nth i G sortS))
     
-  | Prod : forall n, forall G : ctx n, forall A B s_1 s_2, 
-    typed n G A (sort s_1) -> typed (S n) (A ::: G) B (sort s_2) ->
-    forall s_3, R s_1 s_2 = Some s_3 -> typed n G (Pi A B) (sort s_3)
+  | Prod : forall G A B s_1 s_2, 
+    typed G A (sort s_1) -> typed (A :: G) B (sort s_2) ->
+    forall s_3, R s_1 s_2 = Some s_3 -> typed G (Pi A B) (sort s_3)
     
-  | Abs : forall n, forall G : ctx n, forall A B x s, 
-    typed n G (Pi A B) s -> typed (S n) (A ::: G) x B ->
-    typed n G (lambda A x) (Pi A B)
+  | Abs : forall G A B x s, 
+    typed G (Pi A B) s -> typed (A :: G) x B ->
+    typed G (lambda A x) (Pi A B)
 
-  | SortT : forall s t, SortR s t -> typed 0 vnil (sort s) (sort t)
+  | SortT : forall s t, SortR s t -> typed nil (sort s) (sort t)
 
-  | App : forall n, forall G : ctx n, forall A B f x, 
-    typed n G f (Pi A B) -> typed n G x A ->
-    typed n G (app f x) (subst x B)
+  | App : forall G A B f x, 
+    typed G f (Pi A B) -> typed G x A ->
+    typed G (app f x) (subst x B)
 
-  | LetIn : forall n, forall G : ctx n, forall A B x y, typed n G x A -> typed (S n) (A ::: G) y B ->
-    typed n G (let_in x y) (subst x B)
+  | LetIn : forall G A B x y, typed G x A -> typed (A :: G) y B ->
+    typed G (let_in x y) (subst x B)
 
-  | Sum : forall n, forall G : ctx n, forall A B s_1 s_2, 
-    typed n G A (sort s_1) -> typed (S n) (A ::: G) B (sort s_2) ->
-    forall s_3, R s_1 s_2 = Some s_3  -> typed n G (Sigma A B) (sort s_3)
+  | Sum : forall G A B s_1 s_2, 
+    typed G A (sort s_1) -> typed (A :: G) B (sort s_2) ->
+    forall s_3, R s_1 s_2 = Some s_3  -> typed G (Sigma A B) (sort s_3)
 
-  | Pair : forall n, forall G : ctx n, forall A B s x y, 
-    typed n G (Sigma A B) s -> typed n G x A -> typed n G y (subst x B) -> 
-    typed n G (pair x y) (Sigma A B)
+  | Pair : forall G A B s x y, 
+    typed G (Sigma A B) s -> typed G x A -> typed G y (subst x B) -> 
+    typed G (pair x y) (Sigma A B)
 
-  | LetTuple : forall n, forall G : ctx n, forall A B C x y,
-    typed n G x (Sigma A B) -> typed (S (S n)) (B ::: A ::: G) y C ->
-    typed n G (let_tuple x y) C
+  | LetTuple : forall G A B C x y,
+    typed G x (Sigma A B) -> typed (B :: A :: G) y C ->
+    typed G (let_tuple x y) C
 
-  | SubsetI : forall n, forall G : ctx n, forall A P, 
-    typed n G A sortS -> typed (S n) (A ::: G) P sortP ->
-    typed n G (Subset A P) sortS
+  | SubsetI : forall G A P, 
+    typed G A sortS -> typed (A :: G) P sortP ->
+    typed G (Subset A P) sortS
 
-  | Conv : forall n, forall G : ctx n, forall x A, 
-    typed n G x A -> forall B, conv A B -> typed n G x B
+  | Conv : forall G x A, 
+    typed G x A -> forall B, conv A B -> typed G x B
 
-  | Subsum : forall n, forall G : ctx n, forall x A, 
-    typed n G x A -> forall B, coerced A B -> typed n G x B.
+  | Subsum : forall G x A, 
+    typed G x A -> forall B, coerced A B -> typed G x B.
 
 
-Definition lift_ctx_rec (n k l : nat) (G : ctx l) :=
-  vmap l term term (fun t => lift_rec n t k) G.
+Fixpoint lift_ctx_rec (n k : nat) (G : ctx) { struct G } : ctx :=
+  match G with
+  | nil => nil
+  | cons t G' => lift_rec n t k :: (lift_ctx_rec n (pred k) G')
+ end.
 
-Definition lift_ctx (n l : nat) (G : ctx l) := lift_ctx_rec n 0 l G.
+Definition lift_ctx (n : nat) (G : ctx) := lift_ctx_rec n (length G) G.
 
 Hint Unfold lift_ctx lift_ctx_rec : CCP.
 
@@ -86,7 +80,7 @@ with wfd_mut := Induction for wfd Sort Prop.
 
 Scheme typed_depind := Induction for typed Sort Prop.
 
-Lemma typed_wf : forall n, forall G : ctx n, forall t T, typed n G t T -> wfd n G.
+Lemma typed_wf : forall G t T, typed G t T -> wfd G.
 Proof.
   induction 1 ; autoc.
 Qed.
@@ -110,26 +104,164 @@ Ltac eautoc := eauto with arith CCP.
 Require Import Lt.
 
 Set Implicit Arguments.
-Infix "+++" := vapp (right associativity, at level 60) : vector_scope.
 
-Lemma weakening : forall n m, forall G : ctx n, forall G' : ctx m, forall t T, 
-  typed (m + n) (vapp term m n G' G) t T ->
-  forall U,
-  wfd (m + S n) (vapp term m (S n) (lift_ctx 1 m G') (U ::: G)) -> 
-  typed (m + S n) (vapp term m (S n) (lift_ctx 1 m G') (U ::: G)) (lift_rec 1 t m)
-  (lift_rec 1 T m).
+Lemma leq_exists : forall m i, m <= i -> exists i', i = m + i'.
 Proof.
-  intros n m.
-  intros G G' t T Ht.
-  induction Ht ; simpl ; intros.
+  intros m i H ; induction H.
+  exists 0 ; auto with arith.
+   induction IHle.
+   exists (S x).
+   omega.
+Qed.
+
+Lemma map_length : forall A B : Set, forall f : A -> B, forall l,
+  length (map f l) = length l.
+Proof.
+  intros.
+  induction l ; simpl ; auto.
+Qed.
+
+Lemma lift_ctx_rec_length : forall l i k, length (lift_ctx_rec i k l)  = length l.
+Proof.
+ induction l ; simpl ; auto.
+Qed. 
+
+Require Import CCP.ListProps.
+
+Lemma weakening : forall G t T U,  wfd (U :: G) ->  
+  forall m G',
+  m = length G' ->
+  typed (G' ++ G) t T -> typed ((lift_ctx_rec 1 m G') ++ (U :: G)) (lift_rec 1 t m) (lift_rec 1 T m).
+Proof.
+  intros G t T.
+  apply typed_mut with 
+  (P := fun G : ctx => fun t T : term =>
+  fun H : typed G t T =>
+  forall U, 
+  wfd (U :: G) ->
+  forall m, forall G' : ctx,  m = length G' ->
+  typed (G' ++ G) t T ->
+  typed ((lift_ctx_rec 1 m G') ++ (U :: G)) (lift_rec 1 t m) (lift_rec 1 T m))
+  (P0 := 
+  (fun G : ctx => fun x : wfd G =>
+  forall U,
+  wfd (U :: G) ->
+  forall m, forall G' : ctx, m = length G' ->
+  wfd (G' ++ G) ->
+  wfd ((lift_ctx_rec 1 m G') ++ (U :: G)))).
+  
+  intros.
+  simpl.
+  elim (le_gt_dec m i) ; auto ; intros.
+  unfold lift ; rewrite simpl_lift_rec ; auto with arith.
+  simpl.
+  cut(nth i G0 sortS = nth (m + S i) (lift_ctx_rec 1 m G' ++ U :: G0) sortS).
+  intros.
+  rewrite H3.
+  pose (v := Var) ; unfold lift in v.
+  induction m.
+  simpl.
+  apply v ; rewrite (length_0_nil _ G' (sym_eq H1)) ; simpl ; auto with arith.
+  rewrite H3.
+
+
+
+  inversion H2 ;auto.
 
   elim (le_gt_dec m i) ; intros.
-  unfold lift.
-  rewrite simpl_lift_rec ; auto with arith.
+  pose (H U H0 m G' H1 (typed_wf _ _ _ H2)).
+  pose (Var _ w0 (S i)).
+  assert(i >= length (lift_ctx_rec 1 m G')) ; try omega.
+  unfold lift_ctx ; rewrite lift_ctx_rec_length.
+  omega.
+  rewrite (nth_app_middle _ U sortS (lift_ctx_rec 1 m G') G0 i H8) in t0. 
+  unfold lift ; rewrite simpl_lift_rec.
   simpl.
-  rewrite (cons_nth term n0 i G0 U).
+  
+  assert(lift_ctx_rec 1 m G' ++ G0 = G0).
+  induction G'.
+  simpl.
+  auto.
+  simpl.
+  
+
+
+
+
+  assert(
+  induction G'.
+  simpl.
+  symmetry.
+  apply extensionality.
+  
+  simpl nth at 1.
+  
+
+
+  
+  unfold lift.
+  rewrite H1 ; simpl.
+  unfold lift in H4.
+  rewrite H4.
+  rewrite simpl_lift_rec ; auto with arith ; simpl.
+  rewrite (nth_cons term i G0 sortS U).
+  elim (le_gt_dec (length G') i)  ; intros.
+  pose (v :=  Var) ; unfold lift in v ; apply v ; simpl ; auto with arith.
+
+  elim (le_gt_dec m i).
+  intros.
+  
+
+
+
+  pose (Var _ w0 (S i)).
+
+  induction (leq_exists a).
+  rewrite H3.
+
+  pose (Var _ _  (S i)).
+  
+
+  induction a.
+  simpl vapp ; simpl plus.
   pose Var.
-  unfold lift in t.
+  unfold lift in t0 ; apply t0 ; auto with arith.
+
+  simpl vapp.
+
+simpl.
+
+
+  simpl.
+  rewrite (
+  rewrite (nth_app term i n0 (lt_n_S _ _ p) G0 m (lift_ctx 1 m G') U H2).
+
+  
+  induction a.
+  assert(m + S i < m + S n0) ; try omega.
+  pose Var.
+  assert(exists i', S i = m + i').
+  induction i.
+  exists 1 ; omega.
+
+
+   
+  unfold lift in t0.
+  induction m.
+  apply t0.
+  eapply H ; auto.
+  simpl.
+  apply H1.
+  simpl.
+  rewrite (eq_vnil _ G').
+  simpl.
+  assumption.
+
+  simpl.
+  
+
+apply w.
+  apply (t0 (m + S n0).
 
 
 inversion G0.
