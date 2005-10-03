@@ -2,7 +2,7 @@
 \usepackage[latin1]{inputenc}  %% les accents dans le fichier.tex
 %\usepackage[T1]{fontenc}       %% Pour la c\'{e}sure des mots accentu\'{e}s
 \usepackage{indentfirst}
-%\usepackage[dvips]{graphicx}
+\usepackage[dvips]{graphicx}
 %\usepackage{coqdoc}
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -21,7 +21,10 @@
 \usepackage{ifthen}
 \usepackage{ifmtarg}
 \usepackage{pxfonts}
-\usepackage{pgf}
+\usepackage[xdvi]{xy}
+\xyoption{all}
+%\CompileMatrices
+
 \usepackage{subfigure}
 
 % This is the "centered" symbol
@@ -52,8 +55,6 @@
 \input{subtyping-algo}
 \input{typing-impl}
 \input{subtyping-impl}
-
-\pgfdeclareimage[height=3cm]{lambda-cube}{figures/lambda-cube}
 
 \newcommand{\src}[1]{\texttt{#1}}
 \newcommand{\srcm}[1]{\text{\texttt{#1}}}

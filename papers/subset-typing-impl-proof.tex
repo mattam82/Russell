@@ -124,11 +124,22 @@ On l'énonce de la façon suivante:
 On note dans la suite $`G \typec t : T \subi^c U$ pour 
 $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
 
+
+\def\iu{\ipt{u}{\iG}}
+\def\tux{\ipt{t[u/x]}{\ipG{`G, `D[u/x]}}}
+\def\cux{[c~\ipt{u}{\iG}/x]}
+\def\tcux{\ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x]}
+\def\GD{`G, x : V, `D}
+\def\Gr{`G, `D[u/x]}
+\def\iGD{\ipG{`G, x : V, `D}}
+\def\iGr{\ipG{`G, `D[u/x]}}
+
 \begin{lemma}[Substitution et coercion]
   \[\left.\begin{array}{l}
       \iG \typec \ipt{u}{\iG} : \ipT{u}{\iG} \\
       \iG \typec c : \ipT{u}{\iG} \subi \ipt{V}{\iG} \\
       `G, x : V, `D \typea t : T
+%      `G, x : V, `D \typea t : T "=>" \ipT{t}{\iGD} = \ipt{T}{\iGD}      
 %      \ipG{`G, x : V, `D} \typec \ipt{t}{\ipG{`G, x : V, `D}} :
 %      \ipt{T}{\ipG{`G, x : V, `D}}
   \end{array}
@@ -140,21 +151,12 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
   \ipt{T}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x]
   \\
   `a~\ipt{t[u/x]}{\ipG{`G, `D[u/x]}} & 
-  \eqbi & \ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x] \\
-  \ipt{T[u/x]}{`G, `D[u/x]} & \eqbi & \ipt{T}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x]
-
+  \eqbi & \ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x] 
+%  \ipt{T[u/x]}{`G, `D[u/x]} & \eqbi & \ipt{T}{\ipG{`G, x: V, `D}}[c~\ipt{u}{\iG}/x]
 \end{array}
 \]
 \end{lemma}
 
-\def\iu{\ipt{u}{\iG}}
-\def\tux{\ipt{t[u/x]}{\ipG{`G, `D[u/x]}}}
-\def\cux{[c~\ipt{u}{\iG}/x]}
-\def\tcux{\ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x]}
-\def\GD{`G, x : V, `D}
-\def\Gr{`G', `D[u/x]}
-\def\iGD{\ipG{`G, x : V, `D}}
-\def\iGr{\ipG{`G', `D[u/x]}}
 
 \begin{proof}
   Par induction sur la dérivation de $`G, x : V \typea t : T$.
@@ -250,54 +252,139 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
       \ipt{E[u/x]}{\iGr} & \eqbi & \ipt{E}{\iGD}\cux
     \end{eqnarray*}
     
-    On veut montrer qu'il existe une coercion $c_f$ telle que:
+    \def\afe{`a}
+    On veut montrer qu'il existe une coercion $\afe$ telle que:
     \begin{eqnarray*}
-      \iGD \typec c_f & : & \ipT{(f~e)[u/x]}{\iG} \subi
+      \iGD \typec \afe & : & \ipT{(f~e)[u/x]}{\iG} \subi
       \ipt{W[e/y][u/x]}{\iG} \\
-      c_f~\ipt{(f~e)[u/x]}{\iGr} & \eqbi & \ipt{f~e}{\iGD}\cux \\
+      \afe~\ipt{(f~e)[u/x]}{\iGr} & \eqbi & \ipt{f~e}{\iGD}\cux \\
       \ipt{W[e/y][u/x]}{\iGr} & \eqbi & \ipt{W[e/y]}{\iGD}\cux
     \end{eqnarray*}
 
     Par définition de la substitution et de l'interprétation, 
+    \def\myipt#1{\lbag#1\rbag}
     \begin{eqnarray*}
-      \ip{(f~e)[u/x]}{\iG} 
-      & = & (\ipt{f[u/x]~e[u/x]}{\iG}, W'[c'~e'/y]) \\
-      & = & ((\pi~f')~(c'~e'), W'[c'~e'/y]) \\
+      \ip{(f~e)}{\iGD}
+      & = & (((\pi~\ipt{f}{\iGD})~(c'~\ipt{e}{\iGD})),
+      \ipt{W}{\iGD}[c'~\ipt{e}{\iGD}/y]) \\
+      & = & ((\pi~\myipt{f})~(c'~\myipt{e})),
+      \myipt{W}[c'~\myipt{e}/y]\cux \\
       \text{ où } & & \\
-      (f', T') & = & \ip{f[u/x]}{\iG} \\
-      (\pi, \Pi y : V'.W') & = & \muimpl~(T') \\
-      (e', E') & = & \ip{e}{\iG} \\
-      c' & = & \sref{coerce}~E'~V'.
+      \myipt{x} & = & \ipt{x}{\iGD} \\
+      (\pi, \ipt{\Pi y : V.W}{\iGD}) & = & \muimpl~(\ipT{f}{\iGD}) \\
+      c' & = & \sref{coerce}~\ipT{e}{\iGD}~\ipt{V}{\iGD}.
     \end{eqnarray*}
-  
+    
+    Or $\ipT{e}{\iGD} = \ipt{E}{\iGD}$ par induction donc $c' :
+    \ipt{E}{\iGD} \subi \ipt{V}{\iGD}$. On peut substituer pour obtenir:
+    $c' : \ipt{E[u/x]}{\iGr} \subi \ipt{V[u/x]}{\iGr}$ (lemme
+    \ref{subst-ipt-subi}).
+    On a donc: 
+    \[\ipt{(f~e)}{\iGD}\cux =
+    ((\pi~\ipt{f}{\iGD}\cux)~(c'~\ipt{e}{\iGD}\cux))\]
+    et
+    \[\ipT{(f~e)}{\iGD}\cux =
+    \ipt{W}{\iGD}[c'~\ipt{e}{\iGD}/y]\cux\]
+    
+    
+    D'autre part on a:
+    \begin{eqnarray*}
+      \ip{(f~e)[u/x]}{\iGr}
+      & = & (\ipt{f[u/x]~e[u/x]}{\iG}, W'[c''~e'/y]) \\
+      & = & ((\pi'~f')~(c''~e'), W'[c''~e'/y]) \\
+      \text{ où } & & \\
+      (f', T') & = & \ip{f[u/x]}{\iGr} \\
+      (\pi', \Pi y : V'.W') & = & \muimpl~(T') \\
+      (e', E') & = & \ip{e[u/x]}{\iGr} \\
+      c'' & = & \sref{coerce}~E'~V'.
+    \end{eqnarray*}
+
     A partir de $\mualgo(F) = \Pi y : V.W$ on peut déduire que 
     $\mualgo(F[u/x]) = \Pi y : V[u/x].W[u/x]$ par substitutivité de
     $\mualgo$ (lemme \ref{substitutive-mu}) et par le lemme
-    \ref{mu-interp} on obtient $\muimpl(\ipt{F[u/x]}{\iGr}) = 
+    \ref{mu-interp} on obtient \[\muimpl(\ipt{F[u/x]}{\iGr}) = 
     (\pi, \ipt{\mualgo(\Pi y : V[u/x].W[u/x])}{\iGr}) = 
-    (\pi, \ipt{\Pi y : V[u/x].W[u/x]}{\iGr})$.
+    (\pi, \ipt{\Pi y : V[u/x].W[u/x]}{\iGr})\]
+%     De même, à partir de $E \suba V$ on peut déduire une coercion \[c :
+%     \ipt{E[u/x]}{\iGr} \subi \ipt{V[u/x]}{\iGr}\]
+    
+    On a donc les coercions suivantes pour la fonction $f$ et l'argument
+    $e$: 
+    \[
+    \xymatrix{
+      \ipt{F[u/x]}{\iGr}\ar[rr]_{\pi} & & \ipt{(\Pi y : V.W)[u/x]}{\iGr} \\
+      \ipT{f[u/x]}{\iGr}\ar[u]^{`a_f}\ar[rr]^{\pi'} & &
+      {\Pi y : V'.W'}\ar@{-->}[u]^{c_f}}
+    \quad
+    \xymatrix{
+      \ipt{E[u/x]}{\iGr}\ar[rr]_{c'} & & \ipt{V[u/x]}{\iGr}\ar@{-->}[d]^{c_e} \\
+      \ipT{e[u/x]}{\iGr}\ar[u]^{`a_e}
+      \ar[rr]^{c''} & & V'}
+    \]
+    
+    On veut montrer que les diagrammes commutent et que $c_f, c_e$ sont
+    uniquement déterminés. 
+    Pour cela on va
+    montrer qu'il existe une coercion $c_f : \Pi y : V'.W' \subi 
+    \ipt{\Pi z : V[u/x].W[u/x]}{\iGr}$. Cela est vrai par transitivité
+    et symmétrie de la coercion. On en déduit qu'il existe $c_1, c_2$
+    tels que $c_f = \lambda f.\lambda x. c_2 (f (c_1~x))$ avec
+    \[
+    \xymatrix{
+      \ipt{V[u/x]}{\iGr}\ar[rr]^{c_1} & & V' & & W' \ar[rr]^{c_2} & & \ipt{W[u/x]}{\iGr}
+    }\]
+     
+    On peut prendre $c_e = c_1$ et $\afe = c_2$, on obtient: $c'' = c_1
+    `o c' `o `a_e$.
+    Alors:
+%    \newcommand{\step}[1]{\textbf{ \{ #1 \} }}
+    
+    $\begin{array}{ll}
+      \firsteq{\afe~\ipt{(f~e)[u/x]}{\iGr}}
+      
+      \step{Définition de l'interprétation}
+      {=}{\afe~((\pi'~f')~(c''~e'))}
+      
+      \step{Définitions de $`a$ et $c''$}
+      {=}{c_2~((\pi'~f')~((c_1 `o c' `o `a_e)~e'))}
+      
+      \step{Définition de la composition}
+      {=}{c_2~((\pi'~f')~(c_1~(c'~(`a_e~e'))))}
+
+      \step{Définition de $c_f$ ($= \lambda f.\lambda
+        x.c_2~(f~(c_1~x))$)}
+      {=}{(c_f~(\pi'~f'))~(c'~(`a_e~e'))}
+
+      \step{Commutation du diagramme 1}{=}{(\pi~(`a_f~f'))~(c'~(`a_e~e'))}
+      
+      \step{Définitions de $`a_f$ et $`a_e$}{=}{(\pi~\ipt{f}{\iGD}\cux)~(c'~\ipt{e}{\iGD}\cux)}
+
+      \step{Définition de l'interprétation}{=}{\ipt{f~e}{\iGD}\cux}
+      \vspace{0.2em}
+    \end{array}$
+    
+    
+%     Il faut maintenant montrer que $\ipt{W[e/y][u/x]}{\iGr} \eqbi
+%     \ipt{W[e/y]}{\iGD}\cux$.
+
+%     On a $`a_1 : T' \subi \ipt{T[u/x]}{\iG}$ et $\pi : \ipt{T[u/x]}{\iG}
+%     \subi \ipt{\Pi y : V[u/x].W[u/x]}{\iG}$, on peut donc construire la
+%     coercion \[\pi~`o~`a_1 : T' \subi \Pi y :
+%     \ipt{V[u/x]}{\iG}.\ipt{W[u/x]}{\ipG{`G, y : V[u/x]}}\]
     
     
 
+%     $T'$ est nécessairement de la forme $\mysubset{x}{\ldots\Pi x : V'.W'\ldots}{P}$.
 
-    On a $`a_1 : T' \subi \ipt{T[u/x]}{\iG}$ et $\pi : \ipt{T[u/x]}{\iG}
-    \subi \ipt{\Pi y : V[u/x].W[u/x]}{\iG}$, on peut donc construire la
-    coercion \[\pi~`o~`a_1 : T' \subi \Pi y :
-    \ipt{V[u/x]}{\iG}.\ipt{W[u/x]}{\ipG{`G, y : V[u/x]}}\]
+%     On a $E \suba V$ et l'on veut montrer qu'il existe une coercion $c : 
+%     E' \subi V'$. 
     
     
 
-    $T'$ est nécessairement de la forme $\mysubset{x}{\ldots\Pi x : V'.W'\ldots}{P}$.
-
-    On a $E \suba V$ et l'on veut montrer qu'il existe une coercion $c : 
-    E' \subi V'$. 
-    
-    
-
-    La substitution ne change pas la forme des termes, donc on est
-    assuré que si $\mualgo(T) = \Pi x : V.W$ alors $\muimpl{T'} = (\pi,
-    \Pi y : V'.W')$ où $V' \subi \ipt{V[u/x]}{\iG}$ et
-    $\ipt{W[u/x]}{\ipG{`G, y : V}} \subi W'$.
+%     La substitution ne change pas la forme des termes, donc on est
+%     assuré que si $\mualgo(T) = \Pi x : V.W$ alors $\muimpl{T'} = (\pi,
+%     \Pi y : V'.W')$ où $V' \subi \ipt{V[u/x]}{\iG}$ et
+%     $\ipt{W[u/x]}{\ipG{`G, y : V}} \subi W'$.
     
     
 
@@ -554,5 +641,5 @@ Si on a une preuve de ce lemme, alors on peut montrer:
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "subset-typing"
-%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"style:figures:\" ${pdfx}latex"
 %%% End: 
