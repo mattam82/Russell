@@ -173,22 +173,15 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
       On peut appliquer notre hypothèse d'induction pour obtenir:
       \[`E c_T, \iGr \typec c_T : \ipT{T[u/x]}{\iGr}
       \subi s\] ($\ipt{s}{`G} = s$ pour tout $`G$ et $x$ ne peut
-      pas apparaître dans une sorte). On a les propriétés:
-      \[c_T~\ipt{T[u/x]}{\iGr} \eqbi \ipt{T}{\iGD}\cux
-      \text{ et } s \eqbi s\] 
+      pas apparaître dans une sorte). On a la propriété suivante:
+      \[c_T~\ipt{T[u/x]}{\iGr} \eqbi \ipt{T}{\iGD}\cux\] 
       % Or . On a donc:
       %\[c_T~\ipt{(\Gr)(y)}{\iGr} \eqbi \ipt{(\GD(y))}{\iGD}\cux\].
       $c_T$ est une coercion vers une sorte, c'est donc l'identité
-      (lemme \ref{subi-sorts}). On en déduit la deuxième condition:
-      \[\ipt{T[u/x]}{\iGr} \eqbi \ipt{T}{\iGD}\cux\]
-      
-      Clairement, $`a$ est l'identité car 
-      \begin{eqnarray*}
-        \ipT{y[u/x]}{\iGr} & = & \iGr(y) \\
-        & = & \ipt{(\Gr)(y)}{\iGr} \\
-        & = & \ipt{T[u/x]}{\iGr} \\
-        & \eqbi & \ipt{T}{\iGD}\cux
-      \end{eqnarray*}
+      (lemme \ref{subi-sorts}). 
+
+%       On en déduit la deuxième condition:
+%       \[\ipt{T[u/x]}{\iGr} \eqbi \ipt{T}{\iGD}\cux\]
       Le jugement de coercion dérive donc l'identité par
       \irule{SubConv}, et l'on a bien:
       \begin{eqnarray*}     
@@ -216,11 +209,11 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
       $\ipt{u}{\ipG{`G}} = \ipt{u}{\ipG{`G, `D}}$ pour toute extension
       $`D$ bien formée (ne masquant pas les variable de $`G$).
 
-      De même:
-      \begin{eqnarray*}
-        \ipt{V[u/x]}{\iGr} & = & \ipt{V}{\iGr} \\
-        & = & \ipt{V}{\iGD}\cux
-      \end{eqnarray*}      
+%       De même:
+%       \begin{eqnarray*}
+%         \ipt{V[u/x]}{\iGr} & = & \ipt{V}{\iGr} \\
+%         & = & \ipt{V}{\iGD}\cux
+%       \end{eqnarray*}      
       
     \end{itemize}
     
@@ -229,10 +222,10 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
     \typenva
     \begin{prooftree}
       \TAX{App}
-      {$`G \seq f : F \quad \mualgo(F) = \Pi y : V. W$}
-      {$`G \seq e : E \quad `G \seq E, V : s$}
-      {$E \sub V $}
-      {$`G \seq (f e) : W [ e / y ]$}
+      {$`G \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
+      {$`G \seq e : E \quad `G \seq E, A : s$}
+      {$E \sub A $}
+      {$`G \seq (f~e) : B [ e / y ]$}
       {}
     \end{prooftree}
     \typenvi
@@ -242,23 +235,21 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
     Par induction:
     \begin{eqnarray*}
       `E `a_f, \iGD \typec `a_f & : & \ipT{f[u/x]}{\iG} \subi
-      \ipt{F[u/x]}{\iG} \\
+      \ipt{F}{\iGD}\cux \\
       `a_f~\ipt{f[u/x]}{\iGr} & \eqbi & \ipt{f}{\iGD}\cux \\
-      \ipt{F[u/x]}{\iGr} & \eqbi & \ipt{F}{\iGD}\cux\\
       \text{ et } & & \\
       `E `a_e, \iGD \typec `a_e & : & \ipT{e[u/x]}{\iG} \subi
-      \ipt{E[u/x]}{\iG} \\
-      `a_e~\ipt{e[u/x]}{\iGr} & \eqbi & \ipt{e}{\iGD}\cux \\
-      \ipt{E[u/x]}{\iGr} & \eqbi & \ipt{E}{\iGD}\cux
+      \ipt{E}{\iGD}\cux \\
+      `a_e~\ipt{e[u/x]}{\iGr} & \eqbi & \ipt{e}{\iGD}\cux
     \end{eqnarray*}
     
     \def\afe{`a}
     On veut montrer qu'il existe une coercion $\afe$ telle que:
     \begin{eqnarray*}
       \iGD \typec \afe & : & \ipT{(f~e)[u/x]}{\iG} \subi
-      \ipt{W[e/y][u/x]}{\iG} \\
-      \afe~\ipt{(f~e)[u/x]}{\iGr} & \eqbi & \ipt{f~e}{\iGD}\cux \\
-      \ipt{W[e/y][u/x]}{\iGr} & \eqbi & \ipt{W[e/y]}{\iGD}\cux
+      \ipt{B[e/y]}{\iGD}\cux \\
+      \afe~\ipt{(f~e)[u/x]}{\iGr} & \eqbi & \ipt{f~e}{\iGD}\cux 
+%     \ipt{B[e/y][u/x]}{\iGr} & \eqbi & \ipt{B[e/y]}{\iGD}\cux
     \end{eqnarray*}
 
     Par définition de la substitution et de l'interprétation, 
@@ -266,74 +257,79 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
     \begin{eqnarray*}
       \ip{(f~e)}{\iGD}
       & = & (((\pi~\ipt{f}{\iGD})~(c'~\ipt{e}{\iGD})),
-      \ipt{W}{\iGD}[c'~\ipt{e}{\iGD}/y]) \\
+      \ipt{B}{\iGD}[c'~\ipt{e}{\iGD}/y]) \\
       & = & ((\pi~\myipt{f})~(c'~\myipt{e})),
-      \myipt{W}[c'~\myipt{e}/y]\cux \\
+      \myipt{B}[c'~\myipt{e}/y]\cux \\
       \text{ où } & & \\
       \myipt{x} & = & \ipt{x}{\iGD} \\
-      (\pi, \ipt{\Pi y : V.W}{\iGD}) & = & \muimpl~(\ipT{f}{\iGD}) \\
-      c' & = & \sref{coerce}~\ipT{e}{\iGD}~\ipt{V}{\iGD}.
+      (\pi, \ipt{\Pi y : A.B}{\iGD}) & = & \muimpl~(\ipT{f}{\iGD}) \\
+      c' & = & \sref{coerce}~\ipT{e}{\iGD}~\ipt{A}{\iGD}.
     \end{eqnarray*}
     
-    Or $\ipT{e}{\iGD} = \ipt{E}{\iGD}$ par induction donc $c' :
-    \ipt{E}{\iGD} \subi \ipt{V}{\iGD}$. On peut substituer pour obtenir:
-    $c' : \ipt{E[u/x]}{\iGr} \subi \ipt{V[u/x]}{\iGr}$ (lemme
+    
+    \ipt{E}{\iGD} \subi \ipt{A}{\iGD}$. On peut substituer pour obtenir:
+    \[c' : \ipt{E}{\iGD}\cux \subi \ipt{A}{\iGD}\cux\] (lemme
     \ref{subst-ipt-subi}).
     On a donc: 
     \[\ipt{(f~e)}{\iGD}\cux =
     ((\pi~\ipt{f}{\iGD}\cux)~(c'~\ipt{e}{\iGD}\cux))\]
     et
     \[\ipT{(f~e)}{\iGD}\cux =
-    \ipt{W}{\iGD}[c'~\ipt{e}{\iGD}/y]\cux\]
+    \ipt{B}{\iGD}[c'~\ipt{e}{\iGD}/y]\cux\]
     
     
     D'autre part on a:
     \begin{eqnarray*}
       \ip{(f~e)[u/x]}{\iGr}
-      & = & (\ipt{f[u/x]~e[u/x]}{\iG}, W'[c''~e'/y]) \\
-      & = & ((\pi'~f')~(c''~e'), W'[c''~e'/y]) \\
+      & = & (\ipt{f[u/x]~e[u/x]}{\iG}, B'[c''~e'/y]) \\
+      & = & ((\pi'~f')~(c''~e'), B'[c''~e'/y]) \\
       \text{ où } & & \\
       (f', T') & = & \ip{f[u/x]}{\iGr} \\
-      (\pi', \Pi y : V'.W') & = & \muimpl~(T') \\
+      (\pi', \Pi y : A'.B') & = & \muimpl~(T') \\
       (e', E') & = & \ip{e[u/x]}{\iGr} \\
-      c'' & = & \sref{coerce}~E'~V'.
+      c'' & = & \sref{coerce}~E'~A'.
     \end{eqnarray*}
 
-    A partir de $\mualgo(F) = \Pi y : V.W$ on peut déduire que 
-    $\mualgo(F[u/x]) = \Pi y : V[u/x].W[u/x]$ par substitutivité de
+    A partir de $\mualgo(F) = \Pi y : A.B$ on peut déduire que 
+    $\mualgo(F[u/x]) = \Pi y : A[u/x].B[u/x]$ par substitutivité de
     $\mualgo$ (lemme \ref{substitutive-mu}) et par le lemme
     \ref{mu-interp} on obtient \[\muimpl(\ipt{F[u/x]}{\iGr}) = 
-    (\pi, \ipt{\mualgo(\Pi y : V[u/x].W[u/x])}{\iGr}) = 
-    (\pi, \ipt{\Pi y : V[u/x].W[u/x]}{\iGr})\]
-%     De même, à partir de $E \suba V$ on peut déduire une coercion \[c :
-%     \ipt{E[u/x]}{\iGr} \subi \ipt{V[u/x]}{\iGr}\]
+    (\pi, \ipt{\mualgo(\Pi y : A[u/x].B[u/x])}{\iGr}) = 
+    (\pi, \ipt{\Pi y : A[u/x].B[u/x]}{\iGr})\]
+%     De même, à partir de $E \suba A$ on peut déduire une coercion \[c :
+%     \ipt{E[u/x]}{\iGr} \subi \ipt{A[u/x]}{\iGr}\]
     
     On a donc les coercions suivantes pour la fonction $f$ et l'argument
     $e$: 
     \[
     \xymatrix{
-      \ipt{F[u/x]}{\iGr}\ar[rr]_{\pi} & & \ipt{(\Pi y : V.W)[u/x]}{\iGr} \\
+      \ipt{F}{\iGD}\cux\ar[rr]_{\pi} & & 
+      \ipt{\Pi y : A.B}{\iGD}\cux \\
       \ipT{f[u/x]}{\iGr}\ar[u]^{`a_f}\ar[rr]^{\pi'} & &
-      {\Pi y : V'.W'}\ar@{-->}[u]^{c_f}}
-    \quad
+      {\Pi y : A'.B'}\ar@{-->}[u]^{c_f}}
+    \]
+    \[
     \xymatrix{
-      \ipt{E[u/x]}{\iGr}\ar[rr]_{c'} & & \ipt{V[u/x]}{\iGr}\ar@{-->}[d]^{c_e} \\
+      \ipt{E}{\iGD}\cux\ar[rr]_{c'} & & 
+      \ipt{A}{\iGr}\cux\ar@{-->}[d]^{c_e} \\
       \ipT{e[u/x]}{\iGr}\ar[u]^{`a_e}
-      \ar[rr]^{c''} & & V'}
+      \ar[rr]^{c''} & & A'}
     \]
     
     On veut montrer que les diagrammes commutent et que $c_f, c_e$ sont
     uniquement déterminés. 
     Pour cela on va
-    montrer qu'il existe une coercion $c_f : \Pi y : V'.W' \subi 
-    \ipt{\Pi z : V[u/x].W[u/x]}{\iGr}$. Cela est vrai par transitivité
+    montrer qu'il existe une coercion $c_f : \Pi y : A'.B' \subi 
+    \ipt{\Pi z : A.B}{\iGD}\cux$. Cela est vrai par transitivité
     et symmétrie de la coercion. On en déduit qu'il existe $c_1, c_2$
     tels que $c_f = \lambda f.\lambda x. c_2 (f (c_1~x))$ avec
     \[
     \xymatrix{
-      \ipt{V[u/x]}{\iGr}\ar[rr]^{c_1} & & V' & & W' \ar[rr]^{c_2} & & \ipt{W[u/x]}{\iGr}
+      \ipt{A}{\iGD}\cux\ar[rr]^(0.7){c_1} & & A' & &
+      B' \ar[rr]^(0.3){c_2} & & 
+      \ipt{B}{\ipG{`G, x : A, `D, y : A}}\cux
     }\]
-     
+    
     On peut prendre $c_e = c_1$ et $\afe = c_2$, on obtient: $c'' = c_1
     `o c' `o `a_e$.
     Alors:
@@ -364,17 +360,17 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
     \end{array}$
     
     
-%     Il faut maintenant montrer que $\ipt{W[e/y][u/x]}{\iGr} \eqbi
-%     \ipt{W[e/y]}{\iGD}\cux$.
+%     Il faut maintenant montrer que $\ipt{B[e/y][u/x]}{\iGr} \eqbi
+%     \ipt{B[e/y]}{\iGD}\cux$.
 
 %     On a $`a_1 : T' \subi \ipt{T[u/x]}{\iG}$ et $\pi : \ipt{T[u/x]}{\iG}
-%     \subi \ipt{\Pi y : V[u/x].W[u/x]}{\iG}$, on peut donc construire la
+%     \subi \ipt{\Pi y : A[u/x].B[u/x]}{\iG}$, on peut donc construire la
 %     coercion \[\pi~`o~`a_1 : T' \subi \Pi y :
-%     \ipt{V[u/x]}{\iG}.\ipt{W[u/x]}{\ipG{`G, y : V[u/x]}}\]
+%     \ipt{A[u/x]}{\iG}.\ipt{B[u/x]}{\ipG{`G, y : A[u/x]}}\]
     
     
 
-%     $T'$ est nécessairement de la forme $\mysubset{x}{\ldots\Pi x : V'.W'\ldots}{P}$.
+%     $T'$ est nécessairement de la forme $\mysubset{x}{\ldots\Pi x : V'.B'\ldots}{P}$.
 
 %     On a $E \suba V$ et l'on veut montrer qu'il existe une coercion $c : 
 %     E' \subi V'$. 
@@ -382,9 +378,9 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
     
 
 %     La substitution ne change pas la forme des termes, donc on est
-%     assuré que si $\mualgo(T) = \Pi x : V.W$ alors $\muimpl{T'} = (\pi,
-%     \Pi y : V'.W')$ où $V' \subi \ipt{V[u/x]}{\iG}$ et
-%     $\ipt{W[u/x]}{\ipG{`G, y : V}} \subi W'$.
+%     assuré que si $\mualgo(T) = \Pi x : V.B$ alors $\muimpl{T'} = (\pi,
+%     \Pi y : V'.B')$ où $V' \subi \ipt{V[u/x]}{\iG}$ et
+%     $\ipt{B[u/x]}{\ipG{`G, y : V}} \subi B'$.
     
     
 
@@ -409,10 +405,10 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
   relation de commutation entre les coercions appliquées des deux cotés.
 \end{proof}
 
-% Par induction structurelle sur $W$.
+% Par induction structurelle sur $B$.
 
 %   \begin{induction}
-%   \item[$W `= y$]\quad
+%   \item[$B `= y$]\quad
 %     \begin{itemize}
 %     \item Si $y = x$, alors on doit montrer: $c~\ipt{u}{\iG} \eqbi
 %       \ipt{u}{\iG}$. Cela n'est vrai que si $c$ est l'identité, donc si
@@ -429,7 +425,7 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
 %       = \ipt{y}{\iG} = \ipt{y[u/x]}{\iG}$.
 %     \end{itemize}
     
-%   \item[$W `= f~v$]\quad
+%   \item[$B `= f~v$]\quad
 %     Par induction, $\ipt{f}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}] \eqbi
 %     \ipt{f[u/x]}{\iG}$ et $\ipt{v}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}] \eqbi
 %     \ipt{v[u/x]}{\iG}$.
@@ -477,7 +473,7 @@ $`G \typec t : T `^ `E c, `G \typec c : T \subi U$.
 %       donc on ne peut s'assurer que $\pi `o c = \pi'$ puisque $S, S'$ et
 %       $T,T'$ peuvent effectivement être différents. En fait $T$ et $T'$
 %       ne peuvent être différents puisqu'on a $\ipG{`G, x : V} \typec
-%       \ipt{W}{\ipG{`G, x : V}} : s$, donc $f~v : s$ par inversion et $T
+%       \ipt{B}{\ipG{`G, x : V}} : s$, donc $f~v : s$ par inversion et $T
 %       = T' = s$. On 
 
       
