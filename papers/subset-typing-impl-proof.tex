@@ -69,18 +69,149 @@ On conserve les propriétés suivantes sur la coercion:
   alors $`E!c, `G \typec c : A \subi C$ et $c = c_2 `o c_1$.
 \end{lemma}
 \begin{proof}
-  \TODO{}
+  De la même façon que pour la preuve de transitivité de la
+  coercion algorithmique, on élimine la règle \irule{SubTrans}. 
+  Comme les règles sont simplement annotés par des termes de coercion et
+  que le type dirige toujours la dérivation, la propriété est directe.
 \end{proof}
 
 
 \begin{lemma}[Symétrie de la coercion]
   \label{subi-sym}
   S'il existe $c$ tel que $`G \typec c : A \subi B$
-  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c =
-  \sref{id} = c `o c^{-1}$.
+  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbi
+  \sref{id}~A$ et $c `o c^{-1} \eqbi \sref{id}~B$, où
+  $\sref{id} \coloneqq \lambda X : Set.\lambda x : X. x$.
 \end{lemma}
 \begin{proof}
-  \TODO{}
+  Par induction sur la dérivation de $c$.
+  \begin{induction}
+    \case{SubConv} Trivial.
+
+    \case{SubHnf} Par induction, il existe $c^{-1} : \hnf{B} \subi
+    \hnf{A}$, $c_1$ est donc de type $B \subi A$ par conversion.
+
+    \case{SubProd}
+    Par induction on a: $`G \typec c_1^{-1} : T \subi U$ et $`G, x : U \typec c_2^{-1} : W \subi
+    V[c_1~x/x]$.
+    On peut donc construire la coercion:
+    $\lambda f : \Pi x : U.W. \lambda x : T. c_2^{-1}~(f~(c_1^{-1}~x))$
+    de type $\Pi x : U.W \subi \Pi x : T.V$ car:
+    $f~(c_1^{-1}~x) : W[c_1^{-1}~x/x]$ donc $c_2^{-1}~(f~(c_1^{-1}~x)) : 
+    V[c_1~(c_1^{-1}~x)/x]$. Or $c_1 `o c^{-1}_1 \eqbi \sref{id}~T$, donc
+    $V[c_1~(c_1^{-1}~x)/x] \eqbi V$.
+
+    On va maintenant montrer les identités (avec des termes à la Curry):
+
+    $\begin{array}{ll}
+      \firsteq{(\lambda f.c_2 `o f `o c_1) `o 
+        (\lambda f.c_2^{-1} `o f `o c_1^{-1})}
+      
+      \step{Définition de la composition}
+      {\eqbi}{\lambda f.c `o c^{-1}}
+      
+      \step{Hypothèse d'induction}
+      {\eqbi}{\sref{id}~T}
+    \end{array}$
+
+
+
+
+    \case{SubSigma}
+    De là même façon.
+
+    \case{SubSub}
+    Par induction $`G \typec c^{-1} : T \subi U$, on peut donc appliquer
+    \irule{SubProof} pour obtenir la coercion:
+    $\lambda t : T.\elt{U}{(\lambda x :
+      U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}$
+    de type : $T \subi \mysubset{x}{U}{P}$.
+    
+    On a l'équation suivante:
+
+    $\begin{array}{ll}
+      \firsteq{c `o \pi_1 `o \lambda t : T.\elt{U}{(\lambda x :
+          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}}
+      
+      \step{Définition de $\pi_1$}
+      {\eqbi}{c `o c^{-1}}
+      
+      \step{Hypothèse d'induction}
+      {\eqbi}{\sref{id}~T}
+    \end{array}$
+
+    De même:
+
+    $\begin{array}{ll}
+      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
+          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
+        `o c `o \pi_1}
+      
+      \step{Définition de la composition}
+      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}
+        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
+    
+    \step{Hypothèse d'induction}
+    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
+
+    \step{Indifférence aux preuves!}
+    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
+
+    \end{array}$
+
+    \case{SubProof}
+    C'est le cas dual, ici on a par induction $c^{-1} : U \subi T$.
+    On veut construire une coercion de type $\mysubset{x}{U}{P} \subi
+    T$.
+    On applique donc \irule{SubSub} pour obtenir:
+    $c^{-1} `o \pi_1$.
+    On a bien:
+
+    $\begin{array}{ll}
+      \firsteq{c^{-1} `o \pi_1 `o (\lambda t : T.
+        \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}})}
+      
+      \step{Définition de la composition}
+      {\eqbi}{c^{-1} `o (\lambda t : T.
+        \pi_1~(\elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}))}
+        
+      \step{Définition de $\pi_1$}
+      {\eqbi}{c^{-1} `o (\lambda t : T. c~t)}
+      
+      \step{Hypothèse d'induction}
+      {\eqbi}{\sref{id}~T}
+    \end{array}
+    \vspace{0.2em}
+    $
+    
+    et
+    \vspace{0.2em}
+
+    $\begin{array}{ll}
+      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
+          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
+        `o c `o \pi_1}
+      
+      \step{Définition de la composition}
+      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}
+        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
+    
+    \step{Hypothèse d'induction}
+    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
+
+    \step{Indifférence aux preuves!}
+    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
+
+    \end{array}$
+    
+    
+
+
+  \end{induction}
 \end{proof}
 
 

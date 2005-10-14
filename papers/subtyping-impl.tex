@@ -55,9 +55,16 @@
   \ipt{#4}{#1}}
 \newcommand{\subimplndiff}[6]{#1 \typec #2 : \ipt{#3}{#1} #4 \subi
   \ipt{#5}{#1} #6}
+
+\renewcommand{\subimpln}[4]{#1 \typec #2 : #3 \subi
+  #4}
+\renewcommand{\subimplndiff}[6]{#1 \typec #2 : #3 #4 \subi
+  #5 #6}
+
+
 \newcommand{\SubConvC}{
 \UAX{SubConv}
-{$\ipt{T}{`G} \eqbi \ipt{U}{`G}$}
+{$T \eqbi U$}
 {$\subimpln{`G}{(\lambda x. x)}{T}{U}$}
 {} 
 }
@@ -72,8 +79,9 @@
 \def\SubProdC{%
 \BAX{SubProd}
 {$\subimpln{`G}{c_1}{U}{T}$}
-{$`G, x : \ipt{U}{`G} \typec c_2 : \ipt{V}{`G, x :
-  \ipt{T}{`G}}[c_1~x/x] \subi \ipt{W}{`G, x : \ipt{U}{`G}}$}
+%{$`G, x : \ipt{U}{`G} \typec c_2 : \ipt{V}{`G, x :
+ % \ipt{T}{`G}}[c_1~x/x] \subi \ipt{W}{`G, x : \ipt{U}{`G}}$}
+{$`G, x : U \typec c_2 : V[c_1~x/x] \subi W$}
 {$\subimpln{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
 {}
 }
@@ -81,8 +89,9 @@
 \def\SubSigmaC{%
 \BAX{SubSigma}
 {$\subimpln{`G}{c_1}{T}{U}$}
-{$`G, x : \ipt{T}{`G} \typec c_2 : \ipt{V}{`G, x : \ipt{T}{`G}} \subi
-  \ipt{W}{`G, x : \ipt{T}{`G}}[c_1~x/x]$}
+%{$`G, x : \ipt{T}{`G} \typec c_2 : \ipt{V}{`G, x : \ipt{T}{`G}} \subi
+%  \ipt{W}{`G, x : \ipt{T}{`G}}[c_1~x/x]$}
+{$`G, x : T \typec c_2 : V \subi W[c_1~x/x]$}
 {$\subimpln{`G}
   {\lambda (x, y). (c_1~x, c_2~y)}
   {\Sigma x : T. V}{\Sigma x : U. W}$}
@@ -92,10 +101,10 @@
 \def\SubLeftC{\SubSubC}
 \def\SubSubC{%
 \UAX{SubSub}
-%{$`G, x : U \typec P : \Prop$}
-{$\subimpln{`G}{c}{U}{V}$}
+% {$`G, x : U \typec P : \Prop$}
+{$\subimpln{`G}{c}{U}{T}$}
 {$\subimpln{`G}{c `o \pi_1}
-  {\mysubset{x}{U}{P}}{V}$}
+  {\mysubset{x}{U}{P}}{T}$}
 {}
 }
     
