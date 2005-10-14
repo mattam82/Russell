@@ -33,7 +33,7 @@ Qed.
   \label{fig:euclid-script}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{verbatim}
 (* Subtac ne gère pas encore les notations de Coq *)
 Definition neq (A : Type) (x y : A) : Prop := x <> y.
@@ -43,7 +43,8 @@ Proof.
   intros ; elim (le_lt_dec y x) ; intros ; auto with arith.
 Defined.
 
-Recursive program mydiv (a : nat) { well_founded lt a lt_wf } : { b : nat | neq nat b O } ->
+Recursive program mydiv (a : nat) { well_founded lt a lt_wf } : 
+  { b : nat | neq nat b O } ->
   [ q : nat ] { r : nat | div_prop a b q r } :=
   fun { y : nat | neq nat y O } =>
     if lt_ge_dec a y
@@ -77,7 +78,7 @@ y : { b : nat | b <> 0 }
   \label{fig:euclid-subtac}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \begin{verbatim}
 Recursive program mydiv (a : nat) using lt proof lt_wf  :
   { b : nat | neq nat b O } -> [ q : nat ] { r : nat | div_prop a b q r } :=

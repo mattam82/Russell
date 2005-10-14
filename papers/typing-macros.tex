@@ -123,8 +123,22 @@
     sous-typage.}
   \fi}
 
+\def\inductionon#1{
+  \ifstreq{#1}{typing-decl}Par induction sur la dérivation de typage.
+  \else\ifstreq{#1}{typing-algo}Par induction sur la dérivation de
+    typage dans le système algorithmique.
+    \else\ifstreq{#1}{typing-impl}Par induction sur la dérivation de
+    typage.
+  \else\ifstreq{#1}{subtyping-decl}Par induction sur la dérivation de
+    sous-typage.
+  \else\ifstreq{#1}{subtyping-algo}Par induction sur la dérivation de
+    sous-typage dans le système algorithmique.
+  \else\ifstreq{#1}{subtyping-impl}Par induction sur la dérivation de
+    sous-typage.
+  \fi}
+
 \newenvironment{induction}[1][text=\empty]{
-  \if#1\empty\text\else\inductionon{#1}
+  \if#1\empty\text\else\inductionon{#1}\fi
   \begin{list}{Unset default item}{}}
   {\end{list}}
 

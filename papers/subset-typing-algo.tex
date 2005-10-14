@@ -49,7 +49,7 @@ sera nécessaire pour la correction du typage:
 
 \begin{proof}
   Les règles du système algorithmique sont un sous-ensemble des règles
-  du système déclaratif, excepté pour la règle \irule{SubHnf}.
+  du système décla\-ratif, excepté pour la règle \irule{SubHnf}.
   On utilise \irule{SubConv} et \irule{SubTrans} pour montrer son
   admissibilité dans dans le système déclaratif.
   \begin{prooftree}
@@ -658,7 +658,7 @@ pouvoir prouver la complétude.
     \item[\protect{$`D = `D', y : T$}]
       On a alors $`G, x : U, `D' \typea T : s$ et par induction
       $`G, `D'[u/x] \typea T[u/x] : s[u/x]$. Donc on peut appliquer
-      \irule{WfVar} pour obtenir $\wf `G, `D'[u/x], T[u/x]$ soit
+      \irule{WfVar} pour obtenir $\wf `G, `D'[u/x], y : T[u/x]$ soit
       $\wf `G, `D[u/x]$
     \end{itemize}
     
@@ -669,10 +669,11 @@ pouvoir prouver la complétude.
     \case{Var}
     Par induction, $\wf `G, `D[u/x]$.
     Si $t `= x$ alors on a $T = U$ et $T[u/x] = U$ puisque $x$
-    n'apparaît pas dans $U$. On a donc bien $`G, `D[u/x] \typea t[u/x] = u :
-    T[u/x] = U$. 
+    n'apparaît pas dans $U$. On a donc $`G, `D[u/x] \typea t[u/x] = u :
+    T[u/x] = U$, qui peut s'obtenir par affaiblissement de $`G \typea u
+    : U$. 
     Si $y : T `: `G$ alors on applique simplement \irule{Var}.
-    Si $y : T `: `G$ alors $y : T[u/x] `: `D[u/x]$ et on obtient
+    Si $y : T `: `D$ alors $y : T[u/x] `: `D[u/x]$ et on obtient
     $`G, `D[u/x] \typea y[u/x] :  T[u/x]$ par \irule{Var}.
     
     \case{Prod}
@@ -685,14 +686,14 @@ pouvoir prouver la complétude.
 
     \case{App}
     On étudie le cas de l'application qui requiert un lemme supplémentaire.
-    Par induction, $`G, `D[u/x] \typea f[u/x] : T[u/x]$ et
+    Par induction, on a $`G, `D[u/x] \typea f[u/x] : T[u/x]$ et
     $`G, `D[u/x] \typea a[u/x] : A[u/x]$. Si $\mualgo(T) = \Pi y :
     V.W$ alors $\mualgo(T[u/x]) = \Pi y : V[u/x].W[u/x]$ (lemme
     \ref{substitutive-mu}). Par induction, on a aussi $`G, `D[u/x] \typea
     A[u/x],V[u/x] : s$. Enfin, par substitutivité de la coercion on a $A[u/x]
     \suba V[u/x]$. On peut donc appliquer \irule{App} pour obtenir 
-    $`G, `D[u/x] \typea (f[u/x] a[u/x]) : W[u/x][a[u/x]/y]$. Or $W[u/x][a[u/x]/y] =
-    W[a/y][u/x]$. On a donc bien $`G, `D[u/x] \typea (f a)[u/x] :
+    $`G, `D[u/x] \typea (f[u/x]~a[u/x]) : W[u/x][a[u/x]/y]$. Or
+    $W[u/x][a[u/x]/y] = W[a/y][u/x]$ ($y `; \freevars{u}$). On a donc bien $`G, `D[u/x] \typea (f~a)[u/x] :
     (W[a/y])[u/x]$.
     On a un raisonnement similaire pour \irule{LetSum}.
   \end{induction}

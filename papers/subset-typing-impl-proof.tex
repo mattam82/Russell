@@ -53,9 +53,9 @@ dériver ce jugement:
   \UIC{$`G' \typec \lambda x.x : \nat \subi \nat$}
   \UIC{$`G' \typec (\lambda x.x) `o \pi_1 : \mysubset{x}{\nat}{P} \subi \nat$}
   \AXC{$(\listml~n)[\pi_1~n/n] \eqbi \listml~(\pi_1~n)$}
-  \UIC{$`G, n : \mysubset{x}{\nat}{P} \typec c_2 = (\lambda x.x) :
+  \UIC{$`G, n : \mysubset{x}{\nat}{P} \typec (\lambda x.x) :
     (\listml~n)[\pi_1~n/n] \subi \listml~(\pi_1~n)$}
-  \BIC{$`G' \typec \lambda f.\lambda x.c_2~(f~(\pi_1~x)) : 
+  \BIC{$`G' \typec \lambda f.\lambda x.(\lambda x.x)~(f~(\pi_1~x)) : 
     \Pi n : \nat. \listml~n \subi 
     \Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$}
 \end{prooftree}
@@ -144,16 +144,17 @@ On l'énonce de la façon suivante:
 %      \ipt{T}{\ipG{`G, x : V, `D}}
   \end{array}
 \right\} "=>"
-\begin{array}{lcl}
+\begin{array}{l}
   `E `a,
-  \ipG{`G, `D[u/x]} \typec `a & : & \ipT{t[u/x]}{\ipG{`G, `D[u/x]}}
+  \ipG{`G, `D[u/x]} \typec `a : \ipT{t[u/x]}{\ipG{`G, `D[u/x]}}
   \subi 
-  \ipt{T}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x]
-  \\
-  `a~\ipt{t[u/x]}{\ipG{`G, `D[u/x]}} & 
-  \eqbi & \ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x] \\
-  \ipT{t}{\iGD} & = & \ipt{T}{\iGD}
-%  \ipt{T[u/x]}{`G, `D[u/x]} & \eqbi & \ipt{T}{\ipG{`G, x: V, `D}}[c~\ipt{u}{\iG}/x]
+  \ipt{T}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x] \\
+  \begin{array}{lcl}
+    `a~\ipt{t[u/x]}{\ipG{`G, `D[u/x]}} & 
+    \eqbi & \ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x] \\
+    \ipT{t}{\iGD} & = & \ipt{T}{\iGD}
+    % \ipt{T[u/x]}{`G, `D[u/x]} & \eqbi & \ipt{T}{\ipG{`G, x: V, `D}}[c~\ipt{u}{\iG}/x]
+  \end{array}
 \end{array}
 \]
 \end{lemma}
@@ -294,8 +295,8 @@ On l'énonce de la façon suivante:
       
     \item Sinon, $T = V$, $x `; V$, $t[u/x] = u$.
       Soit $`a = c$.
-      On sait que $\ipT{x[u/x]}{\iG} = \ipT{u}{\iG}$ et
-      $\ipt{V}{\iGD}\cux = \ipt{V}{\iGD}$,
+      On sait que \[\ipT{x[u/x]}{\iG} = \ipT{u}{\iG} \mbox{ et }
+      \ipt{V}{\iGD}\cux = \ipt{V}{\iGD}\]
       $c$ est donc du bon type, et il suffit d'affaiblir le jugement
       $\iG \typec c : \ipT{u}{\iG} \subi \ipt{V}{\iG}$ pour obtenir la
       dérivation voulue.
@@ -368,13 +369,14 @@ On l'énonce de la façon suivante:
         
     On peut substituer pour obtenir:
     \[c'\cux : \ipt{E}{\iGD}\cux \subi \ipt{A}{\iGD}\cux\]
+
     On a donc: 
     \[\ipt{(f~e)}{\iGD}\cux =
     ((\pi~\ipt{f}{\iGD}\cux)~(c'\cux~\ipt{e}{\iGD}\cux))\]
     et
     \[\ipT{(f~e)}{\iGD}\cux =
     \ipt{B}{\iGD}[c'~\ipt{e}{\iGD}/y]\cux\]
-    
+
     D'autre part on a:
     \begin{eqnarray*}
       \ip{(f~e)[u/x]}{\iGr}
@@ -390,7 +392,7 @@ On l'énonce de la façon suivante:
     A partir de $\mualgo(F) = \Pi y : A.B$ on peut déduire que 
     $\mualgo(F[u/x]) = \Pi y : A[u/x].B[u/x]$ par substitutivité de
     $\mualgo$ (lemme \ref{substitutive-mu}) et par le lemme
-    \ref{mu-interp} on obtient \[\muimpl(\ipt{F[u/x]}{\iGr}) = 
+    \ref{mu-interp}~on obtient \[\muimpl(\ipt{F[u/x]}{\iGr}) = 
     (\pi, \ipt{\mualgo(F[u/x])}{\iGr}) = 
     (\pi, \ipt{\Pi y : A[u/x].B[u/x]}{\iGr})\]
 
@@ -454,7 +456,6 @@ On l'énonce de la façon suivante:
     On peut prendre $c_e = c_1$ et $\afe = c_2$. On a l'équation $c'' = c_1
     `o c' `o `a_e$.
     Alors:
-%    \newcommand{\step}[1]{\textbf{ \{ #1 \} }}
     
     \[\begin{array}{ll}
       \firsteq{\afe~\ipt{(f~e)[u/x]}{\iGr}}
@@ -488,34 +489,9 @@ On l'énonce de la façon suivante:
       \step{Définition de l'interprétation}
       {=}{\ipt{B}{\ipG{\GD, y : A}}[c'~\ipt{e}{\iGD}/y]}
     
-      \step{Application du lemme \ref{coerce-subst-type} à $\GD, y : A \typea B : s$}
+      \step{Application du lemme \ref{coerce-subst-type}~à $\GD, y : A \typea B : s$}
       {\eqbi}{\ipT{B[e/y]}{\iGD}}
     \end{array}\]
-    
-
-
-    
-%     Il faut maintenant montrer que $\ipt{B[e/y][u/x]}{\iGr} \eqbi
-%     \ipt{B[e/y]}{\iGD}\cux$.
-
-%     On a $`a_1 : T' \subi \ipt{T[u/x]}{\iG}$ et $\pi : \ipt{T[u/x]}{\iG}
-%     \subi \ipt{\Pi y : A[u/x].B[u/x]}{\iG}$, on peut donc construire la
-%     coercion \[\pi~`o~`a_1 : T' \subi \Pi y :
-%     \ipt{A[u/x]}{\iG}.\ipt{B[u/x]}{\ipG{`G, y : A[u/x]}}\]
-    
-    
-
-%     $T'$ est nécessairement de la forme $\mysubset{x}{\ldots\Pi x : V'.B'\ldots}{P}$.
-
-%     On a $E \suba V$ et l'on veut montrer qu'il existe une coercion $c : 
-%     E' \subi V'$. 
-    
-    
-
-%     La substitution ne change pas la forme des termes, donc on est
-%     assuré que si $\mualgo(T) = \Pi x : V.B$ alors $\muimpl{T'} = (\pi,
-%     \Pi y : V'.B')$ où $V' \subi \ipt{V[u/x]}{\iG}$ et
-%     $\ipt{B[u/x]}{\ipG{`G, y : V}} \subi B'$.
     
     \TODO{Autres cas}
 

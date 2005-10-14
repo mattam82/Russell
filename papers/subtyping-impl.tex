@@ -5,6 +5,13 @@
 {} 
 }
 
+\def\SubHnfI{%
+\UAX{SubHnf}
+{$\subimpl{`G}{c}{\hnf{T}}{\hnf{U}}$}
+{$\subimpl{`G}{c}{T}{U}$}
+{} 
+}
+
 \def\SubProdI{%
 \BAX{SubProd}
 {$\subimpl{`G}{c_1}{U}{T}$}
@@ -52,6 +59,13 @@
 \UAX{SubConv}
 {$\ipt{T}{`G} \eqbi \ipt{U}{`G}$}
 {$\subimpln{`G}{(\lambda x. x)}{T}{U}$}
+{} 
+}
+
+\newcommand{\SubHnfC}{
+\UAX{SubHnf}
+{$\subimpln{`G}{c}{\hnf{T}}{\hnf{U}}$}
+{$\subimpln{`G}{c}{T}{U}$}
 {} 
 }
 
@@ -103,6 +117,8 @@
     
     \vspace{\infvspace}
     \SubConvI\DP
+    \quad
+    \SubHnfI\DP
 
     \vspace{\infvspace}
     \SubProdI\DP
@@ -129,6 +145,8 @@
     
     \vspace{\infvspace}
     \SubConvC\DP
+    \quad
+    \SubHnfC\DP
 
     \vspace{\infvspace}
     \SubProdC\DP
@@ -152,6 +170,9 @@
   \begin{center}
     \def\fCenter{\subti}
     \SubConvI\DP
+    \quad
+    \SubHnfI\DP
+
     \vspace{\infvspace}
     \SubLeftI\DP
 

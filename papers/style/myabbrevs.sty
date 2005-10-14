@@ -5,8 +5,8 @@
 
 \usepackage{qsymbols}
 
-\newqsymbol{`<}{\langle}
-\newqsymbol{`>}{\rangle}
+% \newqsymbol{`<}{\langle}
+% \newqsymbol{`>}{\rangle}
 
 \newcommand{\cad}{c'est-à-dire}
 \newcommand{\ssi}{si et seulement si~}
@@ -22,7 +22,7 @@
 \newqsymbol{`N}{\dom{N}}
 \newqsymbol{`Z}{\dom{Z}}
 \newqsymbol{`R}{\dom{R}}
-\newqsymbol{`Q}{\dom{Q}}
+% \newqsymbol{`Q}{\dom{Q}}
 
 \newqsymbol{`|}{\mid}
 \newqsymbol{`O}{\emptyset}
@@ -41,21 +41,21 @@ $\smile$}}}}
 
 % logic
 \newqsymbol{`-}{\mp}
-\newqsymbol{"|="}{\models}
-\newqsymbol{"|/="}{\not\models}
+% \newqsymbol{"|="}{\models}
+% \newqsymbol{"|/="}{\not\models}
 
 % linear logic
-\newqsymbol{`*}{\ensuremath{\otimes}}
-\newqsymbol{`+}{\ensuremath{\oplus}}
-\newqsymbol{`x}{\ensuremath{\times}}
-\newcommand{\with}{\ensuremath{\binampersand}}
-\newcommand{\para}{\ensuremath{\bindnasrepma}}
+% \newqsymbol|{`*}{\ensuremath{\otimes}}
+% \newqsymbol{`+}{\ensuremath{\oplus}}
+% \newqsymbol{`x}{\ensuremath{\times}}
+% \newcommand{\with}{\ensuremath{\binampersand}}
+% \newcommand{\para}{\ensuremath{\bindnasrepma}}
 
 %\makeatother
 
 % Pi-calculus
 \newcommand{\picalc}{$\pi$-calculus}
-\newqsymbol{`n}{\boldsymbol{\nu}}
+% \newqsymbol{`n}{\boldsymbol{\nu}}
 \renewcommand{\bar}[1]{{\overline #1}}
 
 % Coq
@@ -110,6 +110,11 @@ $\smile$}}}}
 % \renewcommand{\step}[3]{\\ #1 & #2 & \textbf{\{ #3 \}}}
 
 \newcommand{\firsteq}[1]{& #1 }
+
+% \newcommand{\step}[3]{\vspace{0.2em}\\ &
+%   \if#1\empty{#2 & #3}\else{\quad\textbf{\{ #1 \}}\vspace{0.2em}\\ #2 & #3}\fi}
+
+\newcommand{\freevars}[1]{\ensuremath\mathcal{F}_{vars}(#1)}
+
 \newcommand{\step}[3]{\vspace{0.2em}\\ & 
- \if#1\empty\\ #2 & #3\else\quad\textbf{\{ #1 \}}\vspace{0.2em}\\ #2 & #3\fi}
-%
+  \if#1\empty\\ #2 & #3\else\quad\textbf{\{ #1 \}}\vspace{0.2em}\\ #2 & #3\fi}
