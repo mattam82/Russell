@@ -1,4 +1,4 @@
-\def\iG{\ipG{`G}}
+\def\iG{`G}
 \subsection{Propriétés}
 On veut montrer que si l'on a un jugement valide dans notre système
 algorithmique, alors son image par l'interprétation est un jugement
@@ -256,10 +256,10 @@ On l'énonce de la façon suivante:
 \end{proof}
 
 
-\def\iu{\ipt{u}{\iG}}
-\def\tux{\ipt{t[u/x]}{\ipG{`G, `D[u/x]}}}
-\def\cux{[c~\ipt{u}{\iG}/x]}
-\def\tcux{\ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x]}
+\def\iu{\ip{u}{\iG}}
+\def\tux{\ip{t[u/x]}{`G, `D[u/x]}}
+\def\cux{[c~\ip{u}{`G}/x]}
+\def\tcux{\ip{t}{\ipG{`G, x : V, `D}}[c~\ip{u}{`G}/x]}
 \def\GD{`G, x : V, `D}
 \def\Gr{`G, `D[u/x]}
 \def\iGD{\ipG{`G, x : V, `D}}
@@ -267,136 +267,34 @@ On l'énonce de la façon suivante:
 
 \begin{lemma}[Substitution et coercion]
   \[\left.\begin{array}{l}
-      \iG \typec \ipt{u}{\iG} : \ipT{u}{\iG} \\
-      \iG \typec c : \ipT{u}{\iG} \subi \ipt{V}{\iG} \\
-      `G, x : V, `D \typea t : T
+      `G \typea u : U \\
+      c : U \subi V \\
+      \GD \typea t : T
 %      `G, x : V, `D \typea t : T "=>" \ipT{t}{\iGD} = \ipt{T}{\iGD}      
 %      \ipG{`G, x : V, `D} \typec \ipt{t}{\ipG{`G, x : V, `D}} :
 %      \ipt{T}{\ipG{`G, x : V, `D}}
   \end{array}
 \right\} "=>"
 \begin{array}{l}
-  `E `a,
-  \ipG{`G, `D[u/x]} \typec `a : \ipT{t[u/x]}{\ipG{`G, `D[u/x]}}
-  \subi 
-  \ipt{T}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x] \\
-  \begin{array}{lcl}
-    `a~\ipt{t[u/x]}{\ipG{`G, `D[u/x]}} & 
-    \eqbi & \ipt{t}{\ipG{`G, x : V, `D}}[c~\ipt{u}{\iG}/x] \\
-    \ipT{t}{\iGD} & = & \ipt{T}{\iGD}
-    % \ipt{T[u/x]}{`G, `D[u/x]} & \eqbi & \ipt{T}{\ipG{`G, x: V, `D}}[c~\ipt{u}{\iG}/x]
-  \end{array}
+  \Gr \typea t[u/x] : T' \\
+  `E `a : T' \suba T[u/x],\\
+  `a \ip{t[u/x]}{\Gr} \eqbi \ip{t}{\GD}\cux
 \end{array}
 \]
 \end{lemma}
 
 
 \begin{proof}
-  Par induction sur la dérivation de $`G, x : V \typea t : T$.
-  Soit $`G' = \GD$ et $`G_{`r} = \Gr$.
-
-  On va utiliser le lemme suivant à plusieurs reprises.
-
-  \begin{lemma}[Coercions et subsitution dans les types]
-    \label{coerce-subst-type}
-    Pour toute sous-dérivation de $\GD \typea t : T$ de la forme
-    $\GD \typec V : s$ où $s `: \setproptype$, on a la propriété suivante:
-    \[\ipt{V[u/x]}{\iGr} \eqbi \ipt{V}{\iGD}\cux\]
-  \end{lemma}
-  \begin{proof}
-    En effet, par induction $`E`a, \iGr \typec `a : \ipT{V[u/x]}{\iGr}
-    \suba \ipt{s}{\iGD}\cux = s$. On sait que $`a$ est une coercion vers
-    une sorte, c'est donc l'identité (lemme \ref{subi-sorts}). Donc
-    \begin{eqnarray*}
-      \ipt{V}{\iGD}\cux & \eqbi & (\lambda x.x)~\ipt{V[u/x]}{\iGr} \\
-      & \eqbi & \ipt{V[u/x]}{\iGr}
-    \end{eqnarray*}
-  \end{proof}
+  D'après le lemme de substitution du système algorithmique, 
+  on a $\Gr \typea t[u/x] T' \suba T[u/x]$. On peut donc automatiquement
+  dériver $`a$ à partir de la dérivation de $T' \suba T[u/x]$. On va
+  montrer la conclusion par induction sur la dérivation de $`G, x : V
+  \typea t : T$. Soit $`G' = \GD$ et $`G_{`r} = \Gr$.
   
-  De même on utilisera le lemme suivant à plusieurs reprises:
-  \begin{lemma}[Interprétation de la coercion algorithmique]
-    \label{interp-coercion}
-    Si l'on peut appliquer l'hypothèse d'induction sur $`G \typea A, B :
-    s$ et qu'on a $A \suba B$ alors
-    \[`E!c: \ipt{A}{\iG} \suba \ipt{B}{\iG}\].
-  \end{lemma}
-  
-  \begin{proof}
-    Par induction sur la dérivation de $A \suba B$:
-    \begin{induction}
-      \case{SubConv}
-      On a $A \eqbi B$. 
-      On va montrer que si $A "->"_{\beta} A'$ alors
-      $\ipt{A}{\iG} "->"^{*}_{\beta} \ipt{A'}{\iG}$
-      
-      \begin{itemize}
-      \item Si $A `= (\lambda y : T.v)~u$ et $A' = v[u/y]$ alors
-        par définition de l'interprétation, 
-        \[\ipt{A}{\iG} `= 
-        (\lambda y : \ipt{T}{\iG}.\ipt{v}{\ipG{`G, y : T}})
-        (c~\ipt{u}{\iG})\]
-        où $c : \ipT{u}{\iG} \subi \ipt{T}{\iG}$.
-        $c$ est bien dérivable car par induction, $\ipT{u}{\iG} =
-        \ipt{U}{\iG}$ et l'on peut appliquer l'hypothèse d'induction
-        courante sur la dérivation de $`G \typea T : s$. On obtient ce
-        jugement par inversion de $`G \typea (\lambda x : T.v)~u : s$.
-        En effet pour que cette application soit bien typée on doit
-        avoir $`G \typea T, U : s$.  
-        
-        D'autre part, $\ipt{A'}{\iG} = \ipt{v[u/y]}{\iG}$.
-        Or par inversion du jugement $`G \typec (\lambda y :
-        T.v)~u : s$, on a $`G, y : T \typea v : s$.
-        On peut appliquer l'hypothèse d'induction pour obtenir:
-        \[\ipt{v[u/y]}{\iG} \eqbi \ipt{v}{\ipG{`G, y : T}}
-        [c~\ipt{u}{\iG}/y]\]
-        Comme $\ipt{A}{\iG}$ se réduit vers $\ipt{v[u/y]}{\iG}$ la
-        propriété est bien montrée.
-        
-      \item Si $A `= (\lambda y : V.v)~u$ et $A' = 
-        (\lambda y : V.v')~u$ alors $v "->"_{\beta} v'$.
-        Direct par induction ($\ipt{v}{\iG} "->"^{*}_{\beta}
-        \ipt{v'}{\iG}$).
-
-      \item Sinon il n'y a que des réductions internes possibles, 
-        et la propriété est vraie par induction
-      \end{itemize}
-
-      On peut faire le même raisonnement pour $B$,
-      on en déduit que si $A \eqbi B$ alors $\ipt{A}{\iG} \eqbi
-      \ipt{B}{\iG}$.
-      
-      \case{SubHnf}
-      On a $\hnf{A}~\suba~\hnf{B}$ et par induction
-      $`E!c.\iG \typec c : \ipt{\hnf{A}}{\iG} \subi 
-      \ipt{\hnf{B}}{\iG}$. On peut donc appliquer \irule{SubHnf}
-      dans le système de réecriture des coercions pour obtenir
-      le résultat désiré.
-
-      \case{SubProd}
-      \def\iGA{`G, y : A}
-      Soit $A `= \Pi y : C.D$ et $B `= \Pi y : A.F$.
-      Par induction \[`E!c_1, \iG \typec c_1 : \ipt{A}{\iG} \subi
-      \ipt{C}{\iG}\] et \[`E!c_2, \ipG{\iGA} \typec c_2
-      : \ipt{D}{\iGA} \subi \ipt{F}{\iGA}\]
-      On a aussi \[\ipt{D}{\ipG{\iGA}} = 
-      \ipt{D}{\ipG{`G, y : C}}[c_1~y/y]\]
-      par induction sur $`G, y : C \typea D : s$.
-      On a donc \[`E!c_2, \ipG{\iGA} \typec c_2
-      : \ipt{D}{\ipG{`G, x : V, `D, y : C}}[c_1~y/y] \subi
-      \ipt{F}{\iGA}\] 
-      et on peut appliquer \irule{SubProd}.
-      Les autres cas se montrent de la même manière.
-      
-    \end{induction}
-    
-    
-  \end{proof}
-  
-  On va maintenant procéder à l'induction.
-
   \begin{induction}
     \case{Var} 
     On a:
+    \typenva
     \begin{prooftree}
       \BAX{Var}
       {$\wf \GD$}
@@ -404,44 +302,23 @@ On l'énonce de la façon suivante:
       {$\GD \seq y : T$}
       {}
     \end{prooftree}    
+    \typenvi
 
     \begin{itemize}
-    \item Si $x "/=" y$ alors
-      par inversion du jugement de bonne formation, on a:
-      $\GD \typea T : s$ pour $s `: \setproptype$.
-      On peut appliquer le lemme \ref{coerce-subst-type} pour obtenir:
-      \[\ipt{T[u/x]}{\iGr} \eqbi \ipt{T}{\iGD}\cux\] 
-
-      Or \[\ipT{t[u/x]}{\iGr} = \ipT{y}{\iGr} = \iGr(y) = \ipt{T[u/x]}{\iGr}\]
-            
-      Le jugement de coercion dérive donc l'identité par
-      \irule{SubConv}, et l'on a bien:
-      \begin{eqnarray*}     
-        `a~\ipt{y[u/x]}{\iGr} & = & `a~y \\
-        & = & (\lambda x.x)~y \\
-        & \eqbi & y \\
-        & = & \ipt{y}{\iGD}\cux
-      \end{eqnarray*}
-      
-      
-    \item Sinon, $T = V$, $x `; V$, $t[u/x] = u$.
-      Soit $`a = c$.
-      On sait que \[\ipT{x[u/x]}{\iG} = \ipT{u}{\iG} \mbox{ et }
-      \ipt{V}{\iGD}\cux = \ipt{V}{\iGD}\]
-      $c$ est donc du bon type, et il suffit d'affaiblir le jugement
-      $\iG \typec c : \ipT{u}{\iG} \subi \ipt{V}{\iG}$ pour obtenir la
-      dérivation voulue.
+    \item Si $x "/=" y$ alors par définition de l'interprétation, on doit montrer
+      $`a~y \eqbi y$. C'est direct car la coercion de $T'$ à
+      $T[u/x]$ ne peut être que l'identité. En effet,
+      le type dérivé pour $y$ dans
+      l'environnement $`G, `D[u/x]$ est $(`G, `D[u/x])(y)$, soit $T[u/x]$. 
+         
+    \item Sinon, $T = V$, $x `; V$, $t[u/x] = u$ et donc $T' = U$.
+      On peut prendre $`a = c$ car $T' = U$ et $T[u/x] = V$.
       On peut vérifier:
       \begin{eqnarray*}
-        c~\ipt{x[u/x]}{\iGr} & = & c~\ipt{u}{\iGr} \\
-        & = & \ipt{x}{\iGD}\cux
+        c~\ip{x[u/x]}{\Gr} & = & c~\ip{u}{\Gr} \\
+        & = & \ip{x}{\GD}\cux
       \end{eqnarray*}
       
-      On utilise la propriété: 
-      $\ipt{u}{\ipG{`G}} = \ipt{u}{\ipG{`G, `D}}$ pour toute extension
-      $`D$ bien formée (ne masquant pas les variable de $`G$).
-
-      La seconde propriété est directe par définition de l'interprétation.
     \end{itemize}
     
     \case{App}\quad
@@ -456,116 +333,102 @@ On l'énonce de la façon suivante:
     \end{prooftree}
     \typenvi
     
-    \def\iGx{\ipG{`G, x : V}}
-    
     Par induction:
-    \begin{eqnarray*}
-      `E `a_f, \iGD \typec `a_f & : & \ipT{f[u/x]}{\iG} \subi
-      \ipt{F}{\iGD}\cux \\
-      `a_f~\ipt{f[u/x]}{\iGr} & \eqbi & \ipt{f}{\iGD}\cux \\
-      \text{ et } & & \\
-      `E `a_e, \iGD \typec `a_e & : & \ipT{e[u/x]}{\iG} \subi
-      \ipt{E}{\iGD}\cux \\
-      `a_e~\ipt{e[u/x]}{\iGr} & \eqbi & \ipt{e}{\iGD}\cux
-    \end{eqnarray*}
+    \[`E `a_f : F' \suba F[u/x],
+    `a_f~\ip{f[u/x]}{\Gr} \eqbi \ip{f}{\GD}\cux\]
+    \[`E `a_e, E' \suba E[u/x],
+    `a_e~\ip{e[u/x]}{\Gr} \eqbi \ip{e}{\GD}\cux\]
     
     \def\afe{`a}
-    On veut montrer qu'il existe une coercion $\afe$ telle que:
-    \begin{eqnarray*}
-      \iGD \typec \afe & : & \ipT{(f~e)[u/x]}{\iG} \subi
-      \ipt{B[e/y]}{\iGD}\cux \\
-      \afe~\ipt{(f~e)[u/x]}{\iGr} & \eqbi & \ipt{f~e}{\iGD}\cux 
-%     \ipt{B[e/y][u/x]}{\iGr} & \eqbi & \ipt{B[e/y]}{\iGD}\cux
-    \end{eqnarray*}
-
+    On a $\Gr \typea (f~e)[u/x] : B' \suba B[u/x]$ et l'on veut montrer
+    qu'il existe une coercion $\afe$ telle que:
+    \[\afe : B' \suba B[e/y][u/x],
+    \afe~\ip{(f~e)[u/x]}{\Gr} \eqbi \ip{(f~e)}{\GD}\cux\]
+    
     Par définition de la substitution et de l'interprétation, 
-    \def\myipt#1{\lbag#1\rbag}
+    \def\myip#1{\lbag#1\rbag}
     \begin{eqnarray*}
-      \ip{(f~e)}{\iGD}
-      & = & (((\pi~\ipt{f}{\iGD})~(c'~\ipt{e}{\iGD})),
-      \ipt{B}{\iGD}[c'~\ipt{e}{\iGD}/y]) \\
-      & = & ((\pi~\myipt{f})~(c'~\myipt{e})),
-      \myipt{B}[c'~\myipt{e}/y] \\
+      \ip{(f~e)}{\GD}
+      & = & (((\pi~\ip{f}{\GD})~(c'~\ip{e}{\GD})) \\
       \text{ où } & & \\
-      \myipt{x} & = & \ipt{x}{\iGD} \\
-      (\pi, \ipt{\Pi y : A.B}{\iGD}) & = & \muimpl~(\ipT{f}{\iGD}) \\
-      c' & = & \sref{coerce}~\ipT{e}{\iGD}~\ipt{A}{\iGD}.
+      (\pi, \Pi y : A.B) & = & \muimpl~(\typeafn{\GD}{f}) \\
+      c' & = & \sref{coerce}~\typeafn{\GD}{e}~A.
     \end{eqnarray*}
     
     On doit montrer que $c'$ est bien dérivable.
-    Par induction on a $\ipT{e}{\iGD} = \ipt{E}{\iGD}$ et
+    Par induction on a $\ip{e}{\GD} = \ip{E}{\GD}$ et
     par hypothèse $E \suba A$. On peut appliquer le lemme
     \ref{interp-coercion} pour obtenir:    
-    \[`E!c', \iGD \typec c' : \ipt{E}{\iGD} \subi \ipt{A}{\iGD}\]
+    \[`E!c', \GD \typec c' : \ip{E}{\GD} \subi \ip{A}{\GD}\]
         
     On peut substituer pour obtenir:
-    \[c'\cux : \ipt{E}{\iGD}\cux \subi \ipt{A}{\iGD}\cux\]
+    \[c'\cux : \ip{E}{\GD}\cux \subi \ip{A}{\GD}\cux\]
 
     On a donc: 
-    \[\ipt{(f~e)}{\iGD}\cux =
-    ((\pi~\ipt{f}{\iGD}\cux)~(c'\cux~\ipt{e}{\iGD}\cux))\]
+    \[\ip{(f~e)}{\GD}\cux =
+    ((\pi~\ip{f}{\GD}\cux)~(c'\cux~\ip{e}{\GD}\cux))\]
     et
-    \[\ipT{(f~e)}{\iGD}\cux =
-    \ipt{B}{\iGD}[c'~\ipt{e}{\iGD}/y]\cux\]
+    \[\ip{(f~e)}{\GD}\cux =
+    \ip{B}{\GD}[c'~\ip{e}{\GD}/y]\cux\]
 
     D'autre part on a:
     \begin{eqnarray*}
-      \ip{(f~e)[u/x]}{\iGr}
-      & = & (\ipt{f[u/x]~e[u/x]}{\iG}, B'[c''~e'/y]) \\
+      \ip{(f~e)[u/x]}{\Gr}
+      & = & (\ip{f[u/x]~e[u/x]}{\iG}, B'[c''~e'/y]) \\
       & = & ((\pi'~f')~(c''~e'),~B'[c''~e'/y]) \\
       \text{ où } & & \\
-      (f', T') & = & \ip{f[u/x]}{\iGr} \\
+      (f', T') & = & \ip{f[u/x]}{\Gr} \\
       (\pi', \Pi y : A'.B') & = & \muimpl~(T') \\
-      (e', E') & = & \ip{e[u/x]}{\iGr} \\
+      (e', E') & = & \ip{e[u/x]}{\Gr} \\
       c'' & = & \sref{coerce}~E'~A'.
     \end{eqnarray*}
 
     A partir de $\mualgo(F) = \Pi y : A.B$ on peut déduire que 
     $\mualgo(F[u/x]) = \Pi y : A[u/x].B[u/x]$ par substitutivité de
     $\mualgo$ (lemme \ref{substitutive-mu}) et par le lemme
-    \ref{mu-interp}~on obtient \[\muimpl(\ipt{F[u/x]}{\iGr}) = 
-    (\pi, \ipt{\mualgo(F[u/x])}{\iGr}) = 
-    (\pi, \ipt{\Pi y : A[u/x].B[u/x]}{\iGr})\]
+    \ref{mu-interp}~on obtient \[\muimpl(\ip{F[u/x]}{\Gr}) = 
+    (\pi, \ip{\mualgo(F[u/x])}{\Gr}) = 
+    (\pi, \ip{\Pi y : A[u/x].B[u/x]}{\Gr})\]
 
 
     On doit aussi montrer que $c''$ est bien dérivable.
-    Ici, $E' = \ipT{e[u/x]}{\iGr}$ et $A' = \ipt{A[u/x]}{\iGr}$, et on a
+    Ici, $E' = \ip{e[u/x]}{\Gr}$ et $A' = \ip{A[u/x]}{\Gr}$, et on a
     l'hypothèse $E \suba A$.    
     Or par substitutivité de la coercion dans le système algorithmique,
     on a $E[u/x] \suba A[u/x]$. 
     On peut appliquer le lemme \ref{interp-coercion} pour déduire:
-    \[`E!d, \iGr \typec d : \ipt{E[u/x]}{\iGr} \subi
-    \ipt{A[u/x]}{\iGr}\]
+    \[`E!d, \Gr \typec d : \ip{E[u/x]}{\Gr} \subi
+    \ip{A[u/x]}{\Gr}\]
     
     Par application du lemme \ref{coerce-subst-type} sur la dérivation
-    de $\GD \typea E : s$ on peut déduire que \[\ipt{E[u/x]}{\iGr} =
-    \ipt{E}{\iGD}\cux\] On peut donc composer les coercions pour
+    de $\GD \typea E : s$ on peut déduire que \[\ip{E[u/x]}{\Gr} =
+    \ip{E}{\GD}\cux\] On peut donc composer les coercions pour
     obtenir:
-    \[c'' = d `o `a_e : \ipT {e[u/x]}{\iGr} \subi A'\]
+    \[c'' = d `o `a_e : \ip {e[u/x]}{\Gr} \subi A'\]
     
 
 
 %     De même, à partir de $E \suba A$ on peut déduire une coercion \[c :
-%     \ipt{E[u/x]}{\iGr} \subi \ipt{A[u/x]}{\iGr}\]
+%     \ip{E[u/x]}{\Gr} \subi \ip{A[u/x]}{\Gr}\]
     
     Par inversion de $\GD \typea f : F$ on a $\GD \typea F : s$.
     On peut appliquer le lemme \ref{coerce-subst-type} pour obtenir:
-    \[\ipt{F[u/x]}{\iGr} = \ipt{F}{\iGD}\cux\]
+    \[\ip{F[u/x]}{\Gr} = \ip{F}{\GD}\cux\]
     
     On a donc les coercions suivantes pour la fonction $f$ et l'argument
     $e$: 
     \[
     \xymatrix{
-      \ipt{F}{\iGD}\cux\ar[rr]_{\pi} & & 
-      \ipt{\Pi y : A.B}{\iGD}\cux \\
-      \ipT{f[u/x]}{\iGr}\ar[u]^{`a_f}\ar[rr]^{\pi'} & &
+      \ip{F}{\GD}\cux\ar[rr]_{\pi} & & 
+      \ip{\Pi y : A.B}{\GD}\cux \\
+      \ip{f[u/x]}{\Gr}\ar[u]^{`a_f}\ar[rr]^{\pi'} & &
       {\Pi y : A'.B'}\ar@{-->}[u]^{c_f}}
     \]
     \[
     \xymatrix{
-      \ipt{E}{\iGD}\cux\ar[rr]_{c'} & & 
-      \ipt{A}{\iGr}\cux\ar@{-->}[d]^{c_e} \\
-      \ipT{e[u/x]}{\iGr}\ar[u]^{`a_e}
+      \ip{E}{\GD}\cux\ar[rr]_{c'} & & 
+      \ip{A}{\Gr}\cux\ar@{-->}[d]^{c_e} \\
+      \ip{e[u/x]}{\Gr}\ar[u]^{`a_e}
       \ar[rr]^{c''} & & A'}
     \]
     
@@ -573,15 +436,15 @@ On l'énonce de la façon suivante:
     uniquement déterminés. 
     Pour cela on va tout d'abord
     montrer qu'il existe une coercion unique \[c_f : \Pi y : A'.B' \subi 
-    \ipt{\Pi z : A.B}{\iGD}\cux\] Cela est vrai par transitivité
+    \ip{\Pi z : A.B}{\GD}\cux\] Cela est vrai par transitivité
     et symmétrie de la coercion (lemmes \ref{subi-trans} et \ref{subi-sym}).  
     On en déduit qu'il existe $c_1, c_2$
     tels que $c_f = \lambda f.\lambda x. c_2~(f~(c_1~x))$ avec
     \[
     \xymatrix{
-      \ipt{A}{\iGD}\cux\ar[rr]^(0.7){c_1} & & A' & &
+      \ip{A}{\GD}\cux\ar[rr]^(0.7){c_1} & & A' & &
       B' \ar[rr]^(0.3){c_2} & & 
-      \ipt{B}{\ipG{`G, x : A, `D, y : A}}\cux
+      \ip{B}{\ipG{`G, x : A, `D, y : A}}\cux
     }\]
     
     On peut prendre $c_e = c_1$ et $\afe = c_2$. On a l'équation $c'' = c_1
@@ -589,7 +452,7 @@ On l'énonce de la façon suivante:
     Alors:
     
     \[\begin{array}{ll}
-      \firsteq{\afe~\ipt{(f~e)[u/x]}{\iGr}}
+      \firsteq{\afe~\ip{(f~e)[u/x]}{\Gr}}
       
       \step{Définition de l'interprétation}
       {=}{\afe~((\pi'~f')~(c''~e'))}
@@ -606,22 +469,22 @@ On l'énonce de la façon suivante:
 
       \step{Commutation du diagramme 1}{=}{(\pi~(`a_f~f'))~(c'~(`a_e~e'))}
       
-      \step{Définitions de $`a_f$ et $`a_e$}{=}{(\pi~\ipt{f}{\iGD}\cux)~(c'~\ipt{e}{\iGD}\cux)}
+      \step{Définitions de $`a_f$ et $`a_e$}{=}{(\pi~\ip{f}{\GD}\cux)~(c'~\ip{e}{\GD}\cux)}
 
-      \step{Définition de l'interprétation}{=}{\ipt{f~e}{\iGD}\cux}
+      \step{Définition de l'interprétation}{=}{\ip{f~e}{\GD}\cux}
       \vspace{0.2em}
     \end{array}\]
     
     \vspace{1cm}
     On montre la deuxième condition:
     \[\begin{array}{ll}
-      \firsteq{\ipT{f~e}{\iGD}}
+      \firsteq{\ip{f~e}{\GD}}
 
       \step{Définition de l'interprétation}
-      {=}{\ipt{B}{\ipG{\GD, y : A}}[c'~\ipt{e}{\iGD}/y]}
+      {=}{\ip{B}{\ipG{\GD, y : A}}[c'~\ip{e}{\GD}/y]}
     
       \step{Application du lemme \ref{coerce-subst-type}~à $\GD, y : A \typea B : s$}
-      {\eqbi}{\ipT{B[e/y]}{\iGD}}
+      {\eqbi}{\ip{B[e/y]}{\GD}}
     \end{array}\]
     
     \TODO{Autres cas}
@@ -634,8 +497,8 @@ On peut maintenant montrer notre théorème de correction.
 \setboolean{displayLabels}{false}
 \begin{theorem}[Correction de l'interprétation]
   \label{correct-interp}
-  Si $`G \typea t : T$ alors on a $\iG \typec \ipt{t}{\iG} :
-  \ipt{T}{\iG}$.
+  Si $`G \typea t : T$ alors on a $\iG \typec \ip{t}{\iG} :
+  \ip{T}{\iG}$.
   Si $\wf `G$ alors $\wf \iG$.
 \end{theorem}
 
@@ -647,16 +510,16 @@ On peut maintenant montrer notre théorème de correction.
     \case{WfEmpty} Trivial.
 
     \case{WfVar}
-    Par induction $\iG \typec \ipt{A}{\iG} :
-    \ipt{s}{\iG}$. Par inversion du jugement de bonne formation
+    Par induction $\iG \typec \ip{A}{\iG} :
+    \ip{s}{\iG}$. Par inversion du jugement de bonne formation
     dans \CCI{}, $\typewf \iG$.
-    Or, $\ipt{s}{\iG} = s$ ($s `: \{ \Prop, \Set, \Type \}$), donc 
+    Or, $\ip{s}{\iG} = s$ ($s `: \{ \Prop, \Set, \Type \}$), donc 
     on peut appliquer \irule{WfVar} dans \CCI{} pour obtenir:
-    $\wf \iG, x : \ipt{A}{\iG}$, soit $\wf \ipG{`G, x : A}$.
+    $\wf \iG, x : \ip{A}{\iG}$, soit $\wf \ipG{`G, x : A}$.
 
     \case{PropSet}
-    Direct par induction, $\iG \typec \ipt{s}{\iG} = s :
-    \ipt{\Type}{\iG} = \Type$. La deuxième condition est directe
+    Direct par induction, $\iG \typec \ip{s}{\iG} = s :
+    \ip{\Type}{\iG} = \Type$. La deuxième condition est directe
     par définition de l'interprétation.
     
     \case{Var} On a:
@@ -665,35 +528,35 @@ On peut maintenant montrer notre théorème de correction.
     \end{prooftree}
     Par induction, $\wf \iG$ et par simple inspection de la
     définition de l'interprétation des contextes, si $x : A `: `G$ alors
-    $x : \ipt{A}{`D} `: \iG$ pour $`D ``( `G$. Par affaiblissement
-    dans \CCI{}, on obtient aisément $\iG \typec x : \ipt{A}{`D}$ 
-    à partir de  $\ipG{`D} \typec x : \ipt{A}{\ipG{`D}}$. Or il est clair par
-    la définition de l'interprétation que $\ipt{A}{`D} = \ipt{A}{`G}$  
+    $x : \ip{A}{`D} `: \iG$ pour $`D ``( `G$. Par affaiblissement
+    dans \CCI{}, on obtient aisément $\iG \typec x : \ip{A}{`D}$ 
+    à partir de  $\ipG{`D} \typec x : \ip{A}{\ipG{`D}}$. Or il est clair par
+    la définition de l'interprétation que $\ip{A}{`D} = \ip{A}{`G}$  
     si $`G$ est une extension de $`D$ puisqu'on utilise l'environnement
     uniquement au moment de typer les variables et
     $\iG(x) = \ipG{`D}(x)$ pour tout $x$ utilisé dans $A$.
-    On a donc $\iG \typec x : \ipt{A}{\iG}$.
-    La deuxième condition est montrée par $\ipT{x}{`G} = \iG(x) = 
-    \ipt{A}{\ipG{`D}} = \ipt{A}{\iG}$.
+    On a donc $\iG \typec x : \ip{A}{\iG}$.
+    La deuxième condition est montrée par $\ip{x}{`G} = \iG(x) = 
+    \ip{A}{\ipG{`D}} = \ip{A}{\iG}$.
       
     \case{Prod} On a:
     \begin{prooftree}
       \Prod
     \end{prooftree}
     
-    Par induction $\iG \typec \ipt{T}{\iG} : \ipt{s_1}{\iG}
-    = s_1$ et $\ipG{`G, x : T} \typec \ipt{U}{\ipG{`G, x : T}} :
-    \ipt{s_2}{\ipG{`G, x : T}} = s_2$.
+    Par induction $\iG \typec \ip{T}{\iG} : \ip{s_1}{\iG}
+    = s_1$ et $\ipG{`G, x : T} \typec \ip{U}{\ipG{`G, x : T}} :
+    \ip{s_2}{\ipG{`G, x : T}} = s_2$.
     On déplie l'interprétation pour obtenir:
-    $\iG, x : \ipt{T}{\iG} \typec \ipt{U}{\iG{}, x : \ipt{T}{\iG}} :
+    $\iG, x : \ip{T}{\iG} \typec \ip{U}{\iG{}, x : \ip{T}{\iG}} :
     s_2$.
     
     Par \irule{Prod} dans \CCI, on obtient:
-    $\iG{} \typec \Pi x : \ipt{T}{\iG}. \ipt{U}{\iG{}, x : \ipt{T}{\iG}}
+    $\iG{} \typec \Pi x : \ip{T}{\iG}. \ip{U}{\iG{}, x : \ip{T}{\iG}}
     : s_3$.
-    Or $\ipt{\Pi x : T.U}{\iG} = \Pi x : \ipt{T}{\iG}. \ipt{U}{\iG{}, x
-      : \ipt{T}{\iG}}$, donc on a bien:
-    $\iG \typec \ipt{\Pi x : T.U}{\iG} : s_3 = \ipt{s_3}{\iG}$.
+    Or $\ip{\Pi x : T.U}{\iG} = \Pi x : \ip{T}{\iG}. \ip{U}{\iG{}, x
+      : \ip{T}{\iG}}$, donc on a bien:
+    $\iG \typec \ip{\Pi x : T.U}{\iG} : s_3 = \ip{s_3}{\iG}$.
     La seconde condition est directe d'après la définition de $\mathcal{R}$ qui
     est une fonction.
 
@@ -702,24 +565,24 @@ On peut maintenant montrer notre théorème de correction.
       \Abs
     \end{prooftree}
     
-    Par induction $\iG \typec \ipt{\Pi x : T.U}{\iG} : \ipt{s}{\iG}$
-    et $\ipG{`G, x : T} \typec \ipt{M}{\ipG{`G, x : T}} :
-    \ipt{U}{\ipG{`G, x : T}}$.
+    Par induction $\iG \typec \ip{\Pi x : T.U}{\iG} : \ip{s}{\iG}$
+    et $\ipG{`G, x : T} \typec \ip{M}{\ipG{`G, x : T}} :
+    \ip{U}{\ipG{`G, x : T}}$.
     On déplie l'interprétation pour obtenir:
-    $\iG, x : \ipt{T}{\iG} \typec \ipt{M}{\iG{}, x : \ipt{T}{\iG}} :
-    \ipt{U}{\ipG{`G, x : T}}$.
+    $\iG, x : \ip{T}{\iG} \typec \ip{M}{\iG{}, x : \ip{T}{\iG}} :
+    \ip{U}{\ipG{`G, x : T}}$.
     
     Par \irule{Abs} dans \CCI, on obtient:
-    $\iG{} \typec \lambda x : \ipt{T}{\iG}. \ipt{M}{\iG{}, x : \ipt{T}{\iG}}
-    : \ipt{\Pi x : T.U}{\iG}$.
+    $\iG{} \typec \lambda x : \ip{T}{\iG}. \ip{M}{\iG{}, x : \ip{T}{\iG}}
+    : \ip{\Pi x : T.U}{\iG}$.
     C'est équivalent à:
-    $\iG \typec \ipt{\lambda x : T.U}{\iG} : \ipt{\Pi x : T.U}{\iG}$.
+    $\iG \typec \ip{\lambda x : T.U}{\iG} : \ip{\Pi x : T.U}{\iG}$.
     La seconde condition se montre ainsi:
-    $\ipT{\lambda x : T.M}{\iG} = \Pi x : \ipt{T}{\iG}. \ipT{M}{\iG, x :
-      \ipt{T}{\iG}}$. Or par induction, 
-    $\ipT{M}{\iG, x : \ipt{T}{\iG}} = \ipt{U}{\iG, x : \ipt{T}{\iG}}$, donc 
-    $\ipT{\lambda x : T.M}{\iG} = \Pi x : \ipt{T}{\iG}. \ipt{U}{\iG, x :
-      \ipt{T}{\iG}} = \ipt{\Pi x : T.U}{\iG}$.
+    $\ip{\lambda x : T.M}{\iG} = \Pi x : \ip{T}{\iG}. \ip{M}{\iG, x :
+      \ip{T}{\iG}}$. Or par induction, 
+    $\ip{M}{\iG, x : \ip{T}{\iG}} = \ip{U}{\iG, x : \ip{T}{\iG}}$, donc 
+    $\ip{\lambda x : T.M}{\iG} = \Pi x : \ip{T}{\iG}. \ip{U}{\iG, x :
+      \ip{T}{\iG}} = \ip{\Pi x : T.U}{\iG}$.
     
     \case{App} On a:
     \begin{prooftree}
@@ -727,21 +590,21 @@ On peut maintenant montrer notre théorème de correction.
     \end{prooftree}
 
     C'est le cas intéressant puisqu'on ajoute ici des coercions.
-    Par induction, $\iG{} \typec \ipt{f}{\iG} : \ipt{T}{\iG}$,
-    $\iG{} \typec \ipt{u}{\iG} : \ipt{U}{\iG}$,
-    $\iG{} \typec \ipt{U}{\iG}, \ipt{V}{\iG} : \ipt{s}{\iG}$.
+    Par induction, $\iG{} \typec \ip{f}{\iG} : \ip{T}{\iG}$,
+    $\iG{} \typec \ip{u}{\iG} : \ip{U}{\iG}$,
+    $\iG{} \typec \ip{U}{\iG}, \ip{V}{\iG} : \ip{s}{\iG}$.
     
     On procéde par étapes: d'abord la construction d'une fonction
-    $\pi \ipt{f}{\iG} : \ipt{\Pi x : V.W}{\iG}$ puis la construction de
-    l'argument $c \ipt{u}{\iG} : \ipt{V}{\iG}$. On n'a plus qu'à les
+    $\pi \ip{f}{\iG} : \ip{\Pi x : V.W}{\iG}$ puis la construction de
+    l'argument $c \ip{u}{\iG} : \ip{V}{\iG}$. On n'a plus qu'à les
     appliquer pour obtenir le jugement:
-    $\iG{} \typec \ipt{f~u}{\iG} : \ipt{W}{\iG, x :
-      \ipt{V}{\iG}}[c~u/x]$.
+    $\iG{} \typec \ip{f~u}{\iG} : \ip{W}{\iG, x :
+      \ip{V}{\iG}}[c~u/x]$.
     Par substitutivité de l'interprétation, on a
-    $\ipt{W}{\iG, x : \ipt{V}{\iG}}[c~u/x] \eqbi
-    \ipt{W[u/x]}{\iG}$ puisque les coercions de sorte à sorte ne peuvent
+    $\ip{W}{\iG, x : \ip{V}{\iG}}[c~u/x] \eqbi
+    \ip{W[u/x]}{\iG}$ puisque les coercions de sorte à sorte ne peuvent
     être que l'identité. On peut donc déduire:
-    $\iG{} \typec \ipt{f~u}{\iG} : \ipt{W[u/x]}{\iG}$ par \irule{Conv}.
+    $\iG{} \typec \ip{f~u}{\iG} : \ip{W[u/x]}{\iG}$ par \irule{Conv}.
 
     \item[- \irule{Sigma}, \irule{Sum}, \irule{LetSum}, \irule{Subset}:]
       Direct par induction ou un raisonnement similaire à \irule{App}.      
