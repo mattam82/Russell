@@ -634,8 +634,7 @@ pouvoir prouver la complétude.
   \label{substitutive-typing}
   Si $`G \typea u : U$ alors
   \[ \left\{ \begin{array}{lcl}
-      `G, x : U, `D \typea t : T & "=>" & `G, `D[u/x] \typea t[u/x] :
-      T[u/x] \\
+      `G, x : U, `D \typea t : T & "=>" & `G, `D[u/x] \typea t[u/x] : T[u/x] \\
       \wf `G, x : U, `D & "=>" & \wf `G, `D[u/x]
     \end{array}\right. \]
 \end{lemma}
@@ -657,7 +656,7 @@ pouvoir prouver la complétude.
 
     \item[\protect{$`D = `D', y : T$}]
       On a alors $`G, x : U, `D' \typea T : s$ et par induction
-      $`G, `D'[u/x] \typea T[u/x] : s[u/x]$. Donc on peut appliquer
+      $`G, `D'[u/x] \typea T[u/x] : s[u/x] = s$. Donc on peut appliquer
       \irule{WfVar} pour obtenir $\wf `G, `D'[u/x], y : T[u/x]$ soit
       $\wf `G, `D[u/x]$
     \end{itemize}
@@ -777,7 +776,7 @@ système de typage vis-à-vis du système déclaratif.
     $`E U, `G \subta u : U \sub V$.
     
     Si $T \suba \Pi x : V.W$ alors $\mualgo(T) = \Pi x : V'.W'$ avec
-    $V \suba V'$ et $W' \suba W$ (lemme \ref{beta-mu}.
+    $V \suba V'$ et $W' \suba W$ (lemme \ref{beta-mu}).
 
     Par transitivité de la coercion: $U \suba V'$, on peut donc dériver 
     \begin{prooftree}

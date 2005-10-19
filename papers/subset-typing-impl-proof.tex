@@ -276,8 +276,8 @@ On l'énonce de la façon suivante:
   \end{array}
 \right\} "=>"
 \begin{array}{l}
-  \Gr \typea t[u/x] : T' \\
-  `E `a : T' \suba T[u/x],\\
+  `E~T', \Gr \typea t[u/x] : T' `^ \\
+  `E~`a : T' \suba T[u/x],\\
   `a \ip{t[u/x]}{\Gr} \eqbi \ip{t}{\GD}\cux
 \end{array}
 \]
@@ -285,12 +285,8 @@ On l'énonce de la façon suivante:
 
 
 \begin{proof}
-  D'après le lemme de substitution du système algorithmique, 
-  on a $\Gr \typea t[u/x] T' \suba T[u/x]$. On peut donc automatiquement
-  dériver $`a$ à partir de la dérivation de $T' \suba T[u/x]$. On va
-  montrer la conclusion par induction sur la dérivation de $`G, x : V
-  \typea t : T$. Soit $`G' = \GD$ et $`G_{`r} = \Gr$.
-  
+  Par induction sur la dérivation de $`G, x : V, `D \typea t : T$.
+
   \begin{induction}
     \case{Var} 
     On a:
@@ -305,14 +301,14 @@ On l'énonce de la façon suivante:
     \typenvi
 
     \begin{itemize}
-    \item Si $x "/=" y$ alors par définition de l'interprétation, on doit montrer
-      $`a~y \eqbi y$. C'est direct car la coercion de $T'$ à
-      $T[u/x]$ ne peut être que l'identité. En effet,
-      le type dérivé pour $y$ dans
-      l'environnement $`G, `D[u/x]$ est $(`G, `D[u/x])(y)$, soit $T[u/x]$. 
-         
-    \item Sinon, $T = V$, $x `; V$, $t[u/x] = u$ et donc $T' = U$.
-      On peut prendre $`a = c$ car $T' = U$ et $T[u/x] = V$.
+    \item Si $x "/=" y$ alors $T' = (`G, `D[u/x])(y) = T[u/x]$. Il
+      existe une unique coercion $`a : T[u/x] \suba T[u/x]$, l'identité.   
+      Par définition de l'interprétation, on doit montrer
+      $`a~y \eqbi y$, trivial.
+
+    \item Sinon, $t[u/x] = u$ et donc $T' = U$. 
+      On a $T = V$, $x `; V$ par hypothèse.
+      On peut prendre $`a = c : U \suba V$ car $T' = U$ et $T[u/x] = V$.
       On peut vérifier:
       \begin{eqnarray*}
         c~\ip{x[u/x]}{\Gr} & = & c~\ip{u}{\Gr} \\
@@ -332,21 +328,18 @@ On l'énonce de la façon suivante:
       {}
     \end{prooftree}
     \typenvi
-    
+
+    On cherche $B'$ tel que $\Gr \typea (f~e)[u/x] : B'$.    
     Par induction:
-    \[`E `a_f : F' \suba F[u/x],
+    \[\Gr \typea f[u/x] : F' `^
+    `E `a_f : F' \suba F[u/x],
     `a_f~\ip{f[u/x]}{\Gr} \eqbi \ip{f}{\GD}\cux\]
-    \[`E `a_e, E' \suba E[u/x],
+    \[\Gr \typea e[u/x] : E' `^
+    `E `a_e, E' \suba E[u/x],
     `a_e~\ip{e[u/x]}{\Gr} \eqbi \ip{e}{\GD}\cux\]
     
-    \def\afe{`a}
-    On a $\Gr \typea (f~e)[u/x] : B' \suba B[u/x]$ et l'on veut montrer
-    qu'il existe une coercion $\afe$ telle que:
-    \[\afe : B' \suba B[e/y][u/x],
-    \afe~\ip{(f~e)[u/x]}{\Gr} \eqbi \ip{(f~e)}{\GD}\cux\]
-    
+    \def\afe{`a}    
     Par définition de la substitution et de l'interprétation, 
-    \def\myip#1{\lbag#1\rbag}
     \begin{eqnarray*}
       \ip{(f~e)}{\GD}
       & = & (((\pi~\ip{f}{\GD})~(c'~\ip{e}{\GD})) \\
@@ -355,137 +348,121 @@ On l'énonce de la façon suivante:
       c' & = & \sref{coerce}~\typeafn{\GD}{e}~A.
     \end{eqnarray*}
     
-    On doit montrer que $c'$ est bien dérivable.
-    Par induction on a $\ip{e}{\GD} = \ip{E}{\GD}$ et
-    par hypothèse $E \suba A$. On peut appliquer le lemme
-    \ref{interp-coercion} pour obtenir:    
-    \[`E!c', \GD \typec c' : \ip{E}{\GD} \subi \ip{A}{\GD}\]
-        
-    On peut substituer pour obtenir:
-    \[c'\cux : \ip{E}{\GD}\cux \subi \ip{A}{\GD}\cux\]
-
-    On a donc: 
-    \[\ip{(f~e)}{\GD}\cux =
-    ((\pi~\ip{f}{\GD}\cux)~(c'\cux~\ip{e}{\GD}\cux))\]
-    et
-    \[\ip{(f~e)}{\GD}\cux =
-    \ip{B}{\GD}[c'~\ip{e}{\GD}/y]\cux\]
-
-    D'autre part on a:
+    Par définition on a $\typeafn{\GD}{e} = E$ et
+    par hypothèse $E \suba A$,  $c'$ est donc dérivable. 
+    
+    On a donc:
+    \begin{eqnarray*}
+      \ip{(f~e)}{\GD}\cux & = & ((\pi~\ip{f}{\GD})~(c'~\ip{e}{\GD}))\cux
+      \\
+      \text{ où } & & \\
+      (\pi, \Pi y : A.B) & = & \muimpl(F) \\
+      c' & = & \sref{coerce}~E~A
+    \end{eqnarray*}
+    
+    Soit $e' = e[u/x]$ et $f' = f[u/x]$, on a d'autre part:
     \begin{eqnarray*}
       \ip{(f~e)[u/x]}{\Gr}
-      & = & (\ip{f[u/x]~e[u/x]}{\iG}, B'[c''~e'/y]) \\
-      & = & ((\pi'~f')~(c''~e'),~B'[c''~e'/y]) \\
+      & = & \ip{f'~e'}{\iG} \\
+      & = & (\pi'~\ip{f'}{\Gr})~(c''~\ip{e'}{\Gr}) \\
       \text{ où } & & \\
-      (f', T') & = & \ip{f[u/x]}{\Gr} \\
-      (\pi', \Pi y : A'.B') & = & \muimpl~(T') \\
-      (e', E') & = & \ip{e[u/x]}{\Gr} \\
-      c'' & = & \sref{coerce}~E'~A'.
+      (\pi', \Pi y : A'.B') & = & \muimpl~(\typeafn{\Gr}{f'}) \\
+      c'' & = & \sref{coerce}~\typeafn{\Gr}{e'}~A'
     \end{eqnarray*}
 
-    A partir de $\mualgo(F) = \Pi y : A.B$ on peut déduire que 
-    $\mualgo(F[u/x]) = \Pi y : A[u/x].B[u/x]$ par substitutivité de
-    $\mualgo$ (lemme \ref{substitutive-mu}) et par le lemme
-    \ref{mu-interp}~on obtient \[\muimpl(\ip{F[u/x]}{\Gr}) = 
-    (\pi, \ip{\mualgo(F[u/x])}{\Gr}) = 
-    (\pi, \ip{\Pi y : A[u/x].B[u/x]}{\Gr})\]
-
-
-    On doit aussi montrer que $c''$ est bien dérivable.
-    Ici, $E' = \ip{e[u/x]}{\Gr}$ et $A' = \ip{A[u/x]}{\Gr}$, et on a
-    l'hypothèse $E \suba A$.    
-    Or par substitutivité de la coercion dans le système algorithmique,
-    on a $E[u/x] \suba A[u/x]$. 
-    On peut appliquer le lemme \ref{interp-coercion} pour déduire:
-    \[`E!d, \Gr \typec d : \ip{E[u/x]}{\Gr} \subi
-    \ip{A[u/x]}{\Gr}\]
+    Or $\typeafn{\Gr}{f'} = F'$ et $\typeafn{\Gr}{e'} = E'$.
+    Par substitutivité de $\mu$ (lemme \ref{substitutive-mu}), si $\mualgo(F) = \Pi y : A.B$ alors 
+    $\mualgo(F[u/x]) = \Pi y : A[u/x].B[u/x]$.
+    Donc $F[u/x] \suba \Pi y : A[u/x].B[u/x]$. Par transitivité de la coercion avec $F' \suba
+    F[u/x]$, on obtient $F' \suba \Pi y : A[u/x].B[u/x]$. Cela implique
+    que $\muimpl(F')$ nous retournera bien un produit (lemme \ref{beta-mu}).
     
-    Par application du lemme \ref{coerce-subst-type} sur la dérivation
-    de $\GD \typea E : s$ on peut déduire que \[\ip{E[u/x]}{\Gr} =
-    \ip{E}{\GD}\cux\] On peut donc composer les coercions pour
-    obtenir:
-    \[c'' = d `o `a_e : \ip {e[u/x]}{\Gr} \subi A'\]
-    
-
-
-%     De même, à partir de $E \suba A$ on peut déduire une coercion \[c :
-%     \ip{E[u/x]}{\Gr} \subi \ip{A[u/x]}{\Gr}\]
-    
-    Par inversion de $\GD \typea f : F$ on a $\GD \typea F : s$.
-    On peut appliquer le lemme \ref{coerce-subst-type} pour obtenir:
-    \[\ip{F[u/x]}{\Gr} = \ip{F}{\GD}\cux\]
-    
-    On a donc les coercions suivantes pour la fonction $f$ et l'argument
-    $e$: 
+    On a donc les coercions suivantes:
     \[
     \xymatrix{
-      \ip{F}{\GD}\cux\ar[rr]_{\pi} & & 
-      \ip{\Pi y : A.B}{\GD}\cux \\
-      \ip{f[u/x]}{\Gr}\ar[u]^{`a_f}\ar[rr]^{\pi'} & &
+      F[u/x]\ar[rr]_{\pi\cux} & & 
+      \Pi y : A[u/x].B[u/x] \\
+      F'\ar[u]^{`a_f}\ar[rr]^{\pi'} & &
       {\Pi y : A'.B'}\ar@{-->}[u]^{c_f}}
     \]
+
+    Par symmétrie et transitivité de la coercion, on en déduit qu'il
+    existe $c_f : \Pi y : A'.B' \suba \Pi y : A[u/x].B[u/x]$.
+    $c_f$ est nécessairement de la forme:
+    $\lambda f.\lambda x.c_2~(f~(c_1~x))$ où $c_1 : A[u/x] \suba A'$ et
+    $c_1 : B' \suba B[u/x]$.
+
+    On a donc les coercions suivantes pour l'argument $e$:
+    
     \[
     \xymatrix{
-      \ip{E}{\GD}\cux\ar[rr]_{c'} & & 
-      \ip{A}{\Gr}\cux\ar@{-->}[d]^{c_e} \\
-      \ip{e[u/x]}{\Gr}\ar[u]^{`a_e}
-      \ar[rr]^{c''} & & A'}
+      E[u/x]'\ar[rr]_{c'\cux} & & 
+      A[u/x]\ar[d]^{c_1} \\
+      E'\ar[u]^{`a_e}
+      \ar@{-->}[rr]^{c''} & & A'}
     \]
+
+    On en déduit que $c'' = c_1 `o c'\cux `o `a_e$ est bien dérivable et
+    l'on a:
+
+    \begin{eqnarray*}
+      \ip{(f~e)[u/x]}{\Gr}      
+      & = & (\pi'~\ip{f'}{\Gr})~(c''~\ip{e'}{\Gr}) \\
+      \text{ où } & & \\
+      (\pi', \Pi y : A'.B') & = & \muimpl~(F') \\
+      c'' & = & \sref{coerce}~E'~A'
+    \end{eqnarray*}
     
-    On veut montrer que les diagrammes commutent et que $c_f, c_e$ sont
-    uniquement déterminés. 
-    Pour cela on va tout d'abord
-    montrer qu'il existe une coercion unique \[c_f : \Pi y : A'.B' \subi 
-    \ip{\Pi z : A.B}{\GD}\cux\] Cela est vrai par transitivité
-    et symmétrie de la coercion (lemmes \ref{subi-trans} et \ref{subi-sym}).  
-    On en déduit qu'il existe $c_1, c_2$
-    tels que $c_f = \lambda f.\lambda x. c_2~(f~(c_1~x))$ avec
-    \[
-    \xymatrix{
-      \ip{A}{\GD}\cux\ar[rr]^(0.7){c_1} & & A' & &
-      B' \ar[rr]^(0.3){c_2} & & 
-      \ip{B}{\ipG{`G, x : A, `D, y : A}}\cux
-    }\]
     
-    On peut prendre $c_e = c_1$ et $\afe = c_2$. On a l'équation $c'' = c_1
-    `o c' `o `a_e$.
-    Alors:
-    
+    Soit $`a = c_2[c'~\ip{e'}{\Gr}/y]$, $c_2$ est de type $B' \suba B[u/x]$, donc
+    $c_2[c'~\ip{e'}{\Gr}/y] : B'[e'/y] \suba B[u/x][e'/y] = B[e/y][u/x]$ ($y$
+    n'apparait pas dans $u$, et $e' = e[u/x]$). On a donc $T' =
+    B'[e'/y]$. On peut vérifier que c'est bien le type résultant de
+    l'application inférée par l'algorithme de typage:
+
+    \typenva
+    \begin{prooftree}
+      \TAX{App}
+      {$`G \seq f[u/x] : F' \quad \mualgo(F') = \Pi y : A'. B'$}
+      {$`G \seq e[u/x] : E' \quad `G \seq E', A' : s$}
+      {$E' \sub A' $}
+      {$`G \seq (f~e)[u/x] : B' [ e[u/x] / y ]$}
+      {}
+    \end{prooftree}
+    \typenvi
+
+
+    \def\ipGr#1{\lbag #1 \rbag}
+    \def\cuxobj#1{#1_{`r}}
+    Soit $\ipGr{t} = \ip{t}{\Gr}$ et $\cuxobj{t} = t\cux$.
+    On peut vérifier:
     \[\begin{array}{ll}
       \firsteq{\afe~\ip{(f~e)[u/x]}{\Gr}}
       
       \step{Définition de l'interprétation}
-      {=}{\afe~((\pi'~f')~(c''~e'))}
+      {=}{\afe~((\pi'~\ipGr{f'})~(c''~\ipGr{e'}))}
       
       \step{Définitions de $`a$ et $c''$}
-      {=}{c_2~((\pi'~f')~((c_1 `o c' `o `a_e)~e'))}
+      {=}{c_2~((\pi'~\ipGr{f'})~((c_1 `o \cuxobj{c'} `o `a_e)~\ipGr{e'}))}
       
       \step{Définition de la composition}
-      {=}{c_2~((\pi'~f')~(c_1~(c'~(`a_e~e'))))}
+      {=}{c_2~((\pi'~\ipGr{f'})~(c_1~(\cuxobj{c'}~(`a_e~\ipGr{e'}))))}
 
       \step{Définition de $c_f$ ($= \lambda f.\lambda
         x.c_2~(f~(c_1~x))$)}
-      {=}{(c_f~(\pi'~f'))~(c'~(`a_e~e'))}
-
-      \step{Commutation du diagramme 1}{=}{(\pi~(`a_f~f'))~(c'~(`a_e~e'))}
+      {=}{c_f~(\pi'~\ipGr{f'})~(\cuxobj{c'}~(`a_e~\ipGr{e'}))}
       
-      \step{Définitions de $`a_f$ et $`a_e$}{=}{(\pi~\ip{f}{\GD}\cux)~(c'~\ip{e}{\GD}\cux)}
+      \step{Commutation du diagramme 1}{=}
+      {(\cuxobj{\pi}~(`a_f~\ipGr{f'}))~(\cuxobj{c'}~(`a_e~\ipGr{e'}))}
+      
+      \step{Définitions de $`a_f$ et $`a_e$}{=}
+      {(\cuxobj{\pi}~\ip{f}{\GD}\cux)~(\cuxobj{c'}~\ip{e}{\GD}\cux)}
 
       \step{Définition de l'interprétation}{=}{\ip{f~e}{\GD}\cux}
       \vspace{0.2em}
     \end{array}\]
     
     \vspace{1cm}
-    On montre la deuxième condition:
-    \[\begin{array}{ll}
-      \firsteq{\ip{f~e}{\GD}}
-
-      \step{Définition de l'interprétation}
-      {=}{\ip{B}{\ipG{\GD, y : A}}[c'~\ip{e}{\GD}/y]}
-    
-      \step{Application du lemme \ref{coerce-subst-type}~à $\GD, y : A \typea B : s$}
-      {\eqbi}{\ip{B[e/y]}{\GD}}
-    \end{array}\]
     
     \TODO{Autres cas}
 
