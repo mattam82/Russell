@@ -56,7 +56,9 @@
 \newcommand{\subimplndiff}[6]{#1 \typec #2 : \ipt{#3}{#1} #4 \subi
   \ipt{#5}{#1} #6}
 
-\renewcommand{\subimpln}[4]{#1 \typec #2 : #3 \suba
+\renewcommand{\subimpln}[4]{#1 \typec #2 : #3 \suba'
+  #4}
+\newcommand{\subimplnp}[4]{#1 \typec #2 : #3 \suba
   #4}
 \renewcommand{\subimplndiff}[6]{#1 \typec #2 : #3 #4 \suba
   #5 #6}
@@ -65,37 +67,37 @@
 \newcommand{\SubConvC}{
 \UAX{SubConv}
 {$T \eqbi U$}
-{$\subimpln{`G}{(\lambda x. x)}{T}{U}$}
+{$\subimpln{`G}{(\lambda x : \ip{T}{`G}. x)}{T}{U}$}
 {} 
 }
 
 \newcommand{\SubHnfC}{
 \UAX{SubHnf}
 {$\subimpln{`G}{c}{\hnf{T}}{\hnf{U}}$}
-{$\subimpln{`G}{c}{T}{U}$}
+{$\subimplnp{`G}{c}{T}{U}$}
 {} 
 }
 
 \def\SubProdC{%
 \BAX{SubProd}
-{$\subimpln{`G}{c_1}{U}{T}$}
+{$\subimplnp{`G}{c_1}{U}{T}$}
 %{$`G, x : \ipt{U}{`G} \typec c_2 : \ipt{V}{`G, x :
  % \ipt{T}{`G}}[c_1~x/x] \subi \ipt{W}{`G, x : \ipt{U}{`G}}$}
 %{$`G, x : U \typec c_2 : V[c_1~x/x] \subi W$}
 {$`G, x : U \typec c_2 : V \suba W$}
-{$\subimpln{`G}{\lambda f.\lambda x. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
+{$\subimpln{`G}{\lambda f : \ip{\Pi x : T.V}{`G}.\lambda x : \ip{U}{`G}. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
 {}
 }
 
 \def\SubSigmaC{%
 \BAX{SubSigma}
-{$\subimpln{`G}{c_1}{T}{U}$}
+{$\subimplnp{`G}{c_1}{T}{U}$}
 %{$`G, x : \ipt{T}{`G} \typec c_2 : \ipt{V}{`G, x : \ipt{T}{`G}} \subi
 %  \ipt{W}{`G, x : \ipt{T}{`G}}[c_1~x/x]$}
 %{$`G, x : T \typec c_2 : V \subi W[c_1~x/x]$}
 {$`G, x : T \typec c_2 : V \suba W$}
 {$\subimpln{`G}
-  {\lambda (x, y). (c_1~x, c_2~y)}
+  {\lambda (x, y) : \ip{\Sigma x : T.V}{`G}. (c_1~x, c_2~y)}
   {\Sigma x : T. V}{\Sigma x : U. W}$}
 {}
 }
@@ -104,7 +106,7 @@
 \def\SubSubC{%
 \UAX{SubSub}
 % {$`G, x : U \typec P : \Prop$}
-{$\subimpln{`G}{c}{U}{T}$}
+{$\subimplnp{`G}{c}{U}{T}$}
 {$\subimpln{`G}{c `o \pi_1}
   {\mysubset{x}{U}{P}}{T}$}
 {}
@@ -114,9 +116,11 @@
 \def\SubProofC{%
 \UAX{SubProof}
 %{$`G, x : U \typec P : \Prop$}
-{$\subimpln{`G}{c}{T}{U}$}
+{$\subimplnp{`G}{c}{T}{U}$}
 {$\subimpln{`G}
-  {\lambda t : T. \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}}
+  {\lambda t : \ip{T}{`G}. \elt{\ip{U}{`G}}{\ip{\lambda x :
+        U.P}{`G}}{(c~t)}
+    {?_{\ip{P}{`G}[c~t/x]}}}
   {T}{\mysubset{x}{U}{P}}$}
 {}
 }
@@ -202,6 +206,56 @@
   \subtiShortContent
   \caption{Réécriture de la coercion vers \CCI}
   \label{fig:subtyping-impl-rules}
+\end{figure}
+}
+
+\def\coerce{\sref{coerce}}
+\def\coerceFig{
+\begin{figure}
+\begin{verbatim}
+let app_opt f = function
+   Some f -> f
+ | None -> (fun x -> x)
+
+let rec coerce' env (x,y) =
+ match (x,y) with
+ | (Pi y : T.V, Pi y : U.W) =>
+    let c1 = coerce env U T 
+    and c2 = coerce (U :: env) V W
+    in
+       (fun f -> 
+         mkLambda (x, ip env U, app_opt c2 ((lift 1 f) (c1 x))))
+
+ | (Sigma y : T.V, Sigma y : U.W) =>
+    let c1 = coerce env T U 
+    and c2 = coerce (T :: env) V W
+    in
+       (fun f -> 
+          mkPair (c1 (mkApp coqfst f), c2 (mkApp coqsnd f)))
+
+ | ({ x : U | P }, T) =>
+    let c = coerce env U T
+    in
+       (fun f -> 
+          app_opt c (mkApp pi_1 f))
+ 
+ | (T, { x : U | P }) =>
+    let c = coerce env T U
+    in
+       (fun t -> 
+          let ipU = ip env U in
+          let ipP = ip (U :: env) P in
+          let ct = app_opt c t in
+            mkElt ipU  ipP ct (mkEx (subst ct ipP)))
+ | _ => assert(false)
+
+and coerce env (x, y) = 
+  let x', y' = hnf x, hnf y in
+    if conv x' y' then None
+    else Some (coerce' env x' y')
+\end{verbatim}
+  \caption{Génération des coercions}
+  \label{fig:coerce}
 \end{figure}
 }
 

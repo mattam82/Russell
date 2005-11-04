@@ -38,8 +38,10 @@ On utilise les abbréviations suivantes:
     & & (\lambda x : `t'. v') & \\
     & \\
     \ip{f~u}{`G} 
-    & = & \letml~(\pi, \Pi x : V.W) = \muimpl(\typeafn{`G}{f})~\inml & \\
-    & & \letml~c = \sref{coerce}~\typeafn{`G}{u}~V~\inml & \\
+    & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
+    & & \letml~(\Pi x : V.W) = \mualgo(F)~\inml & \\
+    & & \letml~\pi = \sref{coerce}~F~(\Pi x : V.W) & \\
+    & & \letml~c = \sref{coerce}~U~V~\inml & \\
     & & (\pi~\ip{f}{`G})~(c~\ip{u}{`G}) & \\
     & \\
     \ip{\Sigma x : T.U}{`G} 
@@ -47,36 +49,37 @@ On utilise les abbréviations suivantes:
     & \\
     \ip{x \coloneqq t, u : U}{`G}
     & = & \letml~t' = \ip{t}{`G}~\inml & \\
-%    & & \letml~U' = \ip{U}{`G, x : \type(t)}~\inml& \\
+    & & \letml~U' = \typeafn{`G}{u}~\inml& \\
     & & \letml~u' = \ip{u}{`G}~\inml & \\
-    & & \letml~c = \sref{coerce}~\typeafn{`G}{u}~U[t/x]~\inml & \\
+    & & \letml~c = \sref{coerce}~U'~U[t/x]~\inml & \\
     & & (t', c~u') & \\
     & \\
     \ip{\letml~(x,y) = t~\inml~v}{`G} 
     & = & \letml~t' = \ip{t}{`G}~\inml & \\
-    & & \letml~(\pi, \Sigma x : T.U) = \muimpl(\typeafn{`G}{t})~\inml & \\
-    & & \letml~v' = \ip{v}{`G, x : T, y : U}~\inml & \\
-    & & \letcci~(x, y) = t'~\inml~v' & \\
+    & & \letml~T = \typeafn{`G}{t}~\inml & \\
+    & & \letml~\Sigma x : V.W = \mualgo(T)~\inml & \\
+    & & \letml~c = \sref{coerce}~T~(\Sigma x : V.W) & \\
+    & & \letml~v' = \ip{v}{`G, x : V, y : W}~\inml & \\
+    & & \letcci~(x, y) = c~t'~\inml~v' & \\
     & \\
     \ip{\mysubset{x}{U}{P}}{`G}
-    & = & \letml~U' = \ip{U}{`G}~\inml & \\
-    & & \letml~P' = \ip{P}{`G, x : U}~\inml & \\
-    & & \mysubset{x}{U'}{P'}
+    & = & \mysubset{x}{\ip{U}{`G}}{\ip{P}{`G, x : U}}
   \end{array}\]
   \caption{Interprétation dans \CCI{}}
   \label{fig:interp}
 \end{figure}
 
-\typemuiFig
-Ici la fonction $\muimpl$ (figure \ref{fig:muimpl-definition}) renvoie à la fois un type (qu'on demande
-équivalent à un produit) et une fonction de coercion qui va faire les
-projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
-objets de type sous-ensemble $\mysubset{x}{T}{P}$ sont codés par un terme 
-de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
-(un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
-(de type $P[t/x]$). Il faut donc faire exactement
-une projection pour atteindre par exemple la fonction à partir d'un objet de type
-$\mysubset{f}{\nat "->" \nat}{f~0 \neq 0}$.
+%\subtiFig
+
+% Ici la fonction $\muimpl$ (figure \ref{fig:muimpl-definition}) renvoie à la fois un type (qu'on demande
+% équivalent à un produit) et une fonction de coercion qui va faire les
+% projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
+% objets de type sous-ensemble $\mysubset{x}{T}{P}$ sont codés par un terme 
+% de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
+% (un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
+% (de type $P[t/x]$). Il faut donc faire exactement
+% une projection pour atteindre par exemple la fonction à partir d'un objet de type
+% $\mysubset{f}{\nat "->" \nat}{f~0 \neq 0}$.
 
 On fait l'extension aux contextes de la façon suivante:
 \begin{itemize}
@@ -128,207 +131,832 @@ On va décrire informellement le sens de chaque règle:
 
 % \input{typing-impl-new}
 %\typeinewFig
-\input{subset-typing-impl-proof}
+%\input{subset-typing-impl-proof}
 
+\def\iG{`G}
+\subsection{Propriétés}
+On veut montrer que si l'on a un jugement valide dans notre système
+algorithmique, alors son image par l'interprétation est un jugement
+valide de \CCI{}. On rappelle que \CCI{} est équivalent au premier
+calcul présenté où la règle de coercion est remplacée par la règle de conversion.
 
-% Nous avons de bonnes raisons de penser que la traduction fonctionne: le
-% système \PVS{} repose sur système similaire depuis des années, notre
-% réécriture fonctionne en pratique et enfin, on voit bien que le système
-% déclaratif se plonge dans \CCI{} aisément. Dans ce cas, il suffit de
-% voir que la règle de coercion permet toujours de trouver une fonction de
-% $U$ à $T$ et qu'elle ne peut modifier que la forme des objets, alors
-% qu'aucune règle ne repose dessus.
-
-% \begin{proof}
-%   Notre traduction est un homomorphisme, il est donc direct que le
-%   typage soit conservé. Il faut juste s'assurer que l'on ne modifie pas
-%   la forme des termes et des types par la réécriture. C'est possible
-%   uniquement pour les règles \irule{App} et \irule{LetSum}, on va donc
-%   les étudier plus en détail.
-
-%   \begin{prooftree}
-%     \QAX{App}
-%     {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
-%     {$\muimpl~T' `= (\pi, \Pi x : V'. W')$}
-%     {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
-%     {$\subimpl{`G'}{c}{U'}{V'}$}
-%     {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
-%     {}
-%   \end{prooftree}
+\typenvi
+\subsubsection{Remarques sur l'interprétation}
+\begin{itemize}
+\item[{\bf Déterminisme}] L'interprétation est déterministe par rapport à la
+  forme des termes. On peut en déduire que
+  si $`G \typea x : T$ et $`G \typea \Sigma x : T.U : s$ alors 
+  si $\ipt{T}{\ipG{`G}} = T'$ on a $\ipt{\Sigma x : T.U}{\ipG{`G}} =
+  \Sigma x : T'. U'$.  
   
-%   Par induction, on sait que $\muimpl(T') `= (\pi, \Pi x : V'. W')$ puisque
-%   la réécriture ne change pas la forme des types.
-%   Par définition de $\muimpl$ on a $\pi~f' : \Pi x : V'.W'$.
-%   On assure donc la forme fonctionelle de $f$ par la réécriture.
-%   La définition de la coercion nous assure que $c~u' : V'$. On obtient
-%   donc $(\pi~f) (c~u') : W'[c~u'/x]$. 
-%   Ici, la coercion pourrait changer la forme du type, par exemple si 
-%   $W `= x$, on aurait $W'[c~u'/x] = c~u'$. Nous allons montrer que cela
-%   ne change pas la forme du type.
-%   Si $W = x$, alors $V'$ ne peut être qu'une sorte. En effet, il n'est
-%   pas possible de former des produits ayant un terme en membre droit, la
-%   syntaxe même nous assure que les termes ne peuvent figurer qu'en
-%   position interne, c'est-à-dire appliqués à un type. Or si $V'$ est une
-%   sorte, la forme de $W$ et donc de $W'$ n'est pas changé par la
-%   substitution puisque $x$ n'apparait pas dedans.
-%   Si $V'$ n'est pas une sorte, il peut être par exemple un produit.
+\item[{\bf Conservation de la structure}] On voit très clairement que notre
+  interprétation est un homomorphisme module les coercions, 
+  c'est à dire qu'elle préserve globallement la structure des termes et
+  des types.
+
+\item[{\bf Consevation du typage}] Notre interprétation transforme un terme
+  bien typé dans le système algorithmique en un terme bien typé dans
+  \CCI{}. Ce résultat va découler du fait que l'on reconstruit implicitement
+  la dérivation de typage du système algorithmique dans notre
+  interprétation en ajoutant les coercions nécessaires pour être bien
+  typé dans \CCI{}.
+\end{itemize}
+
+\subsubsection{Correction}
+On veut montrer le théorème suivant: si $`G \typea t : T$ alors $\iG
+\typec \ipt{t}{\iG} : \ipt{T}{\iG}$. Nous n'avons pas encore trouvé de
+preuve de ce résultat. En effet le jugement de coercion rend la preuve
+ très difficile à cause de son caractère
+non local. Pour mieux comprendre ce problème, considérons l'exemple
+suivant:
+
+\paragraph{Exemple}
+Dans le système algorithmique, on peut très bien dériver
+$\Pi n : \nat. \sref{list}~n \suba \Pi n :
+\mysubset{x}{\nat}{P}.\listml~n$ puisque $\mysubset{x}{\nat}{P} \suba
+\nat$ et $\listml~n \eqbi \listml~n$.
+Si l'on réécrit vers \CCI{}, on n'aura plus les même types
+de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
+Ici, une coercion a été insérée dans le second type:
+$`G' \typec c : \Pi n : \nat. \listml~n \subi \Pi n :
+\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. Seulement, et c'est là la
+preuve que l'intuition de la coercion par prédicats est bonne, on peut
+dériver ce jugement:
+
+\begin{prooftree}
+  \AXC{$\nat \eqbi \nat$}
+  \UIC{$`G' \typec \lambda x.x : \nat \subi \nat$}
+  \UIC{$`G' \typec (\lambda x.x) `o \pi_1 : \mysubset{x}{\nat}{P} \subi \nat$}
+  \AXC{$(\listml~n)[\pi_1~n/n] \eqbi \listml~(\pi_1~n)$}
+  \UIC{$`G, n : \mysubset{x}{\nat}{P} \typec (\lambda x.x) :
+    (\listml~n)[\pi_1~n/n] \subi \listml~(\pi_1~n)$}
+  \BIC{$`G' \typec \lambda f.\lambda x.(\lambda x.x)~(f~(\pi_1~x)) : 
+    \Pi n : \nat. \listml~n \subi 
+    \Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$}
+\end{prooftree}
+
+\paragraph{Coercion}
+On conserve les propriétés suivantes sur la coercion:
+
+\begin{lemma}[Coercion et conversion]
+  \label{coercioni-conversion}
+  Si $`G \typea S,T,U : s$, $S \eqbi T$ et $`G \typec
+  c : T \sub U$ alors $\typec c' : S \sub U$ avec $c \eqbi c'$.
+\end{lemma}
+
+\begin{proof}
+  Par simple inspection des règles on voit que le jugement ne peut
+  distinguer deux termes $\beta$-équivalents (ils ont forcément les
+  mêmes formes normales de tête). 
+\end{proof}
+
+\begin{lemma}[Coercion et formes normales de tête]
+  \label{coercioni-hnf}
+  Si $T \suba U$ alors $\hnf{T}~\suba \hnf{U}$ est dérivable par une
+  dérivation plus petite ou égale.
+\end{lemma}
+
+\begin{proof}
+  \begin{induction}[subtyping-algo]
+
+    \case{SubConv} Trivial.
+    \case{SubHnf} On prend la dérivation en prémisse.
+    \casetwo{SubProd}{SubSigma} $T$ et $U$ sont égaux à leurs formes normales
+    de tête, direct.
+
+    \case{SubProof}
+    Par induction $\hnf{T}~\suba \hnf{V}$, on applique \irule{SubProof}
+    \case{SubSubset} idem.
+  \end{induction}  
+\end{proof}
+
+
+
+\begin{lemma}[Transitivité de la coercion]
+  \label{subi-trans}
+  S'il existe $c_1, c_2$ tels que $`G \typec c_1 : A \subi B$ et $`G \typec c_2 : B \subi C$
+  alors $`E!c, `G \typec c : A \subi C$ et $c = c_2 `o c_1$.
+\end{lemma}
+\begin{proof}
+  De la même façon que pour la preuve de transitivité de la
+  coercion algorithmique, on élimine la règle \irule{SubTrans} qui a la
+  forme:
+  \begin{prooftree}
+    \AXC{$`G \typec c_1 : A \suba B$}
+    \AXC{$`G \typec c_2 : B \suba C$}
+    \BIC{$`G \typec c_2 `o c_1 : A \suba C$}
+  \end{prooftree}
   
-%   La règle de formation du produit nous assure que si $x$ apparait dans
-%   $W'$ alors c'est en position interne.
-
-
-% \end{proof}
-
-
-% \begin{proof}
-%   Par induction sur la réécriture de la dérivation.
   
-%   \begin{induction}
-
-%     \case{WfEmpty}% \quad
-% %     \begin{prooftree}
-% %       \UAX{Wf-Atom}
-% %       {}
-% %       {$\wf [] "~>"~\wf []$}
-% %       {}
-% %     \end{prooftree}
-%     Trivial.
+  \begin{induction}[subtyping-decl]
     
-%     \case{WfVar}
-% %     \begin{prooftree}
-% %       \UAX{Wf-Var}
-% %       {$\timpl{`G}{A}{s}{`G'}{A'}{s}$}
-% %       {$\wf `G, x : A "~>"~\wf `G', x : A'$}
-% %       {$s `: \{ \Set, \Prop, \Type(i) \}$}
-% %     \end{prooftree}
-%     Par induction $`G' \typec A' : s$, on applique simplement \irule{WfVar}.
+    \case{SubConv}\quad
+    \begin{prooftree}
+      \AXC{$S \eqbi T$}
+      \UIC{$`G \typec c_1 = \lambda x.x : S \sub T$}
+      \AXC{$`G \typec c_2 : T \sub U$}
+      \BIC{$`G \typec c_2 `o c_1 : S \sub U$}
+    \end{prooftree}
     
-%     \casetwo{PropSet}{Type}
-% %     \begin{prooftree}
-% %       \UAX{PropSet}
-% %       {$\wf `G "~>" ~\wf `G'$}
-% %       {$\timpl{`G}{s}{\Type(0)}{`G'}{s}{\Type(0)}$}
-% %       {$s `: \{ \Prop, \Set \}$} 
-% %     \end{prooftree}
-%     Direct par induction.
+    Par le lemme précédent, on élimine trivialement \irule{SubTrans}.
 
-% %     \case{Type}\quad
-% %     \begin{prooftree}
-% %       \UAX{Type}
-% %       {$\wf `G "~>" \wf `G$}
-% %       {$\timpl{`G}{\Type(i)}{\Type(i + 1)}{`G'}{\Type(i)}{\Type(i + 1)}$}
-% %       {}
-% %     \end{prooftree}
+    \case{SubHnf}\quad
+    \begin{prooftree}
+      \AXC{$\hnf{S}~\sub \hnf{T}$}
+      \UIC{$S \sub T$}
+      \AXC{$T \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+    
+    Si $T \sub U$ alors $\hnf{T}~\suba \hnf{U}$ est dérivable par une
+    dérivation plus petite ou égale (lemme \ref{coercion-hnf}). 
+    Or on a $\hnf{S}~\suba \hnf{T}$. Donc $\hnf{S}~\suba \hnf{U}$ et par
+    \irule{SubHnf}, $S \sub U$.
+    
+    \case{SubProd}\quad
+    \begin{prooftree}
+      \AXC{$X' \sub X$}
+      \AXC{$Y \sub Y'$}
+      \BIC{$\Pi x : X.Y \sub \Pi x' : X'.Y'$}
+      \AXC{$\Pi x' : X'.Y' \sub U$}
+      \BIC{$\Pi x : X.Y \sub U$}
+    \end{prooftree}
+    
+    Si $\Pi x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
+    = \Pi y : S.T$ et $S \sub X'$, $Y' \sub T$.
+    Par induction (les dérivations sont plus petites que la dérivation
+    $\Pi x' : X'.Y' \sub U$), $S \sub X$ et $Y \sub T$ donc $\Pi x : X.Y
+    \sub \Pi y : S.T$ 
+    et enfin $\Pi x : X.Y \sub U$ par le lemme \ref{coercion-mu}.
 
-%     \case{Var}\quad
-%     \begin{prooftree}
-%       \BAX{Var}
-%       {$\wf `G "~>"~\wf `G'$}
-%       {$x : A `: `G "~>" x : A' `: `G'$}
-%       {$\timpl{`G}{x}{A}{`G'}{x}{A'}$}
-%       {}
-%     \end{prooftree}
-%     La réécriture ne change pas le domaine des contextes, c'est donc
-%     direct par induction.
+    De façon équivalente pour le second cas.
 
-%     \case{Prod}\quad
-%     \begin{prooftree}
-%       \BAX{Prod}
-%       {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
-%       {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
-%       {$\timpl{`G}{\Pi x : T.U}{s2}{`G'}{\Pi x : T'.U'}{s2}$}
-%       {$(s1, s2) `: \mathcal{R}$}
-%     \end{prooftree}
+    \case{SubSigma}\quad
+    \begin{prooftree}
+      \AXC{$X \sub X'$}
+      \AXC{$Y \sub Y'$}
+      \BIC{$\Sigma x : X.Y \sub \Sigma x' : X'.Y'$}
+      \AXC{$\Sigma x' : X'.Y' \sub U$}
+      \BIC{$\Sigma x : X.Y \sub U$}
+    \end{prooftree}
+    
+    Si $\Sigma x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
+    = \Sigma y : S.T$ et $X' \sub S$, $Y' \sub T$.
+    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma x : X.Y \sub
+    \Sigma y : S.T$ et enfin $\Sigma x : X.Y \sub U$ (lemme \ref{coercion-mu}).
+    
+    De façon équivalente pour le second cas.
+
+    \case{SubProof}\quad
+    \begin{prooftree}
+      \AXC{$S \sub V$}
+      \UIC{$S \sub \mysubset{x}{V}{P}$}
+      \AXC{$\mysubset{x}{V}{P} \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+    
+    Si $\mysubset{x}{V}{P} \sub U$ alors $\mualgo(U) = \mualgo(V)$.
+    Comme $S \sub V$ on a $S \sub \mualgo(V)$ par une dérivation plus
+    petite ou égale, donc par induction, $S \sub \mualgo(U)$. Donc $S \sub U$.
+    
+    De façon équivalente pour le second cas.
+
+    \case{SubSub}
+    Cas identique à \irule{SubProof}
+    
+  \end{induction}
+\end{proof}
+
+\begin{lemma}[Symétrie de la coercion]
+  \label{subi-sym}
+  S'il existe $c$ tel que $`G \typec c : A \subi B$
+  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbi
+  \sref{id}~A$ et $c `o c^{-1} \eqbi \sref{id}~B$, où
+  $\sref{id} \coloneqq \lambda X : Set.\lambda x : X. x$.
+\end{lemma}
+\begin{proof}
+  Par induction sur la dérivation de $c$.
+  \begin{induction}
+    \case{SubConv} Trivial.
+
+    \case{SubHnf} Par induction, il existe $c^{-1} : \hnf{B} \subi
+    \hnf{A}$, $c_1$ est donc de type $B \subi A$ par conversion.
+
+    \case{SubProd}
+    Par induction on a: $`G \typec c_1^{-1} : T \subi U$ et $`G, x : U \typec c_2^{-1} : W \subi
+    V[c_1~x/x]$.
+    On peut donc construire la coercion:
+    $\lambda f : \Pi x : U.W. \lambda x : T. c_2^{-1}~(f~(c_1^{-1}~x))$
+    de type $\Pi x : U.W \subi \Pi x : T.V$ car:
+    $f~(c_1^{-1}~x) : W[c_1^{-1}~x/x]$ donc $c_2^{-1}~(f~(c_1^{-1}~x)) : 
+    V[c_1~(c_1^{-1}~x)/x]$. Or $c_1 `o c^{-1}_1 \eqbi \sref{id}~T$, donc
+    $V[c_1~(c_1^{-1}~x)/x] \eqbi V$.
+
+    On va maintenant montrer les identités (avec des termes à la Curry):
+
+    $\begin{array}{ll}
+      \firsteq{(\lambda f.c_2 `o f `o c_1) `o 
+        (\lambda f.c_2^{-1} `o f `o c_1^{-1})}
+      
+      \step{Définition de la composition}
+      {\eqbi}{\lambda f.c `o c^{-1}}
+      
+      \step{Hypothèse d'induction}
+      {\eqbi}{\sref{id}~T}
+    \end{array}$
+
+
+
+
+    \case{SubSigma}
+    De là même façon.
+
+    \case{SubSub}
+    Par induction $`G \typec c^{-1} : T \subi U$, on peut donc appliquer
+    \irule{SubProof} pour obtenir la coercion:
+    $\lambda t : T.\elt{U}{(\lambda x :
+      U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}$
+    de type : $T \subi \mysubset{x}{U}{P}$.
+    
+    On a l'équation suivante:
+
+    $\begin{array}{ll}
+      \firsteq{c `o \pi_1 `o \lambda t : T.\elt{U}{(\lambda x :
+          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}}
+      
+      \step{Définition de $\pi_1$}
+      {\eqbi}{c `o c^{-1}}
+      
+      \step{Hypothèse d'induction}
+      {\eqbi}{\sref{id}~T}
+    \end{array}$
+
+    De même:
+
+    $\begin{array}{ll}
+      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
+          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
+        `o c `o \pi_1}
+      
+      \step{Définition de la composition}
+      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}
+        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
+    
+    \step{Hypothèse d'induction}
+    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
+
+    \step{Indifférence aux preuves!}
+    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
+
+    \end{array}$
+
+    \case{SubProof}
+    C'est le cas dual, ici on a par induction $c^{-1} : U \subi T$.
+    On veut construire une coercion de type $\mysubset{x}{U}{P} \subi
+    T$.
+    On applique donc \irule{SubSub} pour obtenir:
+    $c^{-1} `o \pi_1$.
+    On a bien:
+
+    $\begin{array}{ll}
+      \firsteq{c^{-1} `o \pi_1 `o (\lambda t : T.
+        \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}})}
+      
+      \step{Définition de la composition}
+      {\eqbi}{c^{-1} `o (\lambda t : T.
+        \pi_1~(\elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}))}
+        
+      \step{Définition de $\pi_1$}
+      {\eqbi}{c^{-1} `o (\lambda t : T. c~t)}
+      
+      \step{Hypothèse d'induction}
+      {\eqbi}{\sref{id}~T}
+    \end{array}
+    \vspace{0.2em}
+    $
+    
+    et
+    \vspace{0.2em}
+
+    $\begin{array}{ll}
+      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
+          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
+        `o c `o \pi_1}
+      
+      \step{Définition de la composition}
+      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}
+        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
+    
+    \step{Hypothèse d'induction}
+    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
+        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
+
+    \step{Indifférence aux preuves!}
+    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
+
+    \end{array}$
+    
     
 
 
-%     \case{Abs}\quad
-%     \begin{prooftree}
-%       \BAX{Abs}
-%       {$\timpl{`G}{\Pi x : T. U}{s}{`G'}{\Pi x : T'. U'}{s}$}
-%       {$\timpl{`G, x : T}{M}{U}{`G', x : T'}{M'}{U'}$}
-%       {$\timpl{`G}{\lambda x : T. M}{\Pi x : T.U}
-%         {`G'}{\lambda x : T'. M'}{\Pi x : T'.U'}$}
-%       {}
-%     \end{prooftree}
-
-%     \case{App}\quad
-%     \begin{prooftree}
-%       \QAX{App}
-%       {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
-%       {$\mu~T' `= (\pi, \Pi x : V'. W')$}
-%       {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
-%       {$\subimpl{`G'}{c}{U'}{V'}$}
-%       {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
-%       {}
-%     \end{prooftree}
-
-%     \case{LetIn}\quad
-%     \begin{prooftree}
-%       \BAX{LetIn}
-%       {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
-%       {$\timpl{`G, x : T}{v}{V}{`G', x : T'}{v'}{V'}$}
-%       {$\timpl{`G}{\letml~x = t~\inml~v}{V[t / x]}
-%         {`G'}{\letml~x = t'~\inml~v'}{V'[t' / x]}$}
-%       {}
-%     \end{prooftree}
-
-%     \case{SigmaR}\quad
-%     \begin{prooftree}
-%       \BAX{Sigma}
-%       {$\timpl{`G}{T}{s1}{`G'}{T'}{s1}$}
-%       {$\timpl{`G, x : T}{U}{s2}{`G', x : T'}{U'}{s2}$}
-%       {$\timpl{`G}{\Sigma x : T.U}{s2}{`G'}{\Sigma x : T'.U'}{s2} $}
-%       {$(s1, s2) `: \mathcal{R}$}
-%     \end{prooftree}
+  \end{induction}
+\end{proof}
 
 
-%     \case{SumInf}\quad
-%     \begin{prooftree}
-%       \TAXWide{SumInf}
-%       {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
-%       {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
-%       {$\timpl{`G}{\Sigma \_ : T.U}{s}{`G'}{\Sigma \_ : T'.U'}{s}$}
-%       {$\timpl{`G}{(t, u)}{\Sigma \_ : T.U}{`G'}{(t', u')}{\Sigma \_ : T'.U'}$}
-%       {}
-%     \end{prooftree}
+\paragraph{Substitutivité}
+\setboolean{displayLabels}{false}
+Le lemme qui pose problème est la substitutivité de l'interprétation.
+On l'énonce de la façon suivante:
 
-%     \case{SumDep}\quad
-%     \begin{prooftree}
-%       \TAXWide{SumDep}
-%       {$\timpl{`G}{t}{T}{`G'}{t'}{T'}$}
-%       {$\timpl{`G}{u}{U[t/x]}{`G'}{u'}{U'[t'/x]}$}
-%       {$\timpl{`G}{\Sigma x : T.U}{s}{`G'}{\Sigma x : T'.U'}{s}$}
-%       {$\timpl{`G}{(t, u : U)}{\Sigma x : T.U}{`G'}{(t', u')}{\Sigma x : T'.U'}$}
-%       {}
-%     \end{prooftree}
+\begin{lemma}[Coercion de sortes]
+  \label{subi-sorts}
+  Si $s \subi T$ ou $T \subi s$ où $s `: \setproptype$ alors $T = s$.
+\end{lemma}
+\begin{proof}
+  \TODO{}
+\end{proof}
+
+
+
+
+\def\iu{\ip{u}{\iG}}
+\def\tux{\ip{t[u/x]}{`G, `D[u/x]}}
+\def\cux{[c~\ip{u}{`G}/x]}
+\def\tcux{\ip{t}{\ipG{`G, x : V, `D}}[c~\ip{u}{`G}/x]}
+\def\GD{`G, x : V, `D}
+\def\Gr{`G, `D[u/x]}
+\def\iGD{\ipG{`G, x : V, `D}}
+\def\iGr{\ipG{`G, `D[u/x]}}
+
+
+Il nous faut tout d'abord un lemme supplémentaire sur la substitution
+dans le système algorithmique:
+
+\begin{lemma}[Substitutivité du typage algorithmique avec coercion]
+  \label{subst-coerce-algo}
+  \[\left.\begin{array}{l}
+      `G \typea u : U \\
+      \GD \typea t : T \\ 
+      U \suba V
+    \end{array}
+\right\} "=>"    
+`G, `D[u/x] \typea t[u/x] : T' \suba T[u/x]
+    \]
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation de $\GD \typea t : T$.
+
+  \typenva
+  \begin{induction}
+    \case{Var} On a deux cas:
+    \begin{itemize}
+    \item Si $y = x$, alors $T = V$. On a $t[u/x] = u$ donc $T' =
+      U$. Par hypothèse $U \suba V$ donc $T' \suba T[u/x]$ triviallement
+      ($x$ n'apparait pas dans $V$).
+
+    \item Sinon, $t[u/x] = y$ donc $T' = T[u/x]$ et on a $T' \suba T[u/x]$
+      par réflexivité de la coercion.
+    \end{itemize}
     
-%     \case{LetSum}\quad
-%     \begin{prooftree}
-%       \BAX{LetSum}
-%       {$\timpl{`G}{t}{\Sigma x : T. U}{`G'}{t'}{\Sigma x : T'.U'}$}
-%       {$\timpl{`G, x : T, u : U}{v}{V}{`G, x : T', u : U'}{v'}{V'}$}
-%       {$\timpl{`G}{\letml~(x, u) = t~\inml~v}{V}
-%         {`G'}{\letml~(x, u) = t'~\inml~v'}{V'}$}
-%       {}
-%     \end{prooftree}
 
-%     \case{Subset}\quad
-%     \begin{prooftree}
-%       \BAX{Subset}
-%       {$\timpl{`G}{U}{\Type}{`G'}{U'}{\Type}$}
-%       {$\timpl{`G, x : U}{P}{\Prop}{`G', x : U'}{P'}{\Prop} $}
-%       {$\timpl{`G}{\mysubset{x}{U}{P}}{\Type}{`G'}{\mysubset{x}{U'}{P'}}{\Type}$}
-%       {$$}
-%     \end{prooftree}
-%   \end{induction}
-% \end{proof}
+    \case{Prod}
+    Par induction, $\Gr \typea T[u/x] : s_1' \suba s_1[u/x]$ et $\Gr, x
+    : T[u/x]
+    \typea U[u/x] : s_2' \suba s_2[u/x]$. Or $s_1[u/x] = s_1$ et
+    $s_2[u/x] = s_2$. On en déduit par \irule{Prod}: 
+    $\Gr \typea (\Pi x : T.U)[u/x] : s_3 \suba s_3[u/x]$.
+
+    \case{Abs}
+    On a: 
+    \begin{prooftree}
+      \Abs
+    \end{prooftree}
+    
+    Par induction, $\Gr \typea (\Pi y : T.U)[u/x] : s' \suba s[u/x]$ et
+    $\Gr, y : T[u/x] \typea M[u/x] : U' \suba U[u/x]$.
+    Par le même raisonnement que précedemment, $s' = s[u/x] = s$.
+    On peut appliquer \irule{Abs} pour obtenir:
+    $\Gr \typea (\lambda y : T.M)[u/x] : \Pi y : T[u/x].U'$. Comme $U'
+    \suba U[u/x]$ on a $\Pi y : T[u/x].U' \suba \Pi y : T[u/x].U[u/x]$
+    et la propriété est vérifiée.
+
+    \case{App}
+    On a: 
+    \begin{prooftree}
+      \TAX{App}
+      {$\GD \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
+      {$\GD \seq e : E \quad \GD \seq E, A : s$}
+      {$E \sub A $}
+      {$\GD \seq (f~e) : B[ e / y ]$}
+      {}
+    \end{prooftree}
+    
+    Par induction, $\Gr \typea f[u/x] : F' \suba F[u/x]$ et $\Gr \typea
+    e[u/x] : E' \suba E[u/x]$ et $\Gr \typea E[u/x], A[u/x] : s$.
+    Comme $\mualgo(F) = \Pi y : A.B$, $\mualgo(F[u/x]) = \Pi y :
+    A[u/x].B[u/x]$ et par transitivité de la coercion, $F' \suba \Pi y :
+    A[u/x].B[u/x]$. On en déduit que $\mualgo(F') = \Pi y : A'.B'$ avec
+    $A[u/x] \suba A'$ et $B' \suba B[u/x]$.
+    Par substitutivité de la coercion, $E \suba A$ implique $E[u/x]
+    \suba A[u/x]$. On applique la transitivité pour obtenir $E' \suba
+    A'$. Par définition, si $E' \suba E[u/x]$ et $\Gr \typea E[u/x] : s$
+    alors $\Gr \typea E' : s$. De même pour $A'$.  
+
+    On peut donc appliquer \irule{App}:    
+    \begin{prooftree}
+      \TAX{App}
+      {$\GD \seq f[u/x] : F' \quad \mualgo(F') = \Pi y : A'. B'$}
+      {$\GD \seq e[u/x] : E' \quad \GD \seq E', A' : s$}
+      {$E' \sub A' $}
+      {$\GD \seq (f~e)[u/x] : B'[ e[u/x] / y ]$}
+      {}
+    \end{prooftree}
+    
+    Par substitutivité de la coercion, $B' \suba B[u/x]$ implique
+    $B'[e[u/x]/y] \suba B[u/x][e[u/x]/y]$. Or $B[u/x][e[u/x]/y] =
+    B[e/y][u/x]$ car $y$ n'apparait pas dans $u$. On a donc bien
+    $T' = B'[e[u/x]/y] \suba T[u/x] = B[e/y][u/x]$.
+     
+    \item[] Les autres cas passent aisément par induction.
+  \end{induction}
+  
+
+\end{proof}
 
 
 
-% Ce travail est en cours à ce jour, nous nous sommes
-% plutôt penchés sur l'implémentation du typeur et de la fonction de
-% réécriture avant de commencer cette dernière preuve.
+\begin{lemma}[Substitution et coercion]
+  Si $`G \typea u : U$ et $`G \typec c : U \suba V$ alors
+  \[\GD \typea t : T "=>"
+  \begin{array}{l}  
+    `E!`a, \Gr \typec `a : \typeafn{\Gr}{t[u/x]} \suba T[u/x],\\
+    `a \ip{t[u/x]}{\Gr} \eqbi \ip{t}{\GD}\cux
+  \end{array}\]
+  et
+  \[\left.\begin{array}{l}
+      \GD \typea T, T' : s \\
+      T \suba T' \\
+      \GD \typec d : T \suba T'
+    \end{array}
+  \right\} "=>" \Gr \typec d\cux : T[u/x] \suba T'[u/x]\]
+\end{lemma}
+
+
+\begin{proof}
+  Ici, $\typeafn{\Gr}{t[u/x]}$ est l'égal du $T'$ du lemme précédent, il
+  est donc uniquement déterminé par l'algorithme de typage ce qui
+  entraine que $`a$ est unique.
+  
+  On peut remarquer que si $T$ est une sorte $s$ alors
+  $\typeafn{\Gr}{t[u/x]} = s$ et $`a$ est l'identité. On en déduit que
+  \[\ip{t[u/x]}{\Gr}\cux \eqbi \ip{t}\GD\cux\] On utilisera ce fait à
+  plusieurs reprises.
+
+  On omet les environement passés à $\coerce$ s'ils sont évidents.
+  On procède par induction mutuelle sur la dérivation de $`G, x : V, `D
+  \typea t : T$ et la dérivation de $T \suba T'$.
+  \begin{induction}
+    \case{Var} 
+    On a:
+    \typenva
+    \begin{prooftree}
+      \BAX{Var}
+      {$\wf \GD$}
+      {$y : T `: \GD$}
+      {$\GD \seq y : T$}
+      {}
+    \end{prooftree}    
+    \typenvi
+
+    \begin{itemize}
+    \item Si $x "/=" y$ alors $T' = (`G, `D[u/x])(y) = T[u/x]$. Il
+      existe une unique coercion $`a : T[u/x] \suba T[u/x]$, l'identité.   
+      Par définition de l'interprétation, on doit montrer
+      $`a~y \eqbi y$, trivial.
+
+    \item Sinon, $t[u/x] = u$ et donc $T' = U$. 
+      On a $T = V$, $x `; V$ par hypothèse.
+      On peut prendre $`a = c : U \suba V$ car $T' = U$ et $T[u/x] = V$.
+      On peut vérifier:
+      \begin{eqnarray*}
+        c~\ip{x[u/x]}{\Gr} & = & c~\ip{u}{\Gr} \\
+        & = & \ip{x}{\GD}\cux
+      \end{eqnarray*}
+      
+    \end{itemize}
+    
+    \case{App}\quad
+    \typenva
+    \begin{prooftree}
+      \TAX{App}
+      {$`G \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
+      {$`G \seq e : E \quad `G \seq E, A : s$}
+      {$E \sub A $}
+      {$`G \seq (f~e) : B [ e / y ]$}
+      {}
+    \end{prooftree}
+    \typenvi
+
+    Par induction:
+    \[\Gr \typea f[u/x] : F' `^
+    `E `a_f : F' \suba F[u/x],
+    `a_f~\ip{f[u/x]}{\Gr} \eqbi \ip{f}{\GD}\cux\]
+    \[\Gr \typea e[u/x] : E' `^
+    `E `a_e : E' \suba E[u/x],
+    `a_e~\ip{e[u/x]}{\Gr} \eqbi \ip{e}{\GD}\cux\]
+    
+    \def\afe{`a}    
+    Par définition de la substitution et de l'interprétation, 
+    \begin{eqnarray*}
+      \ip{(f~e)}{\GD}
+      & = & (((\pi_F~\ip{f}{\GD})~(c_e~\ip{e}{\GD})) \\
+      \text{ où } & & \\
+      \pi_F & = & \sref{coerce}~F~(\Pi y : A.B) \\
+      c_e & = & \sref{coerce}~E~A.
+    \end{eqnarray*}
+    
+    Clairement, $\pi_F$ et $c_e$ sont dérivables, puisqu'on part de
+    jugements dérivables par la coercion algorithmique.
+    
+    Le lemme \ref{subst-coerce-algo} nous donne la dérivation suivante
+    pour le jugement substitué:
+    \typenva
+    \begin{prooftree}
+      \TAX{App}
+      {$`G \seq f[u/x] : F' \quad \mualgo(F') = \Pi y : A'. B'$}
+      {$`G \seq e[u/x] : E' \quad `G \seq E', A' : s$}
+      {$E' \sub A' $}
+      {$`G \seq (f~e)[u/x] : B' [ e[u/x] / y ]$}
+      {}
+    \end{prooftree}
+    \typenvi
+    
+    Soit $e' = e[u/x]$ et $f' = f[u/x]$, on a donc d'autre part:
+    \begin{eqnarray*}
+      \ip{(f~e)[u/x]}{\Gr}
+      & = & \ip{f'~e'}{\iG} \\
+      & = & (\pi_{F'}~\ip{f'}{\Gr})~(c_{e'}~\ip{e'}{\Gr}) \\
+      \text{ où } & & \\
+      \pi_{F'} & = & \sref{coerce}~F'~(\Pi y : A'.B') \\
+      c'' & = & \sref{coerce}~E'~A'
+    \end{eqnarray*}
+    
+    On a donc les coercions suivantes:
+    \[
+    \xymatrix{
+      F[u/x]\ar[rr]_{\pi_F\cux} & & 
+      \Pi y : A[u/x].B[u/x] \\
+      F'\ar[u]^{`a_f}\ar[rr]^{\pi_{F'}} & &
+      {\Pi y : A'.B'}\ar@{-->}[u]^{c_f}}
+    \]
+
+    Par symmétrie et transitivité de la coercion, on en déduit qu'il
+    existe $c_f : \Pi y : A'.B' \suba \Pi y : A[u/x].B[u/x]$.
+    $c_f$ est nécessairement de la forme:
+    $\lambda f.\lambda y.c_2~(f~(c_1~y))$ où $c_1 : A[u/x] \suba A'$ et
+    $c_2 : B' \suba B[u/x]$.
+
+    On a donc les coercions suivantes pour l'argument $e$:
+    
+    \[
+    \xymatrix{
+      E[u/x]\ar[rr]_{c_e\cux} & & 
+      A[u/x]\ar[d]^{c_1} \\
+      E'\ar[u]^{`a_e}
+      \ar@{-->}[rr]^{c_{e'}} & & A'}
+    \]
+
+    \def\ipGr#1{\lbag #1 \rbag}
+    \def\cuxobj#1{#1[`r]}
+    Soit $\ipGr{t} = \ip{t}{\Gr}$ et $`r = \cux$.
+
+    On en déduit que $c_{e'} = c_1 `o \cuxobj{c_e} `o `a_e$.    
+    Soit $`a = c_2[\cuxobj{c_e}~(`a_e~\ipGr{e'})/y]$.
+    On a $\Gr, y : A[u/x] \typec c_2 : B' \suba B[u/x]$, donc
+    \[\Gr \typec c_2[\cuxobj{c_e}~(`a_e~\ipGr{e'})/y] : B'[e'/y] \suba
+    B[u/x][e'/y]\]
+    et $B[u/x][e'/y] = B[e/y][u/x]$ car $y$
+    n'apparait pas dans $u$, et $e' = e[u/x]$. On peut appliquer
+    l'hypothèse de récurrence car par inversion de $\Gr \typea f' : F'$
+    avec $\mualgo(F') = \Pi y : A'.B'$ on a $\Gr, y : A' \typea B' : s$ et par restriction, $\Gr, y :
+    A[u/x] \typea B' : s$ avec une dérivation de même taille.
+
+
+    On peut vérifier:
+    \[\begin{array}{ll}
+      \firsteq{\afe~\ip{(f~e)[u/x]}{\Gr}}
+      
+      \step{Définition de l'interprétation}
+      {=}{\afe~((\pi_{F'}~\ipGr{f'})~(c_{e'}~\ipGr{e'}))}
+      
+      \step{Définitions de $`a$ et $c_{e'}$}
+      {=}{c_2[\cuxobj{c_e}(`a_e~\ipGr{e'})/y]~((\pi_{F'}~\ipGr{f'})~((c_1 `o \cuxobj{c_e} `o `a_e)~\ipGr{e'}))}
+      
+      \step{Définition de la composition}
+      {=}{c_2[\cuxobj{c_e}(`a_e~\ipGr{e'})/y]~((\pi_{F'}~\ipGr{f'})~(c_1~(\cuxobj{c_e}~(`a_e~\ipGr{e'}))))}
+
+      \step{Définition de $c_f$ ($= \lambda f.\lambda
+        y.c_2~(f~(c_1~y))$)}
+      {=}{c_f~(\pi_{F'}~\ipGr{f'})~(\cuxobj{c_e}~(`a_e~\ipGr{e'}))}
+      
+      \step{Commutation du diagramme 1}{=}
+      {(\cuxobj{\pi_F}~(`a_f~\ipGr{f'}))~(\cuxobj{c_e}~(`a_e~\ipGr{e'}))}
+      
+      \step{Définitions de $`a_f$ et $`a_e$}{=}
+      {(\cuxobj{\pi_F}~\ip{f}{\GD}\cux)~(\cuxobj{c_e}~\ip{e}{\GD}\cux)}
+
+      \step{Définition de l'interprétation}{=}{\ip{f~e}{\GD}\cux}
+      \vspace{0.2em}
+    \end{array}\]
+    
+    \vspace{1cm}
+    
+    \TODO{Autres cas}
+
+    \def\None{\sref{None}}
+    \def\Some{\sref{Some}}
+    \def\lift{\sref{lift}}
+    \def\appopt{\sref{app\_opt}}
+    \case{SubConv}
+    Alors $T \eqbi T'$ donc $d = \None$. Comme $T[u/x] \eqbi T'[u/x]$, 
+    $d\cux = d = \None = \coerce~(T[u/x])~(T'[u/x])$.
+    
+    \case{SubHnf}
+    Par induction, $d\cux = \coerce~(\Gr)~(\hnf{T})[u/x]~(\hnf{T'})[u/x]$.
+    On doit montrer que $\coerce~(\Gr)~T[u/x]~T'[u/x] = d\cux$.    
+    Deux cas sont possibles:
+    \begin{itemize}
+    \item Si $(\hnf{T})[u/x] =
+      \hnf{T[u/x]}$ alors on a la même dérivation que $d$. On vérifie
+      juste $u \eqbi u$ à la place de $x \eqbi x$ aux axiomes, donc $d\cux
+      = d$.
+    \item Sinon,
+      c'est que $\hnf{T} = x$, $\hnf{T[u/x]} = \hnf{u}$ et $(\hnf{T})[u/x]
+      = u$. Dans ce cas, $\hnf{T'} = x$ sinon $T \suba T'$ ne serait pas
+      dérivable. On doit dériver $T[u/x] \suba T'[u/x]$. 
+      
+      \begin{itemize}
+      \item Si $T = x$ alors
+        $T' = x$ et l'on doit dériver $u \suba u$ ce qui est direct par
+        \irule{SubConv}: $d\cux = d = \sref{None}$.
+        
+      \item Sinon, on doit appliquer $\hnf{\_}$ et dériver:
+        $\hnf{u} \suba \hnf{u}$. Encore une fois une application de
+        \irule{SubConv} suffit et le terme engendré est $\None$.
+      \end{itemize}
+    \end{itemize}
+    
+    \case{SubProd}
+    On a $T = \Pi y : U.V$ et $T' = \Pi y : U'.V'$ avec
+    $c_1 = \coerce~(\GD)~U'~U$, $c_2 = \coerce~(\GD, y : U')~V~V'$ et
+    \[d = \Some (\funml~f "=>"
+    \sref{mkLambda}~(y, \ip{U'}{\GD},
+    \appopt~c_2~((\lift~1~f)~(\appopt~c_1~y))))\].
+    
+    Par induction, 
+    \[\coerce~(\Gr)~(U'[u/x])~(U[u/x]) = c_1\cux\]
+    \[\coerce~(\Gr, y : U'[u/x])~(V[u/x])~(V'[u/x]) = c_2\cux\]
+
+    Or par définition $\coerce~(\Gr)~T[u/x]~T'[u/x] =$
+    \begin{eqnarray*}
+       & &
+      \coerce'~(\Gr)~(\Pi y : U[u/x].V[u/x])~(\Pi y : U'[u/x].V'[u/x])
+      \\
+      & = & (\funml~f "=>"
+      \sref{mkLambda}~(y, \ip{U'[u/x]}{\Gr},
+      \appopt~(c_2\cux)~((\lift~1~f)~(\appopt~(c_1\cux)~y)))).
+    \end{eqnarray*}
+    
+    On a $\ip{U'[u/x]}{\Gr} = \ip{U'}{\GD}\cux$ par induction car $\Pi y :
+    U'.V' : s$ implique $U' : s$ par inversion. On a donc bien $d\cux =
+    \coerce~(\Gr)~(T[u/x])~(T'[u/x])$.
+  \end{induction}
+  
+
+\end{proof}
+
+On peut maintenant montrer notre théorème de correction.
+
+\setboolean{displayLabels}{false}
+\begin{theorem}[Correction de l'interprétation]
+  \label{correct-interp}
+  Si $`G \typea t : T$ alors on a $\iG \typec \ip{t}{\iG} :
+  \ip{T}{\iG}$.
+  Si $\wf `G$ alors $\wf \iG$.
+\end{theorem}
+
+\begin{proof}
+  Par induction mutuelle sur la dérivation de typage ou de bonne
+  formation.
+
+  \begin{induction}
+    \case{WfEmpty} Trivial.
+
+    \case{WfVar}
+    Par induction $\iG \typec \ip{A}{\iG} :
+    \ip{s}{\iG}$. Par inversion du jugement de bonne formation
+    dans \CCI{}, $\typewf \iG$.
+    Or, $\ip{s}{\iG} = s$ ($s `: \{ \Prop, \Set, \Type \}$), donc 
+    on peut appliquer \irule{WfVar} dans \CCI{} pour obtenir:
+    $\wf \iG, x : \ip{A}{\iG}$, soit $\wf \ipG{`G, x : A}$.
+
+    \case{PropSet}
+    Direct par induction, $\iG \typec \ip{s}{\iG} = s :
+    \ip{\Type}{\iG} = \Type$. La deuxième condition est directe
+    par définition de l'interprétation.
+    
+    \case{Var} On a:
+    \begin{prooftree}
+      \Var
+    \end{prooftree}
+    Par induction, $\wf \iG$ et par simple inspection de la
+    définition de l'interprétation des contextes, si $x : A `: `G$ alors
+    $x : \ip{A}{`D} `: \iG$ pour $`D ``( `G$. Par affaiblissement
+    dans \CCI{}, on obtient aisément $\iG \typec x : \ip{A}{`D}$ 
+    à partir de  $\ipG{`D} \typec x : \ip{A}{\ipG{`D}}$. Or il est clair par
+    la définition de l'interprétation que $\ip{A}{`D} = \ip{A}{`G}$  
+    si $`G$ est une extension de $`D$ puisqu'on utilise l'environnement
+    uniquement au moment de typer les variables et
+    $\iG(x) = \ipG{`D}(x)$ pour tout $x$ utilisé dans $A$.
+    On a donc $\iG \typec x : \ip{A}{\iG}$.
+    La deuxième condition est montrée par $\ip{x}{`G} = \iG(x) = 
+    \ip{A}{\ipG{`D}} = \ip{A}{\iG}$.
+      
+    \case{Prod} On a:
+    \begin{prooftree}
+      \Prod
+    \end{prooftree}
+    
+    Par induction $\iG \typec \ip{T}{\iG} : \ip{s_1}{\iG}
+    = s_1$ et $\ipG{`G, x : T} \typec \ip{U}{\ipG{`G, x : T}} :
+    \ip{s_2}{\ipG{`G, x : T}} = s_2$.
+    On déplie l'interprétation pour obtenir:
+    $\iG, x : \ip{T}{\iG} \typec \ip{U}{\iG{}, x : \ip{T}{\iG}} :
+    s_2$.
+    
+    Par \irule{Prod} dans \CCI, on obtient:
+    $\iG{} \typec \Pi x : \ip{T}{\iG}. \ip{U}{\iG{}, x : \ip{T}{\iG}}
+    : s_3$.
+    Or $\ip{\Pi x : T.U}{\iG} = \Pi x : \ip{T}{\iG}. \ip{U}{\iG{}, x
+      : \ip{T}{\iG}}$, donc on a bien:
+    $\iG \typec \ip{\Pi x : T.U}{\iG} : s_3 = \ip{s_3}{\iG}$.
+    La seconde condition est directe d'après la définition de $\mathcal{R}$ qui
+    est une fonction.
+
+    \case{Abs} On a:
+    \begin{prooftree}
+      \Abs
+    \end{prooftree}
+    
+    Par induction $\iG \typec \ip{\Pi x : T.U}{\iG} : \ip{s}{\iG}$
+    et $\ipG{`G, x : T} \typec \ip{M}{\ipG{`G, x : T}} :
+    \ip{U}{\ipG{`G, x : T}}$.
+    On déplie l'interprétation pour obtenir:
+    $\iG, x : \ip{T}{\iG} \typec \ip{M}{\iG{}, x : \ip{T}{\iG}} :
+    \ip{U}{\ipG{`G, x : T}}$.
+    
+    Par \irule{Abs} dans \CCI, on obtient:
+    $\iG{} \typec \lambda x : \ip{T}{\iG}. \ip{M}{\iG{}, x : \ip{T}{\iG}}
+    : \ip{\Pi x : T.U}{\iG}$.
+    C'est équivalent à:
+    $\iG \typec \ip{\lambda x : T.U}{\iG} : \ip{\Pi x : T.U}{\iG}$.
+    La seconde condition se montre ainsi:
+    $\ip{\lambda x : T.M}{\iG} = \Pi x : \ip{T}{\iG}. \ip{M}{\iG, x :
+      \ip{T}{\iG}}$. Or par induction, 
+    $\ip{M}{\iG, x : \ip{T}{\iG}} = \ip{U}{\iG, x : \ip{T}{\iG}}$, donc 
+    $\ip{\lambda x : T.M}{\iG} = \Pi x : \ip{T}{\iG}. \ip{U}{\iG, x :
+      \ip{T}{\iG}} = \ip{\Pi x : T.U}{\iG}$.
+    
+    \case{App} On a:
+    \begin{prooftree}
+      \AppA
+    \end{prooftree}
+
+    C'est le cas intéressant puisqu'on ajoute ici des coercions.
+    Par induction, $\iG{} \typec \ip{f}{\iG} : \ip{T}{\iG}$,
+    $\iG{} \typec \ip{u}{\iG} : \ip{U}{\iG}$,
+    $\iG{} \typec \ip{U}{\iG}, \ip{V}{\iG} : \ip{s}{\iG}$.
+    
+    On procéde par étapes: d'abord la construction d'une fonction
+    $\pi \ip{f}{\iG} : \ip{\Pi x : V.W}{\iG}$ puis la construction de
+    l'argument $c \ip{u}{\iG} : \ip{V}{\iG}$. On n'a plus qu'à les
+    appliquer pour obtenir le jugement:
+    $\iG{} \typec \ip{f~u}{\iG} : \ip{W}{\iG, x :
+      \ip{V}{\iG}}[c~u/x]$.
+    Par substitutivité de l'interprétation, on a
+    $\ip{W}{\iG, x : \ip{V}{\iG}}[c~u/x] \eqbi
+    \ip{W[u/x]}{\iG}$ puisque les coercions de sorte à sorte ne peuvent
+    être que l'identité. On peut donc déduire:
+    $\iG{} \typec \ip{f~u}{\iG} : \ip{W[u/x]}{\iG}$ par \irule{Conv}.
+
+    \item[- \irule{Sigma}, \irule{Sum}, \irule{LetSum}, \irule{Subset}:]
+      Direct par induction ou un raisonnement similaire à \irule{App}.      
+  \end{induction}
+\end{proof}
 
 %%% Local Variables: 
 %%% mode: latex

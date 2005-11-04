@@ -497,7 +497,8 @@ On a besoin de quelques lemmes pour montrer que notre système où
 
 La restriction montre que notre notion de coercion est correcte
 vis-à-vis du typage. On peut dériver les mêmes jugements dans des
-contextes où les variables ont des types équivalents.
+contextes où les variables ont des types équivalents. Ici la taille des
+dérivations ne change pas.
 
 \begin{lemma}[Restriction]
   \label{narrowing-a}
@@ -505,12 +506,15 @@ contextes où les variables ont des types équivalents.
   \left\{ \begin{array}{lcl}
       \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
       & `^{} & \\
-      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T
+      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T' \suba T 
     \end{array}
   \right. \]
 \end{lemma}
 
 \begin{proof}
+  On peut remarquer que si $T `: \setproptype$ alors $T'$ doit être égal
+  à $T$ par définition de la coercion.
+
   Par induction sur la taille de la dérivation de typage ou de bonne formation.
     
   \begin{induction}
@@ -528,17 +532,17 @@ contextes où les variables ont des types équivalents.
         {$\wf `G, x : S$}
         {$s `: \setproptype$}
       \end{prooftree}
-      On a $`G \type S' : s$, donc par \irule{WfVar}, $\typewf `G, x : S'$.  
+      On a donc $`G \type S' : s$, et par \irule{WfVar}, $\typewf `G, x : S'$.  
       
     \item[\protect{$`D `= `D', y : U$}]
       La racine de la dérivation est de la forme:
       \begin{prooftree}
         \UAX{WfVar}
-        {$`G, x : S, `D' \type U : t$}
+        {$`G, x : S, `D' \type U : s$}
         {$\wf `G, x : S, `D', y : U$}
         {$s `: \setproptype$}
       \end{prooftree}
-      Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : t$,
+      Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : s$,
       on a donc bien $\typewf `G, x : S', `D', y : U$ par \irule{WfVar}.
     \end{induction}
     
@@ -548,7 +552,7 @@ contextes où les variables ont des types équivalents.
     \case{Var}
     Par induction, $\typewf `G, x : S', `D$. La seule différence avec le
     contexte précédent est le type associé à $x$, donc si $t \not= x$, on
-    peut simplement réappliquer \irule{Var}. Si $t `= x$ on construit la
+    peut simplement réappliquer \irule{Var}. Si $t `= x$ on a la
     dérivation:
 
     \begin{prooftree}
@@ -557,13 +561,9 @@ contextes où les variables ont des types équivalents.
       {$x : S' `: `G$}
       {$`G, x : S', `D \seq x : S'$}
       {}
-      \AXC{$`G, x : S', `D \type S,S' : s$}
-      \AXC{$S' \sub S$} % `G \subt 
-      \TIC{$`G, x : S', `D \type x : S$}
     \end{prooftree}
     
-    Par l'affaiblissement (lemme \ref{weakening-a}) et $`G \type S,S' : s$,
-    on obtient la prémisse $`G, x : S', `D \type S,S' : s$.
+    On a bien $S' \suba S$, la propriété est donc bien vérifiée.
     
     \case{Prod} 
     Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
@@ -840,19 +840,20 @@ système de typage vis-à-vis du système déclaratif.
     $`E V', `G, x: T, y : U \typea v : V' \suba V$.
     On a $\mualgo(S) = \Sigma x : T'.U'$ avec $T' \suba T$ et $U'
     \suba U$. Par restriction on peut donc dériver $`G, x : T', y : U'
-    \seq v : V'$.
+    \seq v : V'' \suba V'$.
     
     On a donc la dérivation suivante dans le système algorithmique:
     \begin{prooftree}
       \TAX{LetSum}
       {$`G \seq t : S$}
       {$\mualgo(S) = `S x : T'. U'$}
-      {$`G, x : T', y : U' \seq v : V'$}
-      {$`G \seq \letml~(x, u) = t~\inml~v : V'$}
+      {$`G, x : T', y : U' \seq v : V''$}
+      {$`G \seq \letml~(x, u) = t~\inml~v : V''$}
       {}
     \end{prooftree}
     
-    Comme $V' \suba V$, la propriété est vraie.
+    Comme $V'' \suba V' \suba V$, la propriété est vraie par
+    transitivité de la coercion.
 
     \casetwo{Conv}{Coerce}
     Dans les deux cas on a inductivement $`E T', `G \typea t : T'
