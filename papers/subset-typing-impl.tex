@@ -87,47 +87,6 @@ On fait l'extension aux contextes de la façon suivante:
 \item $\ipG{`G, x : T} =  \ipG{`G}, x : \ipt{T}{\ipG{`G}}$
 \end{itemize}
 
-\subsection{Coercions explicites}
-On définit la fonction $\sref{coerce}$ de façon récursive sur la dérivation
-de coercion: $\sref{coerce}~U~V = c$ si $c : U \subi V$.
-On va décrire informellement le sens de chaque règle:
-\typenvi
-\vspace{1.4em}
-\begin{itemize}
-\item[ \SubConvI\DP:] \quad\\\vspace{1em}
-
-  Crée une coercion identité puisque \CCI{}~a la règle de conversion. 
-  \vspace{1em}
-
-\item[\SubLeftI\DP:] \quad\\\vspace{1em}
-
-  Engendre une projection,
-  c'est le cas où l'on ne s'intéresse pas à la preuve accompagnant
-  l'objet. 
-  \vspace{1em}
-
-\item[\SubRightI\DP:] \quad\\\vspace{1em}
-
-  Correspond à la génération d'une
-  obligation de preuve dans \PVS. On utilise le mécanisme des variables
-  existentielles (notées $?:\text{type}$) décrit plus loin pour donner 
-  l'information au système qu'il faut compléter le terme à un endroit
-  donné avec un nouveau terme de type approprié. On peut aisément créer
-  des obligations qui ne seront pas prouvables mais cela relève de la
-  responsabilité de l'utilisateur.
-  \vspace{1em}
-
-\item[\SubProdI\DP,] \quad\\\vspace{1em}
-  
-
-\item[\SubSigmaI\DP:] \quad\\\vspace{1em}
-
-  Réalisent respectivement
-  les coercions pour les produits fonctionnels et cartésiens.
-
-\end{itemize}
-
-\subticFig
 
 % \input{typing-impl-new}
 %\typeinewFig
@@ -141,26 +100,26 @@ valide de \CCI{}. On rappelle que \CCI{} est équivalent au premier
 calcul présenté où la règle de coercion est remplacée par la règle de conversion.
 
 \typenvi
-\subsubsection{Remarques sur l'interprétation}
-\begin{itemize}
-\item[{\bf Déterminisme}] L'interprétation est déterministe par rapport à la
-  forme des termes. On peut en déduire que
-  si $`G \typea x : T$ et $`G \typea \Sigma x : T.U : s$ alors 
-  si $\ipt{T}{\ipG{`G}} = T'$ on a $\ipt{\Sigma x : T.U}{\ipG{`G}} =
-  \Sigma x : T'. U'$.  
+% \subsubsection{Remarques sur l'interprétation}
+% \begin{itemize}
+% \item[{\bf Déterminisme}] L'interprétation est déterministe par rapport à la
+%   forme des termes. On peut en déduire que
+%   si $`G \typea x : T$ et $`G \typea \Sigma x : T.U : s$ alors 
+%   si $\ipt{T}{\ipG{`G}} = T'$ on a $\ipt{\Sigma x : T.U}{\ipG{`G}} =
+%   \Sigma x : T'. U'$.  
   
-\item[{\bf Conservation de la structure}] On voit très clairement que notre
-  interprétation est un homomorphisme module les coercions, 
-  c'est à dire qu'elle préserve globallement la structure des termes et
-  des types.
+% \item[{\bf Conservation de la structure}] On voit très clairement que notre
+%   interprétation est un homomorphisme module les coercions, 
+%   c'est à dire qu'elle préserve globallement la structure des termes et
+%   des types.
 
-\item[{\bf Consevation du typage}] Notre interprétation transforme un terme
-  bien typé dans le système algorithmique en un terme bien typé dans
-  \CCI{}. Ce résultat va découler du fait que l'on reconstruit implicitement
-  la dérivation de typage du système algorithmique dans notre
-  interprétation en ajoutant les coercions nécessaires pour être bien
-  typé dans \CCI{}.
-\end{itemize}
+% \item[{\bf Consevation du typage}] Notre interprétation transforme un terme
+%   bien typé dans le système algorithmique en un terme bien typé dans
+%   \CCI{}. Ce résultat va découler du fait que l'on reconstruit implicitement
+%   la dérivation de typage du système algorithmique dans notre
+%   interprétation en ajoutant les coercions nécessaires pour être bien
+%   typé dans \CCI{}.
+% \end{itemize}
 
 \subsubsection{Correction}
 On veut montrer le théorème suivant: si $`G \typea t : T$ alors $\iG
@@ -195,275 +154,7 @@ dériver ce jugement:
     \Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$}
 \end{prooftree}
 
-\paragraph{Coercion}
-On conserve les propriétés suivantes sur la coercion:
-
-\begin{lemma}[Coercion et conversion]
-  \label{coercioni-conversion}
-  Si $`G \typea S,T,U : s$, $S \eqbi T$ et $`G \typec
-  c : T \sub U$ alors $\typec c' : S \sub U$ avec $c \eqbi c'$.
-\end{lemma}
-
-\begin{proof}
-  Par simple inspection des règles on voit que le jugement ne peut
-  distinguer deux termes $\beta$-équivalents (ils ont forcément les
-  mêmes formes normales de tête). 
-\end{proof}
-
-\begin{lemma}[Coercion et formes normales de tête]
-  \label{coercioni-hnf}
-  Si $T \suba U$ alors $\hnf{T}~\suba \hnf{U}$ est dérivable par une
-  dérivation plus petite ou égale.
-\end{lemma}
-
-\begin{proof}
-  \begin{induction}[subtyping-algo]
-
-    \case{SubConv} Trivial.
-    \case{SubHnf} On prend la dérivation en prémisse.
-    \casetwo{SubProd}{SubSigma} $T$ et $U$ sont égaux à leurs formes normales
-    de tête, direct.
-
-    \case{SubProof}
-    Par induction $\hnf{T}~\suba \hnf{V}$, on applique \irule{SubProof}
-    \case{SubSubset} idem.
-  \end{induction}  
-\end{proof}
-
-
-
-\begin{lemma}[Transitivité de la coercion]
-  \label{subi-trans}
-  S'il existe $c_1, c_2$ tels que $`G \typec c_1 : A \subi B$ et $`G \typec c_2 : B \subi C$
-  alors $`E!c, `G \typec c : A \subi C$ et $c = c_2 `o c_1$.
-\end{lemma}
-\begin{proof}
-  De la même façon que pour la preuve de transitivité de la
-  coercion algorithmique, on élimine la règle \irule{SubTrans} qui a la
-  forme:
-  \begin{prooftree}
-    \AXC{$`G \typec c_1 : A \suba B$}
-    \AXC{$`G \typec c_2 : B \suba C$}
-    \BIC{$`G \typec c_2 `o c_1 : A \suba C$}
-  \end{prooftree}
-  
-  
-  \begin{induction}[subtyping-decl]
-    
-    \case{SubConv}\quad
-    \begin{prooftree}
-      \AXC{$S \eqbi T$}
-      \UIC{$`G \typec c_1 = \lambda x.x : S \sub T$}
-      \AXC{$`G \typec c_2 : T \sub U$}
-      \BIC{$`G \typec c_2 `o c_1 : S \sub U$}
-    \end{prooftree}
-    
-    Par le lemme précédent, on élimine trivialement \irule{SubTrans}.
-
-    \case{SubHnf}\quad
-    \begin{prooftree}
-      \AXC{$\hnf{S}~\sub \hnf{T}$}
-      \UIC{$S \sub T$}
-      \AXC{$T \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-    
-    Si $T \sub U$ alors $\hnf{T}~\suba \hnf{U}$ est dérivable par une
-    dérivation plus petite ou égale (lemme \ref{coercion-hnf}). 
-    Or on a $\hnf{S}~\suba \hnf{T}$. Donc $\hnf{S}~\suba \hnf{U}$ et par
-    \irule{SubHnf}, $S \sub U$.
-    
-    \case{SubProd}\quad
-    \begin{prooftree}
-      \AXC{$X' \sub X$}
-      \AXC{$Y \sub Y'$}
-      \BIC{$\Pi x : X.Y \sub \Pi x' : X'.Y'$}
-      \AXC{$\Pi x' : X'.Y' \sub U$}
-      \BIC{$\Pi x : X.Y \sub U$}
-    \end{prooftree}
-    
-    Si $\Pi x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    = \Pi y : S.T$ et $S \sub X'$, $Y' \sub T$.
-    Par induction (les dérivations sont plus petites que la dérivation
-    $\Pi x' : X'.Y' \sub U$), $S \sub X$ et $Y \sub T$ donc $\Pi x : X.Y
-    \sub \Pi y : S.T$ 
-    et enfin $\Pi x : X.Y \sub U$ par le lemme \ref{coercion-mu}.
-
-    De façon équivalente pour le second cas.
-
-    \case{SubSigma}\quad
-    \begin{prooftree}
-      \AXC{$X \sub X'$}
-      \AXC{$Y \sub Y'$}
-      \BIC{$\Sigma x : X.Y \sub \Sigma x' : X'.Y'$}
-      \AXC{$\Sigma x' : X'.Y' \sub U$}
-      \BIC{$\Sigma x : X.Y \sub U$}
-    \end{prooftree}
-    
-    Si $\Sigma x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    = \Sigma y : S.T$ et $X' \sub S$, $Y' \sub T$.
-    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma x : X.Y \sub
-    \Sigma y : S.T$ et enfin $\Sigma x : X.Y \sub U$ (lemme \ref{coercion-mu}).
-    
-    De façon équivalente pour le second cas.
-
-    \case{SubProof}\quad
-    \begin{prooftree}
-      \AXC{$S \sub V$}
-      \UIC{$S \sub \mysubset{x}{V}{P}$}
-      \AXC{$\mysubset{x}{V}{P} \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-    
-    Si $\mysubset{x}{V}{P} \sub U$ alors $\mualgo(U) = \mualgo(V)$.
-    Comme $S \sub V$ on a $S \sub \mualgo(V)$ par une dérivation plus
-    petite ou égale, donc par induction, $S \sub \mualgo(U)$. Donc $S \sub U$.
-    
-    De façon équivalente pour le second cas.
-
-    \case{SubSub}
-    Cas identique à \irule{SubProof}
-    
-  \end{induction}
-\end{proof}
-
-\begin{lemma}[Symétrie de la coercion]
-  \label{subi-sym}
-  S'il existe $c$ tel que $`G \typec c : A \subi B$
-  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbi
-  \sref{id}~A$ et $c `o c^{-1} \eqbi \sref{id}~B$, où
-  $\sref{id} \coloneqq \lambda X : Set.\lambda x : X. x$.
-\end{lemma}
-\begin{proof}
-  Par induction sur la dérivation de $c$.
-  \begin{induction}
-    \case{SubConv} Trivial.
-
-    \case{SubHnf} Par induction, il existe $c^{-1} : \hnf{B} \subi
-    \hnf{A}$, $c_1$ est donc de type $B \subi A$ par conversion.
-
-    \case{SubProd}
-    Par induction on a: $`G \typec c_1^{-1} : T \subi U$ et $`G, x : U \typec c_2^{-1} : W \subi
-    V[c_1~x/x]$.
-    On peut donc construire la coercion:
-    $\lambda f : \Pi x : U.W. \lambda x : T. c_2^{-1}~(f~(c_1^{-1}~x))$
-    de type $\Pi x : U.W \subi \Pi x : T.V$ car:
-    $f~(c_1^{-1}~x) : W[c_1^{-1}~x/x]$ donc $c_2^{-1}~(f~(c_1^{-1}~x)) : 
-    V[c_1~(c_1^{-1}~x)/x]$. Or $c_1 `o c^{-1}_1 \eqbi \sref{id}~T$, donc
-    $V[c_1~(c_1^{-1}~x)/x] \eqbi V$.
-
-    On va maintenant montrer les identités (avec des termes à la Curry):
-
-    $\begin{array}{ll}
-      \firsteq{(\lambda f.c_2 `o f `o c_1) `o 
-        (\lambda f.c_2^{-1} `o f `o c_1^{-1})}
-      
-      \step{Définition de la composition}
-      {\eqbi}{\lambda f.c `o c^{-1}}
-      
-      \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
-    \end{array}$
-
-
-
-
-    \case{SubSigma}
-    De là même façon.
-
-    \case{SubSub}
-    Par induction $`G \typec c^{-1} : T \subi U$, on peut donc appliquer
-    \irule{SubProof} pour obtenir la coercion:
-    $\lambda t : T.\elt{U}{(\lambda x :
-      U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}$
-    de type : $T \subi \mysubset{x}{U}{P}$.
-    
-    On a l'équation suivante:
-
-    $\begin{array}{ll}
-      \firsteq{c `o \pi_1 `o \lambda t : T.\elt{U}{(\lambda x :
-          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}}
-      
-      \step{Définition de $\pi_1$}
-      {\eqbi}{c `o c^{-1}}
-      
-      \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
-    \end{array}$
-
-    De même:
-
-    $\begin{array}{ll}
-      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
-          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
-        `o c `o \pi_1}
-      
-      \step{Définition de la composition}
-      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}
-        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
-    
-    \step{Hypothèse d'induction}
-    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
-
-    \step{Indifférence aux preuves!}
-    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
-
-    \end{array}$
-
-    \case{SubProof}
-    C'est le cas dual, ici on a par induction $c^{-1} : U \subi T$.
-    On veut construire une coercion de type $\mysubset{x}{U}{P} \subi
-    T$.
-    On applique donc \irule{SubSub} pour obtenir:
-    $c^{-1} `o \pi_1$.
-    On a bien:
-
-    $\begin{array}{ll}
-      \firsteq{c^{-1} `o \pi_1 `o (\lambda t : T.
-        \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}})}
-      
-      \step{Définition de la composition}
-      {\eqbi}{c^{-1} `o (\lambda t : T.
-        \pi_1~(\elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}))}
-        
-      \step{Définition de $\pi_1$}
-      {\eqbi}{c^{-1} `o (\lambda t : T. c~t)}
-      
-      \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
-    \end{array}
-    \vspace{0.2em}
-    $
-    
-    et
-    \vspace{0.2em}
-
-    $\begin{array}{ll}
-      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
-          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
-        `o c `o \pi_1}
-      
-      \step{Définition de la composition}
-      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}
-        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
-    
-    \step{Hypothèse d'induction}
-    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
-
-    \step{Indifférence aux preuves!}
-    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
-
-    \end{array}$
-    
-    
-
-
-  \end{induction}
-\end{proof}
+\input{subset-typing-impl-subtyping}
 
 
 \paragraph{Substitutivité}
