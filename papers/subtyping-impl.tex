@@ -1,3 +1,8 @@
+\def\subihnf{\hnf{\subi}}
+
+\newcommand{\subimplhnf}[4]{#1 \typec #2 : #3 {\subihnf}
+  #4}
+
 \newcommand{\SubConvI}{%
 \UAX{SubConv}
 {$T \eqbi U$}
@@ -7,7 +12,7 @@
 
 \def\SubHnfI{%
 \UAX{SubHnf}
-{$\subimpl{`G}{c}{\hnf{T}}{\hnf{U}}$}
+{$\subimplhnf{`G}{c}{\hnf{T}}{\hnf{U}}$}
 {$\subimpl{`G}{c}{T}{U}$}
 {} 
 }
@@ -16,7 +21,7 @@
 \BAX{SubProd}
 {$\subimpl{`G}{c_1}{U}{T}$}
 {$\subimpl{`G, x : U}{c_2}{V[c_1~x/x]}{W}$}
-{$\subimpl{`G}{\lambda f : \Pi x : T.V.~\lambda x : U.~c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
+{$\subimplhnf{`G}{\lambda f : \Pi x : T.V.~\lambda x : U.~c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
 {}
 }
 
@@ -24,7 +29,7 @@
 \BAX{SubSigma}
 {$\subimpl{`G}{c_1}{T}{U}$}
 {$\subimpl{`G, x : T}{c_2}{V}{W[c_1~x/x]}$}
-{$\subimpl{`G}
+{$\subimplhnf{`G}
   {\lambda t : \Sigma x : T. V.~\letml~(x, y) = t~\inml~(c_1~x, c_2~y)}
   {\Sigma x : T. V}{\Sigma x : U. W}$}
 {}
@@ -35,7 +40,7 @@
 \UAX{SubSub}
 %{$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{T}{U}$}
-{$\subimpl{`G}{\lambda t : \mysubset{x}{T}{P}.~c~(\pi_1~t)}
+{$\subimplhnf{`G}{\lambda t : \mysubset{x}{T}{P}.~c~(\pi_1~t)}
   {\mysubset{x}{T}{P}}{U}$}
 {}
 }
@@ -45,7 +50,7 @@
 \UAX{SubProof}
 %{$`G, x : U \typec P : \Prop$}
 {$\subimpl{`G}{c}{T}{U}$}
-{$\subimpl{`G}
+{$\subimplhnf{`G}
   {\lambda t : T.~\elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}}
   {T}{\mysubset{x}{U}{P}}$}
 {}
@@ -131,9 +136,9 @@
     \def\fCenter{\subtd}
     
     \vspace{\infvspace}
-    \SubConvI\DP
-    \quad
     \SubHnfI\DP
+    \quad
+    \SubConvI\DP
 
     \vspace{\infvspace}
     \SubProdI\DP
