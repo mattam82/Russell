@@ -213,6 +213,9 @@ On conserve les propriétés suivantes sur la coercion:
   \end{itemize}  
 \end{proof}
 
+\input{subset-typing-impl-subtyping-subst}
+
+
 De la même façon que pour la preuve de transitivité de la
 coercion algorithmique, on élimine la règle \irule{SubTrans} qui a la
 forme:
@@ -248,287 +251,40 @@ forme:
   \end{induction}
 \end{proof}
 
-\begin{lemma}[Transitivité de la coercion]
-  \label{subi-trans}
-  S'il existe $c_1, c_2$ tels que $`G \typec c_1 : S \sub T$ et $`G
-  \typec c_2 : T \sub U$
-  alors $`E!c, `G \typec c : S \sub U$ et $c \eqbi c_2 `o c_1$.
+\input{subset-typing-impl-subtyping-trans}
+
+\begin{lemma}[Coercion identité]
+  Si $`G \typec T : s$ alors il existe $cid_T$,
+  $\subimpl{`G}{cid_T}{T}{T}$ et pour tout $t$, $`G \typec t : T$,
+  $cid_T t \eqbi t$.
 \end{lemma}
+
 \begin{proof}
+  Par induction sur la forme de $T$.
+
   
-  \begin{induction}[subtyping-decl]
-    
-    \case{SubConv}\quad
-    \begin{prooftree}
-      \AXC{$S \eqbi T$}
-      \UIC{$`G \typec c_1 = \lambda x.x : S \sub T$}
-      \AXC{$`G \typec c_2 : T \sub U$}
-      \BIC{$`G \typec c_2 `o c_1 : S \sub U$}
-    \end{prooftree}
-    
-    Par le lemme \ref{coercion-conversion-impl}, on élimine trivialement
-    \irule{SubTrans}, des deux c\^ot\'es. On considere donc seulement
-    les derivations avec \irule{SubHnf} pour les deux premisses.
-    
-    \case{SubHnf}\quad
-    \begin{prooftree}
-      \AXC{$`G \typec c : \hnf{S}~\subhnf \hnf{T}$}
-      \UIC{$`G \typec c : S \sub T$}
-      \AXC{$`G \typec c' : \hnf{T}~\subhnf \hnf{U}$}
-      \UIC{$`G \typec c' : T \sub U$}
-      \BIC{$`G \typec c' `o c: S \sub U$}
-    \end{prooftree}
 
-    On va proceder par induction sur les derivations de typage dans
-    le systeme $\subhnf$ pour montrer que $\subimplhnf{`G}{a}{\hnf{S}}{\hnf{T}}$ et
-    $\subimplhnf{`G}{b}{\hnf{T}}{\hnf{U}}$ implique qu'il existe $c \eqbi b `o a :
-    \hnf{S} \subhnf \hnf{U}$.
-    \begin{induction}
-      
-      \case{SubProd}\quad
-      \begin{prooftree}
-        \AXC{$`G \typec c_1 : X' \sub X$}
-        \AXC{$`G, x : X' \typec c_2 : Y[c_1~x/x] \sub Y'$}
-        \BIC{$`G \typec c = \lambda f.\lambda x.c_2~(f~(c_1~x)) : \Pi x : X.Y \subhnf \Pi x : X'.Y'$}
-        \AXC{$`G \typec c' : \Pi x : X'.Y' \subhnf \hnf{U}$}
-        \BIC{$$} %$`G \typec c = c' `o (\lambda f.\lambda x.~c_2~(f~(c_1~x))): \Pi x : X.Y \sub U$}
-      \end{prooftree}
-      
-      Si $\subimplhnf{`G}{c'}{\Pi x : X'.Y'}{\hnf{U}}$,
-      alors par induction cette derivation peut être
-      réecrite en une dérivation sans application de \irule{SubTrans} qui 
-      sera nécessairement de la forme:
-
-      \begin{prooftree}
-        \AXC{$`G \typec d_1 : S \sub X'$}
-        \AXC{$`G, x : S \typec d_2 : Y'[d_1~x/x] \sub T$}
-        \BIC{$\subimplhnf{`G}{\lambda f.\lambda x.d_2~(f~(d_1~x))}
-          {\Pi x : X'.Y'}{\Pi x : S.T}$}
-        \UIC{\vdots}
-        \noLine
-        \UIC{$\mathcal{D}$}
-        \UIC{$`G \typec c' : \Pi x : X'.Y' \subhnf U$}
-      \end{prooftree}
-      
-      Ici $\mathcal{D}$ représente un nombre arbitraire d'applications des
-      règles \irule{SubProof} et \irule{SubHnf}.
-
-      Par induction, il existe $e_1$, $e_2$, tels que
-      $\subimpl{`G}{e_1 \eqbi c_1 `o d_1}{S}{X}$ et 
-      $\subimpl{`G}{e_2 \eqbi c_2 `o d_2}{Y[e~x/x]}{T}$, donc 
-      $\subimplhnf{`G}{e = \lambda f.\lambda x.~e_2~f~(e_1~x)}{\Pi x : X.Y}{\Pi x
-        : S.T}$ est dérivable sans utiliser \irule{SubTrans}.
-      
-      On peut donc construire la dérivation:
-      \begin{prooftree}      
-        \AXC{$\subimpl{`G}{e}{\Pi x : X.Y}{\Pi x : S.T}$}
-        \UIC{$\vdots$}
-        \noLine
-        \UIC{$\mathcal{D}$}
-        \UIC{$\subimpl{`G}{f}{\Pi x : X.Y}{U}$}
-      \end{prooftree}
-      
-      Qui n'a plus d'application de la règle de transitivité.
-
-
-      \case{SubSigma}\quad
-      De façon équivalente à \irule{SubProd}.
-      
-      \case{SubProof}\quad
-      \begin{prooftree}
-        \AXC{$\subimpl{`G}{c}{S}{T}$}
-        \UIC{$\subimplhnf{`G}{d = (\lambda t : S.~\elt{T}{(\lambda x :
-              T.P)}{(c~t)}{?_{P[c~t/x]}})}
-          {\hnf{S}}{\mysubset{x}{T}{P}}$}
-        %\UIC{$\subimpl{`G}{d}{S}{\mysubset{x}{T}{P}}$}
-        \AXC{$\subimplhnf{`G}{e}{\mysubset{x}{T}{P}}{\hnf{U}}$}
-        %\UIC{$\subimpl{`G}{e}{\mysubset{x}{T}{P}}{U}$}
-        \BIC{$$} %$\subimpl{`G}{e `o d}{S}{U}$}
-      \end{prooftree}
-      
-      Si $\subimplhnf{`G}{e}{\mysubset{x}{T}{P}}{\hnf{U}}$ alors
-      $\subimpl{`G}{e'}{T}{\hnf{U}}$ est
-      dérivable par une dérivation plus petite et $e = e' `o \pi_1$.
-      Par induction, avec l'hypoth\`ese $\subimpl{`G}{c}{S}{T}$, il existe $f$ tel que
-      $\subimpl{`G}{f}{S}{U}$ est dérivable par une dérivation
-      n'utilisant pas \irule{SubTrans} et $f \eqbi e' `o c$. 
-      On a bien $e `o d \eqbi e' `o \pi_1 `o d \eqbi e' `o c$ car
-      \begin{eqnarray*}
-        e' `o \pi_1 `o d & = & e' `o \pi_1 `o (\lambda t : S.~\elt{T}{(\lambda x :
-          T.P)}{(c~t)}{?_{P[c~t/x]}}) \\
-        & = &
-        \lambda x.e'~(\pi_1~((\lambda t : S.~\elt{T}{(\lambda x :
-          T.P)}{(c~t)}{?_{P[c~t/x]}})~x)) \\
-        & "->"_{\beta} &
-        \lambda x.e'~(\pi_1~(\elt{T}{(\lambda x :
-          T.P)}{(c~x)}{?_{P[c~x/x]}})) \\
-        & "->"_{\beta} & \lambda x.e'~(c~x) \\
-        & = & e' `o c
-      \end{eqnarray*}      
-
-      \case{SubSub}\quad
-      \begin{prooftree}
-        \AXC{$\subimpl{`G}{c}{S}{\hnf{T}}$}
-        \UIC{$\subimplhnf{`G}{d = c `o \pi_1}
-          {\mysubset{x}{S}{P}}{\hnf{T}}$}
-        % \UIC{$\subimpl{`G}{d}
-        %{\mysubset{x}{S}{P}}{T}$}        
-        \AXC{$\subimplhnf{`G}{e}{\hnf{T}}{\hnf{U}}$}
-        %\UIC{$\subimpl{`G}{e}{T}{U}$}
-        \BIC{$$} %$\subimpl{`G}{e `o d}{\mysubset{x}{S}{P}}{U}$}
-      \end{prooftree}
-      
-      Par induction il existe une dérivation de $\subimpl{`G}{f \eqbi e `o c}
-      {S}{U}$ n'utilisant pas \irule{SubTrans}. On peut donc dériver:
-
-      \begin{prooftree}
-        \AXC{$\subimpl{`G}{f}{S}{U}$}
-        \UIC{$\subimpl{`G}{f `o \pi_1}
-          {\mysubset{x}{S}{P}}{U}$}
-      \end{prooftree}
-      
-      On a bien $f `o \pi_1 \eqbi e `o c `o \pi_1$.
-    
-    \end{induction}
-  \end{induction}
 \end{proof}
+
+
+On peut maintenant énoncer le lemme de symmétrie:
 
 \begin{lemma}[Symétrie de la coercion]
   \label{subi-sym}
   S'il existe $c$ tel que $`G \typec c : A \subi B$
-  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbi
-  \sref{id}~A$ et $c `o c^{-1} \eqbi \sref{id}~B$, où
+  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbei
+  \sref{id}~A$ et $c `o c^{-1} \eqbei \sref{id}~B$, où
   $\sref{id} \coloneqq \lambda X : Set.\lambda x : X. x$.
 \end{lemma}
 \begin{proof}
-  Par induction sur la dérivation de $c$.
-  \begin{induction}
-    \case{SubConv} Trivial.
-
-    \case{SubHnf} Par induction, il existe $c^{-1} : \hnf{B} \subi
-    \hnf{A}$, $c_1$ est donc de type $B \subi A$ par conversion.
-
-    \case{SubProd}
-    Par induction on a: $`G \typec c_1^{-1} : T \subi U$ et $`G, x : U \typec c_2^{-1} : W \subi
-    V[c_1~x/x]$.
-    On peut donc construire la coercion:
-    $\lambda f : \Pi x : U.W. \lambda x : T. c_2^{-1}~(f~(c_1^{-1}~x))$
-    de type $\Pi x : U.W \subi \Pi x : T.V$ car:
-    $f~(c_1^{-1}~x) : W[c_1^{-1}~x/x]$ donc $c_2^{-1}~(f~(c_1^{-1}~x)) : 
-    V[c_1~(c_1^{-1}~x)/x]$. Or $c_1 `o c^{-1}_1 \eqbi \sref{id}~T$, donc
-    $V[c_1~(c_1^{-1}~x)/x] \eqbi V$.
-
-    On va maintenant montrer les identités (avec des termes à la Curry):
-
-    $\begin{array}{ll}
-      \firsteq{(\lambda f.c_2 `o f `o c_1) `o 
-        (\lambda f.c_2^{-1} `o f `o c_1^{-1})}
-      
-      \step{Définition de la composition}
-      {\eqbi}{\lambda f.c `o c^{-1}}
-      
-      \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
-    \end{array}$
-
-
-
-
-    \case{SubSigma}
-    De là même façon.
-
-    \case{SubSub}
-    Par induction $`G \typec c^{-1} : T \subi U$, on peut donc appliquer
-    \irule{SubProof} pour obtenir la coercion:
-    $\lambda t : T.\elt{U}{(\lambda x :
-      U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}$
-    de type : $T \subi \mysubset{x}{U}{P}$.
-    
-    On a l'équation suivante:
-
-    $\begin{array}{ll}
-      \firsteq{c `o \pi_1 `o \lambda t : T.\elt{U}{(\lambda x :
-          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}}
-      
-      \step{Définition de $\pi_1$}
-      {\eqbi}{c `o c^{-1}}
-      
-      \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
-    \end{array}$
-
-    De même:
-
-    $\begin{array}{ll}
-      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
-          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
-        `o c `o \pi_1}
-      
-      \step{Définition de la composition}
-      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}
-        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
-    
-    \step{Hypothèse d'induction}
-    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
-
-    \step{Indifférence aux preuves!}
-    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
-
-    \end{array}$
-
-    \case{SubProof}
-    C'est le cas dual, ici on a par induction $c^{-1} : U \subi T$.
-    On veut construire une coercion de type $\mysubset{x}{U}{P} \subi
-    T$.
-    On applique donc \irule{SubSub} pour obtenir:
-    $c^{-1} `o \pi_1$.
-    On a bien:
-
-    $\begin{array}{ll}
-      \firsteq{c^{-1} `o \pi_1 `o (\lambda t : T.
-        \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}})}
-      
-      \step{Définition de la composition}
-      {\eqbi}{c^{-1} `o (\lambda t : T.
-        \pi_1~(\elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}))}
-        
-      \step{Définition de $\pi_1$}
-      {\eqbi}{c^{-1} `o (\lambda t : T. c~t)}
-      
-      \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
-    \end{array}
-    \vspace{0.2em}
-    $
-    
-    et
-    \vspace{0.2em}
-
-    $\begin{array}{ll}
-      \firsteq{(\lambda t : T.\elt{U}{(\lambda x :
-          U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}})
-        `o c `o \pi_1}
-      
-      \step{Définition de la composition}
-      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}
-        {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
-    
-    \step{Hypothèse d'induction}
-    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
-        \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
-
-    \step{Indifférence aux preuves!}
-    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
-
-    \end{array}$
-    
-    
-
-
-  \end{induction}
+  On sait que le jugement $\subi$ est symmétrique, c'est à dire qu'on a
+  l'existence des inverses. On utilise la transitivité pour montrer le
+  reste du lemme. Si $\subimpl{`G}{c}{A}{B}$ et
+  $\subimpl{`G}{c^{-1}}{B}{A}$ alors il existe $f$ et $f^{-1}$ tel que
+  $\subimpl{`G}{f \eqbi c^{-1} `o c}{A}{A}$ et $\subimpl{`G}{f^{-1}
+    \eqbi c `o c^{-1}}{B}{B}$. Par unicité des coercions, $f \eqbei \lambda
+  x : A.x$ et $f^{-1} \eqbei \lambda x : B.x$. En général $f$ et $f'$
+  sont en forme $\eta$-longue et pas l'identité.
 \end{proof}
 
 %%% Local Variables: 
