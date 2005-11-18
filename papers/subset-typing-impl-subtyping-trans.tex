@@ -1,0 +1,264 @@
+\begin{lemma}[Transitivité de la coercion]
+  \label{subi-trans}
+  S'il existe $c_1, c_2$ tels que $`G \typec c_1 : S \sub T$ et $`G
+  \typec c_2 : T \sub U$
+  alors $`E!c, `G \typec c : S \sub U$ et $c \eqbi c_2 `o c_1$.
+\end{lemma}
+\begin{proof}
+  
+  \begin{induction}[subtyping-decl]
+    
+    \case{SubConv}\quad
+    \begin{prooftree}
+      \AXC{$S \eqbi T$}
+      \UIC{$`G \typec c_1 = \lambda x.x : S \sub T$}
+      \AXC{$`G \typec c_2 : T \sub U$}
+      \BIC{$`G \typec c_2 `o c_1 : S \sub U$}
+    \end{prooftree}
+    
+    Par le lemme \ref{coercion-conversion-impl}, on élimine trivialement
+    \irule{SubTrans}, des deux c\^ot\'es. On considere donc dans le cas suivant uniquement
+    les derivations avec \irule{SubHnf} pour les deux premisses.
+    
+    \case{SubHnf}\quad
+    \begin{prooftree}
+      \AXC{$`G \typec c : \hnf{S}~\subhnf \hnf{T}$}
+      \UIC{$`G \typec c : S \sub T$}
+      \AXC{$`G \typec d : \hnf{T}~\subhnf \hnf{U}$}
+      \UIC{$`G \typec d : T \sub U$}
+      \BIC{$`G \typec d `o c: S \sub U$}
+    \end{prooftree}
+
+    On va proceder par induction sur les derivations de typage dans
+    le systeme $\subhnf$ pour montrer que $\subimplhnf{`G}{a}{\hnf{S}}{\hnf{T}}$ et
+    $\subimplhnf{`G}{b}{\hnf{T}}{\hnf{U}}$ implique qu'il existe $c \eqbi b `o a :
+    \hnf{S} \subhnf \hnf{U}$.
+    \begin{induction}
+      
+      \case{SubProd}\quad
+      \begin{prooftree}
+        \AXC{$`G \typec c_1 : X' \sub X$}
+        \AXC{$`G, x : X' \typec c_2 : Y[c_1~x/x] \sub Y'$}
+        \BIC{$`G \typec c = \lambda f.\lambda x.c_2~(f~(c_1~x)) : \Pi x : X.Y \subhnf \Pi x : X'.Y'$}
+        \AXC{$`G \typec d : \Pi x : X'.Y' \subhnf \hnf{U}$}
+        \BIC{$$} %$`G \typec c = c' `o (\lambda f.\lambda x.~c_2~(f~(c_1~x))): \Pi x : X.Y \sub U$}
+      \end{prooftree}
+      
+      Par induction sur la dérivation $\subimplhnf{`G}{d}{\Pi x :
+        X'.Y'}{\hnf{U}}$. Seules deux règles peuvent s'appliquer à la racine:
+      \begin{induction}
+        \case{SubProd}\quad
+        On a $\hnf{U} = \Pi x : S.T$ et la dérivation a la forme:
+        \begin{prooftree}
+          \AXC{$`G \typec d_1 : S \sub X'$}
+          \AXC{$`G, x : S \typec d_2 : Y'[d_1~x/x] \sub T$}
+          \BIC{$\subimplhnf{`G}{d = (\lambda f.\lambda x.d_2~(f~(d_1~x)))}
+            {\Pi x : X'.Y'}{\Pi x : S.T}$}
+        \end{prooftree}
+
+        Par substitutivité (lemme \ref{subti-coercion-subst}) on a:
+        \[\subimpl{`G, x :
+          S}{c_2[d_1~x/x]}{Y[c_1~x/x][d_1~x/x]}{Y'[d_1~x/x]}\] de même
+        taille que la dérivation de $c_2$.
+        
+        Par induction il existe $e_1, e_2$ tels que:
+        \[\subimpl{`G}{e_1 \eqbi c_1 `o d_1}{S}{X}\] et 
+        \[\subimpl{`G, x : S}{e_2 \eqbi d_2 `o
+          c_2[d_1~x/x]}{Y[c_1~x/x][d_1~x/x]}{T}\]
+        
+        Or $Y[c_1~x/x][d_1~x/x] = Y[c_1~(d_1~x)/x] = Y[e_1~x/x]$.
+        
+        Donc
+        \[\subimplhnf{`G}{e = \lambda f.\lambda x.~e_2~f~(e_1~x)}{\Pi x : X.Y}{\Pi x
+          : S.T}\] est dérivable sans \irule{SubTrans}:
+        
+        \begin{prooftree}
+          \AXC{$`G \typec e_1 : S \sub X$}
+          \AXC{$\subimpl{`G, x : S}{e_2}{Y[e_1~x/x]}{T}$}
+          \BIC{$\subimplhnf{`G}{\lambda f.\lambda x.~e_2~f~(e_1~x)}
+            {\Pi x : X.Y}{\Pi x : S.T}$}
+        \end{prooftree}
+
+        On a bien $e \eqbi d `o c$:
+        \begin{eqnarray*}
+          d `o c & = & 
+          \lambda f : \Pi x : X.Y. d~(c~f) \\
+          & "->"_{\beta} &
+          \lambda f : \Pi x : X.Y. d~(\lambda x : X'.~c_2~(f~(c_1~x))) \\
+          & "->"_{\beta} & 
+          \lambda f : \Pi x : X.Y. \lambda x : S.~d_2~((\lambda x : X'.c_2~(f~(c_1~x)))~(d_1~x)) \\
+          & "->"_{\beta} & 
+          \lambda f : \Pi x : X.Y. \lambda x : S.~d_2~(c_2[d_1~x/x]~(f~(c_1~(d_1~x)))) \\
+          & = & 
+          \lambda f : \Pi x : X.Y. \lambda x : S.~e_2~(f~(e_1~x)) \\
+          & = & e
+        \end{eqnarray*}
+        
+        \case{SubProof}
+        Ici $\hnf{U} = \mysubset{y}{U'}{P}$ et la dérivation commence
+        par:
+        \begin{prooftree}
+          \AXC{$`G \typec e : \Pi x : X'.Y' \sub U'$}
+          \UIC{$\subimplhnf{`G}{d = (\lambda t : (\Pi x : X'.Y'). \elt{U'}{\lambda x :
+                U'.P}{e~t}{?_{P[e~t/x]}})}
+            {\Pi x : X'.Y'}{\mysubset{y}{U'}{P}}$}
+        \end{prooftree}
+
+        Par induction on a $`G \typec f \eqbi e `o c : \Pi x : X.Y \sub
+        U'$.
+        On peut donc dériver:
+        \begin{prooftree}
+          \AXC{$`G \typec f : \Pi x : X.Y \sub U'$}
+          \UIC{$\subimplhnf{`G}{d' = (\lambda t : (\Pi x : X.Y). \elt{U'}{\lambda x :
+                U'.P}{f~t}{?_{P[f~t/x]}})}
+            {\Pi x : X.Y}{\mysubset{y}{U'}{P}}$}
+        \end{prooftree}
+        
+        On peut vérifier que $d' \eqbi d `o c$:
+
+        \begin{eqnarray*}
+          d `o c & = & (\lambda t : (\Pi x : X'.Y'). \elt{U'}{(\lambda x :
+            U'.P)}{(e t)}{?_{P[e~t/x]}}) `o c \\
+          & = &  \lambda t : (\Pi x : X.Y).
+          (\lambda t : (\Pi x : X'.Y').  \elt{U'}{(\lambda x : U'.P)}{(e
+            t)}{?_{P[e~t/x]}})~(c~t) \\          
+          & "->"_{\beta} & 
+          \lambda t : (\Pi x : X.Y).
+          \elt{U'}{(\lambda x :U'.P)}{(e~(c~t))}{?_{P[e~(c~t)/x]}} \\
+          & \eqbi & 
+          \lambda t : (\Pi x : X.Y).
+          \elt{U'}{(\lambda x :U'.P)}{(f~t)}{?_{P[f~t)/x]}} \\
+          & = & d'
+        \end{eqnarray*}
+      
+      \end{induction}
+      
+      \case{SubSigma}\quad
+      De façon équivalente à \irule{SubProd}, on fait le cas si
+      \irule{SubSigma} est utilisée à la prémisse droite.
+
+      \begin{prooftree}
+        \AXC{$\subimplhnf{`G}{c}{T}{\Sigma x : X'.Y'}$}
+        \AXC{$\subimpl{`G}{d_1}{Y'}{Y}$}
+        \AXC{$\subimpl{`G, x : X'}{d_2}{Y'}{Y[d_1~x/x]}$}
+        \BIC{$\subimplhnf{`G}{d = \lambda (x,y).(d_1~x, d_2~y)}{\Sigma x : X'.Y'}{\Sigma x : X.Y}$}
+        \BIC{$$} %$`G \typec c = c' `o (\lambda f.\lambda x.~c_2~(f~(c_1~x))): \Pi x : X.Y \sub U$}
+      \end{prooftree}
+
+      Par induction sur la dérivation de $\subimplhnf{`G}{c}{T}{\Sigma x
+        : X'.Y'}$:
+      \begin{induction}
+        \case{SubSigma}
+        On a:
+        \begin{prooftree}
+          \AXC{$\subimpl{`G}{c_1}{S}{Y'}$}
+          \AXC{$\subimpl{`G, x : X'}{c_2}{T}{Y'[c_1~x/x]}$}
+          \BIC{$\subimplhnf{`G}{c = \lambda (x,y).(c_1~x, c_2~y)}{\Sigma x
+              : S.T}{\Sigma x : X'.Y'}$}
+        \end{prooftree}
+        
+        Par substitutivité on a:
+        \[\subimpl{`G, x :
+          S}{d_2[c_1~x/x]}{Y'[c_1~x/x]}{Y[d_1~x/x][c_1~x/x] = Y[d_1~(c_1~x)/x]}\]
+        
+        Par induction on a donc:
+         \begin{prooftree}
+          \AXC{$\subimpl{`G}{e_1 \eqbi d_1 `o c_1}{S}{Y}$}
+          \AXC{$\subimpl{`G, x : S}{e_2 \eqbi d_2[c_1~x/x] `o c_2}{T}{Y[e_1~x/x]}$}
+          \BIC{$\subimplhnf{`G}{e = \lambda (x,y).(e_1~x, e_2~y)}{\Sigma x
+              : S.T}{\Sigma x : X.Y}$}
+        \end{prooftree}
+        
+        On peut vérifier:
+        \begin{eqnarray*}
+          d `o c & = & \lambda (x,y).d~(c~(x,y)) \\
+          & "->"_\beta & \lambda (x,y).d~(c_1~x, c_2~y) \\
+          & = & \lambda (x,y).(\lambda (x,y).(d_1~x, d_2~y))~(c_1~x,
+          c_2~y) \\
+          & "->"_\beta & 
+          \lambda (x,y). (d_1~(c_1~x), d_2[c_1~x/x] (c_2~y)) \\
+          & \eqbi & \lambda (x,y).(e_1~x, e_2~y) \\
+          & = & e
+        \end{eqnarray*}
+        
+        \case{SubSub}
+        On a: 
+        \begin{prooftree}
+          \AXC{$\subimpl{`G}{c'}{T}{\Sigma x : X'.Y'}$}
+          \UIC{$\subimplhnf{`G}{c = c' `o \pi_1}{\mysubset{y}{T}{P}}{\Sigma x : X'.Y'}$}
+        \end{prooftree}
+        
+        Par induction, $\subimpl{`G}{f \eqbi d `o c'}{T}{\Sigma x :
+          X.Y}$, on a donc:
+        \begin{prooftree}
+          \AXC{$\subimpl{`G}{f \eqbi d `o c'}{T}{\Sigma x : X.Y}$}
+          \UIC{$\subimplhnf{`G}{g = f `o \pi_1}{\mysubset{y}{T}{P}}{\Sigma x : X.Y}$}
+        \end{prooftree}
+        
+        On a bien: $g = f `o \pi_1 \eqbi d `o c' `o \pi_1 \eqbi d `o c$.
+
+      \end{induction}
+      
+      
+      \case{SubProof}\quad
+      \begin{prooftree}
+        \AXC{$\subimpl{`G}{e}{S}{T}$}
+        \UIC{$\subimplhnf{`G}{c = (\lambda t : S.~\elt{T}{(\lambda x :
+              T.P)}{(e~t)}{?_{P[e~t/x]}})}
+          {\hnf{S}}{\mysubset{x}{T}{P}}$}
+        \AXC{$\subimplhnf{`G}{d}{\mysubset{x}{T}{P}}{\hnf{U}}$}
+        \BIC{$$} 
+      \end{prooftree}
+      
+      Si $\subimplhnf{`G}{d}{\mysubset{x}{T}{P}}{\hnf{U}}$ alors
+      $\subimpl{`G}{e'}{T}{\hnf{U}}$ est
+      dérivable par une dérivation plus petite et $d = e' `o \pi_1$.
+      Par induction, avec l'hypoth\`ese $\subimpl{`G}{e}{\hnf{S}}{T}$, il existe $f$ tel que
+      $\subimpl{`G}{f}{\hnf{S}}{\hnf{U}}$ est dérivable par une dérivation
+      n'utilisant pas \irule{SubTrans} et $f \eqbi e' `o e$. 
+      On a bien $f \eqbi e' `o e \eqbi d `o c \eqbi e' `o \pi_1 `o c$ car
+      \begin{eqnarray*}
+        e' `o \pi_1 `o c & = & e' `o \pi_1 `o (\lambda t : S.~\elt{T}{(\lambda x :
+          T.P)}{(e~t)}{?_{P[e~t/x]}}) \\
+        & = &
+        \lambda x.e'~(\pi_1~((\lambda t : S.~\elt{T}{(\lambda x :
+          T.P)}{(e~t)}{?_{P[e~t/x]}})~x)) \\
+        & "->"_{\beta} &
+        \lambda x.e'~(\pi_1~(\elt{T}{(\lambda x :
+          T.P)}{(e~x)}{?_{P[e~x/x]}})) \\
+        & "->"_{\beta} & \lambda x.e'~(e~x) \\
+        & = & e' `o e
+      \end{eqnarray*}      
+      
+      \case{SubSub}\quad
+      \begin{prooftree}
+        \AXC{$\subimpl{`G}{c}{S}{\hnf{T}}$}
+        \UIC{$\subimplhnf{`G}{d = c `o \pi_1}
+          {\mysubset{x}{S}{P}}{\hnf{T}}$}
+        % \UIC{$\subimpl{`G}{d}
+        %{\mysubset{x}{S}{P}}{T}$}        
+        \AXC{$\subimplhnf{`G}{e}{\hnf{T}}{\hnf{U}}$}
+        %\UIC{$\subimpl{`G}{e}{T}{U}$}
+        \BIC{$$} %$\subimpl{`G}{e `o d}{\mysubset{x}{S}{P}}{U}$}
+      \end{prooftree}
+      
+      Par induction il existe une dérivation de $\subimpl{`G}{f \eqbi e `o c}
+      {S}{U}$ n'utilisant pas \irule{SubTrans}. On peut donc dériver:
+
+      \begin{prooftree}
+        \AXC{$\subimpl{`G}{f}{S}{U}$}
+        \UIC{$\subimpl{`G}{f `o \pi_1}
+          {\mysubset{x}{S}{P}}{U}$}
+      \end{prooftree}
+      
+      On a bien $f `o \pi_1 \eqbi e `o c `o \pi_1$.
+    
+    \end{induction}
+  \end{induction}
+\end{proof}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 

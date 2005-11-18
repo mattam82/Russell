@@ -1,0 +1,158 @@
+\def\GD{`G, x : V, `D}
+\def\Gr{`G, x : X, `D[e~x/x]}
+
+\begin{lemma}[Coercion de sortes]
+  \label{subti-coercion-sorts}
+  Si $`G \typec e : s \subi T$ ou $`G \typec e : T \subi s$ alors $T
+  \eqbi s$ et $e \eqbi \lambda x : s.x$.
+\end{lemma}
+\begin{proof}  
+  Clairement on ne peut pas dériver $s \subihnf \hnf{T}$ quelque soit
+  $T$ vérifiant $`G \typec T : s'$. En effet seule la règle
+  \irule{SubProof} pourrait s'appliquer, mais cela impliquerait que
+  $\hnf{T} = \mysubset{x}{U}{P}$ avec $s \subi U$ et ainsi de suite. La
+  seule possibilité est de dériver $s \eqbi T$ ou $s \eqbi U$, auquel cas $U$ est une
+  sorte ce qui contredit le fait que $\mysubset{x}{U}{P} : s$ dans le
+  cas précédent. On a dérive donc $s \subi T$ si et seulement si $s
+  \eqbi T$.
+\end{proof}
+
+\begin{lemma}[Substitutivité de la coercion]
+  \label{subti-coercion-subst}
+  Si $`G \typec X, V, T, U : s$, $`G \typec e : X \subi V$ et
+  $`G, x : V, `D \typec c : T \subi U$ alors
+  $`G, x : X, `D[e~x/x] \typec c[e~x/x] : T[e~x/x] \subi U[e~x/x]$.   
+\end{lemma}
+
+\begin{proof}
+  Soit $T' = T[e~x/x]$, $U' = U[e~x/x]$.
+
+  \begin{induction}[subtyping-algo]
+  \case{SubHnf} 
+  On a: 
+  \begin{prooftree}
+    \AXC{$\subimplhnf{\GD}{c}{\hnf{T}}{\hnf{U}}$}
+    \UIC{$\subimpl{\GD}{c}{T}{U}$}
+  \end{prooftree}
+  
+  On a plusieurs possibilités:
+  \begin{itemize}
+  \item Si $\hnf{T} = x$. Alors la seule règle appliquable est
+    \irule{SubProof}, on a donc:
+    \begin{prooftree}
+      \AXC{$\subimpl{\GD}{c'}{x}{W}$}
+      \UIC{$\subimplhnf{\GD}{c = (\lambda t : x.\ldots(c'~t))}{\hnf{T} = x}{\hnf{U} = \mysubset{y}{W}{P}}$}
+    \end{prooftree}
+    
+    Par induction: \[\subimpl{\Gr}{c'[e~x/x]}{e~x}{W[e~x/x]}\]
+    Or on peut appliquer \irule{SubHnf} et \irule{SubProof} 
+    pour dériver le jugement $\subimpl{\GD}{?}{T'}{U'}$:
+
+    \begin{prooftree}
+      \AXC{$\subimpl{\Gr}{c'[e~x/x]}{e~x}{W[e~x/x]}$}
+      \UIC{$\subimplhnf{\GD}{\lambda t :
+          x[e~x/x].\ldots(c'~t))}{\hnf{T'} = e~x}{\hnf{U'} = \mysubset{y}{W[e~x/x]}{P[e~x/x]}}$}
+      \UIC{$\subimpl{\Gr}{?}{T'}{U'}$}
+    \end{prooftree}
+    
+    La coercion inférée est bien $c[e~x/x]$.
+    On ne peut appliquer d'autre règle que \irule{SubProof}, en effet,
+    comme $T : s$ on a $\hnf{T} = x : s$ et donc $X \eqbi s$. Par le
+    lemme \ref{subti-coercion-sorts} on en déduit que $\hnf{T'} = x$
+    donc aucune autre règle ne peut s'appliquer.
+    
+  \item Si $\hnf{U} = x$ alors la seule règle applicable est
+    \irule{SubSub} et l'on a un résultat similaire au cas précédent:
+    
+    \begin{prooftree}
+      \AXC{$\subimpl{\Gr}{c'[e~x/x]}{W[e~x/x]}{x}$}
+      \UIC{$\subimplhnf{\GD}{c'[e~x/x] `o \pi_1}{\hnf{T'} =
+          \hnf{T}[e~x/x] = \mysubset{y}{W[e~x/x]}{P[e~x/x]}}{\hnf{U'}}$}
+      \UIC{$\subimpl{\Gr}{?}{T'}{U'}$}
+    \end{prooftree}
+   
+  \item Sinon, $\hnf{T} "/=" x$ et $\hnf{U} "/=" x$ donc $\hnf{T'} =
+    \hnf{T}[e~x/x]$ et $\hnf{U'} = \hnf{U}[e~x/x]$.
+
+    Dans ce cas on va <<rejouer>> la dérivation $\subimplhnf{\GD}{c}{\hnf{T}}{\hnf{U}}$.
+    
+    Par cas sur cette dérivation:
+    \begin{induction}
+      \case{SubProd}\quad
+      On a:
+      \begin{prooftree}
+        \BAX{}
+        {$\subimpl{\GD}{c_1}{C}{A}$}
+        {$\subimpl{\GD, y : C}{c_2}{B[c_1~y/y]}{D}$}
+        {$\subimplhnf{\GD}{\lambda f : \Pi x : A.B.~\lambda x :
+            C.~c_2~(f~(c_1~x))}
+          {\Pi x : A.B}{\Pi x : C.D}$}
+        {}
+      \end{prooftree}
+
+      Par induction: 
+      \[\subimpl{\Gr}{c_1[e~x/x]}{C[e~x/x]}{A[e~x/x]}\]
+      \[\subimpl{\Gr, y : C[e~x/x]}{c_2[e~x/x]}{B[c_1~y/y][e~x/x] = B[e~x/x][c_1[e~x/x]/y]}{D[e~x/x]}\]
+      
+      On en déduit par \irule{SubProd}:
+      \[\subimplhnf{\Gr}{c[e~x/x]}{(\Pi y : A.B)[e~x/x]}{(\Pi y : C.D)[e~x/x]}\]
+      On peut vérifier:
+      $c[e~x/x] : \hnf{T'} \subihnf \hnf{U'} = \lambda f : (\Pi x : A.B)[e~x/x].~\lambda x :
+      C[e~x/x].~c_2[e~x/x]~(f~(c_1[e~x/x]~x))$.
+      
+      \case{SubSigma} idem.
+      
+      \case{SubSub}\quad
+      \begin{prooftree}
+        \AXC{$\subimpl{\GD}{c}{T}{\hnf{U}}$}
+        \UIC{$\subimplhnf{\GD}{\lambda t : \mysubset{y}{T}{P}.~c~(\pi_1~t)}
+          {\mysubset{y}{T}{P}}{\hnf{U}}$}       
+      \end{prooftree}
+      
+      donne:
+      \begin{prooftree}
+        \AXC{$\subimpl{\Gr}{c[e~x/x]}{T[e~x/x]}{\hnf{U}[e~x/x]}$}
+        \UIC{$\subimplhnf{\Gr}{\lambda t : (\mysubset{y}{T}{P})[e~x/x].~c[e~x/x]~(\pi_1~t)}
+          {\mysubset{y}{T[e~x/x]}{P[e~x/x]}}{\hnf{U}[e~x/x]}$}
+      \end{prooftree}
+      
+      \case{SubProof} idem.
+    \end{induction}
+  \end{itemize}
+
+  \case{SubConv}
+  Dans ce cas, c'est direct par préservation de la $\beta$-équivalence par
+  substitution. Pour montrer que la nouvelle coercion est égale à
+  $c[e~x/x]$ il faut raisonner par cas sur la forme de $T$ et $U$. 
+  \begin{itemize} 
+  \item Si la forme de $T$ (respectivement $U$) est égale à $x$ 
+    alors $\hnf{U} = x$ (reps. $\hnf{T} = x$). Or $\GD \typec T,
+    U : s$, donc $\GD \typec x : s$, soit $X \eqbi s$. Par le lemme
+    \ref{subti-coercion-sorts}, on déduit que $e = \lambda x : s.x$.
+    On a donc: $\hnf{T'} = \hnf{U'} = \hnf{e~x} = x$. Or $x \subhnf x$
+    n'est pas dérivable donc on a la dérivation:
+    \begin{prooftree}
+      \AXC{$T' \eqbi U'$}
+      \UIC{$\subimpl{\Gr}{\lambda y : T'.y}{T'}{U'}$}
+    \end{prooftree}
+    
+    On a bien $c[e~x/x] = \lambda y : T[e~x/x].y$.
+  \item Sinon, on a $\hnf{T'} = \hnf{T}[e~x/x]$ et $\hnf{U'} =
+    \hnf{U}[e~x/x]$. Or on sait que $\hnf{T} \subhnf \hnf{U}$ n'est pas
+    dérivable, donc la subsitution ne peut pas l'être non plus (on
+    substitue sous les symboles de tête dans ce cas). Cependant, on a toujours $T'
+    \eqbi U'$ donc on va dériver la coercion attendue.
+    
+  \end{itemize}
+  
+
+
+\end{induction}
+\end{proof}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "subset-typing"
+%%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
+%%% End: 
