@@ -1,96 +1,51 @@
 \subsection{Coercions explicites}
-On définit la fonction $\sref{coerce}$ de façon récursive sur la dérivation
-de coercion: $\sref{coerce}~U~V = c "<=>" c : U \subi V$.
-On utilise deux jugement pour formaliser la dérivation des coercions. Le
-premier jugement $`G \typec c : U \subi V$ se lit `` dans l'environnement
-$`G$ la fonction $c$ est une coercion de $U$ à $V$'' . Le second
-jugement  $`G \typec c : U \subihnf V$ se lit ``dans l'environnement
-$`G$ la fonction $c$ est une coercion de $U$ à $V$'' où $U, V$ sont en
-forme normale de tête. On utilise ces deux jugements mutuellement
-récursifs pour formaliser le fait que l'on normalise toujours en tête
-avant d'essayer de dériver un jugement. Cette récursivité est bien
-fondée puisque le système de coercion $\subihnf$ a la propriété de la
-sous-formule.
+On définit le système $\subi$ (figure \ref{fig:subti})
+qui dérive une coercion à partir de deux types $S$ et $T$ dans un environnement $`G$.
+On a introduit du déterminisme par rapport au jugement de
+coercion algorithmique puisqu'on donne priorité à la règle
+\irule{SubSub} par rapport à la règle \irule{SubProof} (ces règles sont
+confluentes). On explicite aussi la prioritée donnée à la mise en forme
+normale de tête (figure \ref{fig:hnfdef}) puis à la dérivation
+par rapport au test de
+conversion dans la prémisse de \irule{SubConv}.
 
-On va décrire informellement le sens de chaque règle:
-\typenvi
-\vspace{1.4em}
-\begin{itemize}
-\item[ \SubConvI\DP:] \quad\\\vspace{1em}
+Notre opération de mise en forme normale de tête est définie de la façon suivante:
+\begin{figure}[h]
+  \[\begin{array}{lcl}
+    \hnf{((\lambda x : T.e)~v)} & = & \hnf{e[v/x]} \\
+    \hnf{x} & = & x
+  \end{array}\]
+  \caption{Définition de la forme normale de tête}
+  \label{fig:hnfdef}
+\end{figure}
 
-  Crée une coercion identité puisque \CCI{}~a la règle de conversion. 
-  \vspace{1em}
+On utilise la $\beta$-équivalence de $CCI$ enrichi avec les
+existentielles, on étend donc la relation aux existentielles de la façon
+suivante: $\ex{`G}{P} \eqbi \ex{`G'}{P'} `= `G \eqbi `G' `^ P \eqbi P'$.
 
-\item[ \SubHnfI\DP:] \quad\\\vspace{1em}
-
-  On utilise la même coercion qu'en prémisse puisque les types sont
-  convertibles.
-  \vspace{1em}
-
-\item[\SubLeftI\DP:] \quad\\\vspace{1em}
-
-  Engendre une projection,
-  c'est le cas où l'on ne s'intéresse pas à la preuve accompagnant
-  l'objet. 
-  \vspace{1em}
-
-\item[\SubRightI\DP:] \quad\\\vspace{1em}
-
-  Correspond à la génération d'une
-  obligation de preuve dans \PVS. On utilise le mécanisme des variables
-  existentielles (notées $?:\text{type}$) décrit plus loin pour donner 
-  l'information au système qu'il faut compléter le terme à un endroit
-  donné avec un nouveau terme de type approprié. On peut aisément créer
-  des obligations qui ne seront pas prouvables mais cela relève de la
-  responsabilité de l'utilisateur.
-  \vspace{1em}
-
-\item[\SubProdI\DP,] \quad\\\vspace{1em}
-  
-
-\item[\SubSigmaI\DP:] \quad\\\vspace{1em}
-
-  Réalisent respectivement
-  les coercions pour les produits fonctionnels et cartésiens.
-
-\end{itemize}
-
+%\coerceFig
 \subtiFig
-
-On considère le système formé par ces des jugements où la règle
-\irule{SubConv} est moins prioritaire que la règle \irule{SubHnf} et où
-la règle \irule{SubSub} est plus prioritaire que la règle \irule{SubProof}.
-Ces restriction rendent les systèmes complétement déterministes et
-reflètent les choix faits pour en extraire un algorithme. Elles assurent
-aussi l'unicité des coercions:
-
-\begin{fact}[Unicité des coercions]
-  Si $`G \typec c : S \subi T$ et $`G \typec c' : S \subi T$ alors $c =
-  c'$. 
-\end{fact}
 
 
 \begin{lemma}[Coercion et conversion dans le contexte]
   \label{coercion-conversion-ctx-impl}
   Si $`G, x : V, `D \typec c : S \subi T$ et $V \eqbi V'$ alors
-  $`G, x : V', `D \typec c : S \subi T$.
+  $`G, x : V', `D \typec c' : S \subi T$ et $c \eqbi c'$.
 \end{lemma}
 \begin{proof}
   Par induction sur la dérivation de coercion. Tout les cas passent par
   induction sauf \irule{SubConv} qui n'utilise pas $`G$ en prémisse donc
-  ne pose pas de problème. 
+  ne pose pas de problème. Le seul cas intéressant est \irule{SubProof}
+  qui utilise la $\beta$-équivalence sur les existentielles.
 \end{proof}
-
 
 On conserve les propriétés suivantes sur la coercion:
 \def\subhnf{\subihnf}
 \begin{lemma}[Coercion et conversion]
   \label{coercion-conversion-impl}
-  Si $`G \typea S,T,U,V : s$, $S \eqbi T$, $U \eqbi V$ alors
-  Si $`G \typec c : T \sub U$ alors $`G \typec c' : S \sub V$ avec 
-  $c \eqbi c'$ et si $`G \typec c : \hnf{T} \subihnf \hnf{U}$ alors 
-  $`G \typec c' : \hnf{S} \subihnf \hnf{V}$ avec $c \eqbi c'$. Les
-  dérivations sont de même taille.
+  Si $`G \typea S,T,U,V : s$, $S \eqbi T$, $U \eqbi V$ et
+  $`G \typec c : T \sub U$ alors $`G \typec c' : S \sub V$ avec 
+  $c \eqbi c'$. Les dérivations sont de même taille.
 \end{lemma}
 
 \begin{proof}
@@ -100,50 +55,25 @@ On conserve les propriétés suivantes sur la coercion:
   règle appliquée dans le jugement $T \sub U$ est la seule règle
   applicable à $S \sub V$.
 
-  Par induction mutuelle sur la dérivation dans $\sub$ et $\subhnf$.
+  Par induction sur la dérivation dans $\sub$.
    
   \begin{induction}
     \case{SubHnf}\quad
     Comme $S \eqbi T$, $S \eqbi \hnf{T}$. 
     De même comme $U \eqbi V$, $\hnf{U} \eqbi V$.
-    On a l'hypothèse $\hnf{T} \subhnf \hnf{U}$ donc
+    On a l'hypothèse $\hnf{T} \sub \hnf{U}$ donc
     par induction on a $c' : \hnf{S} \sub \hnf{V}$ avec $c' \eqbi c$. 
-    La règle \irule{SubHnf} étant prioritaire sur \irule{SubConv}, 
-    on dérive bien $`G \typec c' : S \sub V$ avec $c' \eqbi c$. 
-
+    On dérive bien $`G \typec c' : S \sub V$ avec $c' \eqbi c$ par \irule{SubHnf}. 
+    
     \case{SubConv}\quad
     On a  $S \eqbi T$, $T \eqbi U$ et $U \eqbi V$ donc $S \eqbi V$ par transitivité
     de la $\beta$-équivalence. On a donc $c' = \lambda x : S.x
     \eqbi \lambda x : T.x$. C'est la seule règle applicable pour dériver
-    le jugement $S \sub V$. Pour le voir, raisonnons par l'absurde. 
-    Si $\hnf{S} \subhnf \hnf{V}$ est dérivable, alors on peut raisonner
-    sur la racine de sa dérivation. On a forcément un des cas suivants:
-    \begin{itemize}
-      \case{SubProd}
-      $\hnf{S} = \Pi x : A.B$ et $\hnf{V} = \Pi x : C.D$. Donc
-      $\hnf{T} = \Pi x : A'.B'$ où $A \eqbi A', B \eqbi B'$ et
-      $\hnf{U} = \Pi x : C'.D'$ où $C \eqbi C', D \eqbi D'$.
-      
-      \case{SubSigma}
-      $\hnf{S} = \Sigma x : A.B$ et $\hnf{V} = \Sigma x : C.D$. Donc
-      $\hnf{T} = \Sigma x : A'.B'$ où $A \eqbi A', B \eqbi B'$ et
-      $\hnf{U} = \Sigma x : C'.D'$ où $C \eqbi C', D \eqbi D'$.
-
-      \case{SubSubset}
-      $\hnf{S} = \mysubset{x}{U}{P}$ donc 
-      $\hnf{T} = \mysubset{x}{U'}{P'}$ où $U \eqbi U', P \eqbi P'$.
-
-      \case{SubProof}
-      $\hnf{V} = \mysubset{y}{V}{Q}$ donc
-      $\hnf{U} = \mysubset{y}{V'}{Q'}$ où $V \eqbi V', Q \eqbi Q'$.
-    \end{itemize}
-    
-    Dans chaque cas, cela implique qu'il existe une dérivation de
-    $\hnf{T} \subhnf \hnf{U}$ donc que l'on dérive $T \sub U$ par la
-    règle \irule{SubHnf} et non \irule{SubConv}.
+    le jugement $S \sub V$, sinon on aurait des symboles de tête
+    différents pour deux termes $\beta$-équivalents. 
 
     \case{SubProd}\quad
-    Soit $\hnf{T} = \Pi x : A.B$ et $\hnf{U} = \Pi x : C.D$.
+    Soit $T = \Pi x : A.B$ et $U = \Pi x : C.D$.
     On a $\subimpl{`G}{c_1}{A}{C}$ et $\subimpl{`G, x : C}{c_2}{B[c_1~x/x]}{D}$
     Or si $S \eqbi \Pi x : A.B$ et $\Pi x : C.D \eqbi V$ alors $\hnf{S}
     = \Pi x : A'.B'$ avec $A \eqbi A'$ et $B \eqbi B'$ et $\hnf{V} =
@@ -156,7 +86,7 @@ On conserve les propriétés suivantes sur la coercion:
     On peut donc déduire $`G, x : C' \typec c_2' : B'[c_1'~x/x] \sub D'$
     par le lemme \ref{coercion-conversion-ctx-impl}. 
     On déduit par
-    \irule{SubProd} que $c' : \hnf{S} \subhnf \hnf{V}$ est
+    \irule{SubProd} que $c' : \hnf{S} \sub \hnf{V}$ est
     dérivable. On a bien $c \eqbi c'$ car $c_1' \eqbi c_1$ et $c_2'
     \eqbi c_2$, donc $\lambda f.\lambda x.c_2~(f~(c_1~x)) \eqbi
     \lambda f.\lambda x.c_2'~(f~(c_1'~x))$.
@@ -192,8 +122,8 @@ On conserve les propriétés suivantes sur la coercion:
       {}
     \end{prooftree}
 
-    Encore une fois $c \eqbi c'$ est vérifié \TODO{Et l'existentielle?}
-    $?_P \eqbi ?_Q "<->" P \eqbi Q$.    
+    Encore une fois $c \eqbi c'$ est vérifié car $\ex{`G, t :
+      \hnf{S}}{P'[c'~t/x]} \eqbi \ex{`G, x : T}{P[c~t/x]}$.
   \end{induction}
 \end{proof}
 
@@ -225,31 +155,6 @@ forme:
   \BIC{$`G \typec c_2 `o c_1 : A \sub C$}
 \end{prooftree}
 
-
-\begin{lemma}[Transitivité de la coercion des formes normales de tête]
-  \label{subihnf-trans}
-  S'il existe $c_1, c_2$ tels que $`G \typec c_1 : S \subhnf T$ et $`G
-  \typec c_2 : T \subhnf U$
-  alors $`E!c, `G \typec c : S \subhnf U$ et $c \eqbi c_2 `o c_1$.
-\end{lemma}
-\begin{proof}
-  
-  \begin{induction}[subtyping-decl]
-    
-    \case{SubProd}\quad
-    \begin{prooftree}
-      \AXC{$`G \typec c_1 : X' \sub X$}
-      \AXC{$`G, x : X' \typec c_2 : Y[c_1~x/x] \sub Y'$}
-      \BIC{$`G \typec \lambda f.\lambda x.c_2~(f~(c_1~x)) : \Pi x : X.Y \sub \Pi x : X'.Y'$}
-      \AXC{$`G \typec c' : \Pi x : X'.Y' \sub U$}
-      \BIC{$`G \typec c = c' `o (\lambda f.\lambda x.~c_2~(f~(c_1~x))): \Pi x : X.Y \subhnf U$}
-    \end{prooftree}
-    
-    Si $\subimpl{`G}{c'}{\Pi x : X'.Y'}{U}$, alors par induction elle peut être
-    réecrite en une dérivation sans application de \irule{SubTrans} qui 
-    sera nécessairement de la forme:
-  \end{induction}
-\end{proof}
 
 \input{subset-typing-impl-subtyping-trans}
 
