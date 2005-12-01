@@ -1,5 +1,8 @@
-\def\GD{`G, x : V, `D}
-\def\Gr{`G, x : X, `D[e~x/x]}
+\def\GD{`G, x : U, `D}
+\def\Gr{`G, `D[u/x]}
+\def\iGD{\ipG{\GD}}
+\def\iGr{\ipG{\Gr}}
+
 
 \begin{lemma}[Coercion de sortes]
   \label{subti-coercion-sorts}
@@ -7,15 +10,436 @@
   \eqbi s$ et $e \eqbi \lambda x : s.x$.
 \end{lemma}
 \begin{proof}  
-  Clairement on ne peut pas dériver $s \subihnf \hnf{T}$ quelque soit
-  $T$ vérifiant $`G \typec T : s'$. En effet seule la règle
+  Clairement on ne peut dériver $s \suba T$ que par \irule{SubConv}
+  (éventuellement précédé de \irule{SubHnf}). En effet seule la règle
   \irule{SubProof} pourrait s'appliquer, mais cela impliquerait que
-  $\hnf{T} = \mysubset{x}{U}{P}$ avec $s \subi U$ et ainsi de suite. La
+  $T \eqbi \mysubset{x}{U}{P}$ avec $s \suba U$ et ainsi de suite. La
   seule possibilité est de dériver $s \eqbi T$ ou $s \eqbi U$, auquel cas $U$ est une
   sorte ce qui contredit le fait que $\mysubset{x}{U}{P} : s$ dans le
   cas précédent. On a dérive donc $s \subi T$ si et seulement si $s
   \eqbi T$.
 \end{proof}
+
+\begin{lemma}[Stabilité de la coercion par substitution]
+  \label{subti-coercion-subst}
+  Si $\GD \typea T, T' : s$, $`G \typec u :
+  U$, alors
+  $\begin{array}{lcl}
+    \GD \typea t : T & "=>" & \ip{t[u/x]}{\Gr} \eqbe
+    \ip{t}{\GD}[\ip{u}{`G}/x] \\
+    \subimpl{\GD}{c}{T}{T'} & "=>" & \subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}
+    `^ c' \eqbei c[\ip{u}{`G}/x]
+  \end{array}$
+  
+\end{lemma}
+
+\begin{proof}
+  Par induction mutuelle sur les dérivation de $c$ et $t$.
+
+  \begin{induction}
+    \case{SubHnf} On a: 
+    \begin{prooftree}
+      \AXC{$\subimpl{\GD}{c}{\hnf{T}}{\hnf{T'}}$}
+      \UIC{$\subimpl{\GD}{c}{T}{T'}$}
+    \end{prooftree}
+    
+    \def\as{\overrightarrow{a}}    
+    \def\bs{\overrightarrow{b}}    
+    \def\asux{\overrightarrow{a[u/x]}}
+    \def\bsux{\overrightarrow{b[u/x]}}
+    \def\ipux{[\ip{u}{`G}/x]}
+
+    Par induction on a
+    $\subimpl{\Gr}{c'}{\hnf{T}[u/x]}{\hnf{T'}[u/x]}$ avec $c' \eqbe
+    c\ipux$.
+    Si $\hnf{T[u/x]} = \hnf{T}[u/x]$ et $\hnf{T'[u/x]} = \hnf{T'}[u/x]$
+    c'est direct par induction. Sinon, on a $\hnf{T} = x~\as$ ou $\hnf{T'} =
+    x~\as$. Les deux cas sont similaires, on traite le cas ou $\hnf{T} =
+    x~\as$. Le jugement $x~\as \suba \hnf{T'}$
+    ne peut être dérivé que par \irule{SubProof} ou
+    \irule{SubConv}. Dans le premier cas, cela implique qu'on a une
+    dérivation de $d : x~\as \suba U'$ où $\hnf{T'} = \mysubset{y}{U'}{P}$. Par
+    induction on a donc une dérivation de
+    $\subimpl{\Gr}{d'}{u~\asux}{U'[u/x]}$ avec $d' \eqbei
+    d\ipux$. 
+    Par le lemme \ref{substi-coercion-hnf} on a donc une dérivation de 
+    $\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$ avec $d' \eqbei
+    d\ipux$. 
+    
+    \begin{prooftree}
+      \AXC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$}
+      \UIC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{U'[u/x]}$}
+      \UIC{$\subimpl{\Gr}{c'}{\hnf{T[u/x]}}{\hnf{(T'[u/x])} = \mysubset{y}{U'[u/x]}{P[u/x]}}$}
+      \UIC{$\subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}$}
+    \end{prooftree}
+      
+      On a $\ip{\hnf{T}}{\GD}\ipux \eqbi
+      \ip{\hnf{T}[u/x]}{\Gr}$ par induction. Or $\hnf{(\hnf{T}[u/x])} =
+      \hnf{(u~\asux)} = \hnf{(T[u/x])}$, donc, du fait qu'on met en forme
+      normale de tête avant interprétation \TODO{Pas explicite dans la
+        def de l'interprétation}:
+      \begin{eqnarray}
+        \ip{\hnf{(T[u/x])}}{\Gr} & = & \ip{\hnf{T}[u/x]}{\Gr} \\
+        & \eqbi & \ip{\hnf{T}}{\GD}\ipux \label{eq:hnftux}
+      \end{eqnarray}
+      
+      Par induction, on a $\ip{U'[u/x]}{\Gr} \eqbi \ip{U'}{\GD}\ipux$ et
+      $\ip{P[u/x]}{\Gr} = \ip{P}{\GD}\ipux$. 
+      On en déduit:
+      \begin{eqnarray*}
+        \ip{P[u/x]}{\Gr}[d'~t/y] & \eqbi & \ip{P}{\GD}\ipux[d'~t/y] \\
+        & \eqbi & \ip{P}{\GD}\ipux[d\ipux~t/y] \\
+        & = & \ip{P}{\GD}[d~t/y]\ipux
+      \end{eqnarray*}
+      
+      Soit $A = \ipG{\Gr, t : \hnf{T[u/x]}} \typec \ip{P[u/x]}{}[d'~t/y]$ et
+      $B = \ipG{\GD, t : \hnf{T}} \typec \ip{P}{}[d~t/y]$. On a
+      $A \eqbi B\ipux$ car $\ipG{\Gr, t : \hnf{T[u/x]}} \eqbi \ipG{\GD, t :
+        \hnf{T}}\ipux$ par \ref{eq:hnftux} et les conclusion des
+      existentielles sont convertibles par le résultat précédent.
+      
+      On a donc:
+      \begin{eqnarray*}
+        c' & = & \lambda t : \ip{\hnf{(T[u/x])}}{\Gr}. \\
+        & &
+        \elt{\ip{U'[u/x]}{\Gr}}
+        {\ip{(\lambda y : (U'[u/x]).P[u/x])}{\Gr}}
+        {(d'~t)}
+        {?_A} \\
+        & \eqbe & \lambda t : \ip{\hnf{(T[u/x])}}{\Gr}. \\
+        & &
+        \elt{\ip{U'[u/x]}{\Gr}}
+        {\ip{(\lambda y : (U'[u/x]).P[u/x])}{\Gr}}
+        {(d\ipux~t)}
+        {?_A} \\
+        & \eqbe & 
+        \lambda t : \ip{\hnf{T}}{\GD}\ipux. \\
+        & &
+        \elt{\ip{U'}{\GD}\ipux}
+        {\ip{(\lambda y : U'.P)}{\GD}\ipux}
+        {(d\ipux~t)}
+        {?_A} \\
+        & \eqbe &
+        (\lambda t : \ip{\hnf{T}}{\GD}.
+        \elt{\ip{U'}{\GD}}{\ip{\lambda y : U'.P}{\GD}}
+        {(d~t)}
+        {?_B})\ipux \\
+        & = & c\ipux
+      \end{eqnarray*}
+          
+      Dans le cas ou l'on applique directement \irule{SubConv} cela
+      implique que $\hnf{T} = x = \hnf{T'}$ donc par reflexivité de la
+      coercion \ref{subti-reflexive}, $\subimpl{\Gr}{c'}{u}{u}$ est dérivable et $c' \eqbei
+      \lambda y : \ip{u}{`G}.y \eqbei (\lambda y : x.y)\ipux$.
+      
+    \case{SubConv}
+    On a $T \eqbi T'$, donc $T[u/x] \eqbi T'[u/x]$ par substitutivité de
+    la $\beta$-équivalence. Par le lemme \ref{subti-eqb-coercion-eqbe-id}, on
+    sait qu'il existe $c'$, $\Gr \typec c' : T[u/x] \sub T'[u/x]$ telle
+    que $c' \eqbe \lambda x : \ip{T[u/x]}{\Gr}.x$. On a bien $c' \eqbe
+    c\ipux$ car $\ip{T[u/x]}{\Gr} \eqb \ip{T}{\GD}\ipux$ par induction.
+    
+    \case{SubProd}
+    On a:
+    \begin{prooftree}
+      \AXC{$\subimplhyp{\GD}{c_1}{A'}{A}$}
+      \AXC{$\subimplhyp{\GD, y : A'}{c_2}{B}{B'}$}
+      \BIC{$\subimplconcl{\GD}{f}
+        {\lambda x : \ip{A'}{\GD}.~c_2~(f~(c_1~x))}
+        {\Pi y : A.B}{\Pi y : A'.B'}$}
+    \end{prooftree}
+    
+    Par induction et application de \irule{SubProd}:
+    \begin{prooftree}
+      \AXC{$\subimplhyp{\Gr}{c_1'}{A'[u/x]}{A[u/x]}$}
+      \AXC{$\subimplhyp{\Gr, y : A'[u/x]}{c_2'}{B[u/x]}{B'[u/x]}$}
+      \BIC{$\subimpl{\Gr}{c'}
+        {\Pi y : A[u/x].B[u/x]}{\Pi y : A'[u/x].B'[u/x]}$}
+    \end{prooftree}
+    
+    où \[c' = \lambda f : \ip{\Pi y : A[u/x].B[u/x]}{\Gr}.\lambda x :
+    \ip{A'[u/x]}{\Gr}.~c_2'~(f~(c_1'~x))\]
+    Par induction, $\ip{A'[u/x]}{\Gr} \eqbe \ip{A'}{\GD}\ipux$ et 
+    $\ip{\Pi y : A[u/x].B[u/x]}{\Gr} \eqbe \ip{\Pi y : A.B}{\GD}\ipux$.
+    On a donc bien $c' \eqbe c\ipux$.
+   
+    \casethree{SubSigma}{SubProof}{SubSub} Idem, direct par induction.
+  
+    \case{PropSet} Trivial.
+    
+    \case{Var} 
+    On a:
+    \typenva
+    \begin{prooftree}
+      \BAX{Var}
+      {$\wf \GD$}
+      {$y : T `: \GD$}
+      {$\GD \seq y : T$}
+      {}
+    \end{prooftree}    
+    \typenvi
+
+    \begin{itemize}
+    \item Si $x "/=" y$, alors par définition de l'interprétation,
+      on doit montrer
+      $\ip{y[u/x]}{\Gr} = y = \ip{y}{\GD}\ipux$.
+      
+    \item Sinon, $t[u/x] = u$ et $\ip{u}{\Gr} = \ip{x}{\GD}\ipux =
+      \ip{u}{\GD}$. On utilise ici le fait que $u$ est bien typé dans
+      l'environnement $`G$, donc dans toute extension bien formée de cet
+      environnement par affaiblissement.      
+    \end{itemize}
+    
+    \case{App}\quad
+    \typenva
+    \begin{prooftree}
+      \TAX{App}
+      {$\GD \seq f : F \quad \mualgo(F) = \Pi y : A. B : s$}
+      {$\GD \seq e : E \quad `G \seq E, A : s$}
+      {$E \sub A$}
+      {$\GD \seq (f~e) : B [ e / y ]$}
+      {}
+    \end{prooftree}
+    \typenvi
+
+    Par induction:
+    \[\ip{f[u/x]}{\Gr} \eqbi \ip{f}{\GD}\ipux\]
+    \[\ip{e[u/x]}{\Gr} \eqbi \ip{e}{\GD}\ipux\]
+    
+    \def\afe{`a}    
+    Par définition de la substitution et de l'interprétation, 
+    \begin{eqnarray*}
+      \ip{(f~e)}{\GD}
+      & = & (((\pi_F~\ip{f}{\GD})~(c_e~\ip{e}{\GD})) \\
+      \text{ où } & & \\
+      \pi_F & = & \sref{coerce}~F~(\Pi y : A.B) \\
+      c_e & = & \sref{coerce}~E~A.
+    \end{eqnarray*}
+    
+    Clairement, $\pi_F$ et $c_e$ sont dérivables, puisqu'on part de
+    jugements dérivables par la coercion algorithmique.
+
+    On a la substitutivité du typage \ref{substitutive-typing} donc le
+    jugement substitué est:
+    \typenva
+    \begin{prooftree}
+      \TAX{App}
+      {$\Gr \seq f[u/x] : F[u/x] \quad \mualgo(F[u/x]) = \Pi y : A[u/x]. B[u/x] : s$}
+      {$\Gr \seq e[u/x] : E[u/x] \quad `G \seq E[u/x], A[u/x] : s$}
+      {$E[u/x] \sub A[u/x]$}
+      {$\Gr \seq (f~e)[u/x] : B' [ e[u/x] / y ]$}
+      {}
+    \end{prooftree}
+       
+    Soit $e' = e[u/x]$ et $f' = f[u/x]$, on a donc d'autre part:
+    \begin{eqnarray*}
+      \ip{(f~e)[u/x]}{\Gr}
+      & = & \ip{f'~e'}{\Gr} \\
+      & = & (\pi_{F[u/x]}~\ip{f'}{\Gr})~(c_{e'}~\ip{e'}{\Gr}) \\
+      \text{ où } & & \\
+      \pi_{F[u/x]} & = & \sref{coerce}~F[u/x]~(\Pi y : A[u/x].B[u/x]) \\
+      c_{e'} & = & \sref{coerce}~E[u/x]~A[u/x]
+    \end{eqnarray*}
+    
+    Par induction, il existe $d$, $e$:
+    $\Gr \typec d \eqbe \pi_F\ipux : F[u/x] \suba (\Pi y : A.B)[u/x]$
+    et 
+    $\Gr \typec e \eqbe c_e\ipux : E[u/x] \suba A[u/x]$.
+    
+    \[\begin{array}{ll}
+      \firsteq{\ip{f~e}{\GD}\ipux}
+      
+      \step{Définition de l'interprétation}
+      {=}(\pi_F~\ip{f}{\GD})~(c_e~\ip{e}{\GD})\ipux 
+
+      \step{Définition de la substitution}
+      {=}{(\pi_F\ipux~\ip{f}{\GD}\ipux)~(c_e\ipux~\ip{e}{\GD}\ipux)}
+
+      \step{Application de l'hypothèse d'induction pour les termes}
+      {\eqbe}{(\pi_F\ipux~\ip{f'}{\Gr})~(c_e\ipux~\ip{e'}{\Gr})}
+
+      \step{Application de l'hypothèse d'induction pour les coercions}
+      {\eqbe}{(d~\ip{f'}{\Gr})~(e~\ip{e'}{\Gr})}
+
+      \step{Unicité des coercions: $d \eqbe \pi_{F'}$ et $e \eqb
+        c_{e'}$}
+      {\eqbe}{(\pi_{F'}~\ip{f'}{\Gr})~(c_{e'}~\ip{e'}{\Gr})}
+      
+      \step{Définition de l'interprétation}
+      {\eqbe}{\ip{(f~e)[u/x]}{\Gr}}
+    \end{array}\]
+    
+    \casethree{Prod}{Sigma}{Subset} Par induction.
+
+    \case{Abs}
+    \typenva
+    On a:
+    \begin{prooftree}
+      \AXC{$\GD \seq \Pi y : T. U : s $}
+      \AXC{$\GD, y : T \seq M : U $}
+      \BIC{$\GD \seq \lambda y : T. M : \Pi y : T.U$}
+    \end{prooftree}
+    
+    On a bien:
+    \[\begin{array}{ll}
+      \firsteq{\ip{\lambda y : T.M}{\GD}\ipux}
+      
+      \step{Définition de l'interprétation}
+      {=}{\lambda y : \ip{T}{\GD}\ipux.\ip{M}{\GD, y : T}\ipux}
+
+      \step{Application de l'hypothèse de récurrence}
+      {\eqbe}{\lambda y : \ip{T[u/x]}{\Gr}.\ip{M[u/x]}{\Gr, y : T[u/x]}}
+
+      \step{Définition de l'interprétation}
+      {=}{\ip{\lambda y : T[u/x].M[u/x]}}
+    \end{array}\]
+      
+    \casetwo{LetSum}{SumDep} \TODO{Par induction}
+
+
+  \end{induction}
+\end{proof}
+
+On va maintenant étendre la relation de coercion aux contextes de
+manière canonique.
+\typenva
+\begin{definition}[Coercion de contextes]
+  \label{coercion-ctx}
+  On définit inductivement la coercion de deux contextes de coercions
+  algorithmiques par les règles suivantes:
+  \begin{itemize}
+  \item $[] \sub []$
+  \item $`G, x : T \sub `G', x : T'$ si $`G \sub `G'$ et $T \sub T'$.
+  \end{itemize}
+\end{definition}
+
+De même pour les coercions explicites dérivées par le jugement $`G
+\typec c : T \suba S$.
+\begin{definition}[Coercion explicites de contextes]
+  \label{coercion-ctx-i}
+  On définit inductivement la coercion de deux contextes de coercions
+  explicites par les règles suivantes:
+  \begin{itemize}
+  \item $[] \sub []$
+  \item $`r, c : `G, x : T \sub `G', x : T'$ si $`r : `G \sub `G'$ et 
+    $`G \typec c : T \sub T'$.
+  \end{itemize}
+\end{definition}
+
+Clairement toute coercion de contexte algorithmique correspond à une
+coercion de contexte explicite et vice-versa.
+
+\begin{definition}[Extension de la substitution aux coercions de
+  contextes]
+  \label{subst-coercion-ctx}
+  On définit la substitution d'une coercion de contexte inductivement:
+  \begin{itemize}
+  \item $t[[]] = t$
+  \item $t[`r, c : `G, x : T \sub T'] = t[`r : `G][c~x/x]$
+  \end{itemize}
+\end{definition}
+\begin{lemma}[Stabilité par affaiblissement]
+  Si $`r : `D \sub `G$, $`G \typec c : T \subi T'$ et $\ip{T'}{`D} \eqbe
+  \ip{T}{`G}[`r]$, alors $`D \typec c' : T \sub T'$ et $c' \eqb c[`r]$.
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation de coercion:
+
+  \begin{induction}
+    \case{SubHnf} 
+    On a $\subimpl{`G}{c}{\hnf{T}}{\hnf{T'}}$. Par induction, 
+    $`D \typec c[`r] : \hnf{T} \sub \hnf{T'}$. 
+    On peut donc dériver $`D \typec c[`r] : T \sub T'$ par \irule{SubHnf}.
+
+    \case{SubConv}
+    On a $T \eqb T'$ et $c = \lambda x : \ip{T}{`G}.x$. 
+    On peut donc dériver $\subimpl{`D}{c' = \lambda x : \ip{T}{`D}.x}{T}{T'}$.
+    Or $\ip{T}{`D} \eqb \ip{T'}{`G}[`r]$, on a donc bien $c' = c[`r]$.
+
+    \case{SubProd}
+    On a:
+    \begin{prooftree}
+      \BAX{}
+      {$\subimpl{`G}{c_1}{C}{A}$}
+      {$\subimpl{`G, y : C}{c_2}{B}{D}$}
+      {$\subimplhnf{`G}{\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
+          \ip{C}{`G}.~c_2~(f~(c_1~x))}
+        {\Pi x : A.B}{\Pi x : C.D}$}
+      {}
+    \end{prooftree}
+    Par induction on a {$\subimpl{`D}{c_1[`r]}{C}{A}$}. On peut définir
+    la coercion $`s = `r, (\lambda x : \ip{C}{`D}.x) : `D, x : C \sub `G, x : C$ et obtenir par
+    induction:
+    $\subimpl{`G, y : C}{c_2[`s]}{B}{D}$
+    
+    On peut alors appliquer \irule{SubProd} pour obtenir:
+    \[\subimplhnf{`G}{c' = \lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
+      \ip{C}{`G}.~c_2[`s]~(f~(c_1[`r]~x))}{\Pi x : A.B}{\Pi x : C.D}\]
+    
+    Comme $\ip{\Pi x : A.B}{`G} = \Pi x : \ip{A}{`G}.\ip{B}{`G, x : A}$
+    on a:
+    \[\begin{array}{ll}
+      \firsteq{(\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
+          \ip{C}{`G}.~c_2~(f~(c_1~x)))[`r]}
+
+        \step{Définition de la substitution}
+        {=}{\lambda f : \ip{\Pi x : A.B}{`G}[`r].~\lambda x :
+          \ip{C}{`G}[`r].c_2[`r]~(f~(c_1[`r]~x))}
+
+        \step{Application de l'hypothèse de récurrence}
+        {\eqbe}{\lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
+          \ip{C}{`D}.c_2[`r]~(f~(c_1[`r]~x))}
+        
+        \step{Coercion identité dans $`s$}
+        {=}{\lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
+          \ip{C}{`D}.c_2[`s]~(f~(c_1[`r]~x))}      
+      \end{array}\]
+      
+    \case{SubSigma}
+    \TODO{todo!}
+    On a:
+    \begin{prooftree}
+      \BAX{}
+      {$\subimpl{`G}{c_1}{C}{A}$}
+      {$\subimpl{`G, y : C}{c_2}{B}{D}$}
+      {$\subimplhnf{`G}{\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
+          \ip{C}{`G}.~c_2~(f~(c_1~x))}
+        {\Pi x : A.B}{\Pi x : C.D}$}
+      {}
+    \end{prooftree}
+    Par induction on a {$\subimpl{`D}{c_1[`r]}{C}{A}$}. On peut définir
+    la coercion $`s = `r, (\lambda x : \ip{C}{`D}.x) : `D, x : C \sub `G, x : C$ et obtenir par
+    induction:
+    $\subimpl{`G, y : C}{c_2[`s]}{B}{D}$
+    
+    On peut alors appliquer \irule{SubProd} pour obtenir:
+    \[\subimplhnf{`G}{c' = \lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
+      \ip{C}{`G}.~c_2[`s]~(f~(c_1[`r]~x))}{\Pi x : A.B}{\Pi x : C.D}\]
+    
+    Comme $\ip{\Pi x : A.B}{`G} = \Pi x : \ip{A}{`G}.\ip{B}{`G, x : A}$
+    on a:
+    \[\begin{array}{ll}
+      \firsteq{(\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
+          \ip{C}{`G}.~c_2~(f~(c_1~x)))[`r]}
+
+        \step{Définition de la substitution}
+        {=}{\lambda f : \ip{\Pi x : A.B}{`G}[`r].~\lambda x :
+          \ip{C}{`G}[`r].c_2[`r]~(f~(c_1[`r]~x))}
+
+        \step{Application de l'hypothèse de récurrence}
+        {\eqbe}{\lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
+          \ip{C}{`D}.c_2[`r]~(f~(c_1[`r]~x))}
+        
+        \step{Coercion identité dans $`s$}
+        {=}{\lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
+          \ip{C}{`D}.c_2[`s]~(f~(c_1[`r]~x))}      
+      \end{array}\]
+      
+
+  \end{induction}
+\end{proof}
+
 
 \begin{lemma}[Substitutivité de la coercion]
   \label{subti-coercion-subst}

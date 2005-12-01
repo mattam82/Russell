@@ -45,7 +45,7 @@ On conserve les propriétés suivantes sur la coercion:
   \label{coercion-conversion-impl}
   Si $`G \typea S,T,U,V : s$, $S \eqbi T$, $U \eqbi V$ et
   $`G \typec c : T \sub U$ alors $`G \typec c' : S \sub V$ avec 
-  $c \eqbi c'$. Les dérivations sont de même taille.
+  $c \eqbi c'$. 
 \end{lemma}
 
 \begin{proof}
@@ -68,7 +68,9 @@ On conserve les propriétés suivantes sur la coercion:
     \case{SubConv}\quad
     On a  $S \eqbi T$, $T \eqbi U$ et $U \eqbi V$ donc $S \eqbi V$ par transitivité
     de la $\beta$-équivalence. On a donc $c' = \lambda x : S.x
-    \eqbi \lambda x : T.x$. C'est la seule règle applicable pour dériver
+    \eqbi \lambda x : T.x$ dérivable par une application optionnelle de
+    \irule{SubHnf} puis \irule{SubConv}. 
+    C'est la seule règle applicable pour dériver
     le jugement $S \sub V$, sinon on aurait des symboles de tête
     différents pour deux termes $\beta$-équivalents. 
 
@@ -128,33 +130,52 @@ On conserve les propriétés suivantes sur la coercion:
 \end{proof}
 
 \begin{lemma}[Coercion et formes normales de tête]
-  \label{coercioni-hnf}
+  \label{substi-coercion-hnf}
   Si $`G \typec c : T \suba U$ alors $`G \typec c' : \hnf{T}~\suba
   \hnf{U}$ avec $c \eqbi c'$ est dérivable par une
   dérivation plus petite ou égale.
 \end{lemma}
 
 \begin{proof}
-  Par cas sur la dérivation dans le système algorithmique:
-  \begin{itemize}
-    \case{SubHnf} La mise en forme normale de tête étant idempotente, on
-    a la même dérivation.
-    \case{SubConv} Trivial.
-  \end{itemize}  
+  Par idempotence de la mise en forme normale de tête, on a la même
+  dérivation dans le cas ou la dernière règle appliquée était
+  \irule{SubHnf}, sinon c'est trivial.
 \end{proof}
 
+\begin{lemma}[Coercion de termes convertibles]
+  \label{subti-eqb-coercion-eqbe-id}
+  Si $`G \typea T, U : s$ et $T \eqb U$ alors il existe $c$,
+  $`G \typec c : T \suba U$ avec $c \eqbe \lambda x : T.x$.
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la forme normale de $T$ notée $\nf{T}$.
+
+  \begin{itemize}
+  \item $\nf{T} = \Pi y : A.B$ Alors, $\nf{U} = \Pi y : A'.B'$ avec 
+    $A \eqb A'$, $B \eqb B'$. Par induction, $c_1 \eqbe \lambda x : \ip{A'}{`G}.x
+    : A' \sub A$ et $c_2 \eqbe \lambda y : \ip{B'}{`G, x : A'}.y : B
+    \sub B'$. On a donc:
+    \begin{eqnarray*}
+      c & = & \lambda f : \ip{\Pi x : A.B}{`G}.\lambda x :
+      \ip{A'}{`G}. c_2~f~(c_1~x) \\
+      & \eqbe & \lambda f : \ip{\Pi x : A.B}{`G}.\lambda x :
+      \ip{A'}{`G}. f~x \\
+      & \eqbe & \lambda f : \ip{\Pi x : A.B}{`G}. f
+    \end{eqnarray*}
+    De façon équivalente pour $\Sigma, \{|\}$.
+    
+  \item Si $\nf{T}$ n'a pas pour symbole de tête, $\Pi, \Sigma$ ou
+    $\{|\}$, alors il est possible que $U$ est pour symbole de tête un
+    type sous-ensemble auquel cas le mécanisme est similaire. 
+    Dans tout les autres cas, \irule{SubConv} est la seule règle
+    applicable et on a $c = \lambda x : T.x$.
+  \end{itemize}
+  
+\end{proof}
+
+
 \input{subset-typing-impl-subtyping-subst}
-
-
-De la même façon que pour la preuve de transitivité de la
-coercion algorithmique, on élimine la règle \irule{SubTrans} qui a la
-forme:
-\begin{prooftree}
-  \AXC{$`G \typec c_1 : A \sub B$}
-  \AXC{$`G \typec c_2 : B \sub C$}
-  \BIC{$`G \typec c_2 `o c_1 : A \sub C$}
-\end{prooftree}
-
 
 \input{subset-typing-impl-subtyping-trans}
 

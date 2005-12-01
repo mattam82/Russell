@@ -1,5 +1,7 @@
 \newcommand{\timpl}[6]{#4 \typec #5 : #6} %#1 \typea #2 : #3 "~>"
-\newcommand{\subimpl}[4]{#1 \typec #2 : #3 \sub #4}
+\newcommand{\subimplconcl}[5]{#1 \typec \lambda #2 : \ip{#4}{`G}. #3 : #4 \suba #5}
+\newcommand{\subimplhyp}[4]{#1 \typec #2 : #3 \suba #4}
+\newcommand{\subimpl}{\subimplhyp}
 
 \def\WfEmptyI{
   \UAX{WfEmpty}
@@ -59,7 +61,7 @@
   {$\timpl{`G}{f}{T}{`G'}{f'}{T'}$}
   {$\mu~T' `= (\pi, \Pi x : V'. W')$}
   {$\timpl{`G}{u}{U}{`G'}{u'}{U'}$}
-  {$\subimpl{`G'}{c}{U'}{V'}$}
+  {$\subimplhyp{`G'}{c}{U'}{V'}$}
   {$\timpl{`G}{f u}{W[u/x]}{`G'}{(\pi~f')~(c~u')}{W'[ c~u' / x ]}$}
   {}
 }

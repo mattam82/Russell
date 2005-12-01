@@ -186,11 +186,11 @@
 
 \def\rulelabel{\rulename}
 
-\def\case#1{\item[- \rulename{#1} :]}
-\newcommand{\casetwo}[2]{\item[- \rulename{#1}, \rulename{#2} :]}
-\def\casethree#1#2#3{\item[- \rulename{#1}, \rulename{#2},
+\def\case#1{\item[-- \rulename{#1} :]}
+\newcommand{\casetwo}[2]{\item[-- \rulename{#1}, \rulename{#2} :]}
+\def\casethree#1#2#3{\item[-- \rulename{#1}, \rulename{#2},
   \rulename{#3} :]}
-\def\casefour#1#2#3#4{\item[- \rulename{#1}, \rulename{#2},
+\def\casefour#1#2#3#4{\item[-- \rulename{#1}, \rulename{#2},
   \rulename{#3}, \rulename{#4} :]}
 
 \def\infvspace{1em}
@@ -203,6 +203,7 @@
 \newcommand{\coerce}[3]{\sref{coerce}_{#1}~#2~#3}
 \newcommand{\coercehnf}[3]{\hnf{\sref{coerce}}_{#1}~#2~#3}
 \newcommand{\ex}[2]{?_{#1 \vdash #2}}
+\newcommand{\tex}[2]{?_{#1 \vdash #2}}
 
 
 %%% Local Variables: 
