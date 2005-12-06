@@ -16,7 +16,7 @@
   $T \eqbi \mysubset{x}{U}{P}$ avec $s \suba U$ et ainsi de suite. La
   seule possibilité est de dériver $s \eqbi T$ ou $s \eqbi U$, auquel cas $U$ est une
   sorte ce qui contredit le fait que $\mysubset{x}{U}{P} : s$ dans le
-  cas précédent. On a dérive donc $s \subi T$ si et seulement si $s
+  cas précédent. On dérive donc $s \subi T$ si et seulement si $s
   \eqbi T$.
 \end{proof}
 
@@ -212,8 +212,8 @@
       \ip{(f~e)}{\GD}
       & = & (((\pi_F~\ip{f}{\GD})~(c_e~\ip{e}{\GD})) \\
       \text{ où } & & \\
-      \pi_F & = & \sref{coerce}~F~(\Pi y : A.B) \\
-      c_e & = & \sref{coerce}~E~A.
+      \pi_F & = & \coerce{`D}{F}{(\Pi y : A.B)} \\
+      c_e & = & \coerce{`D}{E}{A}.
     \end{eqnarray*}
     
     Clairement, $\pi_F$ et $c_e$ sont dérivables, puisqu'on part de
@@ -237,8 +237,8 @@
       & = & \ip{f'~e'}{\Gr} \\
       & = & (\pi_{F[u/x]}~\ip{f'}{\Gr})~(c_{e'}~\ip{e'}{\Gr}) \\
       \text{ où } & & \\
-      \pi_{F[u/x]} & = & \sref{coerce}~F[u/x]~(\Pi y : A[u/x].B[u/x]) \\
-      c_{e'} & = & \sref{coerce}~E[u/x]~A[u/x]
+      \pi_{F[u/x]} & = & \coerce{\Gr}{F[u/x]}{(\Pi y : A[u/x].B[u/x])} \\
+      c_{e'} & = & \coerce{\Gr}{E[u/x]}{A[u/x]}
     \end{eqnarray*}
     
     Par induction, il existe $d$, $e$:
@@ -338,8 +338,10 @@ coercion de contexte explicite et vice-versa.
   \item $t[`r, c : `G, x : T \sub T'] = t[`r : `G][c~x/x]$
   \end{itemize}
 \end{definition}
+
 \begin{lemma}[Stabilité par affaiblissement]
-  Si $`r : `D \sub `G$, $`G \typec c : T \subi T'$ et $\ip{T'}{`D} \eqbe
+  \label{narrowing-i-coercion}
+  Si $`r : `D \sub `G$, $`G \typec c : T \subi T'$ et $\ip{T}{`D} \eqbe
   \ip{T}{`G}[`r]$, alors $`D \typec c' : T \sub T'$ et $c' \eqb c[`r]$.
 \end{lemma}
 
@@ -355,30 +357,28 @@ coercion de contexte explicite et vice-versa.
     \case{SubConv}
     On a $T \eqb T'$ et $c = \lambda x : \ip{T}{`G}.x$. 
     On peut donc dériver $\subimpl{`D}{c' = \lambda x : \ip{T}{`D}.x}{T}{T'}$.
-    Or $\ip{T}{`D} \eqb \ip{T'}{`G}[`r]$, on a donc bien $c' = c[`r]$.
+    Or $\ip{T}{`D} \eqb \ip{T}{`G}[`r]$, on a donc bien $c' = c[`r]$.
 
     \case{SubProd}
     On a:
     \begin{prooftree}
       \BAX{}
       {$\subimpl{`G}{c_1}{C}{A}$}
-      {$\subimpl{`G, y : C}{c_2}{B}{D}$}
+      {$\subimpl{`G, x : C}{c_2}{B}{D}$}
       {$\subimplhnf{`G}{\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
           \ip{C}{`G}.~c_2~(f~(c_1~x))}
         {\Pi x : A.B}{\Pi x : C.D}$}
       {}
     \end{prooftree}
     Par induction on a {$\subimpl{`D}{c_1[`r]}{C}{A}$}. On peut définir
-    la coercion $`s = `r, (\lambda x : \ip{C}{`D}.x) : `D, x : C \sub `G, x : C$ et obtenir par
-    induction:
-    $\subimpl{`G, y : C}{c_2[`s]}{B}{D}$
+    la coercion $`s = `r, (\lambda x : \ip{C}{`D}.x) : `D, x : C \sub `G, y : C$ et obtenir par
+    induction: $\subimpl{`D, x : C}{c_2'}{B}{D}$ avec $c_2' \eqb c_2[`s]$.
     
     On peut alors appliquer \irule{SubProd} pour obtenir:
-    \[\subimplhnf{`G}{c' = \lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
-      \ip{C}{`G}.~c_2[`s]~(f~(c_1[`r]~x))}{\Pi x : A.B}{\Pi x : C.D}\]
+    \[\subimplhnf{`D}{c' = \lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
+      \ip{C}{`D}.~c_2[`s]~(f~(c_1[`r]~x))}{\Pi x : A.B}{\Pi x : C.D}\]
     
-    Comme $\ip{\Pi x : A.B}{`G} = \Pi x : \ip{A}{`G}.\ip{B}{`G, x : A}$
-    on a:
+    On a:
     \[\begin{array}{ll}
       \firsteq{(\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
           \ip{C}{`G}.~c_2~(f~(c_1~x)))[`r]}
@@ -393,187 +393,231 @@ coercion de contexte explicite et vice-versa.
         
         \step{Coercion identité dans $`s$}
         {=}{\lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
-          \ip{C}{`D}.c_2[`s]~(f~(c_1[`r]~x))}      
-      \end{array}\]
+          \ip{C}{`D}.c_2[`s]~(f~(c_1[`r]~x))}
+      \end{array}
+      \]
       
-    \case{SubSigma}
-    \TODO{todo!}
-    On a:
+    \case{SubSigma}\quad
     \begin{prooftree}
       \BAX{}
-      {$\subimpl{`G}{c_1}{C}{A}$}
-      {$\subimpl{`G, y : C}{c_2}{B}{D}$}
-      {$\subimplhnf{`G}{\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
-          \ip{C}{`G}.~c_2~(f~(c_1~x))}
-        {\Pi x : A.B}{\Pi x : C.D}$}
+      {$\subimpl{`G}{c_1}{A}{C}$}
+      {$\subimpl{`G, x : A}{c_2}{B}{D}$}
+      {$\subimplconcl{`G}{t}{\letml~(x, y) = t~\inml~(c_1~x, c_2~y)}
+        {\Sigma x : A.B}{\Sigma x : C.D}$}
       {}
     \end{prooftree}
-    Par induction on a {$\subimpl{`D}{c_1[`r]}{C}{A}$}. On peut définir
-    la coercion $`s = `r, (\lambda x : \ip{C}{`D}.x) : `D, x : C \sub `G, x : C$ et obtenir par
+    Par induction on a {$\subimpl{`D}{c_1[`r]}{A}{C}$}. On peut définir
+    la coercion $`s = `r, (\lambda x : \ip{A}{`D}.x) : `D, x : A \sub `G, x : A$ et obtenir par
     induction:
-    $\subimpl{`G, y : C}{c_2[`s]}{B}{D}$
+    $\subimpl{`D, x : A}{c_2[`s]}{B}{D}$
     
-    On peut alors appliquer \irule{SubProd} pour obtenir:
-    \[\subimplhnf{`G}{c' = \lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
-      \ip{C}{`G}.~c_2[`s]~(f~(c_1[`r]~x))}{\Pi x : A.B}{\Pi x : C.D}\]
+    On peut alors appliquer \irule{SubSigma} pour obtenir:
+    \[\subimplhnf{`G}
+    {c' = \lambda t : \ip{\Sigma x : A.B}{`G}.~\letml~(x, y) = t~\inml~(c_1[`r]~x, c_2[`s]~y)}
+    {\Sigma x : A.B}{\Sigma x : C.D}\]
     
-    Comme $\ip{\Pi x : A.B}{`G} = \Pi x : \ip{A}{`G}.\ip{B}{`G, x : A}$
-    on a:
+    On a:
     \[\begin{array}{ll}
-      \firsteq{(\lambda f : \ip{\Pi x : A.B}{`G}.~\lambda x :
-          \ip{C}{`G}.~c_2~(f~(c_1~x)))[`r]}
-
+      \firsteq{
+        (\lambda t : \ip{\Sigma x : A.B}{`G}.~\letml~(x, y) = t~\inml~(c_1~x, c_2~y))[`r]}
+      
         \step{Définition de la substitution}
-        {=}{\lambda f : \ip{\Pi x : A.B}{`G}[`r].~\lambda x :
-          \ip{C}{`G}[`r].c_2[`r]~(f~(c_1[`r]~x))}
+        {=}{\lambda t : \ip{\Sigma x : A.B}{`G}[`r].~\letml~(x, y) = t~\inml~(c_1[`r]~x, c_2[`r]~y)}
 
         \step{Application de l'hypothèse de récurrence}
-        {\eqbe}{\lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
-          \ip{C}{`D}.c_2[`r]~(f~(c_1[`r]~x))}
+        {\eqbe}{\lambda t : \ip{\Sigma x : A.B}{`D}.~\letml~(x, y) = t~\inml~(c_1[`r]~x, c_2[`r]~y)}
         
         \step{Coercion identité dans $`s$}
-        {=}{\lambda f : \ip{\Pi x : A.B}{`D}.~\lambda x :
-          \ip{C}{`D}.c_2[`s]~(f~(c_1[`r]~x))}      
-      \end{array}\]
+        {=}{\lambda t : \ip{\Sigma x : A.B}{`D}.~\letml~(x, y) =
+          t~\inml~(c_1[`r]~x, c_2[`s]~y)}
+      \end{array} 
+      \]
       
+   \case{SubProof}\quad
+   \begin{prooftree}
+     \UAX{}
+     % {$`G, x : U \typec P : \Prop$}
+     {$\subimplhyp{`G}{c}{T}{U}$}
+     {$\subimplconcl{`G}
+       {t}{\elt{\ip{U}{`G}}
+         {\ip{(\lambda x : U.P)}{`G}}
+         {(c~t)}
+         {\tex{\ipG{`G, t : T}}{\ip{P}{`G, x : U}[c~t/x]}}}
+       {T}{\mysubset{x}{U}{P}}$}
+     {}
+   \end{prooftree}
 
+   Par induction, on a $\subimplhyp{`D}{c[`r]}{T}{U}$. On peut donc dériver:
+   \[\subimplconcl{`D}
+   {t}{\elt{\ip{U}{`D}}
+     {\ip{(\lambda x : U.P)}{`D}}
+     {(c[`r]~t)}
+     {\tex{\ipG{`D, t : T}}{\ip{P}{`D, x : U}[c[`r]~t/x]}}}
+   {T}{\mysubset{x}{U}{P}}\]
+   
+   On a bien $c[`r] \eqb c'$, car:
+   \begin{equations}
+     \firsteq{(\ipG{`G, t : T} \vdash \ip{P}{`G, x : U})[c~t/x][`r]}
+     
+     \step{Définition de la substitution, $x `; `G `^ x `: \freevars{T}$}
+     {=}{\ipG{`G, t : T}[`r] \vdash \ip{P}{`G, x : U}[c~t/x][`r]}
+
+     \step{Définition de l'interprétation}
+     {\eqb}{\ipG{`G}[`r], t : \ip{T}{`G}[`r] \vdash \ip{P}{`G, x : U}[c[`r]~t/x][`r]}
+
+     \step{Hypothèse de récurrence}
+     {\eqb}{\ipG{`D}, t : \ip{T}{`D} \vdash \ip{P}{`G, x : U}[c[`r]~t/x][`r]}
+
+     \step{Hypothèse de récurrence, $\ip{P}{`G, x : U}[`r] = \ip{P}{`D,
+         x : U}$ et $x `; `r$}
+     {\eqb}{\ipG{`D, t : T} \vdash \ip{P}{`D, x : U}[c[`r]~t/x]}
+
+   \end{equations}
+   
+   \case{SubSub} Direct par induction.
   \end{induction}
 \end{proof}
 
-
-\begin{lemma}[Substitutivité de la coercion]
-  \label{subti-coercion-subst}
-  Si $`G \typec X, V, T, U : s$, $`G \typec e : X \subi V$ et
-  $`G, x : V, `D \typec c : T \subi U$ alors
-  $`G, x : X, `D[e~x/x] \typec c[e~x/x] : T[e~x/x] \subi U[e~x/x]$.   
+\begin{lemma}[Stabilité par affaiblissement]
+  \label{narrowing-i-term}
+  Si $`r : `D \sub `G$, $`G \typec t : T$ alors 
+  $`D \typec t : T'$ et il existe $`a$, $\subimpl{`D}{`a}{T'}{T}$ avec
+  $\ip{t}{`G}[`r] \eqbe `a~\ip{t}{`D}$.
 \end{lemma}
 
 \begin{proof}
-  Soit $T' = T[e~x/x]$, $U' = U[e~x/x]$.
+  La première partie du lemme se déduit par applications répétées du
+  lemme de restriction \ref{narrowing-a}.
+  Par induction sur la dérivation de typage:
 
-  \begin{induction}[subtyping-algo]
-  \case{SubHnf} 
-  On a: 
-  \begin{prooftree}
-    \AXC{$\subimplhnf{\GD}{c}{\hnf{T}}{\hnf{U}}$}
-    \UIC{$\subimpl{\GD}{c}{T}{U}$}
-  \end{prooftree}
-  
-  On a plusieurs possibilités:
-  \begin{itemize}
-  \item Si $\hnf{T} = x$. Alors la seule règle appliquable est
-    \irule{SubProof}, on a donc:
+  \begin{induction}
+    \case{Var} 
+    On a:
+    \typenva
     \begin{prooftree}
-      \AXC{$\subimpl{\GD}{c'}{x}{W}$}
-      \UIC{$\subimplhnf{\GD}{c = (\lambda t : x.\ldots(c'~t))}{\hnf{T} = x}{\hnf{U} = \mysubset{y}{W}{P}}$}
+      \BAX{Var}
+      {$\wf `G$}
+      {$y : T `: `G$}
+      {$`G \seq y : T$}
+      {}
+    \end{prooftree}    
+    
+    Par définition de la coercion de contextes, il existe $c : y : T' \sub T
+    `: `r$. Soit $`a = c$, on a bien: $\ip{y}{`G}[`r] = c~y =
+    `a~\ip{y}{`D}$.
+    
+    \case{App}
+    \typenva
+    On a: 
+    \begin{prooftree}
+      \TAX{App}
+      {$`G \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
+      {$`G \seq e : E \quad `G \seq E, A : s$}
+      {$E \sub A $}
+      {$`G \seq (f~e) : B [ e / y ]$}
+      {}
     \end{prooftree}
     
-    Par induction: \[\subimpl{\Gr}{c'[e~x/x]}{e~x}{W[e~x/x]}\]
-    Or on peut appliquer \irule{SubHnf} et \irule{SubProof} 
-    pour dériver le jugement $\subimpl{\GD}{?}{T'}{U'}$:
+    et donc par induction, $`D \seq f : F'$ avec
+    $\subimpl{`D}{`a_f}{F'}{F}$ et
+    $`D \seq e : E'$ avec $\subimpl{`D}{`a_e}{E'}{E}$.
+    On a la coercion $\subimpl{`G}{\pi_F}{F}{\Pi y : A.B}$. Il existe
+    donc une coercion $\pi_{F'}$ telle que
+    $\subimpl{`D}{\pi_{F'}}{F'}{\Pi y : A'.B'}$ par transitivité.
 
-    \begin{prooftree}
-      \AXC{$\subimpl{\Gr}{c'[e~x/x]}{e~x}{W[e~x/x]}$}
-      \UIC{$\subimplhnf{\GD}{\lambda t :
-          x[e~x/x].\ldots(c'~t))}{\hnf{T'} = e~x}{\hnf{U'} = \mysubset{y}{W[e~x/x]}{P[e~x/x]}}$}
-      \UIC{$\subimpl{\Gr}{?}{T'}{U'}$}
-    \end{prooftree}
+    Par définition de l'interprétation, 
+    \begin{eqnarray*}
+      \ip{(f~e)}{`G}
+      & = & (((\pi_F~\ip{f}{`G})~(c_e~\ip{e}{`G})) \\
+      \text{ où } & & \\
+      \pi_F & = & \coerce{`G}{F}{(\Pi y : A.B)} \\
+      c_e & = & \coerce{`G}{E}{A}.
+    \end{eqnarray*}
     
-    La coercion inférée est bien $c[e~x/x]$.
-    On ne peut appliquer d'autre règle que \irule{SubProof}, en effet,
-    comme $T : s$ on a $\hnf{T} = x : s$ et donc $X \eqbi s$. Par le
-    lemme \ref{subti-coercion-sorts} on en déduit que $\hnf{T'} = x$
-    donc aucune autre règle ne peut s'appliquer.
-    
-  \item Si $\hnf{U} = x$ alors la seule règle applicable est
-    \irule{SubSub} et l'on a un résultat similaire au cas précédent:
-    
-    \begin{prooftree}
-      \AXC{$\subimpl{\Gr}{c'[e~x/x]}{W[e~x/x]}{x}$}
-      \UIC{$\subimplhnf{\GD}{c'[e~x/x] `o \pi_1}{\hnf{T'} =
-          \hnf{T}[e~x/x] = \mysubset{y}{W[e~x/x]}{P[e~x/x]}}{\hnf{U'}}$}
-      \UIC{$\subimpl{\Gr}{?}{T'}{U'}$}
-    \end{prooftree}
-   
-  \item Sinon, $\hnf{T} "/=" x$ et $\hnf{U} "/=" x$ donc $\hnf{T'} =
-    \hnf{T}[e~x/x]$ et $\hnf{U'} = \hnf{U}[e~x/x]$.
+    Clairement, $\pi_F$ et $c_e$ sont dérivables, puisqu'on part de
+    jugements dérivables par la coercion algorithmique.
 
-    Dans ce cas on va <<rejouer>> la dérivation $\subimplhnf{\GD}{c}{\hnf{T}}{\hnf{U}}$.
-    
-    Par cas sur cette dérivation:
-    \begin{induction}
-      \case{SubProd}\quad
-      On a:
-      \begin{prooftree}
-        \BAX{}
-        {$\subimpl{\GD}{c_1}{C}{A}$}
-        {$\subimpl{\GD, y : C}{c_2}{B[c_1~y/y]}{D}$}
-        {$\subimplhnf{\GD}{\lambda f : \Pi x : A.B.~\lambda x :
-            C.~c_2~(f~(c_1~x))}
-          {\Pi x : A.B}{\Pi x : C.D}$}
-        {}
-      \end{prooftree}
+    De même:
+    \begin{eqnarray*}
+      \ip{f~e}{`D}
+      & = & (\pi_{F'}~\ip{f'}{`D})~(c_{e'}~\ip{e'}{`D}) \\
+      \text{ où } & & \\
+      \pi_{F'} & = & \coerce{`D}{F'}{(\Pi y : A'.B')} \\
+      c_{e'} & = & \coerce{`D}{E'}{A'}
+    \end{eqnarray*}
 
-      Par induction: 
-      \[\subimpl{\Gr}{c_1[e~x/x]}{C[e~x/x]}{A[e~x/x]}\]
-      \[\subimpl{\Gr, y : C[e~x/x]}{c_2[e~x/x]}{B[c_1~y/y][e~x/x] = B[e~x/x][c_1[e~x/x]/y]}{D[e~x/x]}\]
+    Par le lemme \ref{subti-coercion-subst} on a
+    $\subimpl{`D}{\pi_F[`r]}{F}{\Pi y : A.B}$.
+    On a donc les coercions suivantes:
+    \[
+    \xymatrix{
+      F\ar[rr]_{\pi_F[`r]} & & 
+      \Pi y : A.B \\
+      F'\ar[u]^{`a_f}\ar[rr]^{\pi_{F'}} & &
+      {\Pi y : A'.B'}\ar@{-->}[u]^{c_f}}
+    \]
+
+    Par symmétrie et transitivité de la coercion, on en déduit qu'il
+    existe $c_f$, $\subimpl{`D}{c_f}{\Pi y : A'.B'}{\Pi y : A.B}$.
+    La coercion $c_f$ est nécessairement de la forme:
+    $\lambda f.\lambda y.c_2~(f~(c_1~y))$ où 
+    $\subimpl{`D}{c_1}{A}{A'}$ et $\subimpl{`D, x : A}{c_2}{B'}{B}$.
+    Par le lemme \ref{subti-coercion-subst} on a
+    $\subimpl{`D}{c_e[`r]}{E}{A}$.
+
+    On a donc les coercions suivantes pour l'argument $e$:   
+    \[
+    \xymatrix{
+      E\ar[rr]_{c_e[`r]} & & 
+      A\ar[d]^{c_1} \\
+      E'\ar[u]^{`a_e}
+      \ar@{-->}[rr]^{c_{e'}} & & A'}
+    \]
+       
+
+    Ce diagramme commute, il existe donc une coercion $c_{E',A} \eqbe
+    c_e[`r] `o `a_e : E' \sub A$.    
+    Par le lemme \ref{narrowing-i-coercion} on a donc
+    $\subimpl{`D, x : E'}{c_2'}{B'}{B}$ avec $c_2' \eqbe
+    c_2[c_e[`r]~(`a_e~x)/x]$.
+
+    Par le lemme \ref{subti-coercion-subst} avec $`D \typec e : E'$ on obtient:
+    $\subimpl{`D}{c_2''}{B'[e/x]}{B[e/x]}$ avec $c_2'' \eqbe
+    c_2'[\ip{e}{`D}/x] \eqbe c_2[c_e[`r]~(`a_e~e)/x]$.    
+    Soit $`a = c_2''$, on peut vérifier:
+    \[\begin{array}{ll}
+      \firsteq{`a~\ip{(f~e)}{`D}}
       
-      On en déduit par \irule{SubProd}:
-      \[\subimplhnf{\Gr}{c[e~x/x]}{(\Pi y : A.B)[e~x/x]}{(\Pi y : C.D)[e~x/x]}\]
-      On peut vérifier:
-      $c[e~x/x] : \hnf{T'} \subihnf \hnf{U'} = \lambda f : (\Pi x : A.B)[e~x/x].~\lambda x :
-      C[e~x/x].~c_2[e~x/x]~(f~(c_1[e~x/x]~x))$.
+      \step{Définition de l'interprétation}
+      {=}{`a~((\pi_{F'}~\ip{f}{`D})~(c_{e'}~\ip{e}{`D}))}
       
-      \case{SubSigma} idem.
+      \step{Définitions de $`a$ et $c_{e'}$}
+      {=}{c_2[c_e[`r]~(`a_e~\ip{e}{`D})/x]~
+        ((\pi_{F'}~\ip{f}{`D})~((c_1 `o c_e[`r] `o `a_e)~\ip{e}{`D}))}
       
-      \case{SubSub}\quad
-      \begin{prooftree}
-        \AXC{$\subimpl{\GD}{c}{T}{\hnf{U}}$}
-        \UIC{$\subimplhnf{\GD}{\lambda t : \mysubset{y}{T}{P}.~c~(\pi_1~t)}
-          {\mysubset{y}{T}{P}}{\hnf{U}}$}       
-      \end{prooftree}
-      
-      donne:
-      \begin{prooftree}
-        \AXC{$\subimpl{\Gr}{c[e~x/x]}{T[e~x/x]}{\hnf{U}[e~x/x]}$}
-        \UIC{$\subimplhnf{\Gr}{\lambda t : (\mysubset{y}{T}{P})[e~x/x].~c[e~x/x]~(\pi_1~t)}
-          {\mysubset{y}{T[e~x/x]}{P[e~x/x]}}{\hnf{U}[e~x/x]}$}
-      \end{prooftree}
-      
-      \case{SubProof} idem.
-    \end{induction}
-  \end{itemize}
+      \step{Définition de la composition}
+      {=}{c_2[c_e[`r]~(`a_e~\ip{e}{`D})/x]~
+        ((\pi_{F'}~\ip{f}{`D})~(c_1~(c_e[`r]~(`a_e~\ip{e}{`D}))))}
 
-  \case{SubConv}
-  Dans ce cas, c'est direct par préservation de la $\beta$-équivalence par
-  substitution. Pour montrer que la nouvelle coercion est égale à
-  $c[e~x/x]$ il faut raisonner par cas sur la forme de $T$ et $U$. 
-  \begin{itemize} 
-  \item Si la forme de $T$ (respectivement $U$) est égale à $x$ 
-    alors $\hnf{U} = x$ (reps. $\hnf{T} = x$). Or $\GD \typec T,
-    U : s$, donc $\GD \typec x : s$, soit $X \eqbi s$. Par le lemme
-    \ref{subti-coercion-sorts}, on déduit que $e = \lambda x : s.x$.
-    On a donc: $\hnf{T'} = \hnf{U'} = \hnf{e~x} = x$. Or $x \subhnf x$
-    n'est pas dérivable donc on a la dérivation:
-    \begin{prooftree}
-      \AXC{$T' \eqbi U'$}
-      \UIC{$\subimpl{\Gr}{\lambda y : T'.y}{T'}{U'}$}
-    \end{prooftree}
+      \step{Définition de $c_f$ ($= \lambda f.\lambda
+        x.c_2~(f~(c_1~x))$)}
+      {=}{c_f~(\pi_{F'}~\ip{f}{`D})~(c_e[`r]~(`a_e~\ip{e}{`D}))}
+      
+      \step{Commutation du diagramme 1}
+      {\eqbe}{(\pi_F[`r]~(`a_f~\ip{f}{`D}))~(c_e[`r]~(`a_e~\ip{e}{`D}))}
+      
+      \step{Définitions de $`a_f$ et $`a_e$}{=}
+      {(\pi_F[`r]~\ip{f}{`G}[`r])~(c_e[`r]~\ip{e}{`G}[`r])}
+
+      \step{Définition de l'interprétation}{=}{\ip{f~e}{`G}[`r]}
+      \vspace{0.2em}
+    \end{array}\]
     
-    On a bien $c[e~x/x] = \lambda y : T[e~x/x].y$.
-  \item Sinon, on a $\hnf{T'} = \hnf{T}[e~x/x]$ et $\hnf{U'} =
-    \hnf{U}[e~x/x]$. Or on sait que $\hnf{T} \subhnf \hnf{U}$ n'est pas
-    dérivable, donc la subsitution ne peut pas l'être non plus (on
-    substitue sous les symboles de tête dans ce cas). Cependant, on a toujours $T'
-    \eqbi U'$ donc on va dériver la coercion attendue.
+    \vspace{1cm}
     
-  \end{itemize}
-  
-
-
-\end{induction}
+    \TODO{Autres cas}
+  \end{induction}   
 \end{proof}
-
 
 %%% Local Variables: 
 %%% mode: latex
