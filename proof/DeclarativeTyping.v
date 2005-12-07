@@ -79,6 +79,7 @@ Scheme typed_mut := Induction for typed Sort Prop
 with wfd_mut := Induction for wfd Sort Prop.
 
 Scheme typed_depind := Induction for typed Sort Prop.
+Check typed_mut.
 
 Lemma typed_wf : forall G t T, typed G t T -> wfd G.
 Proof.

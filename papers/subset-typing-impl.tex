@@ -290,7 +290,6 @@ dans le système algorithmique:
   et
   \[\left.\begin{array}{l}
       \GD \typea T, T' : s \\
-      T \suba T' \\
       \GD \typec d : T \suba T'
     \end{array}
   \right\} "=>" \Gr \typec d\cux : T[u/x] \suba T'[u/x]\]
@@ -309,7 +308,7 @@ dans le système algorithmique:
 
   On omet les environement passés à $\sref{coerce}$ s'ils sont évidents.
   On procède par induction mutuelle sur la dérivation de $`G, x : V, `D
-  \typea t : T$ et la dérivation de $T \suba T'$.
+  \typea t : T$ et la dérivation de $\GD \typec d : T \suba T'$.
   \begin{induction}
     \case{Var} 
     On a:
