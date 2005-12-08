@@ -23,12 +23,14 @@ Definition sortS := sort SetS.
 Definition sortP := sort PropS.
 Definition sortT i := sort (TypeS i).
 
+Definition is_propset (s : Sort) := s = PropS \/ s = SetS.
+
 Fixpoint lift_rec (n : nat) (T : term) {struct T} : nat -> term :=
   fun k : nat =>
     match T with
       | rel i => match le_gt_dec k i with
 		  | left _ (* k <= i *) => rel (n + i) 
-		  | right _ (* i > k *) => T
+		  | right _ (* i < k *) => T
 		end
       | sort s => T
       | app f t => app (lift_rec n f k) (lift_rec n t k)
@@ -64,6 +66,25 @@ Fixpoint subst_rec (o T : term) {struct T} : nat -> term :=
   end.
 
 Definition subst (o T : term) := subst_rec o T 0.
+
+Inductive free_db : nat -> term -> Prop :=
+  | db_srt : forall n s, free_db n (sort s)
+  | db_rel : forall k n, k > n -> free_db k (rel n)
+  | db_lambda : forall k A M, free_db k A -> free_db (S k) M -> free_db k (lambda A M)
+  | db_app : forall k u v, free_db k u -> free_db k v -> free_db k (app u v)
+  | db_pi :
+    forall k A B, free_db k A -> free_db (S k) B -> free_db k (Pi A B)
+  | db_pair : forall k A B, free_db k A -> free_db k B -> free_db k (pair A B)
+  | db_let_tuple : forall k A B, free_db k A -> free_db (S k) B -> 
+  free_db k (let_tuple A B)
+  | db_let_in : forall k A B, free_db k A -> free_db (S k) B -> 
+  free_db k (let_in A B)
+  | db_sigma :
+    forall k A B, free_db k A -> free_db (S k) B -> free_db k (Sigma A B)
+  | db_subset :
+    forall k A B, free_db k A -> free_db (S k) B -> free_db k (Subset A B).
+
+
 
 Fixpoint closed_rec (n : nat) (t : term) { struct t } : Prop :=
   match t with

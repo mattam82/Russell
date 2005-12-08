@@ -30,3 +30,44 @@ Proof.
   elim (leq_0_S _ H).
   rewrite (IHl l' i) ; auto with arith.
 Qed.
+
+Lemma length_app : forall A : Set, forall l l' : list A, length (l ++ l') = length l + length l'.
+Proof.
+  intros.
+  induction l.
+  simpl ; auto.
+  simpl.
+  rewrite IHl.
+  reflexivity.
+Qed.
+
+Require Import Omega.
+
+Lemma nth_i_app : forall A : Set, forall d : A, forall l' l i, 
+  nth i l d = nth (length l' + i) (l' ++ l) d.
+Proof.
+  induction l' using rev_ind.
+  intros.
+  simpl.
+  reflexivity.
+  intros.
+  rewrite app_ass ;  simpl.
+  rewrite (length_app A l' (x :: nil)).
+  simpl.
+  rewrite IHl'.
+  assert(length l' + 1 + i = S (length l' + i)) ; try omega.
+  rewrite H.
+  rewrite (nth_app_middle A x d).
+  reflexivity.
+  auto with arith.
+Qed.
+
+
+
+
+
+
+
+
+
+  
