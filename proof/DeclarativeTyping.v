@@ -513,7 +513,7 @@ simpl.
 
 apply w.
   apply (t0 (m + S n0).
-
+  
 
 inversion G0.
 

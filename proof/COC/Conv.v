@@ -24,6 +24,28 @@ elim H3 with N'0; auto with coc core arith sets; intros.
 exists (subst x1 x0); auto with coc core arith sets; unfold subst in |- *;
  auto with coc core arith sets.
 
+inversion_clear H2.
+apply H1.
+unfold transp.
+apply H3.
+
+unfold transp.
+inversion_clear H3.
+unfold transp.
+induction (H1 M'1 H2).
+exists x0 ; try (apply par_pi1) ; auto with coc core arith sets.
+
+inversion_clear H2.
+apply H1.
+unfold transp.
+apply H3.
+
+unfold transp.
+inversion_clear H3.
+unfold transp.
+induction (H1 N'0 H4).
+exists x0 ; try (apply par_pi1) ; auto with coc core arith sets.
+
 inversion_clear H0.
 exists (Srt s); auto with coc core arith sets.
 
@@ -86,10 +108,23 @@ exists (Subset x0 x1); auto with coc core arith sets.
 
 
 intros.
-inversion_clear H4.
-elim H1 with M'0; auto with coc core arith sets; intros.
-elim H3 with N'0; auto with coc core arith sets; intros.
-exists (Let_tuple x0 x1); auto with coc core arith sets.
+unfold transp.
+unfold transp in H2.
+unfold transp in H1.
+induction (H1 M' H0).
+inversion H2.
+rewrite <- H7 in H2.
+rewrite <- H5 in H0.
+rewrite <- H5 in H2.
+rewrite <- H7.
+inversion H0.
+Admitted.
+(*
+exists M'1 ;auto with coc core arith sets.
+
+
+rewrite <- H7.
+rewrite <- H11 in H0.
 
 
 intros.
@@ -99,7 +134,7 @@ elim H3 with N'0; auto with coc core arith sets; intros.
 exists (Let_in x0 x1); auto with coc core arith sets.
 
 Qed.
-
+*)
 
   Lemma strip_lemma : commut _ par_red (transp _ par_red1).
 unfold commut, par_red in |- *; simple induction 1; intros.

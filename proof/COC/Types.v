@@ -61,17 +61,19 @@ with typ : env -> term -> term -> Prop :=
       forall (U : term),
       typ (T :: e) U (Srt prop) -> typ e (Subset T U) (Srt set)
 
-  | type_let_tuple :
+  | type_pi1 :
       forall e t U V,
-      typ e t (Sum U V) ->
-      forall v M,
-      typ (V :: U :: e) v M -> typ e (Let_tuple t v) M
+      typ e t (Sum U V) -> typ e (Pi1 t) U
+
+  | type_pi2 :
+      forall e t U V,
+      typ e t (Sum U V) -> typ e (Pi2 t) (subst (Pi1 t) V)
 
   | type_let_in :
       forall e t U,
       typ e t U ->
       forall v M,
-      typ (U :: e) v M -> typ e (Let_in t v) M
+      typ (U :: e) v M -> typ e (Let_in t v) (subst t M)
 
   | type_conv :
       forall e t (U V : term),
@@ -150,13 +152,15 @@ Qed.
     | Subset A B =>
         forall s1 s2,
         typ e A (Srt set) -> typ (A :: e) B (Srt prop) -> conv T (Srt set) -> P
-    | Let_tuple t v =>
+    | Pi1 t =>
         forall U V,
-        typ e t (Sum U V) -> 
-        forall M, typ (V :: U :: e) v M -> conv T M -> P
+        typ e t (Sum U V) -> conv T U -> P
+    | Pi2 t =>
+        forall U V,
+        typ e t (Sum U V) -> conv T (subst (Pi1 t) V) -> P
     | Let_in t v =>
         forall U, typ e t U -> 
-        forall M, typ (U :: e) v M -> conv T M -> P
+        forall M, typ (U :: e) v M -> conv T (subst t M) -> P
     end.
 
   Lemma inv_type_conv :
@@ -181,7 +185,9 @@ apply H1 with s1 s2; auto with coc core arith datatypes.
 apply H1 with s1 s2; auto with coc core arith datatypes.
 apply H1; auto with coc core arith datatypes.
 
-apply H1 with U0 V0 M; auto with coc core arith datatypes.
+apply H1 with U0 V0; auto with coc core arith datatypes.
+
+apply H1 with U0 V0; auto with coc core arith datatypes.
 
 apply H1 with U0 M; auto with coc core arith datatypes.
 
@@ -210,7 +216,9 @@ apply H4 with s1 s2; auto with coc core arith datatypes.
 apply H4 with s1 s2; auto with coc core arith datatypes.
 apply H4; auto with coc core arith datatypes.
 
-apply H4 with U V M; auto with coc core arith datatypes.
+apply H2 with U V; auto with coc core arith datatypes.
+apply H2 with U V; auto with coc core arith datatypes.
+
 apply H4 with U M; auto with coc core arith datatypes.
 
 apply H1.
@@ -311,6 +319,10 @@ apply typ_inversion with e0 u (Prod V Ur); auto with coc core arith datatypes.
 
 apply typ_inversion with e0 v V; auto with coc core arith datatypes.
 
+apply typ_inversion with e0 u U; auto with coc core arith datatypes.
+
+apply typ_inversion with e0 v (subst u V); auto with coc core arith datatypes.
+
 apply typ_inversion with e0 u (Srt s1); auto with coc core arith datatypes.
 
 apply typ_inversion with (u :: e0) v (Srt s2); auto with coc core arith datatypes.
@@ -321,7 +333,7 @@ apply typ_inversion with (u :: e0) v (Srt prop); auto with coc core arith dataty
 
 apply typ_inversion with e0 u (Sum U V); auto with coc core arith datatypes.
 
-apply typ_inversion with (V :: U :: e0) v M; auto with coc core arith datatypes.
+apply typ_inversion with (e0) u (Sum U V); auto with coc core arith datatypes.
 
 apply typ_inversion with e0 u U; auto with coc core arith datatypes.
 
@@ -418,21 +430,115 @@ apply ins_item_lt with A e0; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T0 n :: f)).
 intro.
-apply type_abs with s1 s2; auto with coc core arith datatypes.
-
-apply wf_var with s1; auto with coc core arith datatypes.
+eapply type_abs.
+apply H1.
+assumption.
+assumption.
+apply H3. 
+auto with coc.
+assumption.
+apply H5.
+auto with coc.
+assumption.
+apply wf_var with s1.
+apply H1.
+assumption.
+assumption.
 
 rewrite distr_lift_subst.
 apply type_app with (lift_rec 1 V n); auto with coc core arith datatypes.
 
-
-
+apply type_pair.
+intuition.
+rewrite <- distr_lift_subst.
+apply H3 ; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T0 n :: f)).
 intro.
 apply type_prod with s1; auto with coc core arith datatypes.
-
 apply wf_var with s1; auto with coc core arith datatypes.
+
+
+cut (wf (lift_rec 1 T0 n :: f)).
+intro.
+apply type_sum with s1; auto with coc core arith datatypes.
+apply wf_var with s1; auto with coc core arith datatypes.
+
+cut (wf (lift_rec 1 T0 n :: f)).
+intro.
+apply type_subset ; auto with coc core arith datatypes.
+apply wf_var with set; auto with coc core arith datatypes.
+
+apply type_pi1 with (lift_rec 1 V (S n)) ; auto with coc.
+
+rewrite distr_lift_subst.
+simpl.
+apply type_pi2 with (lift_rec 1 U n); auto with coc.
+
+cut (wf (lift_rec 1 U n :: f)).
+intro.
+unfold subst.
+rewrite commut_lift_subst_rec.
+simpl.
+pose (H3 (S n) (lift_rec 1 U n :: f) (ins_S A n e0 f U H4) H6).
+replace (S n) with (S (0 + n)).
+rewrite <- distr_lift_subst_rec.
+
+Lemma subst_lift_subst_lift : forall t M n, 
+  subst_rec t (lift_rec 1 M n) 1 = 
+  subst_rec (lift_rec 1 t n) (lift_rec 1 M (S n)) 0.
+Proof.
+  intros.
+  replace (S n) with (S (0 + n)).
+  rewrite <- distr_lift_subst_rec.
+  simpl.
+  induction M ; intros ; auto with coc core arith.
+  elim (lt_eq_lt_dec n n0).
+  intros.
+  induction a.
+  rewrite lift_ref_ge ; auto with coc core arith.
+  rewrite subst_ref_gt ; auto with coc core arith ; try omega.
+  rewrite subst_ref_gt ; auto with coc core arith ; try omega.
+  simpl.
+  elim (le_gt_dec n (pred n0)).
+  intros.
+  assert(S (pred n0) = n0) ; try omega.
+  rewrite H.
+  reflexivity.
+  intros.
+  absurd (n > pred n0) ; try omega.
+  rewrite b.
+  rewrite lift_ref_ge ; auto with arith coc.
+  case n0.
+  simpl.
+  rewrite lift0.
+  reflexivity.
+  intros.
+  rewrite subst_ref_gt ; try omega.
+  rewrite subst_ref_gt ; try omega.
+  replace (pred (S n1)) with n1.
+  rewrite lift_ref_lt.
+  simpl.
+  simpl.
+  rewrite lift0.
+  reflexivity.
+
+  intros.
+  rewrite subst_ref_gt ; auto with coc core arith.
+  omega.
+  intros.
+  
+  
+
+  simpl ; rewrite IHM1.
+  rewrite IHM2.
+  
+
+apply type_let_in. with s1; auto with coc core arith datatypes.
+apply wf_var with s1; auto with coc core arith datatypes.
+
+
+
 
 apply type_conv with (lift_rec 1 U n) s; auto with coc core arith datatypes.
 Qed.
