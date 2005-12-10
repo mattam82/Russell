@@ -777,6 +777,42 @@ apply trans_red with b; auto with coc core arith sets.
 Qed.
 
 
+  Lemma red_sum_sum :
+   forall u v t,
+   red (Sum u v) t ->
+   forall P : Prop,
+   (forall a b : term, t = Sum a b -> red u a -> red v b -> P) -> P.
+simple induction 1; intros.
+apply H0 with u v; auto with coc core arith sets.
+
+apply H1; intros.
+inversion_clear H4 in H2.
+inversion H2.
+apply H3 with N1 b; auto with coc core arith sets.
+apply trans_red with a; auto with coc core arith sets.
+
+apply H3 with a N2; auto with coc core arith sets.
+apply trans_red with b; auto with coc core arith sets.
+Qed.
+
+  Lemma red_subset_subset :
+   forall u v t,
+   red (Subset u v) t ->
+   forall P : Prop,
+   (forall a b : term, t = Subset a b -> red u a -> red v b -> P) -> P.
+simple induction 1; intros.
+apply H0 with u v; auto with coc core arith sets.
+
+apply H1; intros.
+inversion_clear H4 in H2.
+inversion H2.
+apply H3 with N1 b; auto with coc core arith sets.
+apply trans_red with a; auto with coc core arith sets.
+
+apply H3 with a N2; auto with coc core arith sets.
+apply trans_red with b; auto with coc core arith sets.
+Qed.
+
   Lemma red_sort_sort : forall s t, red (Srt s) t -> t <> Srt s -> False.
 simple induction 1; intros; auto with coc core arith sets.
 apply H1.
