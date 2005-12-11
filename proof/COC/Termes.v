@@ -230,9 +230,9 @@ Section Beta_Reduction.
         par_red1 M M' ->
         forall N N',
         par_red1 N N' -> forall T, par_red1 (App (Abs T M) N) (subst N' M')
-    | par_pi1 : forall T, forall M M', par_red1 M M' -> 
-      forall N, par_red1 (Pi1 (Pair T M N)) M'
-    | par_pi2 : forall T M, forall N N', par_red1 N N' -> 
+    | par_pi1 : forall M M', par_red1 M M' -> 
+      forall T N, par_red1 (Pi1 (Pair T M N)) M'
+    | par_pi2 : forall N N', par_red1 N N' -> forall T M,
       par_red1 (Pi2 (Pair T M N)) N'
     | sort_par_red : forall s, par_red1 (Srt s) (Srt s)
     | ref_par_red : forall n, par_red1 (Ref n) (Ref n)
@@ -938,16 +938,22 @@ Qed.
 Lemma conv_conv_pair : forall T S a b c d : term, conv T S -> conv a b -> conv c d -> conv (Pair T a c) (Pair S b d).
 Proof.
 intros.
-apply trans_conv_conv with (Pair S b d).
-elim H0; intros; auto with coc core arith sets.
-apply trans_conv_red with (Pair a P); auto with coc core arith sets.
+apply trans_conv_conv with (Pair T a d).
+elim H1; intros; auto with coc core arith sets.
+apply trans_conv_red with (Pair T a P); auto with coc core arith sets.
 
-apply trans_conv_exp with (Pair a P); auto with coc core arith sets.
+apply trans_conv_exp with (Pair T a P); auto with coc core arith sets.
+
+apply trans_conv_conv with (Pair T b d); auto with coc core arith sets.
+elim H0; intros; auto with coc core arith sets.
+apply trans_conv_red with (Pair T P d); auto with coc core arith sets.
+
+apply trans_conv_exp with (Pair T P d); auto with coc core arith sets.
 
 elim H; intros; auto with coc core arith sets.
-apply trans_conv_red with (Pair P d); auto with coc core arith sets.
+apply trans_conv_red with (Pair P b d); auto with coc core arith sets.
 
-apply trans_conv_exp with (Pair P d); auto with coc core arith sets.
+apply trans_conv_exp with (Pair P b d); auto with coc core arith sets.
 Qed.
 
 
@@ -1006,8 +1012,8 @@ Qed.
 simple induction 1.
 simple induction 1; intros; auto with coc core arith sets.
 apply trans_red with (App (Abs T M') N'); auto with coc core arith sets.
-apply trans_red with (Pi1 (Pair M' N0)); auto with coc core arith sets.
-apply trans_red with (Pi2 (Pair M0 N')); auto with coc core arith sets.
+apply trans_red with (Pi1 (Pair T M' N0)); auto with coc core arith sets.
+apply trans_red with (Pi2 (Pair T M0 N')); auto with coc core arith sets.
 
 intros.
 apply trans_red_red with y; auto with coc core arith sets.
@@ -1047,6 +1053,15 @@ Qed.
 do 5 intro.
 inversion_clear H; intros.
 apply H with T' M'; auto with coc core arith sets.
+Qed.
+
+  Lemma inv_par_red_pair :
+   forall (P : Prop) T (U V x : term),
+   par_red1 (Pair T U V) x ->
+   (forall T' (U' V' : term), x = Pair T' U' V' -> par_red1 U U' -> par_red1 V V' -> P) -> P.
+do 6 intro.
+inversion_clear H; intros.
+apply H with T' M' N'; auto with coc core arith sets.
 Qed.
 
   Hint Resolve par_red1_lift par_red1_subst: coc.
@@ -1114,9 +1129,10 @@ apply mem_app_l; apply H with n k; auto with coc core arith sets.
 
 apply mem_app_r; apply H0 with n k; auto with coc core arith sets.
 
-inversion_clear H1.
-apply mem_pair_l ; apply H with n k; auto with coc core arith sets.
-apply mem_pair_r ; apply H0 with n k; auto with coc core arith sets.
+inversion_clear H2.
+apply mem_pair_T ; apply H with n k; auto with coc core arith sets.
+apply mem_pair_l ; apply H0 with n k; auto with coc core arith sets.
+apply mem_pair_r ; apply H1 with n k; auto with coc core arith sets.
 
 inversion_clear H1.
 apply mem_prod_l; apply H with n k; auto with coc core arith sets.
@@ -1175,9 +1191,10 @@ inversion_clear H0.
     elim H with a n s; auto with coc core arith sets |
     elim H0 with a n s; intros; auto with coc core arith sets]).
 
-inversion_clear H1 ; [
+inversion_clear H2 ; [
 elim H with a n s; auto with coc core arith sets |
-elim H0 with a (S n) s; intros; auto with coc core arith sets].
+elim H0 with a n s; auto with coc core arith sets |
+elim H1 with a n s; intros; auto with coc core arith sets].
 
 inversion_clear H1 ; [
 elim H with a n s; auto with coc core arith sets |
@@ -1185,10 +1202,13 @@ elim H0 with a (S n) s; intros; auto with coc core arith sets].
 inversion_clear H1 ; [
 elim H with a n s; auto with coc core arith sets |
 elim H0 with a (S n) s; intros; auto with coc core arith sets].
-inversion_clear H0.
-elim (H _ _ _ H1) ; intros ; auto with coc core arith sets.
-inversion_clear H0.
-elim (H _ _ _ H1) ; intros ; auto with coc core arith sets.
+inversion_clear H1.
+elim (H _ _ _ H2) ; intros ; auto with coc core arith sets.
+elim (H0 _ _ _ H2) ; intros ; auto with coc core arith sets.
+inversion_clear H0 ; [
+elim H with a n s; auto with coc core arith sets ].
+inversion_clear H0 ; [
+elim H with a n s; auto with coc core arith sets ].
 inversion_clear H1 ; [
 elim H with a n s; auto with coc core arith sets |
 elim H0 with a (S n) s; intros; auto with coc core arith sets].
@@ -1243,8 +1263,9 @@ exists (App z v); auto with coc core arith sets.
 
 exists (App u z); auto with coc core arith sets.
 
-exists (Pair z v); auto with coc core arith sets.
-exists (Pair u z); auto with coc core arith sets.
+exists (Pair z u v); auto with coc core arith sets.
+exists (Pair T z v); auto with coc core arith sets.
+exists (Pair T u z); auto with coc core arith sets.
 
 exists (Prod z n); auto with coc core arith sets.
 exists (Sum z n); auto with coc core arith sets.
@@ -1285,13 +1306,18 @@ apply H1; auto with coc core arith sets.
 apply Acc_intro; auto with coc core arith sets.
 Qed.
 
-  Lemma sn_pair : forall A, sn A -> forall B, sn B -> sn (Pair A B).
-unfold sn in |- *.
+  Lemma sn_pair : forall T, sn T -> forall A, sn A -> forall B, sn B -> sn (Pair T A B).
+unfold sn.
 simple induction 1.
-simple induction 3; intros.
+simple induction 3.
+simple induction 3 ; intros.
 apply Acc_intro; intros.
-inversion_clear H5; auto with coc core arith sets.
+inversion_clear H8; auto with coc core arith sets.
 apply H1; auto with coc core arith sets.
+apply Acc_intro; auto with coc core arith sets.
+apply Acc_intro; auto with coc core arith sets.
+
+apply H4 ; auto with coc core arith sets.
 apply Acc_intro; auto with coc core arith sets.
 Qed.
 
