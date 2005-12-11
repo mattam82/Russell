@@ -224,7 +224,7 @@ intros.
 elim church_rosser with (Sum a c) (Sum b d); intros;
  auto with coc core arith sets.
 apply red_sum_sum with a c x; intros; auto with coc core arith sets.
-apply red_prod_prod with b d x; intros; auto with coc core arith sets.
+apply red_sum_sum with b d x; intros; auto with coc core arith sets.
 apply trans_conv_conv with a0; auto with coc core arith sets.
 apply sym_conv.
 generalize H2.
@@ -235,12 +235,12 @@ Qed.
 
 
 Lemma inv_conv_sum_r :
-   forall a b c d : term, conv (Prod a c) (Prod b d) -> conv c d.
+   forall a b c d : term, conv (Sum a c) (Sum b d) -> conv c d.
 intros.
-elim church_rosser with (Prod a c) (Prod b d); intros;
+elim church_rosser with (Sum a c) (Sum b d); intros;
  auto with coc core arith sets.
-apply red_prod_prod with a c x; intros; auto with coc core arith sets.
-apply red_prod_prod with b d x; intros; auto with coc core arith sets.
+apply red_sum_sum with a c x; intros; auto with coc core arith sets.
+apply red_sum_sum with b d x; intros; auto with coc core arith sets.
 apply trans_conv_conv with b0; auto with coc core arith sets.
 apply sym_conv.
 generalize H2.
@@ -248,6 +248,7 @@ rewrite H5; intro.
 injection H8.
 simple induction 1; auto with coc core arith sets.
 Qed.
+
 
 
   Lemma nf_uniqueness : forall u v, conv u v -> normal u -> normal v -> u = v. 

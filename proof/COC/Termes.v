@@ -30,7 +30,7 @@ Qed.
     | Ref : nat -> term
     | Abs : term -> term -> term
     | App : term -> term -> term
-    | Pair : term -> term -> term
+    | Pair : term -> term -> term -> term
     | Prod : term -> term -> term
     | Sum : term -> term -> term
     | Subset : term -> term -> term
@@ -51,7 +51,7 @@ Qed.
           end
 	| Abs T M => Abs (lift_rec n T k) (lift_rec n M (S k))
 	| App u v => App (lift_rec n u k) (lift_rec n v k)
-	| Pair A B => Pair (lift_rec n A k) (lift_rec n B k)
+	| Pair T A B => Pair (lift_rec n T k) (lift_rec n A k) (lift_rec n B k)
 	| Prod A B => Prod (lift_rec n A k) (lift_rec n B (S k))
 	| Sum A B => Sum (lift_rec n A k) (lift_rec n B (S k))
 	| Subset A B => Subset (lift_rec n A k) (lift_rec n B (S k))
@@ -77,7 +77,7 @@ Qed.
           end
 	| Abs A B => Abs (subst_rec N A k) (subst_rec N B (S k))
 	| App u v => App (subst_rec N u k) (subst_rec N v k)
-	| Pair A B => Pair (subst_rec N A k) (subst_rec N B k)
+	| Pair T A B => Pair (subst_rec N T k) (subst_rec N A k) (subst_rec N B k)
 	| Prod T U => Prod (subst_rec N T k) (subst_rec N U (S k))
 	| Sum T U => Sum (subst_rec N T k) (subst_rec N U (S k))
 	| Subset T U => Subset (subst_rec N T k) (subst_rec N U (S k))
@@ -96,7 +96,7 @@ Qed.
     | db_app :
         forall k u v, free_db k u -> free_db k v -> free_db k (App u v)
     | db_pair :
-        forall k u v, free_db k u -> free_db k v -> free_db k (Pair u v)
+        forall k T u v, free_db k T -> free_db k u -> free_db k v -> free_db k (Pair T u v)
     | db_prod :
         forall k A B, free_db k A -> free_db (S k) B -> free_db k (Prod A B) 
     | db_sum :
@@ -120,8 +120,9 @@ Qed.
     | Nbsbt_abs : forall n : term, subt_nobind m (Abs m n)
     | Nbsbt_app_l : forall v, subt_nobind m (App m v)
     | Nbsbt_app_r : forall u, subt_nobind m (App u m)
-    | Nbsbt_pair_l : forall v, subt_nobind m (Pair m v)
-    | Nbsbt_pair_r : forall u, subt_nobind m (Pair u m)
+    | Nbsbt_pair_T : forall u v, subt_nobind m (Pair m u v)
+    | Nbsbt_pair_l : forall T v, subt_nobind m (Pair T m v)
+    | Nbsbt_pair_r : forall T u, subt_nobind m (Pair T u m)
     | Nbsbt_prod : forall n : term, subt_nobind m (Prod m n)
     | Nbsbt_sum : forall n : term, subt_nobind m (Sum m n)
     | Nbsbt_subset : forall n : term, subt_nobind m (Subset m n)
@@ -141,8 +142,9 @@ Qed.
     | mem_abs_r : forall u v, mem_sort s v -> mem_sort s (Abs u v)
     | mem_app_l : forall u v, mem_sort s u -> mem_sort s (App u v)
     | mem_app_r : forall u v, mem_sort s v -> mem_sort s (App u v)
-    | mem_pair_l : forall u v, mem_sort s u -> mem_sort s (Pair u v)
-    | mem_pair_r : forall u v, mem_sort s v -> mem_sort s (Pair u v)
+    | mem_pair_T : forall T u v, mem_sort s T -> mem_sort s (Pair T u v)
+    | mem_pair_l : forall T u v, mem_sort s u -> mem_sort s (Pair T u v)
+    | mem_pair_r : forall T u v, mem_sort s v -> mem_sort s (Pair T u v)
     | mem_sum_l : forall u v, mem_sort s u -> mem_sort s (Sum u v)
     | mem_sum_r : forall u v, mem_sort s v -> mem_sort s (Sum u v)
     | mem_subset_l : forall u v, mem_sort s u -> mem_sort s (Subset u v)
@@ -159,7 +161,7 @@ End Termes.
 
   Hint Resolve db_srt db_ref db_abs db_app db_pair db_prod db_sum db_subset db_let_in db_pi1 db_pi2 : coc.
   Hint Resolve Bsbt_abs Bsbt_prod Bsbt_sum Bsbt_subset Bsbt_let_in : coc.
-  Hint Resolve Nbsbt_abs Nbsbt_app_l Nbsbt_app_r Nbsbt_pair_l
+  Hint Resolve Nbsbt_abs Nbsbt_app_l Nbsbt_app_r Nbsbt_pair_T Nbsbt_pair_l
     Nbsbt_pair_r Nbsbt_pi1 Nbsbt_pi2 Nbsbt_prod Nbsbt_sum Nbsbt_subset
     Nbsbt_let_in : coc.
   Hint Resolve Sbtrm_nobind: coc.
@@ -168,7 +170,7 @@ End Termes.
   Hints Unfold  mem_sort : coc.
 *)
   Hint Resolve mem_eq mem_prod_l mem_prod_r mem_abs_l mem_abs_r mem_app_l
-    mem_app_r mem_pair_l mem_pair_r : coc.
+    mem_app_r mem_pair_T mem_pair_l mem_pair_r : coc.
   Hint Resolve mem_sum_l mem_sum_r mem_subset_l mem_subset_r mem_pi1 mem_pi2
     mem_let_in_l mem_let_in_r : coc.
 
@@ -176,8 +178,8 @@ Section Beta_Reduction.
 
   Inductive red1 : term -> term -> Prop :=
     | beta : forall M N T, red1 (App (Abs T M) N) (subst N M)
-    | pi1 : forall M N, red1 (Pi1 (Pair M N)) M
-    | pi2 : forall M N, red1 (Pi2 (Pair M N)) N
+    | pi1 : forall T M N, red1 (Pi1 (Pair T M N)) M
+    | pi2 : forall T M N, red1 (Pi2 (Pair T M N)) N
     | abs_red_l :
         forall M M', red1 M M' -> forall N, red1 (Abs M N) (Abs M' N)
     | abs_red_r :
@@ -186,10 +188,12 @@ Section Beta_Reduction.
         forall M1 N1, red1 M1 N1 -> forall M2, red1 (App M1 M2) (App N1 M2)
     | app_red_r :
         forall M2 N2, red1 M2 N2 -> forall M1, red1 (App M1 M2) (App M1 N2)
+    | pair_red_T :
+        forall T S, red1 T S -> forall M1 M2, red1 (Pair T M1 M2) (Pair S M1 M2)
     | pair_red_l :
-        forall M1 N1, red1 M1 N1 -> forall M2, red1 (Pair M1 M2) (Pair N1 M2)
+        forall M1 N1, red1 M1 N1 -> forall T M2, red1 (Pair T M1 M2) (Pair T N1 M2)
     | pair_red_r :
-        forall M2 N2, red1 M2 N2 -> forall M1, red1 (Pair M1 M2) (Pair M1 N2)
+        forall M2 N2, red1 M2 N2 -> forall T M1, red1 (Pair T M1 M2) (Pair T M1 N2)
     | prod_red_l :
         forall M1 N1, red1 M1 N1 -> forall M2, red1 (Prod M1 M2) (Prod N1 M2)
     | prod_red_r :
@@ -226,10 +230,10 @@ Section Beta_Reduction.
         par_red1 M M' ->
         forall N N',
         par_red1 N N' -> forall T, par_red1 (App (Abs T M) N) (subst N' M')
-    | par_pi1 : forall M M', par_red1 M M' -> 
-      forall N, par_red1 (Pi1 (Pair M N)) M'
-    | par_pi2 : forall M, forall N N', par_red1 N N' -> 
-      par_red1 (Pi2 (Pair M N)) N'
+    | par_pi1 : forall T, forall M M', par_red1 M M' -> 
+      forall N, par_red1 (Pi1 (Pair T M N)) M'
+    | par_pi2 : forall T M, forall N N', par_red1 N N' -> 
+      par_red1 (Pi2 (Pair T M N)) N'
     | sort_par_red : forall s, par_red1 (Srt s) (Srt s)
     | ref_par_red : forall n, par_red1 (Ref n) (Ref n)
     | abs_par_red :
@@ -240,10 +244,10 @@ Section Beta_Reduction.
         forall M M',
         par_red1 M M' ->
         forall N N', par_red1 N N' -> par_red1 (App M N) (App M' N')
-    | pair_par_red :
+    | pair_par_red : forall T T', par_red1 T T' ->
         forall M M',
         par_red1 M M' ->
-        forall N N', par_red1 N N' -> par_red1 (Pair M N) (Pair M' N')
+        forall N N', par_red1 N N' -> par_red1 (Pair T M N) (Pair T' M' N')
     | prod_par_red :
         forall M M',
         par_red1 M M' ->
@@ -270,7 +274,7 @@ Section Beta_Reduction.
 End Beta_Reduction.
 
 
-  Hint Resolve beta pi1 pi2 abs_red_l abs_red_r app_red_l app_red_r pair_red_l pair_red_r : coc.
+  Hint Resolve beta pi1 pi2 abs_red_l abs_red_r app_red_l app_red_r pair_red_T pair_red_l pair_red_r : coc.
   Hint Resolve prod_red_l prod_red_r sum_red_l sum_red_r subset_red_l subset_red_r pi1_red pi2_red let_in_red_l let_in_red_r : coc.
   Hint Resolve refl_red refl_conv: coc.
   Hint Resolve par_beta par_pi1 par_pi2 sort_par_red ref_par_red abs_par_red app_par_red pair_par_red
@@ -342,7 +346,7 @@ Qed.
 
   Lemma lift_rec0 : forall M k, lift_rec 0 M k = M.
 simple induction M; simpl in |- *; intros; auto with coc core arith sets ;
-try (try rewrite H; try rewrite H0 ; auto with coc core arith sets).
+try (try rewrite H; try rewrite H0 ; try rewrite H1 ; auto with coc core arith sets).
 elim (le_gt_dec k n); auto with coc core arith sets.
 Qed.
 
@@ -357,7 +361,7 @@ Qed.
    i <= k + n ->
    k <= i -> lift_rec p (lift_rec n M k) i = lift_rec (p + n) M k.
 simple induction M; simpl in |- *; intros; auto with coc core arith sets ; 
-  try (rewrite H; auto with coc core arith sets; rewrite H0; simpl in |- *;
+  try (rewrite H; auto with coc core arith sets; rewrite H0; try rewrite H1 ; simpl in |- *;
  auto with coc core arith sets).
 
 elim (le_gt_dec k n); intros.
@@ -382,7 +386,7 @@ Lemma permute_lift_rec :
    lift_rec p (lift_rec n M k) i = lift_rec n (lift_rec p M i) (p + k).
 simple induction M; simpl in |- *; intros; auto with coc core arith sets ;
  try (
-rewrite H; auto with coc core arith sets; rewrite H0;
+rewrite H; auto with coc core arith sets; rewrite H0; try rewrite H1 ;
  auto with coc core arith sets ; repeat (rewrite plus_n_Sm; auto with coc core arith sets)).
 elim (le_gt_dec k n); elim (le_gt_dec i n); intros.
 rewrite lift_ref_ge; auto with coc core arith sets.
@@ -416,11 +420,11 @@ Qed.
 Require Import Omega.
 
   Lemma simpl_subst_rec :
-   forall N M n p k,
+   forall M N n p k,
    p <= n + k ->
    k <= p -> subst_rec N (lift_rec (S n) M k) p = lift_rec n M k.
 simple induction M; simpl in |- *; intros; auto with coc core arith sets ; 
-  try (rewrite H; auto with coc core arith sets; rewrite H0;
+  try (rewrite H; auto with coc core arith sets; rewrite H0; try rewrite H1;
  auto with coc core arith sets ;
  try (elim plus_n_Sm with n k; auto with coc core arith sets)).
 
@@ -447,7 +451,7 @@ Qed.
    k <= p ->
    lift_rec n (subst_rec N M p) k = subst_rec N (lift_rec n M k) (n + p).
 simple induction M; intros; auto with coc core arith sets ; 
- try (simpl in |- *; rewrite H; auto with coc core arith sets; rewrite H0;
+ try (simpl in |- *; rewrite H; auto with coc core arith sets; rewrite H0; try rewrite H1 ;
  auto with coc core arith sets ; rewrite plus_n_Sm ; auto with coc core arith sets).
 
 unfold subst_rec at 1, lift_rec at 2 in |- *.
@@ -499,7 +503,7 @@ Qed.
 simple induction M; intros; auto with coc core arith sets ; try (
 simpl in |- *; try replace (S (p + k)) with (S p + k);
  auto with coc core arith sets ;
-rewrite H; try rewrite H0; auto with coc core arith sets).
+rewrite H; try rewrite H0; try rewrite H1 ; auto with coc core arith sets).
 
 unfold subst_rec at 1 in |- *.
 elim (lt_eq_lt_dec p n); [ intro a | intro b ].
@@ -547,7 +551,7 @@ Qed.
   simple induction M; auto with coc core arith sets; intros ; try
   (simpl in |- *; replace (S (p + n)) with (S p + n);
  auto with coc core arith sets ;
-rewrite H; try rewrite H0; auto with coc core arith sets).
+rewrite H; try rewrite H0; try rewrite H1 ; auto with coc core arith sets).
 
 unfold subst_rec at 2 in |- *.
 elim (lt_eq_lt_dec p n); [ intro Hlt_eq | intro Hlt ].
@@ -644,13 +648,33 @@ apply trans_red with (App P v0); auto with coc core arith sets.
 Qed.
 
 Lemma red_red_pair :
-   forall u u0 v v0, red u u0 -> red v v0 -> red (Pair u v) (Pair u0 v0).
+   forall T T0 u u0 v v0, red T T0 -> red u u0 -> red v v0 -> red (Pair T u v) (Pair T0 u0 v0).
+simple induction 1.
 simple induction 1.
 simple induction 1 ; intros ; auto with coc core arith sets.
-apply trans_red with (Pair u P); auto with coc core arith sets.
+apply trans_red with (Pair T u P); auto with coc core arith sets.
 
-intros.
-apply trans_red with (Pair P v0); auto with coc core arith sets.
+induction 4 ; intros ; auto with coc core arith sets.
+apply trans_red with (Pair T P v); auto with coc core arith sets.
+apply trans_red with (Pair T P N0); auto with coc core arith sets.
+apply H2 ; auto with coc core arith sets.
+apply trans_red with P0 ; auto.
+
+induction 4.
+induction 1 ; intros ; auto with coc core arith sets.
+apply trans_red with (Pair P u v); auto with coc core arith sets.
+apply trans_red with (Pair P u N0); auto with coc core arith sets.
+apply H1 ; auto with coc core arith sets.
+apply trans_red with P0; auto with coc core arith sets.
+
+induction 1 ; intros ; auto with coc core arith sets.
+apply trans_red with (Pair P N0 v); auto with coc core arith sets.
+apply H1; auto with coc core arith sets.
+apply trans_red with P0; auto with coc core arith sets.
+apply trans_red with (Pair P N0 N1); auto with coc core arith sets.
+apply H1 ; auto with coc core arith sets.
+apply trans_red with P0; auto with coc core arith sets.
+apply trans_red with P1; auto with coc core arith sets.
 Qed.
 
 Ltac red_red_tac t :=
@@ -876,6 +900,54 @@ elim H; intros; auto with coc core arith sets.
 apply trans_conv_red with (Prod P d); auto with coc core arith sets.
 
 apply trans_conv_exp with (Prod P d); auto with coc core arith sets.
+Qed.
+
+
+Lemma conv_conv_sum : forall a b c d : term, conv a b -> conv c d -> conv (Sum a c) (Sum b d).
+Proof.
+intros.
+apply trans_conv_conv with (Sum a d).
+elim H0; intros; auto with coc core arith sets.
+apply trans_conv_red with (Sum a P); auto with coc core arith sets.
+
+apply trans_conv_exp with (Sum a P); auto with coc core arith sets.
+
+elim H; intros; auto with coc core arith sets.
+apply trans_conv_red with (Sum P d); auto with coc core arith sets.
+
+apply trans_conv_exp with (Sum P d); auto with coc core arith sets.
+Qed.
+
+
+Lemma conv_conv_subset : 
+  forall a b c d : term, conv a b -> conv c d -> conv (Subset a c) (Subset b d).
+Proof.
+intros.
+apply trans_conv_conv with (Subset a d).
+elim H0; intros; auto with coc core arith sets.
+apply trans_conv_red with (Subset a P); auto with coc core arith sets.
+
+apply trans_conv_exp with (Subset a P); auto with coc core arith sets.
+
+elim H; intros; auto with coc core arith sets.
+apply trans_conv_red with (Subset P d); auto with coc core arith sets.
+
+apply trans_conv_exp with (Subset P d); auto with coc core arith sets.
+Qed.
+
+Lemma conv_conv_pair : forall T S a b c d : term, conv T S -> conv a b -> conv c d -> conv (Pair T a c) (Pair S b d).
+Proof.
+intros.
+apply trans_conv_conv with (Pair S b d).
+elim H0; intros; auto with coc core arith sets.
+apply trans_conv_red with (Pair a P); auto with coc core arith sets.
+
+apply trans_conv_exp with (Pair a P); auto with coc core arith sets.
+
+elim H; intros; auto with coc core arith sets.
+apply trans_conv_red with (Pair P d); auto with coc core arith sets.
+
+apply trans_conv_exp with (Pair P d); auto with coc core arith sets.
 Qed.
 
 

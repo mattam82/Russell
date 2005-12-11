@@ -37,13 +37,12 @@ with typ : env -> term -> term -> Prop :=
       forall e v (V : term),
       typ e v V ->
       forall u (Ur : term),
-      typ e u (Prod V Ur) -> typ e (App u v) (subst v Ur)
-	
+      typ e u (Prod V Ur) -> typ e (App u v) (subst v Ur)	
   | type_pair :
       forall e u (U : term),
       typ e u U ->
-      forall v V,
-      typ e v (subst u V) -> typ e (Pair u v) (Sum U V)
+      forall V s, typ e (subst u V) (Srt s) ->
+      forall v, typ e v (subst u V) -> typ e (Pair u v) (Sum U V)
   | type_prod :
       forall e T s1,
       typ e T (Srt s1) ->
@@ -144,7 +143,8 @@ Qed.
         forall Ur V : term,
         typ e v V -> typ e u (Prod V Ur) -> conv T (subst v Ur) -> P
     | Pair u v => 
-        forall U V, typ e u U -> typ e v (subst u V) -> conv T (Sum U V) -> P
+        forall U V, typ e u U -> forall s, typ e (subst u V) (Srt s) ->
+        typ e v (subst u V) -> conv T (Sum U V) -> P
     | Prod A B =>
         forall s1 s2,
         typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> conv T (Srt s2) -> P
@@ -182,7 +182,7 @@ apply H1 with s1 s2 U0; auto with coc core arith datatypes.
 
 apply H1 with Ur V0; auto with coc core arith datatypes.
 
-apply H1 with U0 V0 ; auto with coc core arith datatypes.
+apply H1 with U0 V0 s ; auto with coc core arith datatypes.
 
 apply H1 with s1 s2; auto with coc core arith datatypes.
 apply H1 with s1 s2; auto with coc core arith datatypes.
@@ -213,7 +213,7 @@ apply H6 with s1 s2 U; auto with coc core arith datatypes.
 
 apply H4 with Ur V; auto with coc core arith datatypes.
 
-apply H4 with U V; auto with coc core arith datatypes.
+apply H6 with U V s; auto with coc core arith datatypes.
 
 apply H4 with s1 s2; auto with coc core arith datatypes.
 apply H4 with s1 s2; auto with coc core arith datatypes.
@@ -284,11 +284,12 @@ Qed.
   Lemma inv_typ_pair :
    forall (P : Prop) e u v T,
    typ e (Pair u v) T ->
-   (forall U V : term,
-    typ e u U -> typ e v (subst u V) -> conv T (Sum U V) -> P) -> P.
+   (forall U V : term, forall s,
+    typ e u U -> typ e (subst u V) (Srt s) -> typ e v (subst u V) -> conv T (Sum U V) -> P) -> P.
 intros.
 apply typ_inversion with e (Pair u v) T; simpl in |- *;
  auto with coc core arith datatypes; intros.
+apply H0 with U V s ; auto with coc core arith datatypes.
 Qed.
 
   Lemma inv_typ_prod :
@@ -439,10 +440,11 @@ apply wf_var with s1 ; auto with coc core arith datatypes.
 rewrite distr_lift_subst.
 apply type_app with (lift_rec 1 V n); auto with coc core arith datatypes.
 
-apply type_pair.
-intuition.
+apply type_pair with s ; auto with coc core arith datatypes.
 rewrite <- distr_lift_subst.
 apply H3 ; auto with coc core arith datatypes.
+rewrite <- distr_lift_subst.
+apply H5 ; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T0 n :: f)).
 intro.
@@ -659,7 +661,8 @@ apply wf_var with s1; auto with coc core arith datatypes.
 rewrite distr_subst.
 apply type_app with (subst_rec d V n); auto with coc core arith datatypes.
 
-apply type_pair ; auto with coc core arith datatypes.
+apply type_pair with s ; auto with coc core arith datatypes.
+rewrite <- distr_subst ; auto with coc core arith datatypes.
 rewrite <- distr_subst ; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
@@ -703,9 +706,6 @@ apply typ_wf with d t; auto with coc core arith datatypes.
 Qed.
 
 
-
-
-
   Theorem typ_unique :
    forall e t T, typ e t T -> forall U : term, typ e t U -> conv T U.
 simple induction 1; intros.
@@ -730,10 +730,13 @@ unfold subst in |- *; apply conv_conv_subst;
 apply inv_conv_prod_r with V V0; auto with coc core arith datatypes.
 
 apply inv_typ_pair with e0 u v U0 ; auto with coc core arith datatypes ; intros.
-pose (H3 (subst u V0) H6).
-pose (H1 U1 H5).
 apply trans_conv_conv with (Sum U1 V0) ; auto with coc core arith datatypes.
-apply inv_conv_sum.
+
+
+
+apply conv_conv_sum ; auto with coc core arith.
+
+
 
 apply inv_typ_prod with e0 T0 U U0; auto with coc core arith datatypes;
  intros.
