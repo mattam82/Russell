@@ -311,6 +311,26 @@ apply typ_inversion with e (Prod T U) s; simpl in |- *;
 apply H0 with s1 s2; auto with coc core arith datatypes.
 Qed.
 
+  Lemma inv_typ_sum :
+   forall (P : Prop) e T (U s : term),
+   typ e (Sum T U) s ->
+   (forall s1 s2,
+    typ e T (Srt s1) -> typ (T :: e) U (Srt s2) -> conv (Srt s2) s -> P) -> P.
+intros.
+apply typ_inversion with e (Sum T U) s; simpl in |- *;
+ auto with coc core arith datatypes; intros.
+apply H0 with s1 s2; auto with coc core arith datatypes.
+Qed.
+
+  Lemma inv_typ_subset :
+   forall (P : Prop) e T (U s : term),
+   typ e (Subset T U) s ->
+   (typ e T (Srt set) -> typ (T :: e) U (Srt prop) -> conv (Srt set) s -> P) -> P.
+intros.
+apply typ_inversion with e (Subset T U) s; simpl in |- *;
+ auto with coc core arith datatypes; intros.
+Qed.
+
 
   Lemma typ_mem_kind : forall e t T, mem_sort kind t -> ~ typ e t T.
 red in |- *; intros.
@@ -718,26 +738,22 @@ apply typ_sub_weak with e t (t :: e); auto with coc core arith datatypes.
 apply typ_wf with d t; auto with coc core arith datatypes.
 Qed.
 
-Lemma typ_pair_conv : forall e U V u v T, 
-  typ e (Pair (Sum U V) u v) T -> 
-  conv (Sum U V) T.
-Proof.
-  intros.
-  inversion H.
-  apply refl_conv.
-
-  apply inv_typ_pair with e (Sum U V) u v T ; auto with coc core arith datatypes ; intros.
-  inversion H.
-  
-  
-
-  rewrite H5.  
-  
+Scheme typ_dep := Induction for typ Sort Prop.
+ 
 
   Theorem typ_unique :
    forall e t T, typ e t T -> forall U : term, typ e t U -> conv T U.
 intros e t T.
-induction 1; intros.
+induction 1 using typ_dep; intros.
+
+Focus 6.
+apply inv_typ_pair with e (Sum U V) u v U0 ; auto with coc core arith datatypes ; intros.
+apply trans_conv_conv with (Sum U1 V0); auto with coc core arith datatypes.
+apply conv_conv_sum ; auto with coc core arith.
+
+
+
+
 apply sym_conv.
 apply inv_typ_prop with e; auto with coc core arith datatypes.
 
@@ -759,8 +775,12 @@ unfold subst in |- *; apply conv_conv_subst;
 apply inv_conv_prod_r with V V0; auto with coc core arith datatypes.
 
 apply inv_typ_pair with e (Sum U V) u v U0 ; auto with coc core arith datatypes ; intros.
-apply trans_conv_conv with (Sum U1 V0) ; auto with coc core arith.
+apply trans_conv_conv with (Sum U1 V0); auto with coc core arith datatypes.
 apply conv_conv_sum ; auto with coc core arith.
+
+
+inversion H11.
+
 
 
 pose (IHtyp4 (subst u V0) H7).
@@ -780,7 +800,8 @@ apply trans_conv_conv with (Srt s3); auto with coc core arith datatypes.
 
 apply trans_conv_conv with U; auto with coc core arith datatypes.
 Qed.
-
+*)
+Admitted.
 
 
   Theorem type_case :
@@ -806,6 +827,10 @@ apply substitution with V; auto with coc core arith datatypes.
 
 discriminate H4.
 
+left.
+exists s2.
+apply type_sum with s1 ; auto with coc core arith datatypes.
+
 case s2; auto with coc core arith datatypes.
 left.
 exists kind.
@@ -817,10 +842,53 @@ exists kind.
 apply type_set.
 apply typ_wf with T0 (Srt s1); auto with coc core arith datatypes.
 
+case s2.
+right ; auto.
 left.
-exists s; auto with coc core arith datatypes.
-Qed.
+exists kind ; apply type_prop.
+apply typ_wf with T0 (Srt s1); auto with coc core arith datatypes.
 
+left; exists kind ; apply type_set.
+apply typ_wf with T0 (Srt s1); auto with coc core arith datatypes.
+
+induction H1.
+induction H1.
+apply inv_typ_sum with e0 U V (Srt x) ; auto with coc core arith.
+intros.
+left ; exists s1 ; auto with coc core arith.
+discriminate H1.
+
+induction H1.
+left.
+induction H1.
+exists x ; auto with coc core.
+replace (Srt x) with (subst (Pi1 t0) (Srt x)).
+apply substitution with U ; auto with coc core.
+apply inv_typ_sum with e0 U V (Srt x) ; auto with coc core arith.
+intros.
+rewrite <- (conv_sort _ _ H4).
+assumption.
+apply type_pi1 with V ; auto with coc core arith datatypes.
+unfold subst ; simpl ; auto.
+discriminate H1.
+
+induction H5.
+left.
+induction H5.
+exists x.
+replace (Srt x) with (subst t0 (Srt x)).
+apply substitution with U ; auto with coc core.
+unfold subst ; simpl ; auto.
+right.
+rewrite H5.
+unfold subst ; simpl ; auto.
+
+
+induction H4.
+left ; exists s ; auto.
+left.
+exists s ; auto.
+Qed.
 
   Lemma type_kind_not_conv :
    forall e t T, typ e t T -> typ e t (Srt kind) -> T = Srt kind.
@@ -944,10 +1012,33 @@ apply wf_var with s1; auto with coc core arith datatypes.
 
 apply type_app with V; auto with coc core arith datatypes.
 
+apply type_pair with s1 s2; auto with coc core arith datatypes.
+apply H5 ; auto with coc.
+apply wf_var with s1 ; auto with coc core.
+
 cut (wf (T0 :: f)); intros.
 apply type_prod with s1; auto with coc core arith datatypes.
 
 apply wf_var with s1; auto with coc core arith datatypes.
+
+cut (wf (T0 :: f)); intros.
+apply type_sum with s1; auto with coc core arith datatypes.
+
+apply wf_var with s1; auto with coc core arith datatypes.
+
+cut (wf (T0 :: f)); intros.
+apply type_subset; auto with coc core arith datatypes.
+
+apply wf_var with set; auto with coc core arith datatypes.
+
+apply type_pi1 with V ; auto with coc core arith datatypes.
+
+apply type_pi2 with U ; auto with coc core arith datatypes.
+
+cut (wf (U :: f)); intros.
+apply type_let_in with U s ; auto with coc core arith datatypes.
+
+apply wf_var with s ; auto with coc core.
 
 apply type_conv with U s; auto with coc core arith datatypes.
 Qed.
@@ -1010,6 +1101,33 @@ apply substitution with V; auto with coc core arith datatypes.
 
 discriminate H5.
 
+inversion_clear H8.
+
+inversion H9.
+apply type_conv with (Sum N1 V) s2 ; auto with coc.
+apply type_pair with s1 s2 ; auto with coc core.
+apply type_conv with U s1 ; auto with coc core.
+apply typ_red_env with (U :: e0); auto with coc core arith datatypes.
+apply wf_var with s1 ; auto with coc core.
+apply type_sum with s1 ; auto with coc.
+apply type_conv with (Sum U N2) s2 ; auto with coc.
+apply type_pair with s1 s2 ; auto with coc core.
+apply type_conv with (subst u V) s2 ; auto with coc core.
+unfold subst ; apply conv_conv_subst ; auto with coc core.
+replace (Srt s2) with (subst u (Srt s2)).
+apply substitution with U ; auto with coc core arith datatypes.
+unfold subst ; auto.
+apply type_sum with s1 ; auto with coc.
+
+apply type_pair with s1 s2 ; auto with coc core.
+apply type_conv with (subst u V) s2 ; auto with coc core.
+unfold subst ; apply conv_conv_subst ; auto with coc core.
+replace (Srt s2) with (subst N1 (Srt s2)).
+apply substitution with U ; auto with coc core arith datatypes.
+unfold subst ; auto.
+
+apply type_pair with s1 s2 ; auto with coc core.
+
 inversion_clear H4.
 apply type_prod with s1; auto with coc core arith datatypes.
 apply typ_red_env with (T0 :: e0); auto with coc core arith datatypes.
@@ -1017,7 +1135,87 @@ apply wf_var with s1; auto with coc core arith datatypes.
 
 apply type_prod with s1; auto with coc core arith datatypes.
 
-apply type_conv with U s; auto with coc core arith datatypes.
+inversion H4.
+apply type_sum with s1 ; auto with coc core.
+apply typ_red_env with (T0 :: e0)  ; auto with coc core.
+apply wf_var with s1  ; auto with coc core.
+
+apply type_sum with s1 ; auto with coc core.
+
+inversion H4.
+apply type_subset ; auto with coc core.
+apply typ_red_env with (T0 :: e0)  ; auto with coc core.
+apply wf_var with set ; auto with coc core.
+
+apply type_subset ; auto with coc core.
+
+inversion H2.
+rewrite <- H4 in H0.
+apply inv_typ_pair with e0 T0 M N (Sum U V) ; auto.
+intros.
+rewrite <- H3 ; auto.
+induction (type_case _ _ _ H0).
+induction H11.
+apply inv_typ_sum with e0 U V (Srt x) ; auto ; intros.
+apply type_conv with U0 s0; auto with coc core.
+pose (inv_conv_sum_l _ _ _ _ H10).
+apply sym_conv ; auto.
+discriminate.
+
+pose (H1 _ H4).
+apply type_pi1 with V ; auto.
+
+inversion H2.
+rewrite <- H4 in H0.
+apply inv_typ_pair with e0 T0 M N (Sum U V) ; auto ; intros.
+rewrite <- H3 ; auto.
+apply type_conv with (subst M V0) s2; auto with coc core.
+unfold subst ; apply conv_conv_subst ; auto with coc core.
+pose (inv_conv_sum_r _ _ _ _ H10).
+apply sym_conv ; auto.
+
+replace (Srt s2) with (subst ((Pi1 (Pair T0 M N))) (Srt s2)).
+apply substitution with U0 ; auto with coc core arith datatypes.
+
+Focus 2.
+apply type_pi1 with V0.
+apply type_conv with (Sum U V) s2 ; auto with coc core.
+apply type_sum with s1 ; auto with coc core.
+
+Focus 2.
+unfold subst ; auto.
+
+Focus 2.
+pose (H1 _ H4).
+pose (type_pi2 _ _ _ _ t1).
+inversion t2.
+apply type_conv with (subst (Pi1 t0) V) x ; auto with coc core arith.
+unfold subst ; apply conv_conv_subst ; auto with coc core arith.
+inversion H6.
+
+apply inv_typ_sum with e0 U V (Srt x) ; auto with coc ; intros.
+replace (Srt x) with (subst (Pi1 t0) (Srt x)).
+apply substitution with U ; auto with coc core.
+apply type_conv with (Srt s2) kind ; auto with coc core.
+pose (conv_sort _ _ H9).
+rewrite <- e1.
+
+
+induction x.
+
+
+induction (type_case _ _ _ H6).
+induction H10.
+inversion H10.
+apply type_prop.
+apply wf_var with s1 ; auto.
+apply type_set.
+apply wf_var with s1 ; auto.
+
+induction x.
+
+
+apply type_conv with V0; auto with coc core arith datatypes.
 Qed.
 
 
