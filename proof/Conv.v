@@ -1,5 +1,6 @@
-
 Require Import Termes.
+Require Import LiftSubst.
+Require Import Reduction.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.

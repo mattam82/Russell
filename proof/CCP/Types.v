@@ -1,5 +1,6 @@
 
 Require Import Termes.
+Require Import Reduction.
 Require Import Conv.
 Require Export MyList.
 

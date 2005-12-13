@@ -3,6 +3,8 @@ Require Import Peano_dec.
 Require Import Transitive_Closure.
 Require Import Union.
 Require Import Termes.
+Require Import Reduction.
+
 Require Import Conv.
 
   Definition ord_norm1 := union _ subterm (transp _ red1).

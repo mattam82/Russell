@@ -1,4 +1,4 @@
 #/bin/bash
-SOURCES=`cat .sources`
-
-coqdoc -g --toc -d html -R . CCP --html ${SOURCES} 
+SOURCES=`find . -name "*.v"`
+echo ${SOURCES}
+coqdoc -g --toc -d html --html ${SOURCES} 
