@@ -1,7 +1,8 @@
 -I .. -R . CCP
 # List of vernac files to compile
 Types.v
-#Inversion.v
+Coercion.v
+Inversion.v
 #Thinning.v
 #Substitution.v
 #TypeCase.v
