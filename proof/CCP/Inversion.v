@@ -2,17 +2,19 @@ Require Import Termes.
 Require Import Reduction.
 Require Import Conv.
 Require Import LiftSubst.
+Require Import Env.
 Require Import CCP.Types.
 Require Import CCP.Coercion.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
+Implicit Types e f g : env.
 
   Definition inv_type (P : Prop) e t T : Prop :=
     match t with
-    | Srt prop => conv T (Srt kind) -> P
-    | Srt set => conv T (Srt kind) -> P
+    | Srt prop => coerce T (Srt kind) -> P
+    | Srt set => coerce T (Srt kind) -> P
     | Srt kind => True
     | Ref n => forall x : term, item _ x e n -> coerce T (lift (S n) x) -> P
     | Abs A M =>
@@ -29,12 +31,12 @@ Implicit Types A B M N T t u v : term.
             typ e v (subst u V) -> T' = (Sum U V) -> coerce T (Sum U V) -> P
     | Prod A B =>
         forall s1 s2,
-        typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> conv T (Srt s2) -> P
+        typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> coerce T (Srt s2) -> P
     | Sum A B =>
         forall s1 s2,
-        typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> conv T (Srt s2) -> P
+        typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> coerce T (Srt s2) -> P
     | Subset A B =>
-        typ e A (Srt set) -> typ (A :: e) B (Srt prop) -> conv T (Srt set) -> P
+        typ e A (Srt set) -> typ (A :: e) B (Srt prop) -> coerce T (Srt set) -> P
     | Pi1 t =>
         forall U V,
         typ e t (Sum U V) -> coerce T U -> P
@@ -59,10 +61,9 @@ case t; simpl in |- *; intros.
 generalize H1 ; clear H1.
 elim s; auto with coc core arith datatypes; intros.
 
-apply H1; auto with coc core arith datatypes.
-apply coerce_trans with V ; auto with coc.
+apply H1 with x; auto with coc core arith datatypes.
 
-apply H1 with s2 U0; auto with coc core arith datatypes.
+apply H1 with s1 s2 U0; auto with coc core arith datatypes.
 
 apply H1 with Ur V0; auto with coc core arith datatypes.
 
@@ -79,7 +80,7 @@ apply H1 with U0 V0; auto with coc core arith datatypes.
 apply H1 with U0 s1 M s2; auto with coc core arith datatypes.
 
 intros.
-apply trans_conv_conv with V; auto with coc core arith datatypes.
+apply coerce_trans with V; auto with coc core arith datatypes.
 Qed.
 
   Theorem typ_inversion :
@@ -109,7 +110,7 @@ apply H2 with U V; auto with coc core arith datatypes.
 apply H8 with U s1 M s2; auto with coc core arith datatypes.
 
 apply H1.
-apply inv_type_conv with V; auto with coc core arith datatypes.
+apply inv_type_coerce with V; auto with coc core arith datatypes.
 Qed.
 
 
@@ -119,13 +120,13 @@ apply typ_inversion with e (Srt kind) t; simpl in |- *;
  auto with coc core arith datatypes.
 Qed.
 
-  Lemma inv_typ_prop : forall e T, typ e (Srt prop) T -> conv T (Srt kind).
+  Lemma inv_typ_prop : forall e T, typ e (Srt prop) T -> coerce T (Srt kind).
 intros.
 apply typ_inversion with e (Srt prop) T; simpl in |- *;
  auto with coc core arith datatypes.
 Qed.
 
-  Lemma inv_typ_set : forall e T, typ e (Srt set) T -> conv T (Srt kind).
+  Lemma inv_typ_set : forall e T, typ e (Srt set) T -> coerce T (Srt kind).
 intros.
 apply typ_inversion with e (Srt set) T; simpl in |- *;
  auto with coc core arith datatypes.
@@ -134,7 +135,7 @@ Qed.
   Lemma inv_typ_ref :
    forall (P : Prop) e T n,
    typ e (Ref n) T ->
-   (forall U : term, item _ U e n -> conv T (lift (S n) U) -> P) -> P.
+   (forall U : term, item _ U e n -> coerce T (lift (S n) U) -> P) -> P.
 intros.
 apply typ_inversion with e (Ref n) T; simpl in |- *; intros;
  auto with coc core arith datatypes.
@@ -146,7 +147,7 @@ Qed.
    typ e (Abs A M) U ->
    (forall s1 s2 T,
     typ e A (Srt s1) ->
-    typ (A :: e) M T -> typ (A :: e) T (Srt s2) -> conv (Prod A T) U -> P) ->
+    typ (A :: e) M T -> typ (A :: e) T (Srt s2) -> coerce (Prod A T) U -> P) ->
    P.
 intros.
 apply typ_inversion with e (Abs A M) U; simpl in |- *;
@@ -158,7 +159,7 @@ Qed.
    forall (P : Prop) e u v T,
    typ e (App u v) T ->
    (forall V Ur : term,
-    typ e u (Prod V Ur) -> typ e v V -> conv T (subst v Ur) -> P) -> P.
+    typ e u (Prod V Ur) -> typ e v V -> coerce T (subst v Ur) -> P) -> P.
 intros.
 apply typ_inversion with e (App u v) T; simpl in |- *;
  auto with coc core arith datatypes; intros.
@@ -171,7 +172,7 @@ Qed.
    (forall T U V : term, forall s1 s2,
      typ e U (Srt s1) ->
      typ e u U -> typ (U :: e) V (Srt s2) -> typ e v (subst u V) ->
-     T = (Sum U V) -> conv T' (Sum U V) -> P) -> P.
+     T = (Sum U V) -> coerce T' (Sum U V) -> P) -> P.
 intros.
 apply typ_inversion with e (Pair T u v) T'; simpl in |- *;
  auto with coc core arith datatypes; intros.
@@ -182,7 +183,7 @@ Qed.
    forall (P : Prop) e T (U s : term),
    typ e (Prod T U) s ->
    (forall s1 s2,
-    typ e T (Srt s1) -> typ (T :: e) U (Srt s2) -> conv (Srt s2) s -> P) -> P.
+    typ e T (Srt s1) -> typ (T :: e) U (Srt s2) -> coerce (Srt s2) s -> P) -> P.
 intros.
 apply typ_inversion with e (Prod T U) s; simpl in |- *;
  auto with coc core arith datatypes; intros.
@@ -193,7 +194,7 @@ Qed.
    forall (P : Prop) e T (U s : term),
    typ e (Sum T U) s ->
    (forall s1 s2,
-    typ e T (Srt s1) -> typ (T :: e) U (Srt s2) -> conv (Srt s2) s -> P) -> P.
+    typ e T (Srt s1) -> typ (T :: e) U (Srt s2) -> coerce (Srt s2) s -> P) -> P.
 intros.
 apply typ_inversion with e (Sum T U) s; simpl in |- *;
  auto with coc core arith datatypes; intros.
@@ -203,7 +204,7 @@ Qed.
   Lemma inv_typ_subset :
    forall (P : Prop) e T (U s : term),
    typ e (Subset T U) s ->
-   (typ e T (Srt set) -> typ (T :: e) U (Srt prop) -> conv (Srt set) s -> P) -> P.
+   (typ e T (Srt set) -> typ (T :: e) U (Srt prop) -> coerce (Srt set) s -> P) -> P.
 intros.
 apply typ_inversion with e (Subset T U) s; simpl in |- *;
  auto with coc core arith datatypes; intros.
@@ -212,7 +213,7 @@ Qed.
 Lemma inv_typ_pi1 : 
   forall (P : Prop) e t T,
    typ e (Pi1 t) T ->
-   (forall U V, typ e t (Sum U V) ->  conv U T -> P) -> P.
+   (forall U V, typ e t (Sum U V) ->  coerce U T -> P) -> P.
 Proof.
 intros.
 apply typ_inversion with e (Pi1 t) T; simpl in |- *;
@@ -223,7 +224,7 @@ Qed.
 Lemma inv_typ_pi2 : 
   forall (P : Prop) e t T,
    typ e (Pi2 t) T ->
-   (forall U V, typ e t (Sum U V) ->  conv (subst (Pi1 t) V) T -> P) -> P.
+   (forall U V, typ e t (Sum U V) ->  coerce (subst (Pi1 t) V) T -> P) -> P.
 Proof.
 intros.
 apply typ_inversion with e (Pi2 t) T; simpl in |- *;
@@ -238,7 +239,7 @@ Lemma inv_typ_let_in :
    forall s1, typ e V (Srt s1) ->
    forall T', typ (V :: e) t T' ->
    forall s2, typ (V :: e) T' (Srt s2) ->
-   conv (subst v T')  T -> P) -> P.
+   coerce (subst v T')  T -> P) -> P.
 Proof.
 intros.
 apply typ_inversion with e (Let_in v t) T; simpl in |- *;
@@ -303,18 +304,19 @@ inversion_clear H2.
 Qed.
 
 Lemma type_pair_unique : forall e t T, typ e t T -> forall U V u v, t = (Pair (Sum U V) u v) ->
-   conv T (Sum U V).
+   coerce T (Sum U V).
 Proof.
 intros ; induction H ; try discriminate.
 injection H0 ; intros.
 rewrite H6 ; rewrite H7.
-apply refl_conv.
+apply refl_coerce.
 pose (IHtyp1 H0).
-apply trans_conv_conv with U0; auto with coc core arith datatypes.
+apply coerce_trans with U0; auto with coc core arith datatypes.
 Qed.
 
 Lemma type_pair_unique2 : forall e t T, typ e t T -> 
-   forall T' u v, t = (Pair T' u v) -> exists U,  exists  V, T' = Sum U V /\ conv T (Sum U V).
+   forall T' u v, t = (Pair T' u v) -> exists U,  exists  V, T' = Sum U V /\ 
+   coerce T (Sum U V).
 Proof.
 intros ; induction H ; try discriminate.
 injection H0 ; intros.
@@ -326,5 +328,5 @@ induction H3.
 induction H3.
 exists x ; exists x0.
 split ; auto with coc.
-apply trans_conv_conv with U; auto with coc core arith datatypes.
+apply coerce_trans with U; auto with coc core arith datatypes.
 Qed.

@@ -1,68 +1,15 @@
 Require Import Termes.
 Require Import Reduction.
 Require Import LiftSubst.
-Require Import CCSum.Types.
-Require Import CCSum.Inversion.
+Require Import Env.
+Require Import CCP.Types.
+Require Import CCP.Coercion.
+Require Import CCP.Inversion.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
-
-  Inductive ins_in_env A : nat -> env -> env -> Prop :=
-    | ins_O : forall e, ins_in_env A 0 e (A :: e)
-    | ins_S :
-        forall n e f t,
-        ins_in_env A n e f ->
-        ins_in_env A (S n) (t :: e) (lift_rec 1 t n :: f).
-
-  Hint Resolve ins_O ins_S: coc.
-
-  Lemma ins_item_ge :
-   forall A n e f,
-   ins_in_env A n e f ->
-   forall v : nat, n <= v -> forall t, item _ t e v -> item _ t f (S v).
-simple induction 1; auto with coc core arith datatypes.
-simple destruct v; intros.
-inversion_clear H2.
-
-inversion_clear H3; auto with coc core arith datatypes.
-Qed.
-
-  Lemma ins_item_lt :
-   forall A n e f,
-   ins_in_env A n e f ->
-   forall v : nat,
-   n > v -> forall t, item_lift t e v -> item_lift (lift_rec 1 t n) f v.
-simple induction 1.
-intros.
-inversion_clear H0.
-
-simple destruct v; intros.
-elim H3; intros.
-rewrite H4.
-exists (lift_rec 1 t n0); auto with coc core arith datatypes.
-inversion_clear H5.
-elim permute_lift with t n0; auto with coc core arith datatypes.
-
-elim H3; intros.
-rewrite H4.
-inversion_clear H5.
-elim H1 with n1 (lift (S n1) x); intros; auto with coc core arith datatypes.
-exists x0; auto with coc core arith datatypes.
-pattern (lift (S (S n1)) x0) at 1 in |- *.
-rewrite simpl_lift; auto with coc core arith datatypes.
-elim H5.
-change
-  (lift_rec 1 (lift (S (S n1)) x) (S n0) =
-   lift 1 (lift_rec 1 (lift (S n1) x) n0)) in |- *.
-rewrite (permute_lift (lift (S n1) x) n0).
-unfold lift at 2 in |- *.
-pattern (lift (S (S n1)) x) in |- *.
-rewrite simpl_lift; auto with coc core arith datatypes.
-
-exists x; auto with coc core arith datatypes.
-Qed.
-
+Implicit Types e f g : env.
 
   Lemma typ_weak_weak :
    forall A e t T,
@@ -126,6 +73,7 @@ apply type_let_in with (lift_rec 1 U n) s1 s2 ; auto with coc core.
 apply wf_var with s1 ; auto with coc core.
 
 apply type_conv with (lift_rec 1 U n) s; auto with coc core arith datatypes.
+apply coerce_lift_rec ; auto with coc.
 Qed.
 
 
@@ -138,7 +86,6 @@ inversion_clear H0.
 apply typ_weak_weak with A e; auto with coc core arith datatypes.
 apply wf_var with s; auto with coc core arith datatypes.
 Qed.
-
 
   Lemma thinning_n :
    forall n e f,

@@ -3,9 +3,9 @@
 Types.v
 Coercion.v
 Inversion.v
-#Thinning.v
-#Substitution.v
-#TypeCase.v
+Thinning.v
+Substitution.v
+TypeCase.v
 #SubjectReduction.v
 #Unicity.v
 #Class.v

@@ -2,18 +2,11 @@ Require Import Termes.
 Require Import LiftSubst.
 Require Import Reduction.
 Require Import Conv.
-Require Export MyList.
+Require Import Env.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
-
-  Definition env := list term.
-
-  Implicit Types e f g : env.
-
-  Definition item_lift t e n :=
-    ex2 (fun u => t = lift (S n) u) (fun u => item term u (e:list term) n).
 
 Reserved Notation "T >> U" (at level 50).
 

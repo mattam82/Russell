@@ -4,6 +4,12 @@ Require Import Conv.
 Require Import LiftSubst.
 Require Import CCP.Types.
 
+Lemma refl_coerce : forall U, U >> U.
+Proof.
+  intros.
+  apply coerce_conv ; auto with coc core.
+Qed.
+
 Lemma coerce_conv_coerce : forall U U' V V', conv U U' -> conv V V' ->
   U >> V -> U' >> V'.
 Proof.
@@ -32,7 +38,7 @@ apply coerce_trans with B ; auto with coc core.
 apply coerce_trans with C ; auto with coc core.
 Qed.
 
-Lemma conv_sym : forall U V, U >> V -> V >> U.
+Lemma sym_coerce : forall U V, U >> V -> V >> U.
 Proof.
 intros.
 induction H ; auto with coc.
@@ -40,39 +46,48 @@ induction H ; auto with coc.
 apply coerce_trans with B ; auto with coc.
 Qed.
 
-Lemma coerce_kind : forall G U s, G |- U : s -> G |- 
-  U >> (Srt kind) -> conv U (Srt kind).
+Lemma coerce_subst_rec : forall U V,  U >> V -> forall u v, conv u v -> forall n, subst_rec u U n >> subst_rec v V n.
 Proof.
-intros.
-inversion H0 ; auto with coc core.
-rewrite <- H2 in H.
-inversion H.
-rewrite <- H4 in H7.
+  induction 1 ; intros ; simpl.
+  apply coerce_conv ; auto with coc.
+ 
+ apply coerce_prod ; auto with coc.
 
+ apply coerce_sum ; auto with coc.
 
+ apply coerce_sub_l ; auto with coc.
 
+ apply coerce_sub_r ; auto with coc.
 
-Lemma coerce_sort_prod : forall s t u, ~ ((Srt s) >> (Prod t u)).
-red in |- *; intros.
-inversion H.
-elim conv_sort_prod with s t u ; auto with coc.
-
-inversion H0.
-
-
-
-
-elim church_rosser with (Srt s) (Prod t u); auto with coc core arith sets.
-do 2 intro.
-elim red_normal with (Srt s) x; auto with coc core arith sets.
-intro.
-apply red_prod_prod with t u (Srt s); auto with coc core arith sets; intros.
-discriminate H2.
-
-red in |- *; red in |- *; intros.
-inversion_clear H1.
-inversion H ; auto with coc.
-
-
-
+ apply coerce_trans with (subst_rec u B n) ; auto with coc.
 Qed.
+
+Lemma subst_coerce : forall U V, U >> V -> forall t, subst t U >> subst t V.
+Proof.
+  intros.
+  unfold subst ; apply coerce_subst_rec ; auto with coc.
+Qed.
+
+Lemma coerce_lift_rec : forall U V,  U >> V -> forall n k, lift_rec k U n >> lift_rec k V n.
+Proof.
+  induction 1 ; intros ; simpl.
+  apply coerce_conv ; auto with coc.
+ 
+ apply coerce_prod ; auto with coc.
+
+ apply coerce_sum ; auto with coc.
+
+ apply coerce_sub_l ; auto with coc.
+
+ apply coerce_sub_r ; auto with coc.
+
+ apply coerce_trans with (lift_rec k B n) ; auto with coc.
+Qed.
+
+Lemma lift_coerce : forall U V, U >> V -> forall n, lift n U >> lift n V.
+Proof.
+  intros.
+  unfold lift ; apply coerce_lift_rec ; auto with coc.
+Qed.
+
+Hint Resolve refl_coerce sym_coerce subst_coerce lift_coerce : coc.

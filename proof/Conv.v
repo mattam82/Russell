@@ -298,6 +298,14 @@ discriminate.
 apply conv_sort; auto with coc core arith sets.
 Qed.
 
+  Lemma conv_kind_set : ~ conv (Srt kind) (Srt set).
+red in |- *; intro.
+absurd (kind = set).
+discriminate.
+
+apply conv_sort; auto with coc core arith sets.
+Qed.
+
 
   Lemma conv_sort_prod : forall s t u, ~ conv (Srt s) (Prod t u).
 red in |- *; intros.
@@ -311,6 +319,138 @@ discriminate H2.
 red in |- *; red in |- *; intros.
 inversion_clear H1.
 Qed.
+
+  Lemma conv_sort_sum : forall s t u, ~ conv (Srt s) (Sum t u).
+red in |- *; intros.
+elim church_rosser with (Srt s) (Sum t u); auto with coc core arith sets.
+do 2 intro.
+elim red_normal with (Srt s) x; auto with coc core arith sets.
+intro.
+apply red_sum_sum with t u (Srt s); auto with coc core arith sets; intros.
+discriminate H2.
+
+red in |- *; red in |- *; intros.
+inversion_clear H1.
+Qed.
+
+  Lemma conv_sort_subset : forall s t u, ~ conv (Srt s) (Subset t u).
+red in |- *; intros.
+elim church_rosser with (Srt s) (Subset t u); auto with coc core arith sets.
+do 2 intro.
+elim red_normal with (Srt s) x; auto with coc core arith sets.
+intro.
+apply red_subset_subset with t u (Srt s); auto with coc core arith sets; intros.
+discriminate H2.
+
+red in |- *; red in |- *; intros.
+inversion_clear H1.
+Qed.
+
+  Lemma conv_prod_subset : forall U V t u, ~ conv (Prod U V) (Subset t u).
+red in |- *; intros.
+elim church_rosser with (Prod U V) (Subset t u); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_subset_subset with t u P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_prod_prod with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_prod_prod with U V P ; auto with coc core ; intros.
+apply red_subset_subset with t u P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H15 in H3.
+inversion H3.
+
+rewrite <- H15 in H3.
+inversion H3.
+Qed.
+
+  Lemma conv_prod_sum : forall U V t u, ~ conv (Prod U V) (Sum t u).
+red in |- *; intros.
+elim church_rosser with (Prod U V) (Sum t u); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_sum_sum with t u P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_prod_prod with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_prod_prod with U V P ; auto with coc core ; intros.
+apply red_sum_sum with t u P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H15 in H3.
+inversion H3.
+
+rewrite <- H15 in H3.
+inversion H3.
+Qed.
+
+  Lemma conv_subset_sum : forall U V t u, ~ conv (Subset U V) (Sum t u).
+red in |- *; intros.
+elim church_rosser with (Subset U V) (Sum t u); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_sum_sum with t u P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_subset_subset with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_subset_subset with U V P ; auto with coc core ; intros.
+apply red_sum_sum with t u P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H15 in H3.
+inversion H3.
+
+rewrite <- H15 in H3.
+inversion H3.
+Qed.
+
+
+
+
+
+
+
 
 
 End Church_Rosser.
