@@ -267,6 +267,38 @@ simple induction 1; auto with coc core arith sets.
 Qed.
 
 
+Lemma inv_conv_subset_l :
+   forall a b c d : term, conv (Subset a c) (Subset b d) -> conv a b.
+intros.
+elim church_rosser with (Subset a c) (Subset b d); intros;
+ auto with coc core arith sets.
+apply red_subset_subset with a c x; intros; auto with coc core arith sets.
+apply red_subset_subset with b d x; intros; auto with coc core arith sets.
+apply trans_conv_conv with a0; auto with coc core arith sets.
+apply sym_conv.
+generalize H2.
+rewrite H5; intro.
+injection H8.
+simple induction 2; auto with coc core arith sets.
+Qed.
+
+
+Lemma inv_conv_subset_r :
+   forall a b c d : term, conv (Subset a c) (Subset b d) -> conv c d.
+intros.
+elim church_rosser with (Subset a c) (Subset b d); intros;
+ auto with coc core arith sets.
+apply red_subset_subset with a c x; intros; auto with coc core arith sets.
+apply red_subset_subset with b d x; intros; auto with coc core arith sets.
+apply trans_conv_conv with b0; auto with coc core arith sets.
+apply sym_conv.
+generalize H2.
+rewrite H5; intro.
+injection H8.
+simple induction 1; auto with coc core arith sets.
+Qed.
+
+
 
   Lemma nf_uniqueness : forall u v, conv u v -> normal u -> normal v -> u = v. 
 intros.

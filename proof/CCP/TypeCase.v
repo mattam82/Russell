@@ -40,22 +40,27 @@ Qed.
 Inductive hnf : term -> term -> Prop :=
   | hnf_beta : forall T M U U', hnf (subst T U) U' ->  hnf (App (Abs M U) T) U'
   | hnf_other : forall T, ~ is_redex T -> hnf T T.
-
+(*
 Lemma hnf_injection : forall t, exists t', hnf t t'.
 Proof.
 intros. 
 set (tfull := t).
+absurd (~ (exists t', hnf tfull t')).
+unfold not ; intros.
+
 induction t ; auto with coc core ; try solve [exists tfull ; apply hnf_other ; unfold tfull ; red ; auto].
 unfold tfull.
 induction t1 ; simpl ; auto with coc core ; try solve [exists tfull ; apply hnf_other ; unfold tfull ; red ; auto].
-exists (subst 
+
+exists (subst t2 t1_2).
+apply hnf_beta.
 
 induction (is_redex_lemma t H).
 induction H0.
 induction H0.
 exists (
 
-
+*)
 
 Lemma hnf_conv : forall t t', hnf t t' -> conv t t'.
 intros.
@@ -103,16 +108,19 @@ Fixpoint mu_rec (t : term) (hnf : term -> term) { struct t }: term :=
     | _ => t
  end.
 
-Lemma inv_coerce_prod : forall S T, S >> T -> forall A B, S = (Prod A B) ->
-  forall T', mu T T' -> 
+Lemma inv_coerce_prod : forall S T, S >> T -> 
+  forall A B, mu S (Prod A B) -> forall T', mu T T' -> 
   exists A', exists B', conv T' (Prod A' B').
 Proof.
 intros S T H; induction H ; intros ; try rewrite H0 in H ; auto with coc core ; 
 try discriminate.
 
-
+inversion H0.
 inversion H1.
-pose (trans_conv_conv _ B (Subset U P) H (hnf_conv _ _ H2)).
+pose (trans_conv_conv A B (Subset U0 P0) H (hnf_conv _ _ H6)).
+pose (trans_conv_conv _ _ _ (sym_conv _ _ (hnf_conv _ _ H2)) c).
+pose (inv_conv_subset_l).
+
 elim (conv_prod_subset _ _ _ _ c).
 
 rewrite H5 in H ; auto with coc.
@@ -133,12 +141,11 @@ inversion H2.
 elim H3.
 exists U' ; exists P ; auto with coc.
 
-induction (is_subset_lemma B).
-induction (is_subset_impl _ H3).
-induction H4.
-cut(exists x', mu x x').
+cut(exists x', mu B x').
+intro.
+induction H3.
+pose (IHcoerce1 A0 B0 H1 x H3).
 
-pose (IHcoerce1 A0 B0 H1).
 
 
 Lemma inv_typ_sort_set : forall G t, G |- t : (Srt set) -> ~ conv t (Srt set).
