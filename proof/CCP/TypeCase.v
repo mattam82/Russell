@@ -14,6 +14,9 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
+Set Implicit Arguments.
+
+
 Definition is_redex (t : term) := 
 match t with 
 | (App (Abs _ _) _) => True
@@ -36,21 +39,30 @@ induction t1 ; simpl ; simpl in H ; auto ; intuition.
 exists t1_1 ; exists t1_2 ; exists t2 ; auto.
 Qed.
 
-
 Inductive hnf : term -> term -> Prop :=
   | hnf_beta : forall T M U U', hnf (subst T U) U' ->  hnf (App (Abs M U) T) U'
+  | hnf_pi1 : forall T U V U', hnf U U' ->  hnf (Pi1 (Pair T U V)) U'
+  | hnf_pi2 : forall T U V V', hnf V V' ->  hnf (Pi2 (Pair T U V)) V'
   | hnf_other : forall T, ~ is_redex T -> hnf T T.
 (*
-Lemma hnf_injection : forall t, exists t', hnf t t'.
+Lemma hnf_injection : forall t t', t = t' -> forall u, hnf t u -> forall u', 
+  hnf t' u' -> u = u'.
 Proof.
 intros. 
-set (tfull := t).
-absurd (~ (exists t', hnf tfull t')).
-unfold not ; intros.
+induction H0.
+rewrite <- H in H1.
+induction H1.
 
-induction t ; auto with coc core ; try solve [exists tfull ; apply hnf_other ; unfold tfull ; red ; auto].
-unfold tfull.
-induction t1 ; simpl ; auto with coc core ; try solve [exists tfull ; apply hnf_other ; unfold tfull ; red ; auto].
+
+set (tfull := t).
+rewrite <- H in H1.
+induction t ; auto with coc core ; try solve [inversion H0 ; inversion H1 ; auto].
+
+induction t1 ; simpl ; auto with coc core ; try solve [inversion H0 ; inversion H1 ; auto].
+
+inversion_clear H0.
+inversion_clear H1.
+
 
 exists (subst t2 t1_2).
 apply hnf_beta.
@@ -66,8 +78,12 @@ Lemma hnf_conv : forall t t', hnf t t' -> conv t t'.
 intros.
 induction H.
 apply trans_conv_conv with (subst T U) ; auto with coc core.
+apply trans_conv_conv with U ; auto with coc core.
+apply trans_conv_conv with V ; auto with coc core.
 apply refl_conv.
 Qed.
+
+Hint Resolve hnf_conv : coc.
 
 Definition is_subset (t : term) := 
 match t with 
@@ -108,6 +124,77 @@ Fixpoint mu_rec (t : term) (hnf : term -> term) { struct t }: term :=
     | _ => t
  end.
 
+Lemma hnf_red : forall T T' U U', red T U -> hnf T T' -> hnf U U' -> conv T' U'.
+Proof.
+  intros.
+  apply trans_conv_conv with T ; auto with coc.
+  apply sym_conv ; auto with coc.
+  apply trans_conv_conv with U ; auto with coc.
+Qed.
+(*
+
+Lemma conv_subset_hnf_subset : forall A U P, conv A (Subset U P) -> 
+  exists U', exists P', hnf A (Subset U' P') /\ conv U U' /\ conv P P'.
+Proof.
+intros.
+elim church_rosser with A (Subset U P) ; intros ; auto with coc.
+inversion H1.
+rewrite <- H2 in H0.
+inversion H0.
+
+exists U ; exists P ; auto with coc.
+split ; auto.
+apply hnf_other.
+red ; auto.
+split ; auto with coc.
+
+inversion H3.
+inversion H4.
+exists U ; exists P ; simpl ; auto.
+split.
+apply hnf_beta.
+rewrite H9.
+apply hnf_other ; auto.
+split ; auto with coc.
+
+exists U ; exists P ; simpl.
+split ; simpl ; auto.
+apply hnf_pi1 ; auto with coc.
+apply hnf_other ; auto with coc.
+split ; auto with coc.
+
+exists U ; exists P ; simpl.
+split ; simpl ; auto.
+apply hnf_pi2 ; auto with coc.
+apply hnf_other ; auto with coc.
+split ; auto with coc.
+
+exists M1 ; exists P.
+split ; auto with coc.
+apply hnf_other ; auto with coc.
+
+exists U ; exists M2.
+split ; auto with coc.
+apply hnf_other ; auto with coc.
+
+split ; auto with coc.
+
+
+rewrite <- H7 in H4.
+inversion H4.
+*)
+
+
+
+Lemma mu_conv : forall A A', mu A A' -> forall B, conv A B -> forall B', mu B B' -> conv A' B'.
+Proof.
+induction 1 ; simpl ; intros.
+pose (hnf_conv H).
+assert (conv B (Subset U P)).
+apply trans_conv_conv with T ; auto with coc core.
+Admitted.
+(*
+
 Lemma inv_coerce_prod : forall S T, S >> T -> 
   forall A B, mu S (Prod A B) -> forall T', mu T T' -> 
   exists A', exists B', conv T' (Prod A' B').
@@ -119,7 +206,7 @@ inversion H0.
 inversion H1.
 pose (trans_conv_conv A B (Subset U0 P0) H (hnf_conv _ _ H6)).
 pose (trans_conv_conv _ _ _ (sym_conv _ _ (hnf_conv _ _ H2)) c).
-pose (inv_conv_subset_l).
+pose (inv_conv_subset_l _ _ _ _ c0).
 
 elim (conv_prod_subset _ _ _ _ c).
 
@@ -169,29 +256,33 @@ apply inv_typ_subset with G U P T ; auto.
 intros.
 red ; intros.
 Admitted.
-
-Lemma coerce_sorts : forall G t1 t2 s, G |- t1 : (Srt s) -> G |- t2 : Srt s -> t1 >> t2 ->
-  (forall s1, t1 = Srt s1 -> conv t2 (Srt s1)) /\ (forall s2, t2 = Srt s2 -> conv t1 (Srt s2)).
+*)
+(*
+Lemma coercion_sorts : forall s1 s2, Srt s1 >> Srt s2 -> s1 = s2.
 Proof.
   intros.
-  induction H1 ; try (split ; intros ; discriminate).
-  split ; intros ; auto with coc ; try rewrite <- H2 ; auto with coc.
+  inversion H.
+  elim (conv_sort _ _ H0) ; auto.
+*)  
 
-  split ; intros.
-  discriminate.
-  induction IHcoerce.
-  pose (H4 _ H2).
-  
-  apply inv_typ_subset with G U P (Srt s) ; auto with coc core.
+
+Lemma coerce_sorts : forall G s1 s2 s, 
+  G |- Srt s1 : Srt s -> G |- Srt s2 : Srt s -> 
+  Srt s1 >> Srt s2 -> s1 = s2.
+Proof.
   intros.
+  inversion H1.
+  apply conv_sort ; auto.
   
+Admitted.  
+
 
   Theorem type_case :
    forall e t T,
    typ e t T -> (exists s : sort, typ e T (Srt s)) \/ T = Srt kind.
-simple induction 1; intros; auto with coc core arith datatypes.
+induction 1; intros; auto with coc core arith datatypes.
 left.
-elim wf_sort_lift with v e0 t0; auto with coc core arith datatypes; intros.
+elim wf_sort_lift with v e t; auto with coc core arith datatypes; intros.
 exists x; auto with coc core arith datatypes.
 
 left.
@@ -199,15 +290,15 @@ exists s2.
 apply type_prod with s1; auto with coc core arith datatypes.
 
 left.
-elim H3; intros.
-elim H4; intros.
-apply inv_typ_prod with e0 V Ur (Srt x); auto with coc core arith datatypes;
+elim IHtyp2; intros.
+elim H1; intros.
+apply inv_typ_prod with e V Ur (Srt x); auto with coc core arith datatypes;
  intros.
 exists s2.
 replace (Srt s2) with (subst v (Srt s2)); auto with coc core arith datatypes.
 apply substitution with V; auto with coc core arith datatypes.
 
-discriminate H4.
+discriminate H1.
 
 left.
 exists s2.
@@ -217,38 +308,38 @@ case s2; auto with coc core arith datatypes.
 left.
 exists kind.
 apply type_prop.
-apply typ_wf with T0 (Srt s1); auto with coc core arith datatypes.
+apply typ_wf with T (Srt s1); auto with coc core arith datatypes.
 
 left.
 exists kind.
 apply type_set.
-apply typ_wf with T0 (Srt s1); auto with coc core arith datatypes.
+apply typ_wf with T (Srt s1); auto with coc core arith datatypes.
 
 case s2.
 right ; auto.
 left.
 exists kind ; apply type_prop.
-apply typ_wf with T0 (Srt s1); auto with coc core arith datatypes.
+apply typ_wf with T (Srt s1); auto with coc core arith datatypes.
 
 left; exists kind ; apply type_set.
-apply typ_wf with T0 (Srt s1); auto with coc core arith datatypes.
+apply typ_wf with T (Srt s1); auto with coc core arith datatypes.
 
-induction H1.
-induction H1.
-apply inv_typ_sum with e0 U V (Srt x) ; auto with coc core arith.
+induction IHtyp.
+induction H0.
+apply inv_typ_sum with e U V (Srt x) ; auto with coc core arith.
 intros.
 left ; exists s1 ; auto with coc core arith.
-discriminate H1.
+discriminate H0.
 
-induction H1.
+induction IHtyp.
 left.
-induction H1.
+induction H0.
 exists x ; auto with coc core.
-replace (Srt x) with (subst (Pi1 t0) (Srt x)).
+replace (Srt x) with (subst (Pi1 t) (Srt x)).
 apply substitution with U ; auto with coc core.
-apply inv_typ_sum with e0 U V (Srt x) ; auto with coc core arith.
+apply inv_typ_sum with e U V (Srt x) ; auto with coc core arith.
 intros.
-rewrite <- (conv_sort _ _ H4).
+rewrite <- (coerce_sorts _ _ H3).
 assumption.
 apply type_pi1 with V ; auto with coc core arith datatypes.
 unfold subst ; simpl ; auto.

@@ -8,31 +8,17 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
-Reserved Notation "T >> U" (at level 50).
-
-  Inductive coerce : term -> term -> Prop :=
-  | coerce_conv : forall A B, conv A B -> A >> B
-  | coerce_prod : forall A B A' B', A' >> A -> B >> B' -> (Prod A B) >> (Prod A' B')
-  | coerce_sum : forall A B A' B', A >> A' -> B >> B' -> (Sum A B) >> (Sum A' B')
-  | coerce_sub_l : forall U P U', U >> U' -> (Subset U P) >> U'
-  | coerce_sub_r : forall U U' P, U >> U' -> U >> (Subset U' P)
-  | coerce_trans : forall A B C, A >> B ->  B >> C -> A >> C
-
-where "T >> U" := (coerce T U).
-
-Hint Resolve coerce_conv coerce_prod coerce_sum coerce_sub_l coerce_sub_r : coc.
+Reserved Notation "G |- T >> U" (at level 70, T, U at next level).
 
 Reserved Notation "G |- T : U" (at level 70, T, U at next level).
-
   Inductive wf : env -> Prop :=
-    | wf_nil : wf nil
-    | wf_var : forall e T s, typ e T (Srt s) -> wf (T :: e)
-with typ : env -> term -> term -> Prop :=
+  | wf_nil : wf nil
+  | wf_var : forall e T s, e |- T : (Srt s) -> wf (T :: e)
+  with typ : env -> term -> term -> Prop :=
   | type_prop : forall e, wf e -> e |- (Srt prop) : (Srt kind)
-  | type_set : forall e, wf e -> e |- (Srt set) : (Srt kind)
-  | type_var :
-      forall e,
-      wf e -> forall (v : nat) t, item_lift t e v -> e |- (Ref v) : t
+  | type_set : forall e, wf e -> e |- (Srt set) : (Srt kind)	
+  | type_var : (* start *)
+      forall e, wf e -> forall n T, item_lift T e n -> e |- (Ref n) : T
   | type_abs :
       forall e T s1,
       e |- T : (Srt s1) ->
@@ -88,22 +74,51 @@ with typ : env -> term -> term -> Prop :=
   | type_conv :
       forall e t (U V : term),
       e |- t : U -> 
-      U >> V -> forall s, e |- V : (Srt s) -> 
+      forall s, e |- V : (Srt s) -> e |- U : (Srt s) -> 
+      e |- U >> V -> 
       e |- t : V
 
-where "G |- T : U" :=  (typ G T U).
+where "G |- T : U" :=  (typ G T U)
 
-  Hint Resolve wf_nil type_prop type_set type_var: coc.
+with coerce : env -> term -> term -> Prop :=
+  | coerce_refl : forall G A, G |- A >> A
+
+  | coerce_prod : forall G A B A' B', 
+  forall s, G |- A' : (Srt s) -> G |- A : (Srt s) -> G |- A' >> A -> 
+  (A' :: G) |- B >> B' -> G |- (Prod A B) >> (Prod A' B')
+  
+  | coerce_sum : forall G A B A' B', 
+  forall s, G |- A' : (Srt s) -> G |- A : (Srt s) -> G |- A >> A' -> 
+  (A :: G) |- B >> B' -> G |- (Sum A B) >> (Sum A' B')
+
+  | coerce_sub_l : forall G U P U', G |- U >> U' -> 
+  G |- (Subset U P) >> U'
+
+  | coerce_sub_r : forall G U U' P, G |- U >> U' -> 
+  G |- U >> (Subset U' P)
+
+  | coerce_beta : forall G A B C D, 
+  forall s, G |- A : (Srt s) -> G |- B : (Srt s) -> G |- C : (Srt s) ->
+  G |- D : (Srt s) ->
+  conv A B -> G |- B >> C -> conv C D -> G |- A >> D
+
+where "G |- T >> U" := (coerce G T U).
+
+Hint Resolve coerce_refl coerce_prod coerce_sum coerce_sub_l coerce_sub_r : coc.
+Hint Resolve type_pi1 type_pi2 type_pair type_prop type_set type_var: coc.
+
+Scheme typ_mut := Induction for typ Sort Prop
+with coerce_mut := Induction for coerce Sort Prop.
 
   Lemma type_prop_set :
-   forall s, is_prop s -> forall e, wf e -> e |- (Srt s) : (Srt kind).
+   forall s, is_prop s -> forall e, wf e -> typ e (Srt s) (Srt kind).
 simple destruct 1; intros; rewrite H0.
 apply type_prop; trivial.
 apply type_set; trivial.
 Qed.
 
 
-Lemma typ_free_db : forall e t T, e |- t : T -> free_db (length e) t.
+Lemma typ_free_db : forall e t T, typ e t T -> free_db (length e) t.
 Proof.
   simple induction 1 ; intros ; auto with coc core arith datatypes.
   inversion_clear H1.
@@ -112,7 +127,7 @@ Proof.
 Qed.
 
 
-  Lemma typ_wf : forall e t T, e |- t : T -> wf e.
+Lemma typ_wf : forall e t T, e |- t : T -> wf e.
 simple induction 1; auto with coc core arith datatypes.
 Qed.
 
@@ -140,4 +155,3 @@ exists x0; auto with coc core arith datatypes.
 
 apply typ_wf with x (Srt s); auto with coc core arith datatypes.
 Qed.
-

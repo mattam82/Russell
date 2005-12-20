@@ -2,11 +2,16 @@ Require Import Termes.
 Require Import Reduction.
 Require Import Conv.
 Require Import LiftSubst.
-Require Import CCSum.Types.
-Require Import CCSum.Inversion.
-Require Import CCSum.Thinning.
-Require Import CCSum.Substitution.
-Require Import CCSum.TypeCase.
+Require Import Env.
+Require Import CCP.Types.
+Require Import CCP.Thinning.
+Require Import CCP.Substitution.
+
+Implicit Types i k m n p : nat.
+Implicit Type s : sort.
+Implicit Types A B M N T t u v : term.
+Implicit Types e f g : env.
+
 
 
   Inductive red1_in_env : env -> env -> Prop :=
@@ -90,12 +95,12 @@ auto with coc core arith datatypes.
 
 auto with coc core arith datatypes.
 
-elim red_item with v t0 e0 f; auto with coc core arith datatypes; intros.
+elim red_item with n t e0 f; auto with coc core arith datatypes; intros.
 inversion_clear H4.
 inversion_clear H6.
 elim H1; intros.
-elim item_trunc with term v e0 x0; intros; auto with coc core arith datatypes.
-elim wf_sort with v e0 x1 x0; auto with coc core arith datatypes.
+elim item_trunc with term n e0 x0; intros; auto with coc core arith datatypes.
+elim wf_sort with n e0 x1 x0; auto with coc core arith datatypes.
 intros.
 apply type_conv with x x2; auto with coc core arith datatypes.
 rewrite H6.
@@ -271,135 +276,6 @@ apply wf_var with s1 ; auto with coc core.
 apply type_conv with U s; auto with coc core arith datatypes.
 Qed.
 
-Inductive conv_in_env : env -> env -> Prop :=
-| conv_env_hd : forall e t u, conv t u -> conv_in_env (u :: e) (t :: e)
-| conv_env_tl :
-        forall e f t, conv_in_env e f -> conv_in_env (t :: e) (t :: f).
-
-  Hint Resolve conv_env_hd conv_env_tl: coc.
-
-  Lemma conv_item :
-   forall n t e,
-   item_lift t e n ->
-   forall f,
-   conv_in_env e f ->
-   item_lift t f n \/
-   (forall g, trunc _ (S n) e g -> trunc _ (S n) f g) /\
-   ex2 (fun u => conv t u) (fun u => item_lift u f n).
-simple induction n.
-do 3 intro.
-elim H.
-do 4 intro.
-rewrite H0.
-inversion_clear H1.
-intros.
-inversion_clear H1.
-right.
-split; intros.
-inversion_clear H1; auto with coc core arith datatypes.
-
-exists (lift 1 t0) ;
-unfold lift in |- *; auto with coc core arith datatypes.
-
-exists t0; auto with coc core arith datatypes.
-
-left.
-exists x; auto with coc core arith datatypes.
-
-do 5 intro.
-elim H0.
-do 4 intro.
-rewrite H1.
-inversion_clear H2.
-intros.
-inversion_clear H2.
-left.
-exists x; auto with coc core arith datatypes.
-
-elim H with (lift (S n0) x) l f0; auto with coc core arith datatypes; intros.
-left.
-elim H2; intros.
-exists x0; auto with coc core arith datatypes.
-rewrite simpl_lift.
-pattern (lift (S (S n0)) x0) in |- *.
-rewrite simpl_lift.
-elim H5; auto with coc core arith datatypes.
-
-right.
-elim H2.
-simple induction 2; intros.
-split; intros.
-inversion_clear H9; auto with coc core arith datatypes.
-
-elim H8; intros.
-exists (lift (S (S n0)) x1).
-rewrite simpl_lift.
-pattern (lift (S (S n0)) x1) in |- *.
-rewrite simpl_lift.
-unfold lift at 1 3 ; apply conv_conv_lift.
-rewrite H9 in H7.
-assumption.
-
-exists x1; auto with coc core arith datatypes.
-
-exists x; auto with coc core arith datatypes.
-Qed.
-
-Lemma typ_conv_env :
-forall e t T, typ e t T -> forall f, conv_in_env e f -> wf f -> typ f t T.
-simple induction 1; intros.
-auto with coc core arith datatypes.
-
-auto with coc core arith datatypes.
-
-elim conv_item with v t0 e0 f; auto with coc core arith datatypes; intros.
-inversion_clear H4.
-inversion_clear H6.
-elim H1; intros.
-elim item_trunc with term v e0 x0; intros; auto with coc core arith datatypes.
-elim wf_sort with v e0 x1 x0; auto with coc core arith datatypes.
-intros.
-apply type_conv with x x2; auto with coc core arith datatypes.
-rewrite H6.
-replace (Srt x2) with (lift (S v) (Srt x2));
- auto with coc core arith datatypes.
-apply thinning_n with x1; auto with coc core arith datatypes.
-
-cut (wf (T0 :: f)); intros.
-apply type_abs with s1 s2; auto with coc core arith datatypes.
-apply wf_var with s1; auto with coc core arith datatypes.
-
-apply type_app with V; auto with coc core arith datatypes.
-
-apply type_pair with s1 s2; auto with coc core arith datatypes.
-apply H5 ; auto with coc.
-apply wf_var with s1 ; auto with coc core.
-
-cut (wf (T0 :: f)); intros.
-apply type_prod with s1; auto with coc core arith datatypes.
-
-apply wf_var with s1; auto with coc core arith datatypes.
-
-cut (wf (T0 :: f)); intros.
-apply type_sum with s1; auto with coc core arith datatypes.
-
-apply wf_var with s1; auto with coc core arith datatypes.
-
-cut (wf (T0 :: f)); intros.
-apply type_subset; auto with coc core arith datatypes.
-
-apply wf_var with set; auto with coc core arith datatypes.
-
-apply type_pi1 with V ; auto with coc core arith datatypes.
-
-apply type_pi2 with U ; auto with coc core arith datatypes.
-
-cut (wf (U :: f)); intros.
-apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.
-
-apply type_conv with U s; auto with coc core arith datatypes.
-Qed.
 
 
   Lemma subj_red : forall e t T, typ e t T -> forall u, red1 t u -> typ e u T.

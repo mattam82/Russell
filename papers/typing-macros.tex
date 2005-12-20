@@ -99,6 +99,8 @@
 \def\SubTransRule{Sub-Trans} 
 \def\SubConvRule{Sub-Conv}
 \def\SubHnfRule{Sub-$\downarrow$}
+\def\SubIdRule{Sub-Id}
+\def\SubBetaRule{Sub-$\beta$}
 \def\SubEqRule{Sub-Eq}
 \def\SubProdRule{Sub-Prod}
 \def\SubSigmaRule{Sub-Sigma}
@@ -172,6 +174,8 @@
 \fi\ifstreq{#1}{SubProd}\SubProdRule
 \fi\ifstreq{#1}{SubSigma}\SubSigmaRule
 \fi\ifstreq{#1}{SubLeft}\SubLeftRule
+\fi\ifstreq{#1}{SubId}\SubIdRule
+\fi\ifstreq{#1}{SubBeta}\SubBetaRule
 \fi\ifstreq{#1}{SubRight}\SubRightRule
 \fi\ifstreq{#1}{SubProof}\SubProofRule
 \fi\ifstreq{#1}{SubSub}\SubSubRule

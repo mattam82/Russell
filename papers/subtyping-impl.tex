@@ -116,26 +116,40 @@
 {} 
 }
 
+\newcommand{\SubIdC}{
+\UAX{SubId}
+{$$}
+{$\subimplnp{`G}{[]}{T}{T}$}
+{} 
+}
+
+\newcommand{\SubBetaC}{
+\UAX{SubBeta}
+{$\subimpln{`G}{c}{\hnf{T}}{\hnf{U}}$}
+{$\subimplnp{`G}{c}{T}{U}$}
+{} 
+}
+
 \def\SubProdC{%
 \BAX{SubProd}
-{$\subimplnp{`G}{c_1}{U}{T}$}
+{$\subimplnp{`G}{c_1}{U}{T} : s1$}
 %{$`G, x : \ipt{U}{`G} \typec c_2 : \ipt{V}{`G, x :
  % \ipt{T}{`G}}[c_1~x/x] \subi \ipt{W}{`G, x : \ipt{U}{`G}}$}
 %{$`G, x : U \typec c_2 : V[c_1~x/x] \subi W$}
-{$`G, x : U \typec c_2 : V \suba W$}
-{$\subimpln{`G}{\lambda f : \ip{\Pi x : T.V}{`G}.\lambda x : \ip{U}{`G}. c_2~(f~(c_1~x))}{\Pi x : T.V}{\Pi x : U.W}$}
+{$\subimplnp{`G, x : U}{c_2}{V}{W} : s2$}
+{$\subimpln{`G}{\lambda x : \ip{U}{`G}. c_2[[]~(c_1[x])]}{\Pi x : T.V}{\Pi x : U.W}$}
 {}
 }
 
 \def\SubSigmaC{%
 \BAX{SubSigma}
-{$\subimplnp{`G}{c_1}{T}{U}$}
+{$\subimplnp{`G}{c_1}{T}{U} : s1$}
 %{$`G, x : \ipt{T}{`G} \typec c_2 : \ipt{V}{`G, x : \ipt{T}{`G}} \subi
 %  \ipt{W}{`G, x : \ipt{T}{`G}}[c_1~x/x]$}
 %{$`G, x : T \typec c_2 : V \subi W[c_1~x/x]$}
-{$`G, x : T \typec c_2 : V \suba W$}
+{$`G, x : T \typec c_2 : V \suba W : s2$}
 {$\subimpln{`G}
-  {\lambda (x, y) : \ip{\Sigma x : T.V}{`G}. (c_1~x, c_2~y)}
+  {(c_1[\pi_1~[]], c_2[\pi_2~[]])}
   {\Sigma x : T. V}{\Sigma x : U. W}$}
 {}
 }
@@ -145,7 +159,7 @@
 \UAX{SubSub}
 % {$`G, x : U \typec P : \Prop$}
 {$\subimplnp{`G}{c}{U}{T}$}
-{$\subimpln{`G}{c `o \pi_1}
+{$\subimpln{`G}{c[\pi_1~[]]}
   {\mysubset{x}{U}{P}}{T}$}
 {}
 }
@@ -156,9 +170,8 @@
 %{$`G, x : U \typec P : \Prop$}
 {$\subimplnp{`G}{c}{T}{U}$}
 {$\subimpln{`G}
-  {\lambda t : \ip{T}{`G}. \elt{\ip{U}{`G}}{\ip{\lambda x :
-        U.P}{`G}}{(c~t)}
-    {?_{\ip{P}{`G}[c~t/x]}}}
+  {\elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{c}
+    {?_{\ip{P}{`G}[c/x]}}}
   {T}{\mysubset{x}{U}{P}}$}
 {}
 }
@@ -198,9 +211,9 @@
       \def\fCenter{\subtd}
       
     \vspace{\infvspace}
-    \SubConvC\DP
+    \SubIdC\DP
     \quad
-    \SubHnfC\DP
+    \SubBetaC\DP
     
     \vspace{\infvspace}
     \SubProdC\DP
