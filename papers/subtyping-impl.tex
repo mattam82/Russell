@@ -105,7 +105,7 @@
 \newcommand{\SubConvC}{
 \UAX{SubConv}
 {$T \eqbi U$}
-{$\subimpln{`G}{(\lambda x : \ip{T}{`G}. x)}{T}{U}$}
+{$\subimpln{`G}{[]}{T}{U}$}
 {} 
 }
 
@@ -211,9 +211,9 @@
       \def\fCenter{\subtd}
       
     \vspace{\infvspace}
-    \SubIdC\DP
+    \SubConvC\DP
     \quad
-    \SubBetaC\DP
+    \SubHnfC\DP
     
     \vspace{\infvspace}
     \SubProdC\DP

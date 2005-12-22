@@ -293,10 +293,15 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
   %\TODO{Dans \cite{Pierce:TypeSystems}, voir p. 420}
   On procède par élimination de la règle \irule{SubTrans} dans toute
   dérivation de $S \sub U$.
+  Par induction sur l'ordre lexicographique $< depth(S \sub T) +
+  depth(T \sub U), depth(S \sub U) >$.
+  On peut supposer sans perte de généralité qu'il n'y a pas
+  d'applications successive de la règle \irule{SubHnf} dans nos
+  dérivations, par idempotence de la mise en forme normale de tête.
   
-  \begin{induction}[subtyping-decl]
+  \begin{induction}
 
-    \case{SubConv}\quad
+    \casetwo{SubConv}{*}\quad
     \begin{prooftree}
       \AXC{$S \eqbi T$}
       \UIC{$S \sub T$}
@@ -304,71 +309,216 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
       \BIC{$S \sub U$}
     \end{prooftree}
     
-    Par le lemme précédent, on élimine trivialement \irule{SubTrans}.
+    Par le lemme \ref{coercion-conversion}, on élimine trivialement \irule{SubTrans}.
 
-    \case{SubHnf}\quad
+    \casetwo{SubHnf}{*}\quad
     \begin{prooftree}
       \AXC{$\hnf{S}~\sub \hnf{T}$}
       \UIC{$S \sub T$}
       \AXC{$T \sub U$}
       \BIC{$S \sub U$}
     \end{prooftree}
+
+    Par le lemme \ref{coercion-hnf}, il existe une dérivation de 
+    $\hnf{T} \sub \hnf{U}$ de taille plus petite ou égale à la
+    dérivation de $T \sub U$ on peut donc se ramener au cas:
+
+    \begin{prooftree}
+      \AXC{$\hnf{S}~\sub \hnf{T}$}
+      \UIC{$S \sub T$}
+      \AXC{$\hnf{T} \sub \hnf{U}$}
+      \UIC{$T \sub U$}
+      \BIC{$S \sub U$}
+    \end{prooftree}
+
     
-    Si $T \sub U$ alors $\hnf{T}~\suba \hnf{U}$ est dérivable par une
-    dérivation plus petite ou égale (lemme \ref{coercion-hnf}). 
-    Or on a $\hnf{S}~\suba \hnf{T}$. Donc $\hnf{S}~\suba \hnf{U}$ et par
-    \irule{SubHnf}, $S \sub U$.
+    Par cas sur la dérivation de $\hnf{S} \sub \hnf{T}$
+    \begin{induction}
+      \case{SubConv}\quad
+      \begin{prooftree}
+        \AXC{$\hnf{S} \eqbr \hnf{T}$}
+        \UIC{$\hnf{S}~\sub \hnf{T}$}
+        \UIC{$S \sub T$}
+        \AXC{$\hnf{T} \sub \hnf{U}$}
+        \UIC{$T \sub U$}
+        \BIC{$S \sub U$}
+      \end{prooftree}
+      
+      Par le lemme \ref{coercion-conversion}.
+      
+      \case{SubProd}\quad
+      \begin{prooftree}
+        \AXC{$C \sub A$}
+        \AXC{$B \sub D$}
+        \BIC{$\hnf{S}=\Pi x : A.B~\sub \Pi x : C.D = \hnf{T}$}
+        \UIC{$S \sub T$}
+        \AXC{$\hnf{T} = \Pi x : C.D \sub \hnf{U}$}
+        \UIC{$T \sub U$}
+        \BIC{$S \sub U$}
+      \end{prooftree}
+    
+      Par cas sur la dérivation de $\Pi x : C.D \sub \hnf{U}$.
+      \begin{itemize}
+        \case{SubConv} Trivial.
+        \case{SubProd} Alors on a
+        \begin{prooftree}
+          \AXC{$E \sub C$}
+          \AXC{$D \sub F$}
+          \BIC{$\Pi x : C.D \sub \Pi x : E.F$}
+        \end{prooftree}
+        
+        On a donc la dérivation:
+        \begin{prooftree}
+          \AXC{$E \sub C$}\AXC{$C \sub A$}
+          \BIC{$E \sub A$}
+          
+          \AXC{$B \sub D$}\AXC{$D \sub F$}
+          \BIC{$B \sub F$}
+          \BIC{$\hnf{S} = \Pi x : A.B \sub \Pi x : E.F = \hnf{U}$}
+          \UIC{$S \sub U$}
+        \end{prooftree}
+        
+        La taille des dérivations de $E \sub C$, $C \sub A$ et $B \sub
+        D$, $D \sub F$ étant plus
+        petites que $S \sub T$ et $T \sub U$, on élimine bien la transitivité dans ce cas.
+
+        \case{SubProof} On a:
+        \begin{prooftree}
+          \AXC{$\Pi x : C.D \sub E$}
+          \UIC{$\Pi x : C.D \sub \mysubset{y}{E}{P}$}
+        \end{prooftree}
+
+        Par induction, on a:
+
+        \begin{prooftree}
+          \AXC{$\Pi x : A.B \sub \Pi x : C.D$}
+          \AXC{$\Pi x : C.D \sub E$}
+          \BIC{$\Pi x : A.B \sub E$}          
+          \UIC{$\hnf{S} = \Pi x : A.B \sub \mysubset{y}{E}{P} = \hnf{U}$}
+          \UIC{$S \sub U$}
+        \end{prooftree}
+        
+        Car $\Pi x : C.D \sub E$ est une dérivation plus petite que $T
+        \sub U$.
+      \end{itemize}
+            
+      \case{SubSigma} De façon équivalente au produit.
+    
+      \case{SubProof}\quad
+      \begin{prooftree}
+        \AXC{$\hnf{S} \sub C$}
+        \UIC{$\hnf{S}~\sub \mysubset{y}{C}{P} = \hnf{T}$}
+        \UIC{$S \sub T$}
+        \AXC{$\mysubset{y}{C}{P} = \hnf{T} \sub \hnf{U}$}
+        \UIC{$T \sub U$}
+        \BIC{$S \sub U$}
+      \end{prooftree}
+      Encore une fois, par cas sur la dérivation de $\mysubset{y}{C}{P}
+      = \hnf{T} \sub \hnf{U}$:
+      \begin{itemize}
+        \case{SubConv} Trivial.
+        \case{SubSub} On a:
+        \begin{prooftree}
+          \AXC{$C \sub \hnf{U}$}
+          \UIC{$\mysubset{y}{C}{P} = \hnf{T} \sub \hnf{U}$}
+        \end{prooftree}
+        
+        Par induction, on peut donc dériver:
+        \begin{prooftree}
+          \AXC{$\hnf{S} \sub C$}
+          \AXC{$C \sub \hnf{U}$}
+          \BIC{$\hnf{S} \sub \hnf{U}$}
+          \UIC{$S \sub U$}
+        \end{prooftree}
+        
+        Les dérivations $\hnf{S} \sub C$ et $C \sub \hnf{U}$ étant bien
+        plus petites que $S \sub T$ et $T \sub U$.     
+      \end{itemize}
+      
+      \case{SubSub} De même:
+      \begin{prooftree}
+        \AXC{$A \sub \hnf{T}$}
+        \UIC{$\hnf{S} = \mysubset{y}{A}{P}~\sub \hnf{T}$}
+        \UIC{$S \sub T$}
+        \AXC{$\hnf{T} \sub \hnf{U}$}
+        \UIC{$T \sub U$}
+        \BIC{$S \sub U$}
+      \end{prooftree}
+
+      Se réecrit en:
+      \begin{prooftree}
+        \AXC{$A \sub \hnf{T}$}
+        \AXC{$\hnf{T} \sub \hnf{U}$}
+        \BIC{$A \sub \hnf{U}$}
+        \UIC{$\hnf{S} = \mysubset{y}{A}{P}~\sub \hnf{U}$}
+        \UIC{$S \sub U$}
+      \end{prooftree}
+    \end{induction}
+  
+    On peut faire le même raisonnement par cas sur la dérivation de
+    $\hnf{T} \sub \hnf{U}$. On peut donc se restreindre aux cas ou l'on
+    n'utilise plus la règle \irule{SubHnf} dans les prémisses de \irule{SubConv}.
+        
+    Les cas restants se montrent de façon similaire à leurs équivalents
+    dans la preuve pour le cas \irule{SubHnf}. Par exemple pour le
+    produit:
+
     
     \case{SubProd}\quad
     \begin{prooftree}
-      \AXC{$X' \sub X$}
-      \AXC{$Y \sub Y'$}
-      \BIC{$\Pi x : X.Y \sub \Pi x' : X'.Y'$}
-      \AXC{$\Pi x' : X'.Y' \sub U$}
-      \BIC{$\Pi x : X.Y \sub U$}
+      \AXC{$C \sub A$}
+      \AXC{$B \sub D$}
+      \BIC{$\Pi x : A.B \sub \Pi x : C.D$}
+      \AXC{$\Pi x : C.D \sub U$}
+      \BIC{$\Pi x : A.B \sub U$}
     \end{prooftree}
-    
-    Si $\Pi x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    = \Pi y : S.T$ et $S \sub X'$, $Y' \sub T$.
-    Par induction (les dérivations sont plus petites que la dérivation
-    $\Pi x' : X'.Y' \sub U$), $S \sub X$ et $Y \sub T$ donc $\Pi x : X.Y
-    \sub \Pi y : S.T$ 
-    et enfin $\Pi x : X.Y \sub U$ par le lemme \ref{coercion-mu}.
 
-    De façon équivalente pour le second cas.
+    On n'a seulement à traiter le cas ou $\Pi x : C.D \sub U$ est dérivé par
+    \irule{SubProd} ou \irule{SubProof}.
+    \begin{itemize}
+      \case{SubProd} Alors on a
+        \begin{prooftree}
+          \AXC{$E \sub C$}
+          \AXC{$D \sub F$}
+          \BIC{$\Pi x : C.D \sub \Pi x : E.F$}
+        \end{prooftree}
+        
+        On a donc la dérivation:
+        \begin{prooftree}
+          \AXC{$E \sub C$}\AXC{$C \sub A$}
+          \BIC{$E \sub A$}
+          
+          \AXC{$B \sub D$}\AXC{$D \sub F$}
+          \BIC{$B \sub F$}
+          \BIC{$S = \Pi x : A.B \sub \Pi x : E.F = U$}
+        \end{prooftree}
+        
+        La taille des dérivations de $E \sub C$, $C \sub A$ et $B \sub
+        D$, $D \sub F$ étant plus
+        petites que $\Pi x : A.B \sub \Pi x : C.D$ et $\Pi x : C.D \sub
+        \Pi x : E.F$, on élimine bien la transitivité dans ce cas.
 
-    \case{SubSigma}\quad
-    \begin{prooftree}
-      \AXC{$X \sub X'$}
-      \AXC{$Y \sub Y'$}
-      \BIC{$\Sigma x : X.Y \sub \Sigma x' : X'.Y'$}
-      \AXC{$\Sigma x' : X'.Y' \sub U$}
-      \BIC{$\Sigma x : X.Y \sub U$}
-    \end{prooftree}
-    
-    Si $\Sigma x' : X'.Y' \sub U$, alors il existe $S$, $T$, tel que $\mualgo(U)
-    = \Sigma y : S.T$ et $X' \sub S$, $Y' \sub T$.
-    Par induction, $X \sub S$ et $Y \sub T$ donc $\Sigma x : X.Y \sub
-    \Sigma y : S.T$ et enfin $\Sigma x : X.Y \sub U$ (lemme \ref{coercion-mu}).
-    
-    De façon équivalente pour le second cas.
+        \case{SubProof} On a:
+        \begin{prooftree}
+          \AXC{$\Pi x : C.D \sub E$}
+          \UIC{$\Pi x : C.D \sub \mysubset{y}{E}{P}$}
+        \end{prooftree}
 
-    \case{SubProof}\quad
-    \begin{prooftree}
-      \AXC{$S \sub V$}
-      \UIC{$S \sub \mysubset{x}{V}{P}$}
-      \AXC{$\mysubset{x}{V}{P} \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-    
-    Si $\mysubset{x}{V}{P} \sub U$ alors $\mualgo(U) = \mualgo(V)$.
-    Comme $S \sub V$ on a $S \sub \mualgo(V)$ par une dérivation plus
-    petite ou égale, donc par induction, $S \sub \mualgo(U)$. Donc $S \sub U$.
-    
-    De façon équivalente pour le second cas.
+        Par induction, on a:
 
-    \case{SubSub}
-    Cas identique à \irule{SubProof}
+        \begin{prooftree}
+          \AXC{$\Pi x : A.B \sub \Pi x : C.D$}
+          \AXC{$\Pi x : C.D \sub E$}
+          \BIC{$\Pi x : A.B \sub E$}          
+          \UIC{$S = \Pi x : A.B \sub \mysubset{y}{E}{P} = U$}
+        \end{prooftree}
+        
+        Car $\Pi x : C.D \sub E$ est une dérivation plus petite que $T
+        \sub U$.
+      \end{itemize}
+
+
+
     
   \end{induction}
 \end{proof}
