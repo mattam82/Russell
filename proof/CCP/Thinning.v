@@ -1,13 +1,22 @@
 Require Import Termes.
 Require Import Reduction.
 Require Import LiftSubst.
+v v v v v v v
 Require Import Env.
 Require Import CCP.Types.
+v v v v v v v
+*************
+Require Import CCP.Coercion.
+Require Import CCP.Inversion.
+^ ^ ^ ^ ^ ^ ^
+^ ^ ^ ^ ^ ^ ^
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
+v v v v v v v
 Implicit Types e f g : env.
+^ ^ ^ ^ ^ ^ ^
 
   Lemma typ_weak_weak :
    forall A e t T,
@@ -165,6 +174,7 @@ apply type_let_in with (lift_rec 1 U n) s1 s2 ; auto with coc core.
 apply wf_var with s1 ; auto with coc core.
 
 apply type_conv with (lift_rec 1 U n) s; auto with coc core arith datatypes.
+v v v v v v v
 
 apply coerce_prod with s ; auto with coc.
 apply IHIHc4; auto with coc.
@@ -177,6 +187,11 @@ apply wf_var with s.
 apply IHIHc2 ; auto with coc core.
 
 apply coerce_beta with (lift_rec 1 B n) (lift_rec 1 C n) s ; auto with coc core.
+*************
+v v v v v v v
+apply coerce_lift_rec ; auto with coc.
+^ ^ ^ ^ ^ ^ ^
+^ ^ ^ ^ ^ ^ ^
 Qed.
 
 
@@ -189,6 +204,8 @@ inversion_clear H0.
 apply typ_weak_weak with A e; auto with coc core arith datatypes.
 apply wf_var with s; auto with coc core arith datatypes.
 Qed.
+v v v v v v v
+^ ^ ^ ^ ^ ^ ^
 
 Theorem thinning_coerce : 
    forall e T U,

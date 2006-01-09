@@ -1,14 +1,18 @@
 Require Import Termes.
 Require Import Reduction.
 Require Import LiftSubst.
+v v v v v v v
 Require Import Env.
 Require Import CCP.Types.
 Require Import CCP.Thinning.
+^ ^ ^ ^ ^ ^ ^
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
+v v v v v v v
 Implicit Types e f g : env.
+^ ^ ^ ^ ^ ^ ^
 
 
   Lemma typ_sub_weak :
@@ -119,7 +123,13 @@ apply wf_var with s ; auto with coc core.
 apply coerce_beta with (subst_rec d B n) (subst_rec d C n) s ; auto with coc core.
 Qed.
 
+v v v v v v v
 Lemma coerce_sub_weak :
+*************
+v v v v v v v
+^ ^ ^ ^ ^ ^ ^
+  Lemma typ_sub_weak :
+^ ^ ^ ^ ^ ^ ^
    forall g (d : term) t,
    typ g d t ->
    forall e T (U : term),
@@ -213,6 +223,7 @@ intro ; rewrite distr_subst.
 apply type_let_in with (subst_rec d U n) s1 s2 ; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core arith datatypes.
 
+v v v v v v v
 apply type_conv with (subst_rec d U n) s; auto with coc core arith datatypes.
 
 apply coerce_prod with s ; auto with coc core.
@@ -226,6 +237,12 @@ apply IHcoerce4 ; auto with coc core.
 apply wf_var with s ; auto with coc core.
 
 apply coerce_beta with (subst_rec d B n) (subst_rec d C n) s ; auto with coc core.
+*************
+apply type_conv with (subst_rec d U0 n) s; auto with coc core arith datatypes.
+v v v v v v v
+apply coerce_subst_rec ; auto with coc core.
+^ ^ ^ ^ ^ ^ ^
+^ ^ ^ ^ ^ ^ ^
 Qed.
 
   Theorem substitution :

@@ -2,11 +2,17 @@
 # List of vernac files to compile
 Types.v
 Coercion.v
+v v v v v v v
 #Inversion.v
+*************
+Inversion.v
+v v v v v v v
+^ ^ ^ ^ ^ ^ ^
 Thinning.v
 Substitution.v
 Generation.v
 TypeCase.v
+^ ^ ^ ^ ^ ^ ^
 #SubjectReduction.v
 #Unicity.v
 #Class.v

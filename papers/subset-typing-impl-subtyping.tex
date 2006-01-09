@@ -1,32 +1,3 @@
-\subsection{Coercions explicites}
-On définit le système $\subi$ (figure \ref{fig:subtyping-impl-rules})
-qui dérive une coercion à partir de deux types $S$ et $T$ dans un environnement $`G$.
-On a introduit du déterminisme par rapport au jugement de
-coercion algorithmique puisqu'on donne priorité à la règle
-\irule{SubSub} par rapport à la règle \irule{SubProof} (ces règles sont
-confluentes). On explicite aussi la prioritée donnée à la mise en forme
-normale de tête (figure \ref{fig:hnfdef}) puis à la dérivation
-par rapport au test de
-conversion dans la prémisse de \irule{SubConv}.
-
-Notre opération de mise en forme normale de tête est définie de la façon suivante:
-\begin{figure}[h]
-  \[\begin{array}{lcl}
-    \hnf{((\lambda x : T.e)~v)} & = & \hnf{e[v/x]} \\
-    \hnf{x} & = & x
-  \end{array}\]
-  \caption{Définition de la forme normale de tête}
-  \label{fig:hnfdef}
-\end{figure}
-
-On utilise la $\beta$-équivalence de $CCI$ enrichi avec les
-existentielles, on étend donc la relation aux existentielles de la façon
-suivante: $\ex{`G}{P} \eqbi \ex{`G'}{P'} `= `G \eqbi `G' `^ P \eqbi P'$.
-
-\coerceFig
-\subticFig
-
-
 \begin{lemma}[Coercion et conversion dans le contexte]
   \label{coercion-conversion-ctx-impl}
   Si $`G, x : V, `D \typec c : S \subi T$ et $V \eqbi V'$ alors

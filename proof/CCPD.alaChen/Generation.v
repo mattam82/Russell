@@ -5,8 +5,6 @@ Require Import Conv_Dec.
 Require Import LiftSubst.
 Require Import Env.
 Require Import CCPD.Types.
-Require Import CCPD.Thinning.
-Require Import CCPD.Substitution.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -129,6 +127,9 @@ unfold lift in H ; simpl in H.
 injection H ; intros.
 exists t1 ; exists t2 ; split ; [auto | split ; auto].
 Qed.
+
+Lemma prod_no_kind : forall t G T, G |- t : T -> 
+  forall U V, t = Prod U V -> ~ (exists n, prod_target t n (Srt kind)).
 
 Ltac doubleind t := induction t as [dH1] ; induction dH1 as [dH2].
 

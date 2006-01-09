@@ -2,16 +2,19 @@ Require Import Termes.
 Require Import Reduction.
 Require Import Conv.
 Require Import LiftSubst.
+v v v v v v v
 Require Import Env.
 Require Import CCP.Types.
 Require Import CCP.Coercion.
 Require Import CCP.Inversion.
 Require Import CCP.Thinning.
 Require Import CCP.Substitution.
+^ ^ ^ ^ ^ ^ ^
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
+v v v v v v v
 Implicit Types e f g : env.
 
 Set Implicit Arguments.
@@ -274,8 +277,12 @@ Proof.
   inversion H1.
   apply conv_sort ; auto.
   
+v v v v v v v
 Admitted.  
 
+*************
+^ ^ ^ ^ ^ ^ ^
+^ ^ ^ ^ ^ ^ ^
 
   Theorem type_case :
    forall e t T,

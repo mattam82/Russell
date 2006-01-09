@@ -1,3 +1,5 @@
+\def\iG{`G}
+
 \section{Génération des obligations de preuve}
 On veut désormais traduire les dérivations du système algorithmique
 dans \CCI{} dont le jugement de typage est $\typec$. 
@@ -12,15 +14,20 @@ des trous dont on ne connait que le type des habitants) pour traduire le
 fait qu'il est de la responsabilité de l'utilisateur de prouver que son
 utilisation de la coercion n'était pas incorrecte.
 
+\subsection{Interprétation}
 On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des
-termes (figure \ref{fig:interp}). Cette interprétation renvoie à la fois
-un terme de $t'$ réecrit et son type dans l'environnement \Coq{} $`G$.
+termes (figure \ref{fig:interp}). Cette interprétation renvoie
+un terme $t'$ réecrit bien typé dans l'environnement \CCI{} $\ipG{`G}$.
 
-On utilise les abbréviations suivantes:
-\begin{itemize}
-\item $\ipt{t}{`G} `= \pi_1~ \ip{t}{`G}$, soit le terme réecrit ;
-\item $\ipT{t}{`G} `= \pi_2~ \ip{t}{`G}$, soit le type \Coq{} de $t'$.
-\end{itemize}
+\begin{definition}[Interprétation des contextes]
+  \label{ctx-interp}
+  On fait l'extension aux contextes de la façon suivante:
+  \begin{itemize}
+  \item $\ipG{[]} = []$
+  \item $\ipG{`G, x : T} =  \ipG{`G}, x : \ipt{T}{`G}$
+  \end{itemize}
+\end{definition}
+
 
 \def\typeafn#1#2{\typeml_{#1}(#2)}
 \begin{figure}
@@ -69,63 +76,72 @@ On utilise les abbréviations suivantes:
   \label{fig:interp}
 \end{figure}
 
-%\subtiFig
+Chaque jugement de coercion du système algorithmique permet de dériver
+une coercion explicite qui sera directement appliquée à un objet.
 
-% Ici la fonction $\muimpl$ (figure \ref{fig:muimpl-definition}) renvoie à la fois un type (qu'on demande
-% équivalent à un produit) et une fonction de coercion qui va faire les
-% projections nécessaires sur l'objet \Coq~$f'$. En effet dans \Coq~les
-% objets de type sous-ensemble $\mysubset{x}{T}{P}$ sont codés par un terme 
-% de la forme $\sref{elt}~t~p$ dont on peut extraire les parties objet 
-% (un certain $t$ de type $T$, par la projection $\Pi_1$) et preuve
-% (de type $P[t/x]$). Il faut donc faire exactement
-% une projection pour atteindre par exemple la fonction à partir d'un objet de type
-% $\mysubset{f}{\nat "->" \nat}{f~0 \neq 0}$.
+On formalise donc les coercions par des contextes d'évaluation classiques.
+\begin{definition}[Contextes d'évaluation]
+  \label{eval-ctx}
+  Un contexte d'évaluation est un terme formé à partir de la grammaire
+  suivante:
+  \[\begin{array}{lcl}
+    `a & \Coloneqq & \ldots \\
+    & | & [] \\
+    \\
+    `t & \Coloneqq & \ldots \\
+    & | & []
+  \end{array}\]
+\end{definition}
 
-On fait l'extension aux contextes de la façon suivante:
-\begin{itemize}
-\item $\ipG{[]} = []$
-\item $\ipG{`G, x : T} =  \ipG{`G}, x : \ipt{T}{\ipG{`G}}$
-\end{itemize}
+\subsubsection{Coercions explicites}
+On définit le système $\subi$ (figure \ref{fig:subtyping-impl-rules})
+qui dérive une coercion à partir de deux types $S$ et $T$ dans un environnement $`G$.
+On a introduit du déterminisme par rapport au jugement de
+coercion algorithmique puisqu'on donne priorité à la règle
+\irule{SubSub} par rapport à la règle \irule{SubProof} (ces règles sont
+confluentes). On explicite aussi la prioritée donnée à la mise en forme
+normale de tête (figure \ref{fig:hnfdef}) puis à la dérivation
+par rapport au test de
+conversion dans la prémisse de \irule{SubConv}.
 
+Notre opération de mise en forme normale de tête est définie de la façon suivante:
+\begin{figure}[h]
+  \[\begin{array}{lcl}
+    \hnf{((\lambda x : T.e)~v)} & = & \hnf{e[v/x]} \\
+    \hnf{\pi_1~(x, y)} & = & \hnf{x} \\
+    \hnf{\pi_2~(x, y)} & = & \hnf{y} \\
+    \hnf{x} & = & x
+  \end{array}\]
+  \caption{Définition de la forme normale de tête}
+  \label{fig:hnfdef}
+\end{figure}
 
-% \input{typing-impl-new}
-%\typeinewFig
-%\input{subset-typing-impl-proof}
+On utilise la $\beta$-équivalence de $CCI$ enrichie avec les
+existentielles, on étend donc la relation aux existentielles de la façon
+suivante: $\ex{`G}{P} \eqbi \ex{`G'}{P'} `= `G \eqbi `G' `^ P \eqbi P'$.
 
-\def\iG{`G}
+\subticFig
+
+Le système figure \ref{fig:interp-coerce} dérive les termes de
+coercion. Il a de bonnes propriétés pour la preuve et l'implémentation
+telles que l'unicité et l'élimination de la transitivité que nous
+montrerons plus tard.
+
 \subsection{Propriétés}
 On veut montrer que si l'on a un jugement valide dans notre système
 algorithmique, alors son image par l'interprétation est un jugement
 valide de \CCI{}. On rappelle que \CCI{} est équivalent au premier
-calcul présenté où la règle de coercion est remplacée par la règle de conversion.
+calcul présenté où la règle de coercion est remplacée par la règle 
+de conversion.
 
 \typenvi
-% \subsubsection{Remarques sur l'interprétation}
-% \begin{itemize}
-% \item[{\bf Déterminisme}] L'interprétation est déterministe par rapport à la
-%   forme des termes. On peut en déduire que
-%   si $`G \typea x : T$ et $`G \typea \Sigma x : T.U : s$ alors 
-%   si $\ipt{T}{\ipG{`G}} = T'$ on a $\ipt{\Sigma x : T.U}{\ipG{`G}} =
-%   \Sigma x : T'. U'$.  
-  
-% \item[{\bf Conservation de la structure}] On voit très clairement que notre
-%   interprétation est un homomorphisme module les coercions, 
-%   c'est à dire qu'elle préserve globallement la structure des termes et
-%   des types.
-
-% \item[{\bf Consevation du typage}] Notre interprétation transforme un terme
-%   bien typé dans le système algorithmique en un terme bien typé dans
-%   \CCI{}. Ce résultat va découler du fait que l'on reconstruit implicitement
-%   la dérivation de typage du système algorithmique dans notre
-%   interprétation en ajoutant les coercions nécessaires pour être bien
-%   typé dans \CCI{}.
-% \end{itemize}
 
 \subsubsection{Correction}
-On veut montrer le théorème suivant: si $`G \typea t : T$ alors $\iG
-\typec \ipt{t}{\iG} : \ipt{T}{\iG}$. Nous n'avons pas encore trouvé de
-preuve de ce résultat. En effet le jugement de coercion rend la preuve
- très difficile à cause de son caractère
+Notre problème se rammène à montrer le théorème suivant: 
+\[`G \typea t : T "=>" \iG \typec \ip{t}{`G} : \ip{T}{`G}\]
+Ce résultat ne se montre pas aisément.
+En effet le jugement de coercion rend la preuve
+très difficile à cause de son caractère
 non local. Pour mieux comprendre ce problème, considérons l'exemple
 suivant:
 
@@ -143,15 +159,16 @@ preuve que l'intuition de la coercion par prédicats est bonne, on peut
 dériver ce jugement:
 
 \begin{prooftree}
-  \AXC{$\nat \eqbi \nat$}
-  \UIC{$`G' \typec \lambda x.x : \nat \subi \nat$}
-  \UIC{$`G' \typec (\lambda x.x) `o \pi_1 : \mysubset{x}{\nat}{P} \subi \nat$}
-  \AXC{$(\listml~n)[\pi_1~n/n] \eqbi \listml~(\pi_1~n)$}
-  \UIC{$`G, n : \mysubset{x}{\nat}{P} \typec (\lambda x.x) :
-    (\listml~n)[\pi_1~n/n] \subi \listml~(\pi_1~n)$}
-  \BIC{$`G' \typec \lambda f.\lambda x.(\lambda x.x)~(f~(\pi_1~x)) : 
-    \Pi n : \nat. \listml~n \subi 
-    \Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$}
+  \AXC{$\nat \eqb \nat$}
+  \UIC{$\subimpl{`G'}{[]}{\nat}{\nat}$}
+  \UIC{$\subimpl{`G'}{\pi_1~[]}{\mysubset{x}{\nat}{P}}{\nat}$}
+
+  \AXC{$(\listml~n)[\pi_1~n/n] \eqb \listml~(\pi_1~n)$}
+  \UIC{$\subimpl{`G, n : \mysubset{x}{\nat}{P}}{[]}
+    {(\listml~n)[\pi_1~n/n]}{\listml~(\pi_1~n)}$}
+
+  \BIC{$\subimpl{`G'}{\lambda x.f~(\pi_1~x)}{\Pi n : \nat. \listml~n}
+    {\Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)}$}
 \end{prooftree}
 
 \input{subset-typing-impl-subtyping}

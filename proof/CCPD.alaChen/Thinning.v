@@ -9,33 +9,11 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Lemma coerce_weak_weak :
-  forall A e T U,
-  e |- T >> U ->
-  forall n f,
-  ins_in_env A n e f -> wf f -> coerce f (lift_rec 1 T n) (lift_rec 1 U n).
-intros A e t T IHc.
-induction IHc using coerce_mut with 
- (P := fun e t T => fun IHt : typ e t T =>
-   forall n f,
-   ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))
- (P0 := fun e T U => fun IHt : coerce e T U =>
-   forall n f,
-   ins_in_env A n e f -> wf f -> coerce f (lift_rec 1 T n) (lift_rec 1 U n)) ;
-simpl in |- *; try simpl in IHIHc ; try simpl in IHIHc0 ; try simpl in IHIHc1 ; try simpl in IHIHc2 ; try simpl in IHIHc3 ; 
-try simpl in IHIHc4 ; intros; auto with coc core arith datatypes.
-
-apply coerce_prod with s ; auto with coc.
-apply IHIHt4; auto with coc.
-apply wf_var with s.
-apply IHIHt1 ; auto with coc core.
-
-apply coerce_sum with s ; auto with coc.
-apply IHIHt4; auto with coc.
-apply wf_var with s.
-apply IHIHt2 ; auto with coc core.
-
-apply coerce_trans with (lift_rec 1 B n) s ; auto with coc core.
+Lemma coerce_sort : forall e T U,   e |- T >> U ->
+ forall s1 s2, e |- T : Srt s1 -> e |- U : Srt s2 -> s1 = s2.
+Proof.
+  induction 1 ; intros.
+  
 
 
   Lemma typ_weak_weak :
@@ -44,22 +22,22 @@ apply coerce_trans with (lift_rec 1 B n) s ; auto with coc core.
    forall n f,
    ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n).
 intros A e t T IHt.
-induction IHt ;
-simpl in |- *; try simpl in IHIHt ; try simpl in IHIHt1 ; try simpl in IHIHt2 ; try simpl in IHIHt3 ; 
-try simpl in IHIHt4 ; intros; auto with coc core arith datatypes.
- (*using typ_mut with 
+induction IHt using typ_mut with 
  (P := fun e t T => fun IHt : typ e t T =>
    forall n f,
    ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))
  (P0 := fun e T U => fun IHt : coerce e T U =>
+   forall s, e |- T : Srt s -> e |- U : Srt s ->
    forall n f,
-   ins_in_env A n e f -> wf f -> coerce f (lift_rec 1 T n) (lift_rec 1 U n)) *)
+   ins_in_env A n e f -> wf f -> coerce f (lift_rec 1 T n) (lift_rec 1 U n)) ;
+simpl in |- *; try simpl in IHIHt ; try simpl in IHIHt1 ; try simpl in IHIHt2 ; try simpl in IHIHt3 ; 
+try simpl in IHIHt4 ; intros; auto with coc core arith datatypes.
 
 elim (le_gt_dec n0 n); intros; apply type_var;
  auto with coc core arith datatypes.
-elim H0; intros.
+elim i; intros.
 exists x.
-rewrite H3.
+rewrite H1.
 unfold lift in |- *.
 rewrite simpl_lift_rec; simpl in |- *; auto with coc core arith datatypes.
 
@@ -110,6 +88,22 @@ apply type_let_in with (lift_rec 1 U n) s1 s2 ; auto with coc core.
 apply wf_var with s1 ; auto with coc core.
 
 apply type_conv with (lift_rec 1 U n) s; auto with coc core arith datatypes.
+apply IHIHt4 with s ; auto with coc.
+
+apply coerce_prod ; auto with coc.
+
+apply IHIHt with s ; auto with coc.
+
+apply wf_var with s.
+apply IHIHc1 ; auto with coc core.
+
+apply coerce_sum with s ; auto with coc.
+apply IHIHc4; auto with coc.
+apply wf_var with s.
+apply IHIHc2 ; auto with coc core.
+
+apply coerce_trans with (lift_rec 1 B n) s ; auto with coc core.
+
 
 Qed.
 

@@ -2,11 +2,15 @@ Require Import Termes.
 Require Import LiftSubst.
 Require Import Reduction.
 Require Import Conv.
+v v v v v v v
 Require Import Env.
+^ ^ ^ ^ ^ ^ ^
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
+v v v v v v v
+^ ^ ^ ^ ^ ^ ^
 
 Reserved Notation "G |- T >> U" (at level 70, T, U at next level).
 

@@ -478,11 +478,4 @@ inversion H3.
 Qed.
 
 
-
-
-
-
-
-
-
 End Church_Rosser.

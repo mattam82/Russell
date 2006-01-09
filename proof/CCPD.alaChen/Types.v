@@ -8,28 +8,42 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
-Reserved Notation "T >> U" (at level 70, U at next level).
-Inductive coerce : term -> term -> Prop :=
-  | coerce_conv : forall A B, conv A B -> A >> B
-
-  | coerce_prod : forall A B A' B', B >> B' -> (Prod A B) >> (Prod A' B')
-  
-  | coerce_sum : forall A B A' B', 
-  A >> A' -> B >> B' -> (Sum A B) >> (Sum A' B')
-
-  | coerce_sub_l : forall U P U', U >> U' -> Subset U P >> U'
-
-  | coerce_sub_r : forall U U' P, U >> U' -> U >> (Subset U' P)
-
-  | coerce_trans : forall A B C, A >> B -> B >> C -> A >> C
-
-where "T >> U" := (coerce T U).
-
+Reserved Notation "G |- T >> U" (at level 70, T, U at next level).
 Reserved Notation "G |- T : U" (at level 70, T, U at next level).
-  Inductive wf : env -> Prop :=
+
+Inductive coerce : env -> term -> term -> Prop :=
+  | coerce_conv : forall e A B, conv A B -> e |- A >> B
+
+  | coerce_prod : forall e A B A' B',
+ e |- A' >> A ->
+ (A' :: e) |- B >> B' -> 
+ e |- (Prod A B) >> (Prod A' B')
+  
+  | coerce_sum : forall e A B A' B', 
+  e |- A >> A' -> 
+  (A :: e) |- B >> B' ->
+  e |- (Sum A B) >> (Sum A' B')
+
+  | coerce_sub_l : forall e U P U', 
+ e |- U >> U' -> 
+ e |- Subset U P >> U'
+
+  | coerce_sub_r : forall e U U' P,
+ e |- U >> U' -> 
+ e |- U >> (Subset U' P)
+
+  | coerce_trans : forall e A B C,
+  forall s, e |- A : Srt s -> e |- B : Srt s -> e |- C : Srt s ->
+  e |- A >> B -> e |- B >> C ->
+  e |- A >> C
+
+where "G |- T >> U" := (coerce G T U)
+
+with wf : env -> Prop :=
   | wf_nil : wf nil
   | wf_var : forall e T s, e |- T : (Srt s) -> wf (T :: e)
-  with typ : env -> term -> term -> Prop :=
+
+with typ : env -> term -> term -> Prop :=
   | type_prop : forall e, wf e -> e |- (Srt prop) : (Srt kind)
   | type_set : forall e, wf e -> e |- (Srt set) : (Srt kind)	
   | type_var : (* start *)
@@ -90,16 +104,20 @@ Reserved Notation "G |- T : U" (at level 70, T, U at next level).
       forall e t (U V : term),
       e |- t : U -> 
       forall s, e |- V : (Srt s) -> e |- U : (Srt s) -> 
-      U >> V -> 
+      e |- U >> V -> 
       e |- t : V
 
 where "G |- T : U" :=  (typ G T U).
 
-
 Hint Resolve coerce_conv coerce_prod coerce_sum coerce_sub_l coerce_sub_r : coc.
 Hint Resolve type_pi1 type_pi2 type_pair type_prop type_set type_var: coc.
 
-Scheme typ_mut := Induction for typ Sort Prop.
+Scheme typ_mut := Induction for typ Sort Prop
+with coerce_mut := Induction for coerce Sort Prop.
+
+Scheme typ_mutwf := Induction for typ Sort Prop
+with coerce_mutwf := Induction for coerce Sort Prop
+with wf_mut := Induction for wf Sort Prop.
 
   Lemma type_prop_set :
    forall s, is_prop s -> forall e, wf e -> typ e (Srt s) (Srt kind).
