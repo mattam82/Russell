@@ -53,10 +53,10 @@ sera nécessaire pour la correction du typage:
   On utilise \irule{SubConv} et \irule{SubTrans} pour montrer son
   admissibilité dans dans le système déclaratif.
   \begin{prooftree}
-    \AXC{$U \eqbi \hnf{U}$}  
+    \AXC{$U \eqbr \hnf{U}$}  
     \UIC{$U~\subd \hnf{U}$}
     \AXC{$\hnf{U}~\subd \hnf{T}$}
-    \AXC{$\hnf{T} \eqbi T$}
+    \AXC{$\hnf{T} \eqbr T$}
     \UIC{$\hnf{T}~\subd T$}
     \BIC{$\hnf{U}~\subd T$}
     \BIC{$U \subd T$}
@@ -165,19 +165,19 @@ $\hnf{((\lambda x : \Set.x)~\nat)} = \nat$ et $\nat \suba
 Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
 \begin{lemma}
   \label{conversion-pi}
-  Si $\Pi x : T. U \eqbi S$ alors $\hnf{S} = \Pi x : T'. U'$ avec $T \eqbi T'$ et $U
-  \eqbi U'$.
+  Si $\Pi x : T. U \eqbr S$ alors $\hnf{S} = \Pi x : T'. U'$ avec $T \eqbr T'$ et $U
+  \eqbr U'$.
 \end{lemma}
 \begin{lemma}
   \label{conversion-sigma}
-  Si $\Sigma x : T. U \eqbi S$ alors $\hnf{S} = \Sigma x : T'. U'$ avec $T \eqbi T'$ et $U
-  \eqbi U'$.
+  Si $\Sigma x : T. U \eqbr S$ alors $\hnf{S} = \Sigma x : T'. U'$ avec $T \eqbr T'$ et $U
+  \eqbr U'$.
 \end{lemma}
 
 On peut maintenant montrer:
 \begin{lemma}[Conservation de la conversion par coercion]
   \label{conversion-coercion}
-  Si $`G \typea T, U : s$ et $T \eqbi U$ alors $T \suba U$.
+  Si $`G \typea T, U : s$ et $T \eqbr U$ alors $T \suba U$.
 \end{lemma}
 \begin{proof}
   Par induction sur la forme de $\hnf{T}$.
@@ -186,17 +186,17 @@ On peut maintenant montrer:
   
   \begin{itemize}
   \item[$\hnf{T} = \Pi x : X.Y$:]
-    Alors $\hnf{U} = \Pi y : V.W$ et $X \eqbi V$, $Y \eqbi W$
+    Alors $\hnf{U} = \Pi y : V.W$ et $X \eqbr V$, $Y \eqbr W$
     d'après le lemme \ref{conversion-pi}.
     Par induction $X \sub Y$ et $V \sub W$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
   \item[$\hnf{T} = \Sigma x : X.Y$:]
-    Alors $\hnf{U} = \Sigma y : V.W$, avec $X \eqbi V$ et $Y \eqbi
+    Alors $\hnf{U} = \Sigma y : V.W$, avec $X \eqbr V$ et $Y \eqbr
     W$. Par induction et application de \irule{SubSigma}.
     
   \item[$\hnf{T} `= \mysubset{x}{X}{P}$:] 
-    On a alors $\hnf{U} = \mysubset{x}{X'}{P'}$ avec $X \eqbi X'$, $P \eqbi
+    On a alors $\hnf{U} = \mysubset{x}{X'}{P'}$ avec $X \eqbr X'$, $P \eqbr
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
     \begin{prooftree}
@@ -209,7 +209,7 @@ On peut maintenant montrer:
 
   \item[Sinon:]
     On applique obligatoirement \irule{SubConv} et l'on a la prémisse $T
-    \eqbi U$, c'est donc direct.
+    \eqbr U$, c'est donc direct.
   \end{itemize}
 \end{proof}
 
@@ -254,7 +254,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 
 \begin{lemma}[Coercion et conversion]
   \label{coercion-conversion}
-  Si $`G \type S,T,U : s$, $S \eqbi T$ et $T \sub U$ alors $S \sub U$
+  Si $`G \type S,T,U : s$, $S \eqbr T$ et $T \sub U$ alors $S \sub U$
 \end{lemma}
 
 \begin{proof}
@@ -303,7 +303,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 
     \casetwo{SubConv}{*}\quad
     \begin{prooftree}
-      \AXC{$S \eqbi T$}
+      \AXC{$S \eqbr T$}
       \UIC{$S \sub T$}
       \AXC{$T \sub U$}
       \BIC{$S \sub U$}
@@ -743,10 +743,10 @@ pouvoir prouver la complétude.
   U[u/x].V[u/x]$.
 
   Si $T$ est différent d'un type sous-ensemble alors $\mualgo(T) = T$.
-  Donc $T \eqbi \Pi y : U.V$. Il s'ensuit que $T$ est de la forme $\Pi y
+  Donc $T \eqbr \Pi y : U.V$. Il s'ensuit que $T$ est de la forme $\Pi y
   : U'.W'$ et donc $T[u/x] = \Pi y : U'[u/x].V'[u/x] =
   \mualgo(T[u/x])$. Par substitutivité de la conversion, il s'ensuit que 
-  $\Pi y : U'[u/x].V'[u/x] \eqbi \Pi y : U[u/x].V[u/x]$.
+  $\Pi y : U'[u/x].V'[u/x] \eqbr \Pi y : U[u/x].V[u/x]$.
 \end{proof}
 
 \begin{lemma}[Substitutivité de la coercion]
@@ -757,7 +757,7 @@ pouvoir prouver la complétude.
 \begin{proof}
   \begin{induction}[subtyping-algo]
     \case{SubConv}
-    Direct par préservation de l'équivalence $\eqbi$ par substitution.
+    Direct par préservation de l'équivalence $\eqbr$ par substitution.
     
     \case{SubHnf}
     Par induction, $(\hnf{U})[u/x] \suba (\hnf{T})[u/x]$. 
@@ -1007,7 +1007,7 @@ système de typage vis-à-vis du système déclaratif.
 
     \casetwo{Conv}{Coerce}
     Dans les deux cas on a inductivement $`E T', `G \typea t : T'
-    \suba T$. Avec \irule{Conv} on a $T \eqbi S$, donc $T' \suba S$ par
+    \suba T$. Avec \irule{Conv} on a $T \eqbr S$, donc $T' \suba S$ par
     le lemme \ref{coercion-conversion}. Pour \irule{Coerce} on a $T \subd S$.
     Par complétude de la coercion, $T \suba S$ et par transitivité de la
     coercion, $T' \suba S$. La propriété est donc bien vérifiée dans les

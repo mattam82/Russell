@@ -1,110 +1,148 @@
+
 \begin{lemma}[Coercion et conversion dans le contexte]
   \label{coercion-conversion-ctx-impl}
-  Si $`G, x : V, `D \typec c : S \subi T$ et $V \eqbi V'$ alors
-  $`G, x : V', `D \typec c' : S \subi T$ et $c \eqbi c'$.
+  Si $\timpl{`G}{V, V'}{s}$, $V \eqbr V'$ alors:
+  \begin{eqnarray*}
+    \ip{T}{`G, x : V, `D} = T' & "=>" & 
+    T' \eqbr \ip{T}{`G, x : V', `D} \\
+    \subimpl{`G, x : V, `D}{c}{T}{U} & "=>" &
+    \subimpl{`G, x : V', `D}{c'}{T}{U} `^ c \eqbr c' \\
+  \end{eqnarray*}  
 \end{lemma}
 \begin{proof}
-  Par induction sur la dérivation de coercion. Tout les cas passent par
+  Par induction mutuelle sur la dérivations de coercion et l'interprétation.
+  Pour la coercion, tout les cas passent par
   induction sauf \irule{SubConv} qui n'utilise pas $`G$ en prémisse donc
   ne pose pas de problème. Le seul cas intéressant est \irule{SubProof}
-  qui utilise la $\beta$-équivalence sur les existentielles.
+  qui utilise la $\beta$-équivalence sur les existentielles:
+  
+  Soit $`r = `G, x : V, `D$ et $`r' = `G, x : V', `D$.
+  On a \[\SubProofI[`r]\DP\]
+  Par induction $\subimpl{`r'}{c'}{T}{U}$, donc on peut dériver
+  \[\subimpl{`r'}{%
+    \elt{\ip{U}{`r'}}
+    {\ip{\lambda x : U.P}{`r'}}{c'}
+    {\ex{\ipG{`r'}}{\ip{P}{`r'}[c' /x]}}}
+  {T}{U}\].
+  
+  On a équivalence des coercions en appliquant l'hypothèse d'induction pour
+  l'interprétation. 
+
+  Pour l'interprétation, on suit la définition.
+  On peut montrer que dans le système algorithmique, si $`G, x : V, `D
+  \typea t : T$ alors $`G, x : V', `D \typea t : T'$ et $T \eqbr T$, 
+  on en déduit que les appels à $\typeafn{`r}$ ou $\typeafn{`r'}$
+  donnent des types $\beta\rho$-équivalents.
+  On peut aussi utiliser le contexte lors des appels à \sref{coerce} et
+  cette fois on applique l'hypothèse d'induction pour la coercion.
 \end{proof}
 
-On conserve les propriétés suivantes sur la coercion:
-\def\subhnf{\subihnf}
+\begin{lemma}[Unicité de la coercion]
+  \label{coercion-unicity}
+  Si $`G \typea T, U : s$ alors si $\subimpl{`G}{c}{T}{U}$ et
+  $\subimpl{`G}{c'}{T}{U}$ alors $c = c'$.
+\end{lemma}
+
+\begin{proof}
+  Par simple inspection du système on peut voir qu'une seule règle peut
+  s'appliquer pour toute paire $T, U$ de types donnée. 
+  Seules les régles
+  \irule{SubConv} et \irule{SubHnf} pourraient s'appliquer en même temps
+  si $T = \hnf{T}$ et $U = \hnf{U}$. On a alors $c = []$
+  mais alors le jugement en prémisse de \irule{SubHnf} serait égal à
+  $c$, et comme la coercion en prémisse est la même qu'en conclusion on
+  en déduit que $c = c'$.
+\end{proof}
+
+On peut donc raisonner comme ceci: si l'on parvient à construire une
+dérivation de $\subimpl{`G}{c}{T}{U}$ alors c'est l'unique dérivation
+existante.
+
 \begin{lemma}[Coercion et conversion]
   \label{coercion-conversion-impl}
-  Si $`G \typea S,T,U,V : s$, $S \eqbi T$, $U \eqbi V$ et
-  $`G \typec c : T \sub U$ alors $`G \typec c' : S \sub V$ avec 
-  $c \eqbi c'$. 
+  Si $`G \typea S,T,U,V : s$, $S \eqbr T$, $U \eqbr V$ et $`G \typec c :
+  T \sub U$ alors $`G \typec c' : S \sub V$ avec $c \eqbr c'$.
 \end{lemma}
 
 \begin{proof}
   Par simple inspection des règles on voit que le jugement ne peut
-  distinguer deux termes $\beta$-équivalents (ils ont forcément des
+  distinguer deux termes $\beta\rho$-équivalents (ils ont forcément des
   formes normales de tête équivalentes). On en déduit que la dernière
   règle appliquée dans le jugement $T \sub U$ est la seule règle
   applicable à $S \sub V$.
 
   Par induction sur la dérivation dans $\sub$.
-   
+  
   \begin{induction}
-    \case{SubHnf}\quad
-    Comme $S \eqbi T$, $S \eqbi \hnf{T}$. 
-    De même comme $U \eqbi V$, $\hnf{U} \eqbi V$.
-    On a l'hypothèse $\hnf{T} \sub \hnf{U}$ donc
-    par induction on a $c' : \hnf{S} \sub \hnf{V}$ avec $c' \eqbi c$. 
-    On dérive bien $`G \typec c' : S \sub V$ avec $c' \eqbi c$ par \irule{SubHnf}. 
+    \case{SubHnf}\quad Comme $S \eqbr T$, $S \eqbr \hnf{T}$.  De même
+    comme $U \eqbr V$, $\hnf{U} \eqbr V$.  On a l'hypothèse $\hnf{T}
+    \sub \hnf{U}$ donc par induction on a $c' : \hnf{S} \sub \hnf{V}$
+    avec $c' \eqbr c$.  On dérive bien $`G \typec c' : S \sub V$ avec
+    $c' \eqbr c$ par \irule{SubHnf}.
     
-    \case{SubConv}\quad
-    On a  $S \eqbi T$, $T \eqbi U$ et $U \eqbi V$ donc $S \eqbi V$ par transitivité
-    de la $\beta$-équivalence. On a donc $c' = \lambda x : S.x
-    \eqbi \lambda x : T.x$ dérivable par une application optionnelle de
-    \irule{SubHnf} puis \irule{SubConv}. 
-    C'est la seule règle applicable pour dériver
-    le jugement $S \sub V$, sinon on aurait des symboles de tête
-    différents pour deux termes $\beta$-équivalents. 
+    \case{SubConv}\quad On a $S \eqbr T$, $T \eqbr U$ et $U \eqbr V$
+    donc $S \eqbr V$ par transitivité de la $\beta$-équivalence. On a
+    donc $c' = \lambda x : S.x \eqbr \lambda x : T.x$ dérivable par une
+    application optionnelle de \irule{SubHnf} puis \irule{SubConv}.
+    C'est la seule règle applicable pour dériver le jugement $S \sub V$,
+    sinon on aurait des symboles de tête différents pour deux termes
+    $\beta$-équivalents.
+    
+    \case{SubProd}\quad Soit $T = \Pi x : A.B$ et $U = \Pi x : C.D$.  On
+    a $\subimpl{`G}{c_1}{A}{C}$ et $\subimpl{`G, x :
+      C}{c_2}{B[c_1~x/x]}{D}$ Or si $S \eqbr \Pi x : A.B$ et $\Pi x :
+    C.D \eqbr V$ alors $\hnf{S} = \Pi x : A'.B'$ avec $A \eqbr A'$ et $B
+    \eqbr B'$ et $\hnf{V} = \Pi x : C'.D'$ avec $C \eqbr C'$ et $D \eqbr
+    D'$.
+    
+    Par induction on a $`G \typec c_1' : C' \sub A'$ avec $c_1' \eqbr
+    c_1$. Par hypothèse on a $`G, x : C \typec c_2 : B[c_1~x/x] \sub D$.
+    Par induction: $`G, x : C \typec c_2' : B'[c_1'~x/x] \sub D'$ avec
+    $c_2' \eqbr c_2$ car $B[c_1~x/x] \eqbr B'[c_1~x/x]$.  On peut donc
+    déduire $`G, x : C' \typec c_2' : B'[c_1'~x/x] \sub D'$ par le lemme
+    \ref{coercion-conversion-ctx-impl}.  On déduit par \irule{SubProd}
+    que $c' : \hnf{S} \sub \hnf{V}$ est dérivable. On a bien $c \eqbr
+    c'$ car $c_1' \eqbr c_1$ et $c_2' \eqbr c_2$, donc $\lambda
+    f.\lambda x.c_2~(f~(c_1~x)) \eqbr \lambda f.\lambda
+    x.c_2'~(f~(c_1'~x))$.
 
-    \case{SubProd}\quad
-    Soit $T = \Pi x : A.B$ et $U = \Pi x : C.D$.
-    On a $\subimpl{`G}{c_1}{A}{C}$ et $\subimpl{`G, x : C}{c_2}{B[c_1~x/x]}{D}$
-    Or si $S \eqbi \Pi x : A.B$ et $\Pi x : C.D \eqbi V$ alors $\hnf{S}
-    = \Pi x : A'.B'$ avec $A \eqbi A'$ et $B \eqbi B'$ et $\hnf{V} =
-    \Pi x : C'.D'$ avec $C \eqbi C'$ et $D \eqbi D'$.
-      
-    Par induction on a $`G \typec c_1' : C' \sub A'$ avec $c_1'
-    \eqbi c_1$. Par hypothèse on a $`G, x : C \typec c_2 : B[c_1~x/x]
-    \sub D$. Par induction: $`G, x : C \typec c_2' : B'[c_1'~x/x] \sub
-    D'$ avec $c_2' \eqbi c_2$ car $B[c_1~x/x] \eqbi B'[c_1~x/x]$.
-    On peut donc déduire $`G, x : C' \typec c_2' : B'[c_1'~x/x] \sub D'$
-    par le lemme \ref{coercion-conversion-ctx-impl}. 
-    On déduit par
-    \irule{SubProd} que $c' : \hnf{S} \sub \hnf{V}$ est
-    dérivable. On a bien $c \eqbi c'$ car $c_1' \eqbi c_1$ et $c_2'
-    \eqbi c_2$, donc $\lambda f.\lambda x.c_2~(f~(c_1~x)) \eqbi
-    \lambda f.\lambda x.c_2'~(f~(c_1'~x))$.
-
-    \case{SubSigma}\quad
-    De même par \irule{SubSigma}:
+    \case{SubSigma}\quad De même par \irule{SubSigma}:
     
     \begin{prooftree}      
-      \AXC{$\subimpl{`G}{c_1'}{A'}{C'}$}
-      \AXC{$\subimpl{`G, x : A'}{c_2'}{B'}{D'[c_1'~x/x]}$}
-      \BIC{$\subimplhnf{`G}{\lambda t : \Sigma x : A'. B'.~\letml~(x, y) = t~\inml~(c_1'~x, c_2'~y)}
+      \AXC{$\subimpl{`G}{c_1'}{A'}{C'}$} 
+      \AXC{$\subimpl{`G, x : A'}{c_2'}{B'}{D'[c_1'~x/x]}$} 
+      \BIC{$\subimpl{`G}{\lambda t
+          : \Sigma x : A'. B'.~\letml~(x, y) = t~\inml~(c_1'~x, c_2'~y)}
         {\Sigma x : A'. B'}{\Sigma x : C'. D'}$}
     \end{prooftree}
- 
-    \case{SubSub}\quad  
-    On a $\hnf{T} = \mysubset{x}{T'}{P}$ donc $\hnf{S} = \mysubset{x}{S'}{P'}$
-    avec $T' \eqbi S'$ et $P \eqbi P'$.
-    Par hypothèse, $\subimpl{`G}{c}{T'}{U}$, donc par induction,
-    $\subimpl{`G}{c'}{S'}{\hnf{V}}$ ($U \eqbi \hnf{V}$) et par \irule{SubSub}, 
-    $\subimpl{`G}{c' `o \pi_1}{\mysubset{x}{S'}{P'} = \hnf{S}}{\hnf{V}}$.
-    Clairement, $c' `o \pi_1 \eqbi c `o \pi_1$, la propriété est donc
-    bien vérifiée.
     
-    \case{SubProof}\quad
-    On a $U = \mysubset{x}{U'}{P}$.
-    De même on obtient:
+    \case{SubSub}\quad On a $\hnf{T} = \mysubset{x}{T'}{P}$ donc
+    $\hnf{S} = \mysubset{x}{S'}{P'}$ avec $T' \eqbr S'$ et $P \eqbr P'$.
+    Par hypothèse, $\subimpl{`G}{c}{T'}{U}$, donc par induction,
+    $\subimpl{`G}{c'}{S'}{\hnf{V}}$ ($U \eqbr \hnf{V}$) et par
+    \irule{SubSub}, $\subimpl{`G}{c' `o \pi_1}{\mysubset{x}{S'}{P'} =
+      \hnf{S}}{\hnf{V}}$.  Clairement, $c' `o \pi_1 \eqbr c `o \pi_1$,
+    la propriété est donc bien vérifiée.
+    
+    \case{SubProof}\quad On a $U = \mysubset{x}{U'}{P}$.  De même on
+    obtient:
     \begin{prooftree}
-      \UAX{SubProof}
-      {$\subimpl{`G}{c'}{\hnf{S}}{V' \eqbi U'}$}
-      {$\subimplhnf{`G}
-        {\lambda t : \hnf{S}.~\elt{V'}{(\lambda x : V'.P')}{(c'~t)}{?_{P'[c'~t/x]}}}
-        {\hnf{S}}{\hnf{V} = \mysubset{x}{V'}{P'}}$}
-      {}
+      \UAX{SubProof} {$\subimpl{`G}{c'}{\hnf{S}}{V' \eqbr U'}$}
+      {$\subimpl{`G} {\lambda t : \hnf{S}.~\elt{V'}{(\lambda x :
+            V'.P')}{(c'~t)}{?_{P'[c'~t/x]}}} {\hnf{S}}{\hnf{V} =
+          \mysubset{x}{V'}{P'}}$} {}
     \end{prooftree}
 
-    Encore une fois $c \eqbi c'$ est vérifié car $\ex{`G, t :
-      \hnf{S}}{P'[c'~t/x]} \eqbi \ex{`G, x : T}{P[c~t/x]}$.
+    Encore une fois $c \eqbr c'$ est vérifié car $\ex{`G, t :
+      \hnf{S}}{P'[c'~t/x]} \eqbr \ex{`G, x : T}{P[c~t/x]}$.
   \end{induction}
 \end{proof}
 
 \begin{lemma}[Coercion et formes normales de tête]
   \label{substi-coercion-hnf}
   Si $`G \typec c : T \suba U$ alors $`G \typec c' : \hnf{T}~\suba
-  \hnf{U}$ avec $c \eqbi c'$ est dérivable par une
-  dérivation plus petite ou égale.
+  \hnf{U}$ avec $c \eqbr c'$ est dérivable par une dérivation plus
+  petite ou égale.
 \end{lemma}
 
 \begin{proof}
@@ -115,32 +153,29 @@ On conserve les propriétés suivantes sur la coercion:
 
 \begin{lemma}[Coercion de termes convertibles]
   \label{subti-eqb-coercion-eqbe-id}
-  Si $`G \typea T, U : s$ et $T \eqb U$ alors il existe $c$,
-  $`G \typec c : T \suba U$ avec $c \eqbe \lambda x : T.x$.
+  Si $`G \typea T, U : s$ et $T \eqbr U$ alors il existe $c$, $`G \typec
+  c : T \suba U$ avec $c \eqbre []$.
 \end{lemma}
 
 \begin{proof}
   Par induction sur la forme normale de $T$ notée $\nf{T}$.
 
   \begin{itemize}
-  \item $\nf{T} = \Pi y : A.B$ Alors, $\nf{U} = \Pi y : A'.B'$ avec 
-    $A \eqb A'$, $B \eqb B'$. Par induction, $c_1 \eqbe \lambda x : \ip{A'}{`G}.x
-    : A' \sub A$ et $c_2 \eqbe \lambda y : \ip{B'}{`G, x : A'}.y : B
-    \sub B'$. On a donc:
+  \item $\nf{T} = \Pi y : A.B$ Alors, $\nf{U} = \Pi y : A'.B'$ avec $A
+    \eqbr A'$, $B \eqbr B'$. Par induction, $c_1 \eqbre []: A' \sub A$
+    et $c_2 \eqbre [] : B \sub B'$. On a donc:
     \begin{eqnarray*}
-      c & = & \lambda f : \ip{\Pi x : A.B}{`G}.\lambda x :
-      \ip{A'}{`G}. c_2~f~(c_1~x) \\
-      & \eqbe & \lambda f : \ip{\Pi x : A.B}{`G}.\lambda x :
-      \ip{A'}{`G}. f~x \\
-      & \eqbe & \lambda f : \ip{\Pi x : A.B}{`G}. f
+      c & = & \lambda x : \ip{A'}{`G}. c_2[[]~(c_1[x]) \\
+      & \eqbre & \lambda x : \ip{A'}{`G}. []~x \\
+      & \eqbre & []
     \end{eqnarray*}
     De façon équivalente pour $\Sigma, \{|\}$.
     
   \item Si $\nf{T}$ n'a pas pour symbole de tête, $\Pi, \Sigma$ ou
     $\{|\}$, alors il est possible que $U$ est pour symbole de tête un
-    type sous-ensemble auquel cas le mécanisme est similaire. 
-    Dans tout les autres cas, \irule{SubConv} est la seule règle
-    applicable et on a $c = \lambda x : T.x$.
+    type sous-ensemble auquel cas le mécanisme est similaire.  Dans tout
+    les autres cas, \irule{SubConv} est la seule règle applicable et on
+    a $c = \lambda x : T.x$.
   \end{itemize}
   
 \end{proof}
@@ -153,7 +188,7 @@ On conserve les propriétés suivantes sur la coercion:
 \begin{lemma}[Coercion identité]
   Si $`G \typec T : s$ alors il existe $cid_T$,
   $\subimpl{`G}{cid_T}{T}{T}$ et pour tout $t$, $`G \typec t : T$,
-  $cid_T t \eqbi t$.
+  $cid_T t \eqbr t$.
 \end{lemma}
 
 \begin{proof}
@@ -168,20 +203,20 @@ On peut maintenant énoncer le lemme de symmétrie:
 
 \begin{lemma}[Symétrie de la coercion]
   \label{subi-sym}
-  S'il existe $c$ tel que $`G \typec c : A \subi B$
-  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbei
-  \sref{id}~A$ et $c `o c^{-1} \eqbei \sref{id}~B$, où
-  $\sref{id} \coloneqq \lambda X : Set.\lambda x : X. x$.
+  S'il existe $c$ tel que $`G \typec c : A \subi B$ alors $`E!c^{-1}, `G
+  \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbre \sref{id}~A$ et $c
+  `o c^{-1} \eqbre \sref{id}~B$, où $\sref{id} \coloneqq \lambda X :
+  Set.\lambda x : X. x$.
 \end{lemma}
 \begin{proof}
   On sait que le jugement $\subi$ est symmétrique, c'est à dire qu'on a
   l'existence des inverses. On utilise la transitivité pour montrer le
   reste du lemme. Si $\subimpl{`G}{c}{A}{B}$ et
   $\subimpl{`G}{c^{-1}}{B}{A}$ alors il existe $f$ et $f^{-1}$ tel que
-  $\subimpl{`G}{f \eqbi c^{-1} `o c}{A}{A}$ et $\subimpl{`G}{f^{-1}
-    \eqbi c `o c^{-1}}{B}{B}$. Par unicité des coercions, $f \eqbei \lambda
-  x : A.x$ et $f^{-1} \eqbei \lambda x : B.x$. En général $f$ et $f'$
-  sont en forme $\eta$-longue et pas l'identité.
+  $\subimpl{`G}{f \eqbr c^{-1} `o c}{A}{A}$ et $\subimpl{`G}{f^{-1}
+    \eqbr c `o c^{-1}}{B}{B}$. Par unicité des coercions, $f \eqbre
+  \lambda x : A.x$ et $f^{-1} \eqbre \lambda x : B.x$. En général $f$ et
+  $f'$ sont en forme $\eta$-longue et pas l'identité.
 \end{proof}
 
 %%% Local Variables: 

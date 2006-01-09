@@ -47,8 +47,8 @@ un terme $t'$ réecrit bien typé dans l'environnement \CCI{} $\ipG{`G}$.
     \ip{f~u}{`G} 
     & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
     & & \letml~(\Pi x : V.W) = \mualgo(F)~\inml & \\
-    & & \letml~\pi = \sref{coerce}~F~(\Pi x : V.W) & \\
-    & & \letml~c = \sref{coerce}~U~V~\inml & \\
+    & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)} & \\
+    & & \letml~c = \coerce{`G}{U}{V}\inml & \\
     & & (\pi~\ip{f}{`G})~(c~\ip{u}{`G}) & \\
     & \\
     \ip{\Sigma x : T.U}{`G} 
@@ -58,16 +58,15 @@ un terme $t'$ réecrit bien typé dans l'environnement \CCI{} $\ipG{`G}$.
     & = & \letml~t' = \ip{t}{`G}~\inml & \\
     & & \letml~U' = \typeafn{`G}{u}~\inml& \\
     & & \letml~u' = \ip{u}{`G}~\inml & \\
-    & & \letml~c = \sref{coerce}~U'~U[t/x]~\inml & \\
+    & & \letml~c = \coerce{`G}{U'}{U[t/x]}~\inml & \\
     & & (t', c~u') & \\
     & \\
-    \ip{\letml~(x,y) = t~\inml~v}{`G} 
-    & = & \letml~t' = \ip{t}{`G}~\inml & \\
+    \ip{\pi_i~t}{`G} 
+    & = & \letml~t' = \ip{t}{`G}~\inml & i `: \{ 1, 2 \} \\
     & & \letml~T = \typeafn{`G}{t}~\inml & \\
     & & \letml~\Sigma x : V.W = \mualgo(T)~\inml & \\
-    & & \letml~c = \sref{coerce}~T~(\Sigma x : V.W) & \\
-    & & \letml~v' = \ip{v}{`G, x : V, y : W}~\inml & \\
-    & & \letcci~(x, y) = c~t'~\inml~v' & \\
+    & & \letml~c = \coerce{`G}{T}{(\Sigma x : V.W)}~\inml & \\
+    & & \pi_i~c[t'] & \\
     & \\
     \ip{\mysubset{x}{U}{P}}{`G}
     & = & \mysubset{x}{\ip{U}{`G}}{\ip{P}{`G, x : U}}
@@ -118,11 +117,11 @@ Notre opération de mise en forme normale de tête est définie de la façon suivant
 
 On utilise la $\beta$-équivalence de $CCI$ enrichie avec les
 existentielles, on étend donc la relation aux existentielles de la façon
-suivante: $\ex{`G}{P} \eqbi \ex{`G'}{P'} `= `G \eqbi `G' `^ P \eqbi P'$.
+suivante: $\ex{`G}{P} \eqbr \ex{`G'}{P'} `= `G \eqbr `G' `^ P \eqbr P'$.
 
-\subticFig
+\subtiFig
 
-Le système figure \ref{fig:interp-coerce} dérive les termes de
+Le système figure \ref{fig:coerce-impl-rules} dérive les termes de
 coercion. Il a de bonnes propriétés pour la preuve et l'implémentation
 telles que l'unicité et l'élimination de la transitivité que nous
 montrerons plus tard.
@@ -149,7 +148,7 @@ suivant:
 Dans le système algorithmique, on peut très bien dériver
 $\Pi n : \nat. \sref{list}~n \suba \Pi n :
 \mysubset{x}{\nat}{P}.\listml~n$ puisque $\mysubset{x}{\nat}{P} \suba
-\nat$ et $\listml~n \eqbi \listml~n$.
+\nat$ et $\listml~n \eqbr \listml~n$.
 Si l'on réécrit vers \CCI{}, on n'aura plus les même types
 de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
 Ici, une coercion a été insérée dans le second type:
@@ -159,11 +158,11 @@ preuve que l'intuition de la coercion par prédicats est bonne, on peut
 dériver ce jugement:
 
 \begin{prooftree}
-  \AXC{$\nat \eqb \nat$}
+  \AXC{$\nat \eqbr \nat$}
   \UIC{$\subimpl{`G'}{[]}{\nat}{\nat}$}
   \UIC{$\subimpl{`G'}{\pi_1~[]}{\mysubset{x}{\nat}{P}}{\nat}$}
 
-  \AXC{$(\listml~n)[\pi_1~n/n] \eqb \listml~(\pi_1~n)$}
+  \AXC{$(\listml~n)[\pi_1~n/n] \eqbr \listml~(\pi_1~n)$}
   \UIC{$\subimpl{`G, n : \mysubset{x}{\nat}{P}}{[]}
     {(\listml~n)[\pi_1~n/n]}{\listml~(\pi_1~n)}$}
 
@@ -302,7 +301,7 @@ dans le système algorithmique:
   \[\GD \typea t : T "=>"
   \begin{array}{l}  
     `E!`a, \Gr \typec `a : \typeafn{\Gr}{t[u/x]} \suba T[u/x],\\
-    `a \ip{t[u/x]}{\Gr} \eqbi \ip{t}{\GD}\cux
+    `a \ip{t[u/x]}{\Gr} \eqbr \ip{t}{\GD}\cux
   \end{array}\]
   et
   \[\left.\begin{array}{l}
@@ -320,7 +319,7 @@ dans le système algorithmique:
   
   On peut remarquer que si $T$ est une sorte $s$ alors
   $\typeafn{\Gr}{t[u/x]} = s$ et $`a$ est l'identité. On en déduit que
-  \[\ip{t[u/x]}{\Gr}\cux \eqbi \ip{t}\GD\cux\] On utilisera ce fait à
+  \[\ip{t[u/x]}{\Gr}\cux \eqbr \ip{t}\GD\cux\] On utilisera ce fait à
   plusieurs reprises.
 
   On omet les environement passés à $\sref{coerce}$ s'ils sont évidents.
@@ -343,7 +342,7 @@ dans le système algorithmique:
     \item Si $x "/=" y$ alors $T' = (`G, `D[u/x])(y) = T[u/x]$. Il
       existe une unique coercion $`a : T[u/x] \suba T[u/x]$, l'identité.   
       Par définition de l'interprétation, on doit montrer
-      $`a~y \eqbi y$, trivial.
+      $`a~y \eqbr y$, trivial.
 
     \item Sinon, $t[u/x] = u$ et donc $T' = U$. 
       On a $T = V$, $x `; V$ par hypothèse.
@@ -371,10 +370,10 @@ dans le système algorithmique:
     Par induction:
     \[\Gr \typea f[u/x] : F' `^
     `E `a_f : F' \suba F[u/x],
-    `a_f~\ip{f[u/x]}{\Gr} \eqbi \ip{f}{\GD}\cux\]
+    `a_f~\ip{f[u/x]}{\Gr} \eqbr \ip{f}{\GD}\cux\]
     \[\Gr \typea e[u/x] : E' `^
     `E `a_e : E' \suba E[u/x],
-    `a_e~\ip{e[u/x]}{\Gr} \eqbi \ip{e}{\GD}\cux\]
+    `a_e~\ip{e[u/x]}{\Gr} \eqbr \ip{e}{\GD}\cux\]
     
     \def\afe{`a}    
     Par définition de la substitution et de l'interprétation, 
@@ -489,7 +488,7 @@ dans le système algorithmique:
     \def\lift{\sref{lift}}
     \def\appopt{\sref{app\_opt}}
     \case{SubConv}
-    Alors $T \eqbi T'$ donc $d = \None$. Comme $T[u/x] \eqbi T'[u/x]$, 
+    Alors $T \eqbr T'$ donc $d = \None$. Comme $T[u/x] \eqbr T'[u/x]$, 
     $d\cux = d = \None = \coerce~(T[u/x])~(T'[u/x])$.
     
     \case{SubHnf}
@@ -499,7 +498,7 @@ dans le système algorithmique:
     \begin{itemize}
     \item Si $(\hnf{T})[u/x] =
       \hnf{T[u/x]}$ alors on a la même dérivation que $d$. On vérifie
-      juste $u \eqbi u$ à la place de $x \eqbi x$ aux axiomes, donc $d\cux
+      juste $u \eqbr u$ à la place de $x \eqbr x$ aux axiomes, donc $d\cux
       = d$.
     \item Sinon,
       c'est que $\hnf{T} = x$, $\hnf{T[u/x]} = \hnf{u}$ et $(\hnf{T})[u/x]
@@ -655,7 +654,7 @@ On peut maintenant montrer notre théorème de correction.
     $\iG{} \typec \ip{f~u}{\iG} : \ip{W}{\iG, x :
       \ip{V}{\iG}}[c~u/x]$.
     Par substitutivité de l'interprétation, on a
-    $\ip{W}{\iG, x : \ip{V}{\iG}}[c~u/x] \eqbi
+    $\ip{W}{\iG, x : \ip{V}{\iG}}[c~u/x] \eqbr
     \ip{W[u/x]}{\iG}$ puisque les coercions de sorte à sorte ne peuvent
     être que l'identité. On peut donc déduire:
     $\iG{} \typec \ip{f~u}{\iG} : \ip{W[u/x]}{\iG}$ par \irule{Conv}.

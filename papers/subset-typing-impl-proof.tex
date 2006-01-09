@@ -39,7 +39,7 @@ suivant:
 Dans le système algorithmique, on peut très bien dériver
 $\Pi n : \nat. \sref{list}~n \suba \Pi n :
 \mysubset{x}{\nat}{P}.\listml~n$ puisque $\mysubset{x}{\nat}{P} \suba
-\nat$ et $\listml~n \eqbi \listml~n$.
+\nat$ et $\listml~n \eqbr \listml~n$.
 Si l'on réécrit vers \CCI{}, on n'aura plus les même types
 de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
 Ici, une coercion a été insérée dans le second type:
@@ -49,10 +49,10 @@ preuve que l'intuition de la coercion par prédicats est bonne, on peut
 dériver ce jugement:
 
 \begin{prooftree}
-  \AXC{$\nat \eqbi \nat$}
+  \AXC{$\nat \eqbr \nat$}
   \UIC{$`G' \typec \lambda x.x : \nat \subi \nat$}
   \UIC{$`G' \typec (\lambda x.x) `o \pi_1 : \mysubset{x}{\nat}{P} \subi \nat$}
-  \AXC{$(\listml~n)[\pi_1~n/n] \eqbi \listml~(\pi_1~n)$}
+  \AXC{$(\listml~n)[\pi_1~n/n] \eqbr \listml~(\pi_1~n)$}
   \UIC{$`G, n : \mysubset{x}{\nat}{P} \typec (\lambda x.x) :
     (\listml~n)[\pi_1~n/n] \subi \listml~(\pi_1~n)$}
   \BIC{$`G' \typec \lambda f.\lambda x.(\lambda x.x)~(f~(\pi_1~x)) : 
@@ -79,8 +79,8 @@ On conserve les propriétés suivantes sur la coercion:
 \begin{lemma}[Symétrie de la coercion]
   \label{subi-sym}
   S'il existe $c$ tel que $`G \typec c : A \subi B$
-  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbi
-  \sref{id}~A$ et $c `o c^{-1} \eqbi \sref{id}~B$, où
+  alors $`E!c^{-1}, `G \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbr
+  \sref{id}~A$ et $c `o c^{-1} \eqbr \sref{id}~B$, où
   $\sref{id} \coloneqq \lambda X : Set.\lambda x : X. x$.
 \end{lemma}
 \begin{proof}
@@ -98,8 +98,8 @@ On conserve les propriétés suivantes sur la coercion:
     $\lambda f : \Pi x : U.W. \lambda x : T. c_2^{-1}~(f~(c_1^{-1}~x))$
     de type $\Pi x : U.W \subi \Pi x : T.V$ car:
     $f~(c_1^{-1}~x) : W[c_1^{-1}~x/x]$ donc $c_2^{-1}~(f~(c_1^{-1}~x)) : 
-    V[c_1~(c_1^{-1}~x)/x]$. Or $c_1 `o c^{-1}_1 \eqbi \sref{id}~T$, donc
-    $V[c_1~(c_1^{-1}~x)/x] \eqbi V$.
+    V[c_1~(c_1^{-1}~x)/x]$. Or $c_1 `o c^{-1}_1 \eqbr \sref{id}~T$, donc
+    $V[c_1~(c_1^{-1}~x)/x] \eqbr V$.
 
     On va maintenant montrer les identités (avec des termes à la Curry):
 
@@ -108,10 +108,10 @@ On conserve les propriétés suivantes sur la coercion:
         (\lambda f.c_2^{-1} `o f `o c_1^{-1})}
       
       \step{Définition de la composition}
-      {\eqbi}{\lambda f.c `o c^{-1}}
+      {\eqbr}{\lambda f.c `o c^{-1}}
       
       \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
+      {\eqbr}{\sref{id}~T}
     \end{array}$
 
 
@@ -134,10 +134,10 @@ On conserve les propriétés suivantes sur la coercion:
           U.P)}{(c^{-1}~t)}{?_{P[c^{-1}~t/x]}}}
       
       \step{Définition de $\pi_1$}
-      {\eqbi}{c `o c^{-1}}
+      {\eqbr}{c `o c^{-1}}
       
       \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
+      {\eqbr}{\sref{id}~T}
     \end{array}$
 
     De même:
@@ -148,16 +148,16 @@ On conserve les propriétés suivantes sur la coercion:
         `o c `o \pi_1}
       
       \step{Définition de la composition}
-      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
+      {\eqbr}{\lambda t : \mysubset{x}{U}{P}.
         \elt{U}{(\lambda x : U.P)}
         {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
     
     \step{Hypothèse d'induction}
-    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
+    {\eqbr}{{\lambda t : \mysubset{x}{U}{P}.
         \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
 
     \step{Indifférence aux preuves!}
-    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
+    {\eqbr}{\sref{id}_{\mysubset{x}{U}{P}}}
 
     \end{array}$
 
@@ -174,14 +174,14 @@ On conserve les propriétés suivantes sur la coercion:
         \elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}})}
       
       \step{Définition de la composition}
-      {\eqbi}{c^{-1} `o (\lambda t : T.
+      {\eqbr}{c^{-1} `o (\lambda t : T.
         \pi_1~(\elt{U}{(\lambda x : U.P)}{(c~t)}{?_{P[c~t/x]}}))}
         
       \step{Définition de $\pi_1$}
-      {\eqbi}{c^{-1} `o (\lambda t : T. c~t)}
+      {\eqbr}{c^{-1} `o (\lambda t : T. c~t)}
       
       \step{Hypothèse d'induction}
-      {\eqbi}{\sref{id}~T}
+      {\eqbr}{\sref{id}~T}
     \end{array}
     \vspace{0.2em}
     $
@@ -195,16 +195,16 @@ On conserve les propriétés suivantes sur la coercion:
         `o c `o \pi_1}
       
       \step{Définition de la composition}
-      {\eqbi}{\lambda t : \mysubset{x}{U}{P}.
+      {\eqbr}{\lambda t : \mysubset{x}{U}{P}.
         \elt{U}{(\lambda x : U.P)}
         {(c^{-1}~(c~(\pi_1~t)))}{?_{P[c^{-1}~(c~(\pi_1~t))/x]}}}
     
     \step{Hypothèse d'induction}
-    {\eqbi}{{\lambda t : \mysubset{x}{U}{P}.
+    {\eqbr}{{\lambda t : \mysubset{x}{U}{P}.
         \elt{U}{(\lambda x : U.P)}{(\pi_1~t)}{?_{P[\pi_1~t/x]}}}}
 
     \step{Indifférence aux preuves!}
-    {\eqbi}{\sref{id}_{\mysubset{x}{U}{P}}}
+    {\eqbr}{\sref{id}_{\mysubset{x}{U}{P}}}
 
     \end{array}$
     
@@ -278,7 +278,7 @@ On l'énonce de la façon suivante:
 \begin{array}{l}
   `E~T', \Gr \typea t[u/x] : T' `^ \\
   `E~`a : T' \suba T[u/x],\\
-  `a \ip{t[u/x]}{\Gr} \eqbi \ip{t}{\GD}\cux
+  `a \ip{t[u/x]}{\Gr} \eqbr \ip{t}{\GD}\cux
 \end{array}
 \]
 \end{lemma}
@@ -304,7 +304,7 @@ On l'énonce de la façon suivante:
     \item Si $x "/=" y$ alors $T' = (`G, `D[u/x])(y) = T[u/x]$. Il
       existe une unique coercion $`a : T[u/x] \suba T[u/x]$, l'identité.   
       Par définition de l'interprétation, on doit montrer
-      $`a~y \eqbi y$, trivial.
+      $`a~y \eqbr y$, trivial.
 
     \item Sinon, $t[u/x] = u$ et donc $T' = U$. 
       On a $T = V$, $x `; V$ par hypothèse.
@@ -333,10 +333,10 @@ On l'énonce de la façon suivante:
     Par induction:
     \[\Gr \typea f[u/x] : F' `^
     `E `a_f : F' \suba F[u/x],
-    `a_f~\ip{f[u/x]}{\Gr} \eqbi \ip{f}{\GD}\cux\]
+    `a_f~\ip{f[u/x]}{\Gr} \eqbr \ip{f}{\GD}\cux\]
     \[\Gr \typea e[u/x] : E' `^
     `E `a_e, E' \suba E[u/x],
-    `a_e~\ip{e[u/x]}{\Gr} \eqbi \ip{e}{\GD}\cux\]
+    `a_e~\ip{e[u/x]}{\Gr} \eqbr \ip{e}{\GD}\cux\]
     
     \def\afe{`a}    
     Par définition de la substitution et de l'interprétation, 
@@ -578,7 +578,7 @@ On peut maintenant montrer notre théorème de correction.
     $\iG{} \typec \ip{f~u}{\iG} : \ip{W}{\iG, x :
       \ip{V}{\iG}}[c~u/x]$.
     Par substitutivité de l'interprétation, on a
-    $\ip{W}{\iG, x : \ip{V}{\iG}}[c~u/x] \eqbi
+    $\ip{W}{\iG, x : \ip{V}{\iG}}[c~u/x] \eqbr
     \ip{W[u/x]}{\iG}$ puisque les coercions de sorte à sorte ne peuvent
     être que l'identité. On peut donc déduire:
     $\iG{} \typec \ip{f~u}{\iG} : \ip{W[u/x]}{\iG}$ par \irule{Conv}.
