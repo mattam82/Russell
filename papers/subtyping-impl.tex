@@ -42,7 +42,7 @@
 \UAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}$}
 {$\subimpl{#1}{c[\pi_1~[]]}{\mysubset{x}{U}{P}}{T}$}
-{$\hnf{T} "/=" \{|\}$}
+{$T = \hnf{T} `^ \hnf{T} "/=" \{|\}$}
 }
 
 \newcommand{\SubSubIs}[1][\Gamma]{%
@@ -59,7 +59,7 @@
   {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
     {\ex{\ipG{#1}}{\ip{P}{#1}[c/x]}}}
   {T}{\mysubset{x}{U}{P}}$}
-{}
+{$T = \hnf{T}$}
 }
 
 \def\subtiFig{

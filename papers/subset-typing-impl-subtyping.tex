@@ -1,4 +1,36 @@
 
+\begin{lemma}[Unicité de la coercion]
+  \label{coercion-unicity}
+  Si $`G \typea T, U : s$ alors si $\subimpl{`G}{c}{T}{U}$ et
+  $\subimpl{`G}{c'}{T}{U}$ alors $c = c'$.
+\end{lemma}
+
+\begin{proof}
+  Par induction lexicographique sur la paire de dérivations de $c$ et $c'$.
+  Seule la régle \irule{SubHnf} peut s'appliquer n'importe quand. 
+  Supposons que la dérivation de $c$ se termine par une application de \irule{SubHnf}.
+  Quelque soit la dernière règle appliquée dans la dérivation de $c'$,
+  on a $T = \hnf{T}$ et $U = \hnf{U}$. Par induction on a donc $c = c'$.
+\end{proof}
+
+On peut donc raisonner comme ceci: si l'on parvient à construire une
+dérivation de $\subimpl{`G}{c}{T}{U}$ alors c'est l'unique dérivation
+existante.
+
+\begin{lemma}[Interprétation et conversion]
+  Si $`G \typec T, T' : s$, $T "->"_{\beta\rho} T'$ alors $\ip{T}{`G} \eqbr
+  \ip{T'}{`G}$.
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la structure de $T$.
+  
+  Si $T = (\lambda x : X.v)~e$, alors $T' = v[x/e]$. 
+  $\ip{T}{`G} = (\lambda x : \ip{X}{`G}.\ip{v}{`G, x : X})~(c~\ip{e}{`G})$ 
+  $\ip{T'}{`G} = \ip{v[x/e]}{`G}$.
+\end{proof}
+
+
 \begin{lemma}[Coercion et conversion dans le contexte]
   \label{coercion-conversion-ctx-impl}
   Si $\timpl{`G}{V, V'}{s}$, $V \eqbr V'$ alors:
@@ -32,31 +64,10 @@
   On peut montrer que dans le système algorithmique, si $`G, x : V, `D
   \typea t : T$ alors $`G, x : V', `D \typea t : T'$ et $T \eqbr T$, 
   on en déduit que les appels à $\typeafn{`r}$ ou $\typeafn{`r'}$
-  donnent des types $\beta\rho$-équivalents.
+  donnent des types $\beta\rho$-équivalents. 
   On peut aussi utiliser le contexte lors des appels à \sref{coerce} et
   cette fois on applique l'hypothèse d'induction pour la coercion.
 \end{proof}
-
-\begin{lemma}[Unicité de la coercion]
-  \label{coercion-unicity}
-  Si $`G \typea T, U : s$ alors si $\subimpl{`G}{c}{T}{U}$ et
-  $\subimpl{`G}{c'}{T}{U}$ alors $c = c'$.
-\end{lemma}
-
-\begin{proof}
-  Par simple inspection du système on peut voir qu'une seule règle peut
-  s'appliquer pour toute paire $T, U$ de types donnée. 
-  Seules les régles
-  \irule{SubConv} et \irule{SubHnf} pourraient s'appliquer en même temps
-  si $T = \hnf{T}$ et $U = \hnf{U}$. On a alors $c = []$
-  mais alors le jugement en prémisse de \irule{SubHnf} serait égal à
-  $c$, et comme la coercion en prémisse est la même qu'en conclusion on
-  en déduit que $c = c'$.
-\end{proof}
-
-On peut donc raisonner comme ceci: si l'on parvient à construire une
-dérivation de $\subimpl{`G}{c}{T}{U}$ alors c'est l'unique dérivation
-existante.
 
 \begin{lemma}[Coercion et conversion]
   \label{coercion-conversion-impl}
@@ -82,29 +93,25 @@ existante.
     
     \case{SubConv}\quad On a $S \eqbr T$, $T \eqbr U$ et $U \eqbr V$
     donc $S \eqbr V$ par transitivité de la $\beta$-équivalence. On a
-    donc $c' = \lambda x : S.x \eqbr \lambda x : T.x$ dérivable par une
-    application optionnelle de \irule{SubHnf} puis \irule{SubConv}.
+    donc $c' = c$ dérivable par une application de \irule{SubHnf} puis \irule{SubConv}.
     C'est la seule règle applicable pour dériver le jugement $S \sub V$,
     sinon on aurait des symboles de tête différents pour deux termes
-    $\beta$-équivalents.
+    $\beta\rho$-équivalents.
     
     \case{SubProd}\quad Soit $T = \Pi x : A.B$ et $U = \Pi x : C.D$.  On
-    a $\subimpl{`G}{c_1}{A}{C}$ et $\subimpl{`G, x :
-      C}{c_2}{B[c_1~x/x]}{D}$ Or si $S \eqbr \Pi x : A.B$ et $\Pi x :
+    a $\subimpl{`G}{c_1}{C}{A}$ et $\subimpl{`G, x :
+      C}{c_2}{B}{D}$ Or si $S \eqbr \Pi x : A.B$ et $\Pi x :
     C.D \eqbr V$ alors $\hnf{S} = \Pi x : A'.B'$ avec $A \eqbr A'$ et $B
     \eqbr B'$ et $\hnf{V} = \Pi x : C'.D'$ avec $C \eqbr C'$ et $D \eqbr
     D'$.
     
-    Par induction on a $`G \typec c_1' : C' \sub A'$ avec $c_1' \eqbr
-    c_1$. Par hypothèse on a $`G, x : C \typec c_2 : B[c_1~x/x] \sub D$.
-    Par induction: $`G, x : C \typec c_2' : B'[c_1'~x/x] \sub D'$ avec
-    $c_2' \eqbr c_2$ car $B[c_1~x/x] \eqbr B'[c_1~x/x]$.  On peut donc
-    déduire $`G, x : C' \typec c_2' : B'[c_1'~x/x] \sub D'$ par le lemme
-    \ref{coercion-conversion-ctx-impl}.  On déduit par \irule{SubProd}
-    que $c' : \hnf{S} \sub \hnf{V}$ est dérivable. On a bien $c \eqbr
-    c'$ car $c_1' \eqbr c_1$ et $c_2' \eqbr c_2$, donc $\lambda
-    f.\lambda x.c_2~(f~(c_1~x)) \eqbr \lambda f.\lambda
-    x.c_2'~(f~(c_1'~x))$.
+    Par induction on a $\subimpl{`G}{c_1'}{C'}{A'}$ avec $c_1' \eqbr
+    c_1$ et $\subimpl{`G, x : C}{c_2}{B'}{D'}$. On peut donc
+    déduire $\subimpl{`G, x : C'}{c_2'}{B'}{D'}$ avec $c_2 \eqbr c_2'$ par le lemme
+    \ref{coercion-conversion-ctx-impl}.  
+    On déduit par \irule{SubProd} que $\subimpl{`G}{c'}{\hnf{S}}{\hnf{V}}$ est
+    dérivable. On a bien $c \eqbr c'$ car $\ip{C}{`G} \eqbr \ip{C'}{`G}$, donc 
+    $\lambda x : \ip{C}{`G}.c_2~(f~(c_1~x)) \eqbr \lambda x : \ip{C'}{`G}.c_2'~(f~(c_1'~x))$.
 
     \case{SubSigma}\quad De même par \irule{SubSigma}:
     
