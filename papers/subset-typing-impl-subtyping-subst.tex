@@ -7,7 +7,7 @@
 \begin{lemma}[Coercion de sortes]
   \label{subti-coercion-sorts}
   Si $`G \typec e : s \subi T$ ou $`G \typec e : T \subi s$ alors $T
-  \eqbr s$ et $e = []$.
+  \eqbr s$ et $e = \ctxdot$.
 \end{lemma}
 \begin{proof}  
   Clairement on ne peut dériver $s \suba T$ que par \irule{SubConv}
@@ -115,13 +115,13 @@
     Dans le cas ou l'on applique directement \irule{SubConv} cela
     implique que $\hnf{T} = x = \hnf{T'}$ donc par reflexivité de la
     coercion \ref{subti-reflexive}, $\subimpl{\Gr}{c'}{u}{u}$ est dérivable et $c' \eqbre
-    [] \eqbre []\ipux$.
+    \ctxdot \eqbre \ctxdot\ipux$.
       
     \case{SubConv}
-    On a $T \eqbr T'$, donc $c \eqbre []$. D'autre part, $T[u/x] \eqbr T'[u/x]$ par substitutivité de
+    On a $T \eqbr T'$, donc $c \eqbre \ctxdot$. D'autre part, $T[u/x] \eqbr T'[u/x]$ par substitutivité de
     la $\beta\rho$-équivalence. Par le lemme \ref{subti-eqb-coercion-eqbe-id}, on
     sait qu'il existe une coercion $c'$ telle que le jugement $\Gr
-    \typec c' : T[u/x] \sub T'[u/x]$ est dérivable et $c' \eqbre []$.
+    \typec c' : T[u/x] \sub T'[u/x]$ est dérivable et $c' \eqbre \ctxdot$.
     On a bien $c' \eqbre c\ipux$.
     
     \case{SubProd}
@@ -130,7 +130,7 @@
       \AXC{$\subimpl{\GD}{c_1}{A'}{A}$}
       \AXC{$\subimpl{\GD, y : A'}{c_2}{B}{B'}$}
       \BIC{$\subimpl{\GD}
-        {\lambda x : \ip{A'}{\GD}.~c_2[[]~c_1[x]]}
+        {\lambda x : \ip{A'}{\GD}.~c_2[\ctxdot~c_1[x]]}
         {\Pi y : A.B}{\Pi y : A'.B'}$}
     \end{prooftree}
     
@@ -142,7 +142,7 @@
         {\Pi y : A[u/x].B[u/x]}{\Pi y : A'[u/x].B'[u/x]}$}
     \end{prooftree}
     
-    où \[c' = \lambda x : \ip{A'[u/x]}{\Gr}.~c_2'[[]~c_1'[x] `^ c_1'
+    où \[c' = \lambda x : \ip{A'[u/x]}{\Gr}.~c_2'[\ctxdot~c_1'[x] `^ c_1'
     \eqbre c_1\ipux `^ c_2' \eqbre c_2\ipux\]
     Par induction, $\ip{A'[u/x]}{\Gr} \eqbre \ip{A'}{\GD}\ipux$,
     on a donc bien $c' \eqbre c\ipux$.
@@ -323,7 +323,7 @@ coercion de contexte explicite et vice-versa.
   \end{itemize}
 \end{definition}
 
-\begin{lemma}[Stabilité par affaiblissement]
+\begin{lemma}[Stabilité par affaiblissement des coercions]
   \label{narrowing-i-coercion}
   Si $`r : `D \sub `G$, $`G \typec c : T \subi T'$ et $\ip{T'}{`D} \eqbre
   \ip{T'}{`G}[`r]$, alors $`D \typec c' : T \sub T'$ et $c' \eqbre c[`r]$.
@@ -339,8 +339,8 @@ coercion de contexte explicite et vice-versa.
     On peut donc dériver $`D \typec c[`r] : T \sub T'$ par \irule{SubHnf}.
 
     \case{SubConv}
-    On a $T \eqbre T'$ et $c = []$. 
-    On peut donc dériver $\subimpl{`D}{c' = []}{T}{T'}$,
+    On a $T \eqbre T'$ et $c = \ctxdot$. 
+    On peut donc dériver $\subimpl{`D}{c' = \ctxdot}{T}{T'}$,
     on a bien $c' = c[`r]$.
 
     \case{SubProd}
@@ -349,31 +349,31 @@ coercion de contexte explicite et vice-versa.
       \BAX{}
       {$\subimpl{`G}{c_1}{C}{A}$}
       {$\subimpl{`G, x : C}{c_2}{B}{D}$}
-      {$\subimpl{`G}{\lambda x : \ip{C}{`G}.~c_2[[]~c_1[x]]}
+      {$\subimpl{`G}{\lambda x : \ip{C}{`G}.~c_2[\ctxdot~c_1[x]]}
         {\Pi x : A.B}{\Pi x : C.D}$}
       {}
     \end{prooftree}
 
     Par induction on a $\subimpl{`D}{c_1[`r]}{C}{A}$. On peut définir
-    la coercion $`s = `r, [] : `D, x : C \sub `G, x : C$ et obtenir par
+    la coercion $`s = `r, \ctxdot : `D, x : C \sub `G, x : C$ et obtenir par
     induction: $\subimpl{`D, x : C}{c_2'}{B}{D}$ avec $c_2' \eqbre c_2[`s]$.
     
     On peut alors appliquer \irule{SubProd} pour obtenir:
     \[\subimpl{`D}
-    {c' = \lambda x : \ip{C}{`D}.~c_2[`s][[]~c_1[`r][x]]}{\Pi x : A.B}{\Pi x : C.D}\]
+    {c' = \lambda x : \ip{C}{`D}.~c_2[`s][\ctxdot~c_1[`r][x]]}{\Pi x : A.B}{\Pi x : C.D}\]
     
     On a:
     \[\begin{array}{ll}
-      \firsteq{(\lambda x : \ip{C}{`G}.~c_2[[]~c_1[x]])[`r]}
+      \firsteq{(\lambda x : \ip{C}{`G}.~c_2[\ctxdot~c_1[x]])[`r]}
 
         \step{Définition de la substitution}
-        {=}{\lambda x : \ip{C}{`G}[`r].(c_2[`r])[[]~(c_1[`r])[x]]}
+        {=}{\lambda x : \ip{C}{`G}[`r].(c_2[`r])[\ctxdot~(c_1[`r])[x]]}
 
         \step{Application de l'hypothèse de récurrence}
-        {\eqbre}{\lambda x : \ip{C}{`D}.(c_2[`r])[[]~(c_1[`r])[x]]}
+        {\eqbre}{\lambda x : \ip{C}{`D}.(c_2[`r])[\ctxdot~(c_1[`r])[x]]}
         
         \step{Coercion identité dans $`s$}
-        {=}{\lambda x : \ip{C}{`D}.(c_2[`s])[[]~(c_1[`r])[x]]}
+        {=}{\lambda x : \ip{C}{`D}.(c_2[`s])[\ctxdot~(c_1[`r])[x]]}
       \end{array}
       \]
       
@@ -382,30 +382,30 @@ coercion de contexte explicite et vice-versa.
       \BAX{}
       {$\subimpl{`G}{c_1}{A}{C}$}
       {$\subimpl{`G, x : A}{c_2}{B}{D}$}
-      {$\subimpl{`G}{t}{(c_1[\pi_1~[]], c_2~[\pi_2~[]])}
+      {$\subimpl{`G}{t}{(c_1[\pi_1~\ctxdot], c_2~[\pi_2~\ctxdot])}
         {\Sigma x : A.B}{\Sigma x : C.D}$}
       {}
     \end{prooftree}
     Par induction on a {$\subimpl{`D}{c_1[`r]}{A}{C}$}. On peut définir
-    la coercion $`s = `r, [] : `D, x : A \sub `G, x : A$ et obtenir par
+    la coercion $`s = `r, \ctxdot : `D, x : A \sub `G, x : A$ et obtenir par
     induction:
     $\subimpl{`D, x : A}{c_2[`s]}{B}{D}$
     
     On peut alors appliquer \irule{SubSigma} pour obtenir:
     \[\subimpl{`G}
-    {c' = ((c_1[`r])[\pi_1~[]], (c_2[`s])[\pi_2~[]])}
+    {c' = ((c_1[`r])[\pi_1~\ctxdot], (c_2[`s])[\pi_2~\ctxdot])}
     {\Sigma x : A.B}{\Sigma x : C.D}\]
     
     On a:
     \[\begin{array}{ll}
       \firsteq{
-        ((c_1[\pi_1~[]], c_2[\pi_2~[]]))[`r]}
+        ((c_1[\pi_1~\ctxdot], c_2[\pi_2~\ctxdot]))[`r]}
       
         \step{Définition de la substitution}
-        {=}{((c_1[`r])[\pi_1~[]], (c_2[`r])[\pi_2~[]])}
+        {=}{((c_1[`r])[\pi_1~\ctxdot], (c_2[`r])[\pi_2~\ctxdot])}
 
         \step{Coercion identité dans $`s$}
-        {=}{((c_1[`r])[\pi_1~[]], (c_2[`s])[\pi_2~[]])}
+        {=}{((c_1[`r])[\pi_1~\ctxdot], (c_2[`s])[\pi_2~\ctxdot])}
       \end{array} 
       \]
       
@@ -417,7 +417,7 @@ coercion de contexte explicite et vice-versa.
        {c = \elt{\ip{U}{`G}}
          {\ip{(\lambda x : U.P)}{`G}}
          {d}
-         {\tex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}}}
+         {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}}}
        {T}{\mysubset{x}{U}{P}}$}
      {}
    \end{prooftree}
@@ -426,7 +426,7 @@ coercion de contexte explicite et vice-versa.
    \[\subimpl{`D}{c' = \elt{\ip{U}{`D}}
      {\ip{(\lambda x : U.P)}{`D}}
      {d[`r]}
-     {\tex{\ipG{`D}}{\ip{P}{`D, x : U}[d[`r]/x]}}}
+     {\ex{\ipG{`D}}{\ip{P}{`D, x : U}[d[`r]/x]}}}
    {T}{\mysubset{x}{U}{P}}\]
    
    On a bien $c[`r] \eqbr c'$, car:
@@ -528,7 +528,7 @@ coercion de contexte explicite et vice-versa.
     Par symmétrie et transitivité de la coercion, on en déduit qu'il
     existe $c_f$, $\subimpl{`D}{c_f}{\Pi y : A'.B'}{\Pi y : A.B}$.
     La coercion $c_f$ est nécessairement de la forme:
-    $\lambda y : \ip{A}{`D}.c_2[[]~c_1[y]]$ où 
+    $\lambda y : \ip{A}{`D}.c_2[\ctxdot~c_1[y]]$ où 
     $\subimpl{`D}{c_1}{A}{A'}$ et $\subimpl{`D, x : A}{c_2}{B'}{B}$.
 
     Par le lemme \ref{subti-coercion-subst} on a
@@ -570,7 +570,7 @@ coercion de contexte explicite et vice-versa.
       {=}{c_2[c_e[`r]~[(`a_e[\ip{e}{`D}])]/x]~[
         ((\pi_{F'}[\ip{f}{`D}])~[c_1[c_e[`r][`a_e[\ip{e}{`D}]]]])]}
 
-      \step{Définition de $c_f$ ($= \lambda x.c_2[[]~c_1[x]]$)}
+      \step{Définition de $c_f$ ($= \lambda x.c_2[\ctxdot~c_1[x]]$)}
       {=}{c_f[(\pi_{F'}[\ip{f}{`D}])~[c_e[`r]~[`a_e[\ip{e}{`D}]]]]}
       
       \step{Commutation du diagramme 1}

@@ -1,8 +1,9 @@
 \begin{lemma}[Transitivité de la coercion]
   \label{subi-trans}
-  S'il existe $c_1, c_2$ tels que $`G \typec c_1 : S \sub T$ et $`G
-  \typec c_2 : T \sub U$
-  alors $`E!c, `G \typec c : S \sub U$ et $c \eqbr c_2 `o c_1$.
+  S'il existe $c_1, c_2$ tels que $`G \typec c_1 : S \sub T$ et $`D
+  \typec c_2 : T \sub U$ avec $`r : `D \sub `G$ et $\ip{T}{`G}[`r] \eqbr
+  \ip{T}{`D}$,
+  alors $`E!c, `D \typec c : S \sub U$ et $c \eqbr c_2 `o c_1[`r]$.
 \end{lemma}
 \begin{proof}
   Par induction lexicographique sur la paire de dérivations de $c_1$ et $c_2$.
@@ -14,8 +15,8 @@
 
     \begin{prooftree}
       \AXC{$S \eqbr T$}
-      \UIC{$\subimpl{`G}{c_1 = []}{S}{T}$}
-      \AXC{$\subimpl{`G}{c_2}{T}{U}$}
+      \UIC{$\subimpl{`G}{c_1 = \ctxdot}{S}{T}$}
+      \AXC{$\subimpl{`D}{c_2}{T}{U}$}
       \noLine\BIC{}
     \end{prooftree}
     
@@ -29,26 +30,27 @@
 
     \begin{itemize}
       \case{SubConv} Alors on a $U = \hnf{U} "/=" \Pi, \Sigma, \{|\}$.
-      La coercion composée est alors $[] `o []$. C'est bien la coercion
-      dérivée pour le jugement $\subimpl{`G}{[]}{S}{U}$ par \irule{SubConv}.
+      La coercion composée est alors $\ctxdot `o \ctxdot$. C'est bien la coercion
+      dérivée pour le jugement $\subimpl{`D}{\ctxdot}{S}{U}$ par \irule{SubConv}.
       
-      \case{SubHnf} On a alors $\subimpl{`G}{c_2}{\hnf{T}}{\hnf{U}}$.
+      \case{SubHnf} On a alors $\subimpl{`D}{c_2}{\hnf{T}}{\hnf{U}}$.
       Comme $T = \hnf{T}$, on peut appliquer l'hypothèse d'induction pour
-      obtenir une coercion $c$ telle que $\subimpl{`G}{c}{S}{\hnf{U}}$ et
-      $c \eqbr c_2 `o c_1$.
+      obtenir une coercion $c$ telle que $\subimpl{`D}{c}{S}{\hnf{U}}$ et
+      $c \eqbr c_2 `o c_1[`r]$.
       Une application de \irule{SubHnf} suffit pour obtenir une
-      dérivation de $\subimpl{`G}{c}{S}{U}$ avec $c \eqbr c_2 `o c_1$.
+      dérivation de $\subimpl{`D}{c}{S}{U}$ avec $c \eqbr c_2 `o c_1[`r]$.
       
       \case{SubProof} Ici on a:
       \begin{prooftree}
-        \AXC{$\subimpl{`G}{d}{T}{U'}$}
-        \UIC{$\subimpl{`G}{c_2 = {\elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P}{`G}}{d}
-              {\ex{\ipG{`G}}{\ip{P}{`G}[d/x]}}}}{T}{U = \mysubset{x}{U'}{P}}$}
+        \AXC{$\subimpl{`D}{d}{T}{U'}$}
+        \UIC{$\subimpl{`D}{c_2 = {\elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P}{`D}}{d}
+              {\ex{\ipG{`G}}{\ip{P}{`D}[d/x]}}}}{T}{U = \mysubset{x}{U'}{P}}$}
       \end{prooftree}
 
-      Par induction, il existe une coercion $d' \eqbr d `o c_1 = d$ telle que
-      $\subimpl{d'}{S}{U'}$. On applique \irule{SubProof} pour obtenir
-      la coercion $c$ de $S$ à $U$. Clairement $c \eqbr c_2 `o c_1 = c_2$.
+      Par induction, il existe une coercion $d' \eqbr d `o c_1[`r] = d$ telle que
+      $\subimpl{`D}{d'}{S}{U'}$. On applique \irule{SubProof} pour obtenir
+      la coercion $c$ de $S$ à $U$. Clairement $c \eqbr c_2 `o c_1[`r] =
+      c_2 `o [] = c_2$.
       
     \end{itemize}
     
@@ -60,42 +62,43 @@
 
     \begin{itemize}
       \case{SubConv} Alors on a $S = \hnf{S} "/=" \Pi, \Sigma, \{|\}$.
-      La coercion composée est alors $[] `o []$. C'est bien la coercion
-      dérivée pour le jugement $\subimpl{`G}{[]}{S}{U}$ par \irule{SubConv}.
+      La coercion composée est alors $\ctxdot `o \ctxdot$. C'est bien la coercion
+      dérivée pour le jugement $\subimpl{`D}{\ctxdot}{S}{U}$ par \irule{SubConv}.
       
       \case{SubHnf} On a alors $\subimpl{`G}{c_1}{\hnf{S}}{\hnf{T}}$.
       Comme $T = \hnf{T}$, on peut appliquer l'hypothèse d'induction pour
-      obtenir une coercion $c$ telle que $\subimpl{`G}{c}{\hnf{S}}{U}$ et
-      $c \eqbr c_2 `o c_1$.
+      obtenir une coercion $c$ telle que $\subimpl{`D}{c}{\hnf{S}}{U}$ et
+      $c \eqbr c_2 `o c_1[`r]$.
       Une application de \irule{SubHnf} suffit pour obtenir une
-      dérivation de $\subimpl{`G}{c}{S}{U}$ avec $c = c_2 `o c_1$.
+      dérivation de $\subimpl{`D}{c}{S}{U}$ avec $c = c_2 `o c_1[`r]$.
       
       \case{SubSub} Ici on a:
       \begin{prooftree}
         \AXC{$\subimpl{`G}{d}{S'}{T}$}
-        \UIC{$\subimpl{`G}{c_1 = d[\pi_1~[]]}{S = \mysubset{x}{S'}{P}}{T}$}
+        \UIC{$\subimpl{`G}{c_1 = d[\pi_1~\ctxdot]}{S = \mysubset{x}{S'}{P}}{T}$}
       \end{prooftree}
 
-      Par induction, il existe une coercion $d' \eqbr c_2 `o d = d$ telle que
-      $\subimpl{`G}{d'}{S'}{U}$. On applique \irule{SubSub} pour obtenir
-      la coercion $c$ de $S$ à $U$. Clairement \[c = d'[\pi_1~[]] \eqbr
-      d[\pi_1~[]] = c_1 = [] `o c_1 = c_2 `o c_1\]
+      Par induction, il existe une coercion $d' \eqbr c_2 `o d[`r] = d[`r]$ telle que
+      $\subimpl{`D}{d'}{S'}{U}$. On applique \irule{SubSub} pour obtenir
+      la coercion $c = d[`r][\pi_1~\ctxdot]$ de $S$ à $U$. On a \[c =
+      d[`r][\pi_1~\ctxdot] = d[\pi_1~\ctxdot][`r] \eqbr c_2 `o c_1[`r] \]
+
     \end{itemize}
 
     \case{SubHnf}\quad
     \begin{prooftree}
       \AXC{$\subimpl{`G}{c}{\hnf{S}}{\hnf{T}}$}
       \UIC{$\subimpl{`G}{c}{S}{T}$}
-      \AXC{$\subimpl{`G}{d}{T}{U}$}
+      \AXC{$\subimpl{`D}{d}{T}{U}$}
       \noLine\BIC{} % $\subimpl{`G}{d `o c}{S}{U}$
     \end{prooftree}
     
     Si $T = \hnf{T}$ alors c'est trivial par induction et application de
     \irule{SubHnf}.
-    Sinon, la seule règles permettant de dériver $\subimpl{`G}{d}{T}{U}$
+    Sinon, la seule règles permettant de dériver $\subimpl{`D}{d}{T}{U}$
     est \irule{SubHnf}. Il suffit alors d'appliquer l'hypothèse
     d'induction pour obtenir une dérivation de
-    $\subimpl{`G}{c}{\hnf{S}}{\hnf{U}}$ avec $c \eqbr c_2 `o c_1$ puis
+    $\subimpl{`D}{c}{\hnf{S}}{\hnf{U}}$ avec $c \eqbr c_2 `o c_1[`r]$ puis
     \irule{SubHnf} nous permet de construire le jugement
     $\subimpl{`G}{c}{S}{U}$. 
 
@@ -111,92 +114,118 @@
     \begin{prooftree}
       \AXC{$\subimpl{`G}{c_1}{X'}{X}$}
       \AXC{$\subimpl{`G, x : X'}{c_2}{Y}{Y'}$}
-      \BIC{$\subimpl{`G}{c = \lambda x : \ip{X'}{`G}.c_2[[]~c_1[x]]}{\Pi x : X.Y}{\Pi x : X'.Y'}$}
-      \AXC{$\subimpl{`G}{d}{\Pi x : X'.Y'}{U}$}
+      \BIC{$\subimpl{`G}{c = \lambda x : \ip{X'}{`G}.c_2[\ctxdot~c_1[x]]}{\Pi x : X.Y}{\Pi x : X'.Y'}$}
+      \AXC{$\subimpl{`D}{d}{\Pi x : X'.Y'}{U}$}
       \noLine\BIC{}
     \end{prooftree}
     
-    Par induction sur la dérivation $\subimpl{`G}{d}{\Pi x :
+    Par induction sur la dérivation $\subimpl{`D}{d}{\Pi x :
       X'.Y'}{U}$. Seules deux règles peuvent s'appliquer à la racine:
     \begin{induction}
       \case{SubProd}\quad
       On a $U = \Pi x : S.T$ et la dérivation a la forme:
       \begin{prooftree}
-        \AXC{$\subimpl{`G}{d_1}{S}{X'}$}
-        \AXC{$\subimpl{`G, x : S}{d_2}{Y'}{T}$}
-        \BIC{$\subimpl{`G}{d = (\lambda x : \ip{S}{`G}.d_2[[]~d_1[x]])}
+        \AXC{$\subimpl{`D}{d_1}{S}{X'}$}
+        \AXC{$\subimpl{`D, x : S}{d_2}{Y'}{T}$}
+        \BIC{$\subimpl{`D}{d = (\lambda x : \ip{S}{`D}.d_2[\ctxdot~d_1[x]])}
           {\Pi x : X'.Y'}{\Pi x : S.T}$}
       \end{prooftree}
 
-      On peut construire une coercion de contextes de $`r = [], \ldots,
-      d_1 : (`G, x : S) \sub `G, x : X'$. 
+      On peut construire une coercion de contextes de $`q = `r, d_1 : (`D, x : S) \sub `G, x : X'$. 
 
-      Par le lemme \label{narrowing-i-coercion} on obtient:
-      \[\subimpl{`G, x : S}{c_2'}{Y}{Y'}\] de même
-      taille que la dérivation de $c_2$ tel que $c_2' \eqbr c_2[`r]$
+      Par le lemme \ref{narrowing-i-coercion} on obtient:
+      \[\subimpl{`D, x : S}{c_2'}{Y}{Y'}\] de même
+      taille que la dérivation de $c_2$ tel que $c_2' \eqbr c_2[`q]$
       
-      Par induction avec les dérivations de $c_2'$ et $d_2$
-      il existe donc $e_1, e_2$ tels que:
-      \[\subimpl{`G}{e_1 \eqbr c_1 `o d_1}{S}{X}\] et 
-      \[\subimpl{`G, x : S}{e_2 \eqbr d_2 `o c_2'}{Y}{T}\]
+      On obtient de même $\subimpl{`D}{c_1'}{X'}{X}$ avec $c_1' \eqbr c_1[`r]$.
+
+      En utilisant une coercion de contextes partout l'identité, on
+      obtient par induction avec les dérivations de $c_1[`r]$ et $d_1$
+      d'une part et $c_2'$ et $d_2$ d'autre part, deux coercions
+      $e_1, e_2$ telles que:
+      \[\subimpl{`D}{e_1 \eqbr c_1' `o d_1}{S}{X}\] et 
+      \[\subimpl{`D, x : S}{e_2 \eqbr d_2 `o c_2'}{Y}{T}\]
       
       On en déduit:
       \begin{prooftree}
-        \AXC{$\subimpl{`G}{e_1}{S}{X}$}
-        \AXC{$\subimpl{`G, x : S}{e_2}{Y}{T}$}
-        \BIC{$\subimpl{`G}{e = \lambda x : \ip{S}{`G}.e_2[[]~e_1[x]]}
+        \AXC{$\subimpl{`D}{e_1}{S}{X}$}
+        \AXC{$\subimpl{`D, x : S}{e_2}{Y}{T}$}
+        \BIC{$\subimpl{`D}{e = \lambda x : \ip{S}{`D}.e_2[\ctxdot~e_1[x]]}
           {\Pi x : X.Y}{\Pi x : S.T}$}
       \end{prooftree}
 
-      On a bien $e \eqbr d `o c$:
-      \begin{eqnarray*}        
-        d `o c & = & (\lambda x : \ip{S}{`G}.d_2[[]~d_1[x]]) `o (\lambda
-        x : \ip{X'}{`G}.c_2[[]~c_1[x]]) \\        
-        & = &
-        \lambda x : \ip{S}{`G}.d_2[(\lambda x :
-        \ip{X'}{`G}.c_2[[]~c_1[x]])~d_1[x]]  \\
-        & "->"_{\beta} & 
-        \lambda x : \ip{S}{`G}.d_2[(c_2[d_1[x]/x])[[]~c_1[d_1[x]]]] \\
-        & "->"_{\beta} & 
-        \lambda x : \ip{S}{`G}.d_2[(c_2[d_1[x]/x])[[]~c_1[d_1[x]]]] \\
-        & \eqbr & \lambda x : \ip{S}{`G}.d_2[c_2'[[]~c1[d_1[x]]]] \\
-        & \eqbr & \lambda x : \ip{S}{`G}.e_2[[]~e_1[x]] \\
-        & = & e
-      \end{eqnarray*}
+      On a bien $e \eqbr d `o c[`r]$:
+      \[\begin{array}{ll}
+        \firsteq{d `o c[`r]}
+
+        \step{Définition de $c$ et $d$}
+        {=}{(\lambda x : \ip{S}{`D}.d_2[\ctxdot~d_1[x]]) `o (\lambda
+          y : \ip{X'}{`G}.c_2[\ctxdot~c_1[y]])[`r]}
+        
+        \step{Composition des contextes}
+        {=}{\lambda x : \ip{S}{`D}.d_2[(\lambda y :
+          \ip{X'}{`G}.c_2[\ctxdot~c_1[y]])[`r]~d_1[x]]}
+
+        \step{Substitution dans l'abstraction}
+        {=}{\lambda x : \ip{S}{`D}.d_2[(\lambda y :
+          \ip{X'}{`G}[`r].c_2[\ctxdot~c_1[y]][`r])~d_1[x]]}
+        
+        \step{Réduction}
+        {"->"_{\beta}}
+        {\lambda x :
+          \ip{S}{`D}.d_2[(c_2[\ctxdot~c_1[y]][`r])[d_1[x]/y]]}
+        
+        \step{$y `; `r$}
+        {=}
+        {\lambda x :
+          \ip{S}{`D}.d_2[(c_2[`r][\ctxdot~c_1[`r][y]])[d_1[x]/y]]}
+        
+        \step{Définition de $`q$}
+        {=}{\lambda x : \ip{S}{`D}.d_2[c_2[`q][\ctxdot~c_1[`q][d_1[x]]]]}
+
+        \step{$d_2 `o c_2[`q] \eqbr e_2$}
+        {\eqbr}{\lambda x : \ip{S}{`D}.e_2[\ctxdot~c_1[`q][d_1[x]]]}
+
+        \step{$c_1[`q] = c_1[`r]$}
+        {\eqbr}{\lambda x : \ip{S}{`D}.e_2[\ctxdot~e_1[x]]}
+        
+        \step{Définition}
+        {=}{e}
+      \end{array}\]
       
       \case{SubProof}
       Ici $U = \mysubset{y}{U'}{P}$ et la dérivation commence
       par:
       \begin{prooftree}
-        \AXC{$\subimpl{`G}{e}{\Pi x : X'.Y'}{U'}$}
-        \UIC{$\subimpl{`G}{d = \elt{\ip{U'}{`G}}
-            {\ip{\lambda x : U'.P}{`G}}{e}
-            {\tex{\iG}{\ip{P}{`G}[e/x]}}}
+        \AXC{$\subimpl{`D}{e}{\Pi x : X'.Y'}{U'}$}
+        \UIC{$\subimpl{`D}{d = \elt{\ip{U'}{`D}}
+            {\ip{\lambda x : U'.P}{`D}}{e}
+            {\ex{\ipG{`D}}{\ip{P}{`D}[e/x]}}}
           {\Pi x : X'.Y'}{\mysubset{y}{U'}{P}}$}
       \end{prooftree}
 
-      Par induction on a $\subimpl{`G}{f \eqbr e `o c}{\Pi x : X.Y}{U'}$.
+      Par induction on a $\subimpl{`D}{f \eqbr e `o c[`r]}{\Pi x : X.Y}{U'}$.
       On peut donc dériver:
       \begin{prooftree}
         \AXC{$\subimpl{`G}{f}{\Pi x : X.Y}{U'}$}
         \UIC{$\subimpl{`G}{d' = \elt{\ip{U'}{`G}}
             {\ip{\lambda x : U'.P}{`G}}{f}
-            {\tex{\iG}{\ip{P}{`G}[f/x]}}}
+            {\ex{\iG}{\ip{P}{`G}[f/x]}}}
           {\Pi x : X.Y}{U}$}
       \end{prooftree}
       
-      On peut vérifier que $d' \eqbr d `o c$:
+      On peut vérifier que $d' \eqbr d `o c[`r]$:
 
       \begin{eqnarray*}
-        d `o c & = & (\elt{\ip{U'}{`G}}
+        d `o c[`r] & = & (\elt{\ip{U'}{`G}}
         {\ip{\lambda x : U'.P}{`G}}{e}
-        {\tex{\iG}{\ip{P}{`G}[e/x]}})[c] \\
+        {\ex{\iG}{\ip{P}{`G}[e/x]}})[c[`r]] \\
         & = & \elt{\ip{U'}{`G}}
-        {\ip{\lambda x : U'.P}{`G}}{e[c]}
-        {\tex{\iG}{\ip{P}{`G}[e[c]/x]}} \\
+        {\ip{\lambda x : U'.P}{`G}}{e[c[`r]]}
+        {\ex{\iG}{\ip{P}{`G}[e[c[`r]]/x]}} \\
         & \eqbr & \elt{\ip{U'}{`G}}
         {\ip{\lambda x : U'.P}{`G}}{f}
-        {\tex{\iG}{\ip{P}{`G}[f/x]}} \\
+        {\ex{\iG}{\ip{P}{`G}[f/x]}} \\
         & = & d'
       \end{eqnarray*}
       
@@ -208,10 +237,10 @@
 
     \begin{prooftree}
       \AXC{$\subimpl{`G}{c}{T}{\Sigma x : X'.Y'}$}
-      \AXC{$\subimpl{`G}{d_1}{X'}{X}$}
-      \AXC{$\subimpl{`G, x : X'}{d_2}{Y'}{Y}$}
-      \BIC{$\subimpl{`G}{d = (d_1[\pi_1~[]], d_2[d_1[\pi_1~[]]/x][\pi_2~[]])}{\Sigma x : X'.Y'}{\Sigma x : X.Y}$}
-      \BIC{$$}
+      \AXC{$\subimpl{`D}{d_1}{X'}{X}$}
+      \AXC{$\subimpl{`D, x : X'}{d_2}{Y'}{Y}$}
+      \BIC{$\subimpl{`D}{d = (d_1[\pi_1~\ctxdot], d_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}{\Sigma x : X'.Y'}{\Sigma x : X.Y}$}
+      \noLine\BIC{}
     \end{prooftree}
 
     Par induction sur la dérivation de $\subimpl{`G}{c}{T}{\Sigma x
@@ -221,44 +250,73 @@
       On a:
       \begin{prooftree}
         \AXC{$\subimpl{`G}{c_1}{S}{X'}$}
-        \AXC{$\subimpl{`G, x : X'}{c_2}{T}{Y'}$}
-        \BIC{$\subimpl{`G}{c = (c_1[\pi_1~[]], c_2[c_1[\pi_1~[]]/x][\pi_2~[]])}{\Sigma x
+        \AXC{$\subimpl{`G, x : S}{c_2}{T}{Y'}$}
+        \BIC{$\subimpl{`G}{c = (c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}{\Sigma x
             : S.T}{\Sigma x : X'.Y'}$}
       \end{prooftree}
       
-      Par substitutivité on a $\subimpl{`G, x : S}{d_2'}{Y'}{Y}$ avec
-      $d_2 = d_2[`r]$ où $`r = [], \ldots, c_1 : (`G, x : S) \sub (`G, x : X')$
+      Par affaiblissement pour les coercions (lemme
+      \ref{narrowing-i-coercion}) on a $\subimpl{`D}{c_1'}{S}{X'}$ avec $c_1' \eqbr c_1[`r]$.
+      On peut aussi construire la coercion de contexte
+      $`q = `r, \ctxdot : (`D, x : S) \sub (`G, x : S)$. Par le même lemme on obtient
+      $\subimpl{`D, x : S}{c_2'}{T}{Y'}$ avec $c_2' \eqbr c_2[`q] =
+      c_2[`r]$. On peut enfin construire le jugement
+      $\subimpl{`D, x : S}{d_2'}{Y'}{Y}$ avec $d_2' \eqbr d_2[c_1'[x]/x]$.
       
-      Par induction on a donc:
+      Par induction en utilisant une coercion de contexte partout
+      l'identité on a donc:
       \begin{prooftree}
-        \AXC{$\subimpl{`G}{e_1 \eqbr d_1 `o c_1}{S}{Y}$}
-        \AXC{$\subimpl{`G, x : S}{e_2 \eqbr d_2' `o c_2}{T}{Y}$}
-        \BIC{$\subimpl{`G}{e = (e_1[\pi_1~[]], e_2[e_1[\pi_1~[]]/x][\pi_2~[]])}{\Sigma x
-            : S.T}{\Sigma x : X.Y}$}
+        \AXC{$\subimpl{`D}{e_1 \eqbr d_1 `o c_1[`r]}{S}{X}$}
+        \AXC{$\subimpl{`D, x : S}{e_2 \eqbr d_2' `o c_2'}{T}{Y}$}
+        \BIC{$\subimpl{`D}{e = (e_1[\pi_1~\ctxdot],
+            e_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
+          {\Sigma x : S.T}{\Sigma x : X.Y}$}
       \end{prooftree}
       
-      On a \[ e_2[y] \eqbr d_2'[c_2][y] = d_2'[c_2[y]] =
-      d_2[c_1[x]/x][c_2[y]] = d_2[c_2[c_1[x]/x][y]]
-      \].
 
       On peut vérifier:
-      \begin{eqnarray*}
-        d `o c & = & (d_1[\pi_1~c], d_2[d_1[\pi_1~c]/x] [\pi_2~c] \\
-        & "->"_\rho &
-        (d_1[c_1[\pi_1~[]]], d_2 [d_1[c_1[\pi_1~[]]]/x] [
-        c_2[c_1[\pi_1~[]]/x] [\pi_2~[]]]) \\
-        & \eqbr & 
-        (e_1[\pi_1~[]], d_2 [d_1[c_1[\pi_1~[]]]/x] [c_2[c_1[\pi_1~[]]/x] [\pi_2~[]]]) \\
-        & = &
-        (e_1[\pi_1~[]], d_2 [d_1[c_1[\pi_1~[]]]/x] [c_2[c_1[\pi_1~[]]/x]
-        [\pi_2~[]]]) \\
-        & = &
-        (e_1[\pi_1~[]], d_2 [e_1[\pi_1~[]]/x] [c_2[c_1[\pi_1~[]]/x] [\pi_2~[]]]) \\
-        & = &
-        (e_1[\pi_1~[]], d_2 [c_2[c_1[\pi_1~[]]/x] [\pi_2~[]]] [e_1[\pi_1~[]]/x] \\
-        & \eqbr &
-        (e_1[\pi_1~[]], e_2 [e_1[\pi_1~[]]/x] [\pi_2~[]] \\        
-        & = & e
+      \[\begin{array}{ll}
+        \firsteq{d `o c[`r]}
+
+        \step{Définition de $c$}
+        {=}{(d_1[\pi_1~c[`r]], d_2[\pi_1~c[`r]/x][\pi_2~c[`r]])}
+        
+        \step{Réduction}
+        {"->"_\rho}{(d_1[c_1[`r][\pi_1~\ctxdot]], d_2[(c_1[\pi_1~\ctxdot])[`r]/x]
+          [c_2[`r][\pi_1~\ctxdot/x][\pi_2~\ctxdot]])}
+
+        \step{Définition de $e_1$}
+        {\eqbr}
+        {(e_1[\pi_1~\ctxdot], d_2[c_1[`r][\pi_1~\ctxdot]/x][c_2[`r][\pi_1~\ctxdot/x][\pi_2~\ctxdot]])}
+        
+        \step{Définition de $c_1'$}
+        {\eqbr}
+        {(e_1[\pi_1~\ctxdot], d_2[c_1'[\pi_1~\ctxdot]/x][c_2[`r][\pi_1~\ctxdot/x][\pi_2~\ctxdot]])}
+        
+
+        \step{Définition de $d_2'$}
+        {\eqbr}
+        {(e_1[\pi_1~\ctxdot],
+          d_2'[\pi_1~\ctxdot/x][c_2[`r][\pi_1~\ctxdot/x][\pi_2~\ctxdot]])}
+
+        \step{$x `; c_2[\pi_1~\ctxdot/x]$}
+        {\eqbr}
+        {(e_1[\pi_1~\ctxdot], d_2'[c_2[`r][\pi_1~\ctxdot/x][\pi_2~\ctxdot]][\pi_1~\ctxdot/x])}
+        
+        \step{Définition de $c_2'$}
+        {\eqbr}
+        {(e_1[\pi_1~\ctxdot], d_2'[c_2'[\pi_1~\ctxdot/x][\pi_2~\ctxdot]][\pi_1~\ctxdot/x])}
+        
+        \step{Définition de $e_2$}
+        {\eqbr}
+        {(e_1[\pi_1~\ctxdot],
+          e_2'[\pi_1~\ctxdot/x][\pi_2~\ctxdot][\pi_1~\ctxdot/x])}
+
+        \step{Deuxième substitution inutile}
+        {=}{(e_1[\pi_1~\ctxdot], e_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
+
+        \step{Définition de $e$}
+        {=}{e}
       \end{eqnarray*}
       
       \case{SubSub}
@@ -331,6 +389,27 @@
     On a bien $f `o \pi_1 \eqbr e `o c `o \pi_1$.
     
   \end{induction}
+\end{proof}
+
+
+On peut maintenant énoncer le lemme de symmétrie:
+
+\begin{lemma}[Symétrie de la coercion]
+  \label{subi-sym}
+  S'il existe $c$ tel que $`G \typec c : A \subi B$ alors $`E!c^{-1}, `G
+  \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbre \sref{id}~A$ et $c
+  `o c^{-1} \eqbre \sref{id}~B$, où $\sref{id} \coloneqq \lambda X :
+  Set.\lambda x : X. x$.
+\end{lemma}
+\begin{proof}
+  On sait que le jugement $\subi$ est symmétrique, c'est à dire qu'on a
+  l'existence des inverses. On utilise la transitivité pour montrer le
+  reste du lemme. Si $\subimpl{`G}{c}{A}{B}$ et
+  $\subimpl{`G}{c^{-1}}{B}{A}$ alors il existe $f$ et $f^{-1}$ tel que
+  $\subimpl{`G}{f \eqbr c^{-1} `o c}{A}{A}$ et $\subimpl{`G}{f^{-1}
+    \eqbr c `o c^{-1}}{B}{B}$. Par unicité des coercions, $f \eqbre
+  \lambda x : A.x$ et $f^{-1} \eqbre \lambda x : B.x$. En général $f$ et
+  $f'$ sont en forme $\eta$-longue et pas l'identité.
 \end{proof}
 
 %%% Local Variables: 

@@ -1,7 +1,9 @@
+\def\ctxdot{\bullet}
+
 \newcommand{\SubConvI}[1][\Gamma]{
 \UAX{SubConv}
 {$T \eqbr U$}
-{$\subimpl{#1}{[]}{T}{U}$}
+{$\subimpl{#1}{\ctxdot}{T}{U}$}
 {$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U} `^ U "/="
   \{|\}$}
 }
@@ -9,7 +11,7 @@
 \newcommand{\SubConvIs}[1][\Gamma]{
 \UAX{SubConv}
 {$T \eqbr U$}
-{$\subimpl{#1}{[]}{T}{U}$}
+{$\subimpl{#1}{\ctxdot}{T}{U}$}
 {} 
 }
 
@@ -24,7 +26,7 @@
   \BAX{SubProd}
   {$\subimpl{#1}{c_1}{U}{T}$}
   {$\subimpl{#1, x : U}{c_2}{V}{W}$}  
-  {$\subimpl{#1}{\lambda x : \ip{U}{#1}. c_2[[]~(c_1[x])]}
+  {$\subimpl{#1}{\lambda x : \ip{U}{#1}. c_2[\ctxdot~(c_1[x])]}
     {\Pi x : T.V}{\Pi x : U.W}$}
   {}
 }
@@ -33,7 +35,7 @@
 \BAX{SubSigma}
 {$\subimpl{#1}{c_1}{T}{U}$}
 {$\subimpl{#1, x : T}{c_2}{V}{W}$}
-{$\subimpl{#1}{(c_1[\pi_1~[]], c_2[\pi_2~[]])}
+{$\subimpl{#1}{(c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
   {\Sigma x : T. V}{\Sigma x : U. W}$}
 {}
 }
@@ -41,14 +43,14 @@
 \newcommand{\SubSubI}[1][\Gamma]{%
 \UAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}$}
-{$\subimpl{#1}{c[\pi_1~[]]}{\mysubset{x}{U}{P}}{T}$}
+{$\subimpl{#1}{c[\pi_1~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
 {$T = \hnf{T} `^ \hnf{T} "/=" \{|\}$}
 }
 
 \newcommand{\SubSubIs}[1][\Gamma]{%
 \UAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}$}
-{$\subimpl{#1}{c[\pi_1~[]]}{\mysubset{x}{U}{P}}{T}$}
+{$\subimpl{#1}{c[\pi_1~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
 {}
 }
    
