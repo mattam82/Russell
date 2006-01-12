@@ -92,8 +92,13 @@ On formalise donc les coercions par des contextes d'évaluation classiques.
   \end{array}\]
 \end{definition}
 
+\begin{notation}[Composition des coercions]
+  Le composition de deux coercions notée $c `o d$ est égale à $c[d]$.
+\end{notation}
+
+
 \subsubsection{Coercions explicites}
-On définit le système $\subi$ (figure \ref{fig:subtyping-impl-rules})
+On définit le système $\suba$ (figure \ref{fig:coerce-impl-rules})
 qui dérive une coercion à partir de deux types $S$ et $T$ dans un environnement $`G$.
 On a introduit du déterminisme par rapport au jugement de
 coercion algorithmique puisqu'on donne priorité à la règle
@@ -115,9 +120,9 @@ Notre opération de mise en forme normale de tête est définie de la façon suivant
   \label{fig:hnfdef}
 \end{figure}
 
-On utilise la $\beta$-équivalence de $CCI$ enrichie avec les
+On utilise la $\beta\rho$-équivalence de $CCI$ enrichie avec les
 existentielles, on étend donc la relation aux existentielles de la façon
-suivante: $\ex{`G}{P} \eqbr \ex{`G'}{P'} `= `G \eqbr `G' `^ P \eqbr P'$.
+suivante: \[\ex{`G}{P} \eqbr \ex{`G'}{P'} `= `G \eqbr `G' `^ P \eqbr P'\]
 
 \subtiFig
 
