@@ -1,4 +1,3 @@
-
 \begin{lemma}[Unicité de la coercion]
   \label{coercion-unicity}
   Si $`G \typea T, U : s$ alors si $\subimpl{`G}{c}{T}{U}$ et
@@ -20,41 +19,96 @@ existante.
 \begin{lemma}[Coercion et formes normales de tête]
   \label{substi-coercion-hnf}
   Si $`G \typec c : T \suba U$ alors $`G \typec c' : \hnf{T}~\suba
-  \hnf{U}$ avec $c \eqbr c'$ est dérivable par une dérivation plus
+  \hnf{U}$ avec $c = c'$ est dérivable par une dérivation plus
   petite ou égale.
 \end{lemma}
 
 \begin{proof}
   Par idempotence de la mise en forme normale de tête, on a la même
-  dérivation dans le cas ou la dernière règle appliquée était
+  dérivation dans le cas où la dernière règle appliquée était
   \irule{SubHnf}, sinon c'est trivial.
 \end{proof}
 
 \begin{lemma}[Coercion de termes convertibles]
-  \label{subti-eqb-coercion-eqbe-id}
-  Si $`G \typea T, U : s$ et $T \eqbr U$ alors il existe $c$, $`G \typec
-  c : T \suba U$ avec $c \eqbre \ctxdot$.
+  \label{subti-eqb-coercion-eqbres-id}
+  Si $`G \typea T, U : s$ et $T \eqbr U$ alors il existe $c$,
+  $\subimpl{`G}{c}{T}{U}$ avec $c \eqbres \ctxdot$.
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la forme normale de $T$ notée $\nf{T}$.
+  Par induction sur le nombre de constructeurs $\Pi, \Sigma, \{|\}$ dans
+  les formes normales de $T$ et $U$ (on note $\nf{T}$ la forme normale
+  de $T$).
 
-  \begin{itemize}
-  \item $\nf{T} = \Pi y : A.B$ Alors, $\nf{U} = \Pi y : A'.B'$ avec $A
-    \eqbr A'$, $B \eqbr B'$. Par induction, $c_1 \eqbre \ctxdot: A' \sub A$
-    et $c_2 \eqbre \ctxdot : B \sub B'$. On a donc:
+  \begin{itemize}  
+  \item Si $\nf{T}$ n'a pas pour symbole de tête, $\Pi, \Sigma$ ou
+    $\{|\}$, alors \irule{SubConv} est la seule règle applicable et on
+    a $c = \ctxdot$. On a donc traité les cas ou le nombre de symboles
+    $\Pi, \Sigma, \{|\}$ dans $T$ et $U$ est supérieur ou égal à zéro, seulement
+    s'il n'apparaît pas en tête. On traite maintenant le seul autre cas possible.
+
+  \item Si $\hnf{T} = \Pi y : A.B$, alors $\hnf{U} = \Pi y : A'.B'$ avec $A
+    \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 \eqbres \ctxdot}{A'}{A}$
+    et $\subimpl{`G, x : A'}{c_2 \eqbres \ctxdot}{B}{B'}$ ($\nf{A}, \nf{A'}, \nf{B}, \nf{B'}$ sont des
+    sous-termes stricts de $\nf{T}$ et $\nf{U}$). On peut donc dériver: 
+    $\subimpl{`G}{\lambda x : \ip{A'}{`G}. c_2[\ctxdot~c_1[x]]}
+    {\Pi y : A.B}{\Pi y : A'.B'}$. Puis par application de
+    \irule{SubHnf}, la coercion de $T$ à $U$.
+        
+    On a donc:
     \begin{eqnarray*}
       c & = & \lambda x : \ip{A'}{`G}. c_2[\ctxdot~(c_1[x]) \\
-      & \eqbre & \lambda x : \ip{A'}{`G}. \ctxdot~x \\
-      & \eqbre & \ctxdot
+      & \eqbres & \lambda x : \ip{A'}{`G}. \ctxdot~x \\
+      & \eqbres & \ctxdot
     \end{eqnarray*}
-    De façon équivalente pour $\Sigma, \{|\}$.
     
-  \item Si $\nf{T}$ n'a pas pour symbole de tête, $\Pi, \Sigma$ ou
-    $\{|\}$, alors il est possible que $U$ est pour symbole de tête un
-    type sous-ensemble auquel cas le mécanisme est similaire.  Dans tout
-    les autres cas, \irule{SubConv} est la seule règle applicable et on
-    a $c = \ctxdot$.
+  \item Si $\hnf{T} = \Sigma y : A.B$ alors $\hnf{U} = \Sigma y : A'.B'$ avec $A
+    \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 \eqbres \ctxdot}{A}{A'}$
+    et $\subimpl{`G, x : A}{c_2 \eqbres \ctxdot}{B}{B'}$ ($\nf{A},
+    \nf{A'}, \nf{B}, \nf{B'}$ sont des
+    sous-termes stricts de $\nf{T}$ et $\nf{U}$). On peut donc dériver: 
+    $\subimpl{`G}{(c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
+    {\Pi y : A.B}{\Pi y : A'.B'}$. Puis par application de
+    \irule{SubHnf}, la coercion de $T$ à $U$.
+
+    On a donc:
+    \begin{eqnarray*}
+      c & = & (c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]) \\
+      & "->>"_\beta & (\pi_1~\ctxdot, \pi_2~\ctxdot) \\
+      & =_\SP & \ctxdot
+    \end{eqnarray*}
+    
+  \item Le cas des sous-ensembles est un peu différent.
+    Si $\hnf{T} = \mysubset{x}{T'}{P}$ alors $\hnf{U} =
+    \mysubset{x}{U'}{P'}$ avec $T' \eqbr U'$ et $P \eqbr P'$.
+    La dérivation va avoir la forme suivante:
+    \begin{prooftree}
+      \AXC{$\subimpl{`G}{c' \eqbr \ctxdot}{T'}{U'}$}
+      \UIC{$\subimpl{`G}{d = c'[\pi_1~\ctxdot]}{T'}{U'}$}
+      \UIC{$\subimpl{`G}{c = \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P''}{`G}}{d}
+            {\ex{\ipG{`G}}{\ip{P''}{`G}[d/x]}}}{\mysubset{x}{T'}{P'}}{U'}$}
+      \UIC{$\subimpl{`G}{c}{\mysubset{x}{T'}{P'}}{\mysubset{x}{U'}{P''}}$}
+      \UIC{$\subimpl{`G}{c}{T}{U}$}
+    \end{prooftree}
+    
+    On a donc $d = c'[\pi_1~\ctxdot] \eqbr \pi_1~\ctxdot$.
+    Comme $P' \eqbr P''$, la preuve de l'existentielle
+    $\ex{\ipG{`G}}{\ip{P''}{`G}[\pi_1~\ctxdot/x]}$ peut être considérée
+    comme équivalente à $\pi_2~\ctxdot$. 
+    \TODO{Problème de l'interprétation, on n'a pas $P' \eqbr P'' "=>" \ip{P'}{`G} =
+      \ip{P''}{`G}$}
+
+    On peut vérifier:
+    \begin{eqnarray*}
+      c & = & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P''}{`G}}{d}
+      {\ex{\ipG{`G}}{\ip{P''}{`G}[d/x]}} \\
+      & = & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P''}{`G}}{(\pi_1~\ctxdot)}
+      {\ex{\ipG{`G}}{\ip{P''}{`G}[\pi_1~\ctxdot/x]}} \\
+      & = & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P''}{`G}}{(\pi_1~\ctxdot)}
+      {(\pi_2~\ctxdot)} \\
+      & =_\SP & \ctxdot
+    \end{eqnarray*}
+    
   \end{itemize}
 \end{proof}
 

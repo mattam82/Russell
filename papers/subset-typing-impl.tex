@@ -22,10 +22,9 @@ un terme $t'$ réecrit bien typé dans l'environnement \CCI{} $\ipG{`G}$.
   On fait l'extension aux contextes de la façon suivante:
   \begin{itemize}
   \item $\ipG{[]} = []$
-  \item $\ipG{`G, x : T} =  \ipG{`G}, x : \ipt{T}{`G}$
+  \item $\ipG{`G, x : T} =  \ipG{`G}, x : \ip{T}{`G}$
   \end{itemize}
 \end{definition}
-
 
 \def\typeafn#1#2{\typeml_{#1}(#2)}
 \begin{figure}
@@ -101,32 +100,47 @@ qui dérive une coercion à partir de deux types $S$ et $T$ dans un environnement 
 On a introduit du déterminisme par rapport au jugement de
 coercion algorithmique puisqu'on donne priorité à la règle
 \irule{SubSub} par rapport à la règle \irule{SubProof} (ces règles sont
-confluentes). On explicite aussi la prioritée donnée à la mise en forme
+confluentes). On explicite aussi la priorité donnée à la mise en forme
 normale de tête (figure \ref{fig:hnfdef}) puis à la dérivation
-par rapport au test de
-conversion dans la prémisse de \irule{SubConv}.
+par rapport au test de conversion dans la prémisse de \irule{SubConv}.
 
 Notre opération de mise en forme normale de tête est définie de la façon suivante:
 \begin{figure}[h]
-  \[\begin{array}{lcl}
-    \hnf{((\lambda x : T.e)~v)} & = & \hnf{e[v/x]} \\
-    \hnf{\pi_1~(x, y)} & = & \hnf{x} \\
-    \hnf{\pi_2~(x, y)} & = & \hnf{y} \\
-    \hnf{x} & = & x
+  \[\begin{array}{lcll}
+    \hnf{((\lambda x : T.e)~v)} & = & \hnf{e[v/x]} & \\
+    \hnf{\pi_1~(x, y)} & = & \hnf{x} & \\
+    \hnf{\pi_2~(x, y)} & = & \hnf{y} & \\
+    \hnf{e} & = & e & \{\text{si $e$ est d'une autre forme}\}
   \end{array}\]
-  \caption{Définition de réduction de tête}
+  \caption{Définition de la réduction de tête}
   \label{fig:hnfdef}
 \end{figure}
 
-On utilise la $\beta\rho$-équivalence de $CCI$ enrichie avec les
+\begin{figure}[h]
+  \[\begin{array}{llcll}
+    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
+    (\rho) & \pi_i~(e_1, e_2) & = & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & = & e & \text{si $x `; FV(e)$ et $e :
+      \Pi x : X.Y$} \\
+    (\SP) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{si
+      $e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{\eltpit~e}{\eltpip~e} & = & e & \text{si $e :
+      \mysubset{x}{E}{P}$}
+  \end{array}\]
+  \caption{Théorie équationnelle de \CCI{}}
+  \label{fig:eqcci}
+\end{figure}
+
+On utilise l'équivalence $\eqbres$ définie comme la clôture réflexive,
+symétrique et transitive de la relation définie figure \ref{fig:eqcci} enrichie avec les
 existentielles, on étend donc la relation aux existentielles de la façon
-suivante: \[\ex{`G}{P} \eqbr \ex{`G'}{P'} `= `G \eqbr `G' `^ P \eqbr P'\]
+suivante: \[\ex{`G}{P} \eqbres \ex{`G'}{P'} `= `G \eqbres `G' `^ P \eqbres P'\]
 
 \subtiFig
 
 Le système figure \ref{fig:coerce-impl-rules} dérive les termes de
 coercion. Il a de bonnes propriétés pour la preuve et l'implémentation
-telles que l'unicité et l'élimination de la transitivité que nous
+telles que l'unicité et l'admissibilité de la transitivité que nous
 montrerons plus tard.
 
 \subsection{Propriétés}
@@ -139,7 +153,7 @@ de conversion.
 \typenvi
 
 \subsubsection{Correction}
-Notre problème se rammène à montrer le théorème suivant: 
+Notre problème se ramène à montrer le théorème suivant: 
 \[`G \typea t : T "=>" \iG \typec \ip{t}{`G} : \ip{T}{`G}\]
 Ce résultat ne se montre pas aisément.
 En effet le jugement de coercion rend la preuve
@@ -154,9 +168,12 @@ $\Pi n : \nat. \sref{list}~n \suba \Pi n :
 \nat$ et $\listml~n \eqbr \listml~n$.
 Si l'on réécrit vers \CCI{}, on n'aura plus les même types
 de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
-Ici, une coercion a été insérée dans le second type:
-$`G' \typec c : \Pi n : \nat. \listml~n \subi \Pi n :
-\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. Seulement, et c'est là la
+Ici, une coercion a été insérée dans le second type, en effet, $\ip{\Pi n :
+\mysubset{x}{\nat}{P}.\listml~n}{`G} = \Pi n :
+\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. La coercion générée doit donc
+avoir pour type: $\Pi n : \nat. \listml~n "->" \Pi n :
+\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. 
+Seulement, et c'est là la
 preuve que l'intuition de la coercion par prédicats est bonne, on peut
 dériver ce jugement:
 
@@ -165,13 +182,36 @@ dériver ce jugement:
   \UIC{$\subimpl{`G'}{\ctxdot}{\nat}{\nat}$}
   \UIC{$\subimpl{`G'}{\pi_1~\ctxdot}{\mysubset{x}{\nat}{P}}{\nat}$}
 
-  \AXC{$(\listml~n)[\pi_1~n/n] \eqbr \listml~(\pi_1~n)$}
+  \AXC{$\listml~n \eqbr \listml~n$}
   \UIC{$\subimpl{`G, n : \mysubset{x}{\nat}{P}}{\ctxdot}
-    {(\listml~n)[\pi_1~n/n]}{\listml~(\pi_1~n)}$}
+    {\listml~n}{\listml~n}$}
 
-  \BIC{$\subimpl{`G'}{\lambda x.f~(\pi_1~x)}{\Pi n : \nat. \listml~n}
-    {\Pi n : \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)}$}
+  \BIC{$\subimpl{`G'}{\lambda x : \ip{\mysubset{x}{\nat}{P}}{`G}.
+      \ctxdot~[\ctxdot~(\pi_1~x)] = \ctxdot~(\pi_1 x)}{\Pi n : \nat. \listml~n}
+    {\Pi n : \mysubset{x}{\nat}{P}.\listml~n}$}
 \end{prooftree}
+
+Supposons $`G \typec t : \Pi n : \nat. \listml~n$ alors on a la dérivation
+de typage suivante:
+\begin{prooftree}
+  
+  \AXC{$\timpl{`G, x : \mysubset{x}{\nat}{\ip{P}{`G}}}{t}
+    {\Pi n : \nat. \listml~n}$}
+
+  \AXC{$\timpl{`G, x : \mysubset{x}{\nat}{\ip{P}{`G}}}{\pi_1~x}{\nat}$}
+  
+  \BIC{$\timpl{`G, x : \mysubset{x}{\nat}{\ip{P}{`G}}}
+    {t~(\pi_1~x)}
+    {\listml~(\pi_1~x)}$}
+
+  \UIC{$\timpl{`G}
+    {\lambda x : \ip{\mysubset{x}{\nat}{P}}{`G}. t~(\pi_1~x)}
+    {\Pi n : \ip{\mysubset{x}{\nat}{P}}{`G}.\listml~(\pi_1~x)}$}
+\end{prooftree}
+
+On arrive crée donc bien un terme de type $\ip{\Pi n :
+  \mysubset{x}{\nat}{P}.\listml~n}{`G}$ en appliquant la coercion a un
+terme de type $\ip{\Pi n : \nat. \listml~n}{`G}$, c'est l'effet recherché.
 
 \input{subset-typing-impl-subtyping}
 

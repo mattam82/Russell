@@ -4,8 +4,7 @@
 \UAX{SubConv}
 {$T \eqbr U$}
 {$\subimpl{#1}{\ctxdot}{T}{U}$}
-{$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U} `^ U "/="
-  \{|\}$}
+{$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U}$}
 }
 
 \newcommand{\SubConvIs}[1][\Gamma]{
@@ -58,7 +57,7 @@
   \UAX{SubProof}
   {$\subimpl{#1}{c}{T}{U}$}
   {$\subimpl{#1}
-  {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
+    {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
     {\ex{\ipG{#1}}{\ip{P}{#1}[c/x]}}}
   {T}{\mysubset{x}{U}{P}}$}
 {$T = \hnf{T}$}
