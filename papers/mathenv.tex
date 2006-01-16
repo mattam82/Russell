@@ -48,6 +48,11 @@
   \@ifnotmtarg{#7}{\RightLabel{#7}}
   \TIC{#6}}
 
+\newcommand{\SAX}[8]{\AXC{#2}\noLine\UIC{#3}\AXC{#4}\AXC{#5}\noLine\UIC{#6}
+  \LeftRuleLabel{#1}
+  \@ifnotmtarg{#8}{\RightLabel{#8}}
+  \TIC{#7}}
+
 \newcommand{\BR}[2]{\RightLabel{\rulelabel{#1}}\BIC{#2}}
 \newcommand{\BRL}[2]{\LeftLabel{\rulelabel{#1}}\BIC{#2}}
 

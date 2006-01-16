@@ -60,74 +60,86 @@
     x~\as$. Les deux cas sont similaires, on traite le cas ou $\hnf{T} =
     x~\as$. Le jugement $x~\as \suba \hnf{T'}$
     ne peut être dérivé que par \irule{SubProof} ou
-    \irule{SubConv}. Dans le premier cas, cela implique qu'on a une
-    dérivation de $d : x~\as \suba U'$ où $\hnf{T'} = \mysubset{y}{U'}{P}$. Par
-    induction on a donc une dérivation de
-    $\subimpl{\Gr}{d'}{u~\asux}{U'[u/x]}$ avec $d ' \eqbre
-    d\ipux$. 
-    Par le lemme \ref{substi-coercion-hnf} on a donc une dérivation de 
-    $\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$ avec $d' \eqbre
-    d\ipux$. 
-    
-    Par inversion du jugement
-    $\timpl{\GD}{\mysubset{y}{U'}{P}}{\Set}$ on a 
-    $\timpl{\GD}{U'}{\Set}$ et $\timpl{\GD, y : U'}{P}{\Prop}$. On
-    peut appliquer l'hypothèse d'induction pour obtenir:
-    $\ip{U'[u/x]}{\Gr} \eqbr \ip{U'}{\GD}\ipux$ et
-    $\ip{P[u/x]}{\Gr, y : U'[u/x]} \eqbre \ip{P}{\GD, y : U'}\ipux$. 
-    Par substitutivité on a aussi $\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$.
+    \irule{SubConv}. 
 
-
-    \begin{prooftree}
-      \AXC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$}
-      \UIC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{U'[u/x]}$}
-      \AXC{$\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$}
-      \BIC{$\subimpl{\Gr}{c'}{\hnf{T[u/x]}}{\hnf{(T'[u/x])} = \mysubset{y}{U'[u/x]}{P[u/x]}}$}
-      \UIC{$\subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}$}
-    \end{prooftree}
-    
-    On en déduit:
-    \begin{eqnarray*}
-      \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y] & 
-      \eqbre & \ip{P}{\GD, y : U'}\ipux[d'/y] \\
-      & \eqbre & \ip{P}{\GD, y : U'}\ipux[d\ipux/y] \\
-      & = & \ip{P}{\GD, y : U'}[d/y]\ipux
-    \end{eqnarray*}
-    
-    Soit $A = \ipG{\Gr} \typec \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y]$ et
-    $B = \ipG{\GD} \typec \ip{P}{\GD, y : U'}[d/y]$. On a
-    $A \eqbr B\ipux$ car $\ipG{\Gr} \eqbr \ipG{\GD}\ipux = \ipG{`G}, \ipG{`D}\ipux$ 
-    par application de l'hypothèse d'induction sur chaque élément de
-    $`D$ et les conclusion des existentielles sont convertibles par le résultat précédent.
-    
-    On a donc:
-    \begin{eqnarray*}
-      c' & = &
-      \elt{\ip{U'[u/x]}{\Gr}}
-      {\ip{(\lambda y : (U'[u/x]).P[u/x])}{\Gr}}
-      {d'}
-      {?_A} \\
-      & \eqbre &
-      \elt{\ip{U'[u/x]}{\Gr}}
-      {\ip{(\lambda y : (U'[u/x]).P[u/x])}{\Gr}}
-      {d\ipux}
-      {?_A} \\
-      & \eqbre &
-      \elt{\ip{U'}{\GD}\ipux}
-      {\ip{(\lambda y : U'.P)}{\GD}\ipux}
-      {d\ipux}
-      {?_A} \\
-      & \eqbre &
-      (\elt{\ip{U'}{\GD}}{\ip{\lambda y : U'.P}{\GD}}{d}
-      {?_B})\ipux \\
-      & = & c\ipux
-    \end{eqnarray*}
-    
-    Dans le cas ou l'on applique directement \irule{SubConv} cela
-    implique que $\hnf{T} = x = \hnf{T'}$ donc par reflexivité de la
-    coercion \ref{coerce-refl}, $\subimpl{\Gr}{c'}{u}{u}$ est dérivable et $c' \eqbre
-    \ctxdot \eqbre \ctxdot\ipux$.
+    \begin{itemize}
+      \case{SubProof} On a:
+      \begin{prooftree}
+        \AXC{$\subimpl{`G}{d}{x~\as}{U'}$}
+        \UIC{$\subimpl{`G}{c}{x~\as}{\hnf{T'} = \mysubset{y}{U'}{P}}$}
+      \end{prooftree}
+      Par induction on a donc une dérivation de
+      $\subimpl{\Gr}{d'}{u~\asux}{U'[u/x]}$ avec $d ' \eqbre
+      d\ipux$. 
+      Par le lemme \ref{substi-coercion-hnf} on a donc une dérivation de 
+      $\subimpl{\Gr}{d''}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$ avec $d'' \eqbre
+      d'\ipux$. 
       
+      Par inversion du jugement
+      $\timpl{\GD}{\mysubset{y}{U'}{P}}{\Set}$ on a 
+      $\timpl{\GD}{U'}{\Set}$ et $\timpl{\GD, y : U'}{P}{\Prop}$. On
+      peut appliquer l'hypothèse d'induction pour obtenir:
+      $\ip{U'[u/x]}{\Gr} \eqbr \ip{U'}{\GD}\ipux$ et
+      $\ip{P[u/x]}{\Gr, y : U'[u/x]} \eqbre \ip{P}{\GD, y : U'}\ipux$. 
+      Par substitutivité on a aussi $\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$.
+      
+      
+      \begin{prooftree}
+        \AXC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$}
+        \UIC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{U'[u/x]}$}
+        \AXC{$\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$}
+        \BIC{$\subimpl{\Gr}{c'}{\hnf{T[u/x]}}{\hnf{(T'[u/x])} = \mysubset{y}{U'[u/x]}{P[u/x]}}$}
+        \UIC{$\subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}$}
+      \end{prooftree}
+      
+      On en déduit:
+      \begin{eqnarray*}
+        \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y] & 
+        \eqbre & \ip{P}{\GD, y : U'}\ipux[d'/y] \\
+        & \eqbre & \ip{P}{\GD, y : U'}\ipux[d\ipux/y] \\
+        & = & \ip{P}{\GD, y : U'}[d/y]\ipux
+      \end{eqnarray*}
+      
+      Soit $A = \ipG{\Gr} \typec \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y]$ et
+      $B = \ipG{\GD} \typec \ip{P}{\GD, y : U'}[d/y]$. On a
+      $A \eqbr B\ipux$ car $\ipG{\Gr} \eqbr \ipG{\GD}\ipux = \ipG{`G}, \ipG{`D}\ipux$ 
+      par application de l'hypothèse d'induction sur chaque élément de
+      $`D$ et les conclusion des existentielles sont convertibles par le résultat précédent.
+      
+      On a donc:
+      \begin{eqnarray*}
+        c' & = &
+        \elt{\ip{U'[u/x]}{\Gr}}
+        {\ip{(\lambda y : (U'[u/x]).P[u/x])}{\Gr}}
+        {d'}
+        {?_A} \\
+        & \eqbre &
+        \elt{\ip{U'[u/x]}{\Gr}}
+        {\ip{(\lambda y : (U'[u/x]).P[u/x])}{\Gr}}
+        {d\ipux}
+        {?_A} \\
+        & \eqbre &
+        \elt{\ip{U'}{\GD}\ipux}
+        {\ip{(\lambda y : U'.P)}{\GD}\ipux}
+        {d\ipux}
+        {?_A} \\
+        & \eqbre &
+        (\elt{\ip{U'}{\GD}}{\ip{\lambda y : U'.P}{\GD}}{d}
+        {?_B})\ipux \\
+        & = & c\ipux
+      \end{eqnarray*}
+      
+      \case{SubConv}
+      Alors on a $\hnf{T} = x~\as$ et $\hnf{T'} = x~\bs$ où $\as \eqbres
+      \bs$. Par substitutivité de l'équivalence, $\hnf{T}[u/x] \eqbres
+      \hnf{T'}[u/x]$, donc par le lemme
+      \ref{subti-eqb-coercion-eqbres-id} \Problem{Besoin de la condition
+        de l'énoncé}, on a
+      $\subimpl{\Gr}{c'}{u~\asux}{u~\bsux}$ est dérivable et $c' \eqbre
+      \ctxdot \eqbre \ctxdot\ipux$.
+    \end{itemize}
+    
+
     \case{SubConv}
     On a $T = \hnf{T}$, $T' = \hnf{T'}$, $T \eqbr T'$ et $c \eqbre \ctxdot$. 
     Par substitutivité de la $\beta\rho$-équivalence, on a aussi $T[u/x] \eqbr
@@ -159,7 +171,7 @@
         {\Pi y : A[u/x].B[u/x]}{\Pi y : A'[u/x].B'[u/x]}$}
     \end{prooftree}
     
-    où \[c' = \lambda x : \ip{A'[u/x]}{\Gr}.~c_2'[\ctxdot~c_1'[x] `^ c_1'
+    où \[c' = \lambda x : \ip{A'[u/x]}{\Gr}.~c_2'[\ctxdot~c_1'[x]] `^ c_1'
     \eqbre c_1\ipux `^ c_2' \eqbre c_2\ipux\]
     Par induction, $\ip{A'[u/x]}{\Gr} \eqbre \ip{A'}{\GD}\ipux$,
     on a donc bien $c' \eqbre c\ipux$.
@@ -174,7 +186,7 @@
     \begin{prooftree}
       \BAX{}
       {$\wf \GD$}
-      {$y : T `: \GD$}
+      {$y : T `: (\GD)$}
       {$\GD \seq y : T$}
       {}
     \end{prooftree}    
@@ -224,9 +236,11 @@
     jugement substitué est:
     \typenva
     \begin{prooftree}
-      \TAX{App}
-      {$\Gr \seq f[u/x] : F[u/x] \quad \mualgo(F[u/x]) = \Pi y : A[u/x]. B[u/x] : s$}
-      {$\Gr \seq e[u/x] : E[u/x] \quad `G \seq E[u/x], A[u/x] : s$}
+      \SAX{App}
+      {$\Gr \seq f[u/x] : F[u/x]$}
+      {$\mualgo(F[u/x]) = \Pi y : A[u/x]. B[u/x] : s$}
+      {$\Gr \seq e[u/x] : E[u/x]$}
+      {$`G \seq E[u/x], A[u/x] : s$}
       {$E[u/x] \sub A[u/x]$}
       {$\Gr \seq (f~e)[u/x] : B' [ e[u/x] / y ]$}
       {}
@@ -322,7 +336,7 @@ De même pour les coercions explicites dérivées par le jugement $`G
   explicites par les règles suivantes:
   \begin{itemize}
   \item $[] \sub []$
-  \item $`r, c : `G, x : T \sub `G', x : T'$ si $`r : `G \sub `G'$ et 
+  \item $`r, c : (`G, x : T) \sub (`G', x : T')$ si $`r : `G \sub `G'$ et 
     $`G \typec c : T \sub T'$.
   \end{itemize}
 \end{definition}
@@ -336,7 +350,7 @@ coercion de contexte explicite et vice-versa.
   On définit la substitution d'une coercion de contexte inductivement:
   \begin{itemize}
   \item $t[[]] = t$
-  \item $t[`r, c : `G, x : T \sub T'] = t[`r : `G][c[x]/x]$
+  \item $t[`r, c : (`G, x : T) \sub (`G', x : T')] = t[`r : `G \sub `G'][c[x]/x]$
   \end{itemize}
 \end{definition}
 
@@ -399,7 +413,7 @@ coercion de contexte explicite et vice-versa.
       \BAX{}
       {$\subimpl{`G}{c_1}{A}{C}$}
       {$\subimpl{`G, x : A}{c_2}{B}{D}$}
-      {$\subimpl{`G}{t}{(c_1[\pi_1~\ctxdot], c_2~[\pi_2~\ctxdot])}
+      {$\subimpl{`G}{(c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
         {\Sigma x : A.B}{\Sigma x : C.D}$}
       {}
     \end{prooftree}
@@ -409,20 +423,20 @@ coercion de contexte explicite et vice-versa.
     $\subimpl{`D, x : A}{c_2[`s]}{B}{D}$
     
     On peut alors appliquer \irule{SubSigma} pour obtenir:
-    \[\subimpl{`G}
+    \[\subimpl{`D}
     {c' = ((c_1[`r])[\pi_1~\ctxdot], (c_2[`s])[\pi_2~\ctxdot])}
     {\Sigma x : A.B}{\Sigma x : C.D}\]
     
     On a:
     \[\begin{array}{ll}
       \firsteq{
-        ((c_1[\pi_1~\ctxdot], c_2[\pi_2~\ctxdot]))[`r]}
+        ((c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]))[`r]}
       
-        \step{Définition de la substitution}
-        {=}{((c_1[`r])[\pi_1~\ctxdot], (c_2[`r])[\pi_2~\ctxdot])}
+        \step{Définition de la substitution, $x `; `r$}
+        {=}{((c_1[`r])[\pi_1~\ctxdot], (c_2[`r][\pi_1~\ctxdot/x])[\pi_2~\ctxdot])}
 
         \step{Coercion identité dans $`s$}
-        {=}{((c_1[`r])[\pi_1~\ctxdot], (c_2[`s])[\pi_2~\ctxdot])}
+        {=}{((c_1[`r])[\pi_1~\ctxdot], (c_2[`s])[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
       \end{array} 
       \]
       

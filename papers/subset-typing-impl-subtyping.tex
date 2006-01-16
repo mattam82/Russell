@@ -133,10 +133,9 @@ existante.
     La dérivation va avoir la forme suivante:
     \begin{prooftree}
       \AXC{$\subimpl{`G}{c' \eqbr \ctxdot}{T'}{U'}$}
-      \UIC{$\subimpl{`G}{d = c'[\pi_1~\ctxdot]}{T'}{U'}$}
+      \UIC{$\subimpl{`G}{d = c'[\pi_1~\ctxdot]}{\mysubset{x}{T'}{P}}{U'}$}
       \UIC{$\subimpl{`G}{c = \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{d}
-            {\ex{\ipG{`G}}{\ip{P'}{`G}[d/x]}}}{\mysubset{x}{T'}{P}}{U'}$}
-      \UIC{$\subimpl{`G}{c}{\mysubset{x}{T'}{P}}{\mysubset{x}{U'}{P'}}$}
+          {\ex{\ipG{`G}}{\ip{P'}{`G}[d/x]}}}{\mysubset{x}{T'}{P}}{\mysubset{x}{U'}{P'}}$}
       \UIC{$\subimpl{`G}{c}{T}{U}$}
     \end{prooftree}
     
