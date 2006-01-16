@@ -1,5 +1,6 @@
+
 \begin{lemma}[Transitivité de la coercion]
-  \label{subi-trans}
+  \label{coerce-trans}
   S'il existe $c_1, c_2$ tels que $`G \typec c_1 : S \sub T$ et $`D
   \typec c_2 : T \sub U$ avec $`r : `D \sub `G$ et $\ip{T}{`G}[`r] \eqbr
   \ip{T}{`D}$,
@@ -22,9 +23,8 @@
     
     Les conditions de bord de \irule{SubConv} nous donnent comme
     hypothèses que $S$ et $T$ sont en forme normale de tête et que 
-    $S "/=" \Pi, \Sigma, \{|\}$ et $T "/=" \{|\}$.
-    Par inversion de la $\beta\rho$-équivalence $S \eqbr T$, on a aussi,
-    $T "/=" \Pi, Sigma$.
+    $S "/=" \Pi, \Sigma, \{|\}$. Par inversion de la
+    $\beta\rho$-équivalence $S \eqbr T$, on a aussi $T "/=" \Pi, \Sigma, \{|\}$.
     Les seules règles pouvant s'appliquer a la fin de la dérivation de
     $c_2$ sont donc \irule{SubConv}, \irule{SubHnf} et \irule{SubProof}.
 
@@ -391,25 +391,24 @@
   \end{induction}
 \end{proof}
 
-
 On peut maintenant énoncer le lemme de symmétrie:
 
 \begin{lemma}[Symétrie de la coercion]
-  \label{subi-sym}
-  S'il existe $c$ tel que $`G \typec c : A \subi B$ alors $`E!c^{-1}, `G
-  \typec c^{-1} : B \subi A$ et $c^{-1} `o c \eqbre \sref{id}~A$ et $c
-  `o c^{-1} \eqbre \sref{id}~B$, où $\sref{id} \coloneqq \lambda X :
-  Set.\lambda x : X. x$.
+  \label{coerce-sym}
+  S'il existe $c$ tel que $\subimpl{`G}{c}{A}{B}$ alors $`E!c^{-1}, 
+  \subimpl{`G}{c^{-1}}{B}{A}$ et $c^{-1} `o c \eqbre \ctxdot \eqbr c `o c^{-1}$.
 \end{lemma}
 \begin{proof}
   On sait que le jugement $\subi$ est symmétrique, c'est à dire qu'on a
   l'existence des inverses. On utilise la transitivité pour montrer le
   reste du lemme. Si $\subimpl{`G}{c}{A}{B}$ et
-  $\subimpl{`G}{c^{-1}}{B}{A}$ alors il existe $f$ et $f^{-1}$ tel que
+  $\subimpl{`G}{c^{-1}}{B}{A}$ alors il existe des coercions $f$ et
+  $f^{-1}$ telles que
   $\subimpl{`G}{f \eqbr c^{-1} `o c}{A}{A}$ et $\subimpl{`G}{f^{-1}
-    \eqbr c `o c^{-1}}{B}{B}$. Par unicité des coercions, $f \eqbre
-  \lambda x : A.x$ et $f^{-1} \eqbre \lambda x : B.x$. En général $f$ et
-  $f'$ sont en forme $\eta$-longue et pas l'identité.
+    \eqbr c `o c^{-1}}{B}{B}$. Par réflexivité (lemme \ref{coerce-refl})
+  etunicité des coercions, $f \eqbre
+  \ctxdot$ et $f^{-1} \eqbre \ctxdot$. En général $f$ et
+  $f'$ sont en forme $\eta$-longue.
 \end{proof}
 
 %%% Local Variables: 

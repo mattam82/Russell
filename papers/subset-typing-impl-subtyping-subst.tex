@@ -22,15 +22,18 @@
 
 \begin{lemma}[Stabilité de la coercion par substitution]
   \label{subti-coercion-subst}
-  Si $\GD \typea T, T' : s$, $`G \typec u :
+  Si $\GD \typea T, T' : s$, $`G \typea u :
   U$, alors
   $\begin{array}{lcl}
     \GD \typea t : T & "=>" & \ip{t[u/x]}{\Gr} \eqbre
     \ip{t}{\GD}[\ip{u}{`G}/x] \\
-    \subimpl{\GD}{c}{T}{T'} & "=>" & \subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}
+    \subimpl{\GD}{c}{T}{T'} 
+    & "=>" & \subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}
     `^ c' \eqbre c[\ip{u}{`G}/x]
   \end{array}$
-  
+
+  \Problem{Besoin de $(T \eqbr T' "=>" \ip{T[u/x]}{\Gr} \eqbres
+    \ip{T'[u/x]}{\Gr})$}
 \end{lemma}
 
 \begin{proof}
@@ -66,25 +69,33 @@
     $\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$ avec $d' \eqbre
     d\ipux$. 
     
+    Par inversion du jugement
+    $\timpl{\GD}{\mysubset{y}{U'}{P}}{\Set}$ on a 
+    $\timpl{\GD}{U'}{\Set}$ et $\timpl{\GD, y : U'}{P}{\Prop}$. On
+    peut appliquer l'hypothèse d'induction pour obtenir:
+    $\ip{U'[u/x]}{\Gr} \eqbr \ip{U'}{\GD}\ipux$ et
+    $\ip{P[u/x]}{\Gr, y : U'[u/x]} \eqbre \ip{P}{\GD, y : U'}\ipux$. 
+    Par substitutivité on a aussi $\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$.
+
+
     \begin{prooftree}
       \AXC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$}
       \UIC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{U'[u/x]}$}
-      \UIC{$\subimpl{\Gr}{c'}{\hnf{T[u/x]}}{\hnf{(T'[u/x])} = \mysubset{y}{U'[u/x]}{P[u/x]}}$}
+      \AXC{$\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$}
+      \BIC{$\subimpl{\Gr}{c'}{\hnf{T[u/x]}}{\hnf{(T'[u/x])} = \mysubset{y}{U'[u/x]}{P[u/x]}}$}
       \UIC{$\subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}$}
     \end{prooftree}
     
-    Par induction, on a $\ip{U'[u/x]}{\Gr} \eqbr \ip{U'}{\GD}\ipux$ et
-    $\ip{P[u/x]}{\Gr} = \ip{P}{\GD}\ipux$. 
     On en déduit:
     \begin{eqnarray*}
-      \ip{P[u/x]}{\Gr}[d'/y] & 
-      \eqbre & \ip{P}{\GD}\ipux[d'/y] \\
-      & \eqbre & \ip{P}{\GD}\ipux[d\ipux~t/y] \\
-      & = & \ip{P}{\GD}[d/y]\ipux
+      \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y] & 
+      \eqbre & \ip{P}{\GD, y : U'}\ipux[d'/y] \\
+      & \eqbre & \ip{P}{\GD, y : U'}\ipux[d\ipux/y] \\
+      & = & \ip{P}{\GD, y : U'}[d/y]\ipux
     \end{eqnarray*}
     
-    Soit $A = \ipG{\Gr} \typec \ip{P[u/x]}{\Gr}[d'/y]$ et
-    $B = \ipG{\GD} \typec \ip{P}{\GD}[d/y]$. On a
+    Soit $A = \ipG{\Gr} \typec \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y]$ et
+    $B = \ipG{\GD} \typec \ip{P}{\GD, y : U'}[d/y]$. On a
     $A \eqbr B\ipux$ car $\ipG{\Gr} \eqbr \ipG{\GD}\ipux = \ipG{`G}, \ipG{`D}\ipux$ 
     par application de l'hypothèse d'induction sur chaque élément de
     $`D$ et les conclusion des existentielles sont convertibles par le résultat précédent.
@@ -114,12 +125,18 @@
     
     Dans le cas ou l'on applique directement \irule{SubConv} cela
     implique que $\hnf{T} = x = \hnf{T'}$ donc par reflexivité de la
-    coercion \ref{subti-reflexive}, $\subimpl{\Gr}{c'}{u}{u}$ est dérivable et $c' \eqbre
+    coercion \ref{coerce-refl}, $\subimpl{\Gr}{c'}{u}{u}$ est dérivable et $c' \eqbre
     \ctxdot \eqbre \ctxdot\ipux$.
       
     \case{SubConv}
-    On a $T \eqbr T'$, donc $c \eqbre \ctxdot$. D'autre part, $T[u/x] \eqbr T'[u/x]$ par substitutivité de
-    la $\beta\rho$-équivalence. Par le lemme \ref{subti-eqb-coercion-eqbe-id}, on
+    On a $T = \hnf{T}$, $T' = \hnf{T'}$, $T \eqbr T'$ et $c \eqbre \ctxdot$. 
+    Par substitutivité de la $\beta\rho$-équivalence, on a aussi $T[u/x] \eqbr
+    T'[u/x]$. 
+    % Comme $T, T' "/=" \Pi, \Sigma, \{|\}$, on a $T = y~\as$ et $T' =
+%     y~\bs$ où $\as \eqbr \bs$.
+%     Si $y = x$, alors on doit montrer 
+    Par le lemme \ref{subti-eqb-coercion-eqbres-id} \Problem{Besoin de la
+      condition dans l'énoncé pour l'appliquer}, on
     sait qu'il existe une coercion $c'$ telle que le jugement $\Gr
     \typec c' : T[u/x] \sub T'[u/x]$ est dérivable et $c' \eqbre \ctxdot$.
     On a bien $c' \eqbre c\ipux$.
@@ -369,7 +386,7 @@ coercion de contexte explicite et vice-versa.
         \step{Définition de la substitution}
         {=}{\lambda x : \ip{C}{`G}[`r].(c_2[`r])[\ctxdot~(c_1[`r])[x]]}
 
-        \step{Application de l'hypothèse de récurrence}
+        \step{Condition $\ip{T'}{`D} \eqbre \ip{T'}{`G}[`r]$}
         {\eqbre}{\lambda x : \ip{C}{`D}.(c_2[`r])[\ctxdot~(c_1[`r])[x]]}
         
         \step{Coercion identité dans $`s$}
@@ -448,17 +465,36 @@ coercion de contexte explicite et vice-versa.
   \end{induction}
 \end{proof}
 
+
+Pour montrer le prochain lemme, on a besoin d'une propriété essentielle
+de la coercion, la transitivité.
+\input{subset-typing-impl-subtyping-trans}
+
+
 \begin{lemma}[Stabilité par affaiblissement]
   \label{narrowing-i-term}
-  Si $`r : `D \sub `G$, $`G \typec t : T$ alors 
-  $`D \typec t : T'$ et il existe $`a$, $\subimpl{`D}{`a}{T'}{T}$ avec
+  Si $`r : `D \sub `G$, $`G \typea t : T$ alors 
+  $`D \typea t : T'$ et il existe $`a$, $\subimpl{`D}{`a}{T'}{T}$ avec
   $\ip{t}{`G}[`r] \eqbre `a[\ip{t}{`D}]$.
+
+  Si $`G \typea T, T' : s$, $T \eqbr T'$ alors $\ip{T}{`G} \eqbr \ip{T'}{`G}$.
 \end{lemma}
 
 \begin{proof}
   La première partie du lemme se déduit par applications répétées du
   lemme de restriction \ref{narrowing-a}.
-  Par induction sur la dérivation de typage:
+  
+  On va utiliser à plusieurs reprises le résultat suivant:
+  Si une prémisse du jugement sur lequel on fait la récurrence est de la
+  forme $\timpl{`G}{T}{s}$, alors on peut appliquer l'hypothèse
+  d'induction pour obtenir $\timpl{`D}{T}{s'}$ avec $`a$ tel que
+  $\subimpl{`D}{`a}{s}{s'}$ et $\ip{T}{`G}[`r] \eqbres
+  `a[\ip{T}{`D}]$. Or comme $s$ est une sorte, on a $s' = s$ et $`a =
+  \ctxdot$. On a donc $\ip{T}{`G}[`r] \eqbres
+  \ip{T}{`D}$. 
+
+  Par induction mutuelle sur les dérivations de typage de $t$ et $T$, on
+  commence par la dérivation de $t$.
 
   \begin{induction}
     \case{Var} 
@@ -497,7 +533,7 @@ coercion de contexte explicite et vice-versa.
       \ip{(f~e)}{`G}
       & = & (((\pi_F[\ip{f}{`G}])~(c_e[\ip{e}{`G}])) \\
       \text{ où } & & \\
-      \pi_F & = & \coerce{`G}{F}{(\Pi y : A.B)} \\
+      \pi_F, \Pi y : A.B & = & \muimpl{F} \\
       c_e & = & \coerce{`G}{E}{A}.
     \end{eqnarray*}
     
@@ -509,13 +545,19 @@ coercion de contexte explicite et vice-versa.
       \ip{f~e}{`D}
       & = & (\pi_{F'}[\ip{f'}{`D}])~(c_{e'}[\ip{e'}{`D}]) \\
       \text{ où } & & \\
-      \pi_{F'} & = & \coerce{`D}{F'}{(\Pi y : A'.B')} \\
+      \pi_{F'},(\Pi y : A'.B')  & = & \muimpl{F'} \\
       c_{e'} & = & \coerce{`D}{E'}{A'}
     \end{eqnarray*}
 
-    On a la coercion $\subimpl{`G}{\pi_F}{F}{\Pi y : A.B}$ ; 
+    On a $\muimpl{F} = \pi_F,(\Pi y : A.B)$, donc
+    $\subimpl{`G}{\pi_F}{F}{\Pi y : A.B}$ et 
     par le lemme \ref{subti-coercion-subst} on obtient
-    $\subimpl{`D}{\pi_F[`r]}{F}{\Pi y : A.B}$.
+    $\subimpl{`D}{\pi_F[`r]}{F}{\Pi y : A.B}$. On peut appliquer ce
+    lemme puisque si $\muimpl{F} \eqbres \Pi y : A.B$, alors clairement 
+    c'est que $\hnf{F} = \Pi y : A.B$ donc $\ip{F[u/x]}{`D} = \ip{\Pi y :
+      A[u/x].B[u/x]}{`D}$ \Problem{Il faudrait $F = \Pi y : A.B$}.
+    
+
     On a donc les coercions suivantes:
     \[
     \xymatrix{
@@ -532,7 +574,8 @@ coercion de contexte explicite et vice-versa.
     $\subimpl{`D}{c_1}{A}{A'}$ et $\subimpl{`D, x : A}{c_2}{B'}{B}$.
 
     Par le lemme \ref{subti-coercion-subst} on a
-    $\subimpl{`D}{c_e[`r]}{E}{A}$.
+    $\subimpl{`D}{c_e[`r]}{E}{A}$ \Problem{Encore un probleme
+      d'application du lemme, passe avec l'autre condition}.
 
     On a donc les coercions suivantes pour l'argument $e$:   
     \[
@@ -550,7 +593,8 @@ coercion de contexte explicite et vice-versa.
     $\subimpl{`D, x : E'}{c_2'}{B'}{B}$ avec $c_2' \eqbre
     c_2[(c_e[`r])[`a_e[x]]/x]$.
 
-    Par le lemme \ref{subti-coercion-subst} avec $`D \typec e : E'$ on obtient:
+    Par le lemme \ref{subti-coercion-subst} \Problem{encore une fois, il
+    faut la condition} avec $`D \typec e : E'$ on obtient:
     $\subimpl{`D}{c_2''}{B'[e/x]}{B[e/x]}$ avec \[c_2'' \eqbre
     c_2'[\ip{e}{`D}/x] \eqbre c_2[(c_e[`r])[`a_e[e]]/x]\]. 
 
@@ -588,7 +632,67 @@ coercion de contexte explicite et vice-versa.
     
     \TODO{Autres cas}
   \end{induction}   
+
+  On fait maintenant l'induction sur la dérivation de $`G \typea T :
+  s$. Il suffit de prouver que si $T "->"_{\beta} T'$ alors $\ip{T}{`G}
+  \eqbr \ip{T'}{`G}$.
+  \begin{induction}
+    \case{PropSet} On a $T = s = \ip{T}{`G}$, on doit donc montrer que
+    $\ip{T'}{`G} \eqbr s$. 
+    Par induction sur la dérivation de $T'$.
+    Si $T'$ est une sorte c'est direct. $T'$ ne peut pas être une
+    variable, un type $\Pi, \Sigma, \{|\}$ ni une abstraction ou une
+    paire. Il ne reste que les redex.
+    
+    Si $T' : s$ est dérivé par \irule{App}, alors $W[u/x] = s$ donc $u =
+    s$ ou $W = s$. Dans le premier cas, on aurait une dérivation de $`G
+    \typea s : U$ et $`G \typec U : s'$, ce qui est impossible.
+    Dans le second cas, on a:
+    $`G \typea \Pi x : V.s : s_3$. Par inversion, $`G \typea V : s_1$,
+    $`G, x : V \typea s : s_2$ et $(s_1, s_2, s_3) `: \mathcal{R}$. Or
+    $s_2$ ne peut être que $\Type$, donc c'est impossible.
+    \Problem{$\listml : \Pi x : nat. Set$ n'est pas typable dans notre
+      système ?!, } 
+    
+    \case{Var} On a alors $T' \eqbr x$ et $`G \typea x : s : s'$ par
+    inversion du jugement de bonne formation.
+    Encore une fois seuls les jugement sur les rédex s'appliquent.
+
+
+    \case{App} 
+    Si $f~u$ est de la forme $(\lambda x : V.e)~u$ alors on a
+    $\ip{f~u}{`G} = (\lambda x : \ip{V}{`G}.\ip{e}{`G, x :
+      V})~c[\ip{u}{`G}] "->"_\beta \ip{e}{`G, x : V}[c[\ip{u}{`G}]/x]$
+    où $\subimpl{`G}{c}{U}{V}$. 
+    Supposons $T' = e[u/x]$, alors $\ip{T'}{`G} = \ip{e[u/x]}{`G}$.
+    Par inversion du jugement $\subimpl{`G}{\lambda x : V.e}{\Pi x :
+      V.W}$ on a $\subimpl{`G, x : V}{e}{W = s}$. On applique
+    l'hypothèse d'induction pour obtenir $\ip{e}{`G, x : V}[c] \eqbres
+    `a[\ip{e}{`G, x : U}]$ en utilisant la coercion de contexte
+    $\ctxdot, \ldots, c : (`G, x : U) \sub (`G, x : V)$. La coercion
+    $`a$ est équivalente à l'identité car elle part de la sorte $s$.
+    On a donc: $\ip{e}{`G, x : V}[c] \eqbres \ip{e}{`G, x : U}$. Par
+    substitutivité dans \CCI{} on obtient:
+    \[\ip{e}{`G, x : V}[c[x]/x][\ip{u}{`G}/x] \eqbres \ip{e}{`G, x :
+      U}[\ip{u}{`G}/x]\]
+    Soit:
+    \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] \eqbres \ip{e}{`G, x :
+      U}[\ip{u}{`G}/x]\]
+    Enfin par le lemme de stabilité par substitution
+    \ref{subti-coercion-subst}, on obtient:
+    \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] \eqbres \ip{e[u/x]}{`G}\]
+
+    On a donc bien $\ip{(\lambda x : V.e)~u}{`G} \eqbres
+    \ip{e[u/x]}{`G}$.
+    
+    Si $T = f~u'$ où $u \eqbres u'$, alors:
+    $\ip{T} = (\pi_F[f])~(c[\ip{u}{`G}])$ et $\ip{T'} = (\pi_F[f])~(c'[\ip{u'}{`G}])$. 
+    On doit montrer que $c[\ip{u}{`G}] \eqbres c'[\ip{u'}{`G}]]$. 
+    \Problem{Analyser tout les cas possibles ?}
+  \end{induction}
 \end{proof}
+
+\input{subset-typing-impl-correct}
 
 %%% Local Variables: 
 %%% mode: latex
