@@ -119,22 +119,25 @@ Notre opération de mise en forme normale de tête est définie de la façon suivant
 \begin{figure}[h]
   \[\begin{array}{llcll}
     (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
-    (\rho) & \pi_i~(e_1, e_2) & = & e_i & \\
-    (\eta) & (\lambda x : X.e~x) & = & e & \text{si $x `; FV(e)$ et $e :
-      \Pi x : X.Y$} \\
-    (\SP) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{si
-      $e : \Sigma x : X. Y$} \\
-    & \elt{E}{P}{\eltpit~e}{\eltpip~e} & = & e & \text{si $e :
-      \mysubset{x}{E}{P}$}
+    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
+    (\sigma_i) & \sigma_i~\elt{E}{P}{e_1}{e_2} & = & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & = & e & \text{si $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
+    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \\ %\text{si $e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & `= & e & \\ %\text{si $e :
+                                %%\mysubset{x}{E}{P}$} \\
+    (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{si $t
+      `= t'$}
   \end{array}\]
   \caption{Théorie équationnelle de \CCI{}}
   \label{fig:eqcci}
 \end{figure}
 
-On utilise l'équivalence $\eqbres$ définie comme la clôture réflexive,
-symétrique et transitive de la relation définie figure \ref{fig:eqcci} enrichie avec les
-existentielles, on étend donc la relation aux existentielles de la façon
-suivante: \[\ex{`G}{P} \eqbres \ex{`G'}{P'} `= `G \eqbres `G' `^ P \eqbres P'\]
+On utilise l'équivalence $\eqbpers$ définie comme la clôture réflexive,
+symétrique et transitive de la relation définie figure
+\ref{fig:eqcci}. Cette relation sera dénotée par $`=$ pour plus de clarté.
+% enrichie avec les
+%existentielles, on étend donc la relation aux existentielles de la façon
+%suivante: \[\ex{`G}{P} \eqbres \ex{`G'}{P'} `= `G \eqbres `G' `^ P \eqbres P'\]
 
 \subtiFig
 

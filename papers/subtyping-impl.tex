@@ -59,7 +59,7 @@
   {$\timpl{#1}{\mysubset{x}{U}{P}}{\Set}$}
   {$\subimpl{#1}
     {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
-      {\ex{\ipG{#1}}{\ip{P}{#1}[c/x]}}}
+      {\ex{\ipG{#1}}{\ip{P}{#1, x : U}[c/x]}}}
   {T}{\mysubset{x}{U}{P}}$}
 {$T = \hnf{T}$}
 }

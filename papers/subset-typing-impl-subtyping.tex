@@ -19,7 +19,7 @@ existante.
 \begin{lemma}[Réflexivité de la coercion]
   \label{coerce-refl}
   Si $\timpl{`G}{A}{s}$ alors il existe $c$, $\subimpl{`G}{c}{A}{A}$ et
-  $c \eqbres \ctxdot$.
+  $c `= \ctxdot$.
 \end{lemma}
 
 \begin{proof}
@@ -36,10 +36,10 @@ existante.
   Alors on a la dérivation:
 
   \begin{prooftree}
-    \AXC{$\subimpl{`G}{c' \eqbres \ctxdot}{U}{U}$}
-    \UIC{$\subimpl{`G}{d = c'[\pi_1~\ctxdot]}{U}{U}$}
+    \AXC{$\subimpl{`G}{c' `= \ctxdot}{U}{U}$}
+    \UIC{$\subimpl{`G}{d = c'[\eltpit~\ctxdot]}{U}{U}$}
     \UIC{$\subimpl{`G}{c = \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{d}
-        {\ex{\ipG{`G}}{\ip{P}{`G}[d/x]}}}{\mysubset{x}{U}{P}}{U}$}
+        {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}}}{\mysubset{x}{U}{P}}{U}$}
     \UIC{$\subimpl{`G}{c}{\hnf{A} = \mysubset{x}{U}{P}}{\mysubset{x}{U}{P}}$}
     \UIC{$\subimpl{`G}{c}{A}{A}$}
   \end{prooftree}
@@ -49,17 +49,18 @@ existante.
 
   On a: 
   \begin{eqnarray*}
-    c & = & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{d}
-    {\ex{\ipG{`G}}{\ip{P}{`G}[d/x]}} \\
-    & \eqbres & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{(\pi_1~\ctxdot)}
-    {\ex{\ipG{`G}}{\ip{P}{`G}[\pi_1~\ctxdot/x]}} \\
-    & = & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{(\pi_1~\ctxdot)}
-    {(\pi_2~\ctxdot)} \\
-    & =_\SP & \ctxdot
+    c & \hat{=} & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{d}
+    {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}} \\
+    & \hat{=} & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{(\eltpit~\ctxdot)}
+    {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[\eltpit~\ctxdot/x]}} \\
+    & =_{\sigma} & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{(\eltpit~\ctxdot)}
+    {(\eltpip~\ctxdot)} \\
+    & =_{\rho} & \ctxdot
   \end{eqnarray*}
 
-  On utilise ici l'indifférence aux preuves. Comme $(\pi_2~\ctxdot)$ est
-  de type $\ip{P}{`G}[\pi_1~\ctxdot/x]$, on peut remplacer directement
+  On utilise ici l'indifférence aux preuves ($\sigma$). Comme $(\eltpip~\ctxdot)$ est
+  de type $\ip{P}{`G, x : U}[\eltpit~\ctxdot/x]$ dans un contexte où $\ctxdot$
+  est de type $\ip{\mysubset{x}{U}{P}}{`G}$, on peut remplacer directement
   l'existentielle par ce terme. En pratique, ces preuves pourront être
   directement déchargées par l'assistant de preuve.
 \end{proof}
@@ -80,8 +81,8 @@ existante.
 
 \begin{lemma}[Coercion de termes convertibles]
   \label{subti-eqb-coercion-eqbres-id}
-  Si $`G \typea T, U : s$, $T \eqbr U$ et $\ip{T}{`G} \eqbres \ip{U}{`G}$ alors il existe $c$,
-  $\subimpl{`G}{c}{T}{U}$ avec $c \eqbres \ctxdot$.
+  Si $`G \typea T, U : s$, $T \eqbr U$ alors il existe $c$,
+  $\subimpl{`G}{c}{T}{U}$ avec $c `= \ctxdot$.
 \end{lemma}
 
 \begin{proof}
@@ -97,8 +98,8 @@ existante.
     s'il n'apparaît pas en tête. On traite maintenant le seul autre cas possible.
 
   \item Si $\hnf{T} = \Pi y : A.B$, alors $\hnf{U} = \Pi y : A'.B'$ avec $A
-    \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 \eqbres \ctxdot}{A'}{A}$
-    et $\subimpl{`G, x : A'}{c_2 \eqbres \ctxdot}{B}{B'}$ ($\nf{A}, \nf{A'}, \nf{B}, \nf{B'}$ sont des
+    \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 `= \ctxdot}{A'}{A}$
+    et $\subimpl{`G, x : A'}{c_2 `= \ctxdot}{B}{B'}$ ($\nf{A}, \nf{A'}, \nf{B}, \nf{B'}$ sont des
     sous-termes stricts de $\nf{T}$ et $\nf{U}$). On peut donc dériver: 
     $\subimpl{`G}{\lambda x : \ip{A'}{`G}. c_2[\ctxdot~c_1[x]]}
     {\Pi y : A.B}{\Pi y : A'.B'}$. Puis par application de
@@ -106,25 +107,31 @@ existante.
         
     On a donc:
     \begin{eqnarray*}
-      c & = & \lambda x : \ip{A'}{`G}. c_2[\ctxdot~(c_1[x]) \\
-      & \eqbres & \lambda x : \ip{A'}{`G}. \ctxdot~x \\
-      & \eqbres & \ctxdot
+      c & \hat{=} & \lambda x : \ip{A'}{`G}. c_2[\ctxdot~(c_1[x]) \\
+      & `= & \lambda x : \ip{A'}{`G}. \ctxdot~x \\
+      & =_{\eta} & \ctxdot
     \end{eqnarray*}
     
   \item Si $\hnf{T} = \Sigma y : A.B$ alors $\hnf{U} = \Sigma y : A'.B'$ avec $A
-    \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 \eqbres \ctxdot}{A}{A'}$
-    et $\subimpl{`G, x : A}{c_2 \eqbres \ctxdot}{B}{B'}$ ($\nf{A},
+    \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 `= \ctxdot}{A}{A'}$
+    et $\subimpl{`G, x : A}{c_2 `= \ctxdot}{B}{B'}$ ($\nf{A},
     \nf{A'}, \nf{B}, \nf{B'}$ sont des
     sous-termes stricts de $\nf{T}$ et $\nf{U}$). On peut donc dériver: 
-    $\subimpl{`G}{(c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
-    {\Pi y : A.B}{\Pi y : A'.B'}$. Puis par application de
+    $\subimpl{`G}{\pair{\ip{\Sigma y :
+          A'.B'}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}    
+    {\Sigma y : A.B}{\Sigma y : A'.B'}$. Puis par application de
     \irule{SubHnf}, la coercion de $T$ à $U$.
 
     On a donc:
     \begin{eqnarray*}
-      c & = & (c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]) \\
-      & "->>"_\beta & (\pi_1~\ctxdot, \pi_2~\ctxdot) \\
-      & =_\SP & \ctxdot
+      c & \hat{=} & \pair{\ip{\Sigma y : A'.B'}{`G}}
+      {c_1[\pi_1~\ctxdot]}
+      {c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]} \\
+      & `= & 
+      \pair{\ip{\Sigma y : A'.B'}{`G}}
+      {\pi_1~\ctxdot}
+      {\pi_2~\ctxdot} \\
+      & =_\rho & \ctxdot
     \end{eqnarray*}
     
   \item Le cas des sous-ensembles est un peu différent.
@@ -132,29 +139,24 @@ existante.
     \mysubset{x}{U'}{P'}$ avec $T' \eqbr U'$ et $P \eqbr P'$.
     La dérivation va avoir la forme suivante:
     \begin{prooftree}
-      \AXC{$\subimpl{`G}{c' \eqbr \ctxdot}{T'}{U'}$}
-      \UIC{$\subimpl{`G}{d = c'[\pi_1~\ctxdot]}{\mysubset{x}{T'}{P}}{U'}$}
+      \AXC{$\subimpl{`G}{c' `= \ctxdot}{T'}{U'}$}
+      \UIC{$\subimpl{`G}{d = c'[\eltpit~\ctxdot]}{\mysubset{x}{T'}{P}}{U'}$}
       \UIC{$\subimpl{`G}{c = \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{d}
           {\ex{\ipG{`G}}{\ip{P'}{`G}[d/x]}}}{\mysubset{x}{T'}{P}}{\mysubset{x}{U'}{P'}}$}
       \UIC{$\subimpl{`G}{c}{T}{U}$}
     \end{prooftree}
     
-    On a donc $d = c'[\pi_1~\ctxdot] \eqbr \pi_1~\ctxdot$.
-    Comme $P \eqbr P'$, la preuve de l'existentielle
-    $\ex{\ipG{`G}}{\ip{P'}{`G}[\pi_1~\ctxdot/x]}$ peut être considérée
-    comme équivalente à $\pi_2~\ctxdot$. 
-    \Problem{Problème de l'interprétation, on n'a pas $P \eqbr P' "=>" \ip{P}{`G} =
-      \ip{P'}{`G}$ sans ajouter cette condition dans l'énoncé}
+    On a donc $d = c'[\eltpit~\ctxdot] `= \eltpit~\ctxdot$.
 
     On peut vérifier:
     \begin{eqnarray*}
-      c & = & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P''}{`G}}{d}
-      {\ex{\ipG{`G}}{\ip{P''}{`G}[d/x]}} \\
-      & = & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P''}{`G}}{(\pi_1~\ctxdot)}
-      {\ex{\ipG{`G}}{\ip{P''}{`G}[\pi_1~\ctxdot/x]}} \\
-      & = & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P''}{`G}}{(\pi_1~\ctxdot)}
-      {(\pi_2~\ctxdot)} \\
-      & =_\SP & \ctxdot
+      c & \hat{=} & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{d}
+      {\ex{\ipG{`G}}{\ip{P'}{`G}[d/x]}} \\
+      & `= & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{(\eltpit~\ctxdot)}
+      {\ex{\ipG{`G}}{\ip{P'}{`G}[\eltpit~\ctxdot/x]}} \\
+      & =_\sigma & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{(\eltpit~\ctxdot)}
+      {(\eltpip~\ctxdot)} \\
+      & =_\rho & \ctxdot
     \end{eqnarray*}
     
   \end{itemize}

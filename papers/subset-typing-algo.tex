@@ -30,7 +30,9 @@ sous-ensemble en tête d'un type, par exemple: $\mualgo(\mysubset{f}{\nat
 
 \subsection{Notations}
 On note $\hnf{x}$ la mise en forme normale de tête de $x$ selon la
-réduction définie précédemment. 
+réduction définie précédemment. On note $\hat{=}$ l'égalité
+définitionelle.
+
 
 \setboolean{displayLabels}{true}
 \typenva
@@ -279,7 +281,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 
     \case{SubProof}
     Par induction $\hnf{T}~\suba \hnf{V}$, on applique \irule{SubProof}
-    \case{SubSubset} idem.
+    \case{SubSub} idem.
   \end{induction}  
 \end{proof}
 
