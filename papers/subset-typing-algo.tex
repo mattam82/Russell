@@ -30,7 +30,7 @@ sous-ensemble en tête d'un type, par exemple: $\mualgo(\mysubset{f}{\nat
 
 \subsection{Notations}
 On note $\hnf{x}$ la mise en forme normale de tête de $x$ selon la
-réduction définie précédemment. On note $\hat{=}$ l'égalité
+réduction définie précédemment. On note $\eqdef$ l'égalité
 définitionelle.
 
 
@@ -860,6 +860,97 @@ pouvoir prouver la complétude.
 \begin{proof}
   Par substitutivité du typage (\ref{substitutive-typing}) on a $`G \typed t[u/x] : T[u/x]$.
   Par le lemme précédent $T[u/x] \suba U[u/x]$.
+\end{proof}
+
+\begin{lemma}[Substitutivité du typage avec coercion et affaiblissement]
+  \label{subst-coerce-algo}
+  \[\left.\begin{array}{l}
+      `G \typea u : U \\
+      \GD \typea t : T \\ 
+      U \suba V
+    \end{array}
+\right\} "=>"    
+`G, `D[u/x] \typea t[u/x] : T' \suba T[u/x]
+    \]
+\end{lemma}
+
+\begin{proof}
+  Par induction sur la dérivation de $\GD \typea t : T$.
+  
+  \typenva
+  \begin{induction}
+    \case{Var} On a deux cas:
+    \begin{itemize}
+    \item Si $y = x$, alors $T = V$. On a $t[u/x] = u$ donc $T' =
+      U$. Par hypothèse $U \suba V$ donc $T' \suba T[u/x]$ triviallement
+      ($x$ n'apparait pas dans $V$).
+
+    \item Sinon, $t[u/x] = y$ donc $T' = T[u/x]$ et on a $T' \suba T[u/x]$
+      par réflexivité de la coercion.
+    \end{itemize}
+    
+
+    \case{Prod}
+    Par induction, $\Gr \typea T[u/x] : s_1' \suba s_1[u/x]$ et $\Gr, x
+    : T[u/x]
+    \typea U[u/x] : s_2' \suba s_2[u/x]$. Or $s_1[u/x] = s_1$ et
+    $s_2[u/x] = s_2$. On en déduit par \irule{Prod}: 
+    $\Gr \typea (\Pi x : T.U)[u/x] : s_3 \suba s_3[u/x]$.
+
+    \case{Abs}
+    On a: 
+    \begin{prooftree}
+      \Abs
+    \end{prooftree}
+    
+    Par induction, $\Gr \typea (\Pi y : T.U)[u/x] : s' \suba s[u/x]$ et
+    $\Gr, y : T[u/x] \typea M[u/x] : U' \suba U[u/x]$.
+    Par le même raisonnement que précedemment, $s' = s[u/x] = s$.
+    On peut appliquer \irule{Abs} pour obtenir:
+    $\Gr \typea (\lambda y : T.M)[u/x] : \Pi y : T[u/x].U'$. Comme $U'
+    \suba U[u/x]$ on a $\Pi y : T[u/x].U' \suba \Pi y : T[u/x].U[u/x]$
+    et la propriété est vérifiée.
+
+    \case{App}
+    On a: 
+    \begin{prooftree}
+      \TAX{App}
+      {$\GD \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
+      {$\GD \seq e : E \quad \GD \seq E, A : s$}
+      {$E \sub A $}
+      {$\GD \seq (f~e) : B[ e / y ]$}
+      {}
+    \end{prooftree}
+    
+    Par induction, $\Gr \typea f[u/x] : F' \suba F[u/x]$ et $\Gr \typea
+    e[u/x] : E' \suba E[u/x]$ et $\Gr \typea E[u/x], A[u/x] : s$.
+    Comme $\mualgo(F) = \Pi y : A.B$, $\mualgo(F[u/x]) = \Pi y :
+    A[u/x].B[u/x]$ et par transitivité de la coercion, $F' \suba \Pi y :
+    A[u/x].B[u/x]$. On en déduit que $\mualgo(F') = \Pi y : A'.B'$ avec
+    $A[u/x] \suba A'$ et $B' \suba B[u/x]$.
+    Par substitutivité de la coercion, $E \suba A$ implique $E[u/x]
+    \suba A[u/x]$. On applique la transitivité pour obtenir $E' \suba
+    A'$. Par définition, si $E' \suba E[u/x]$ et $\Gr \typea E[u/x] : s$
+    alors $\Gr \typea E' : s$. De même pour $A'$.  
+
+    On peut donc appliquer \irule{App}:    
+    \begin{prooftree}
+      \TAX{App}
+      {$\GD \seq f[u/x] : F' \quad \mualgo(F') = \Pi y : A'. B'$}
+      {$\GD \seq e[u/x] : E' \quad \GD \seq E', A' : s$}
+      {$E' \sub A' $}
+      {$\GD \seq (f~e)[u/x] : B'[ e[u/x] / y ]$}
+      {}
+    \end{prooftree}
+    
+    Par substitutivité de la coercion, $B' \suba B[u/x]$ implique
+    $B'[e[u/x]/y] \suba B[u/x][e[u/x]/y]$. Or $B[u/x][e[u/x]/y] =
+    B[e/y][u/x]$ car $y$ n'apparait pas dans $u$. On a donc bien
+    $T' = B'[e[u/x]/y] \suba T[u/x] = B[e/y][u/x]$.
+     
+    \item[] Les autres cas passent aisément par induction.
+  \end{induction}
+  
 \end{proof}
 
 On a maintenant tout les ingrédients pour montrer la complétude de notre

@@ -1,5 +1,5 @@
 \begin{lemma}[Unicité de la coercion]
-  \label{coercion-unicity}
+  \label{coerce-unicity}
   Si $`G \typea T, U : s$ alors si $\subimpl{`G}{c}{T}{U}$ et
   $\subimpl{`G}{c'}{T}{U}$ alors $c = c'$.
 \end{lemma}
@@ -49,9 +49,9 @@ existante.
 
   On a: 
   \begin{eqnarray*}
-    c & \hat{=} & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{d}
+    c & \eqdef & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{d}
     {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}} \\
-    & \hat{=} & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{(\eltpit~\ctxdot)}
+    & \eqdef & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{(\eltpit~\ctxdot)}
     {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[\eltpit~\ctxdot/x]}} \\
     & =_{\sigma} & \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{(\eltpit~\ctxdot)}
     {(\eltpip~\ctxdot)} \\
@@ -67,7 +67,7 @@ existante.
 
 
 \begin{lemma}[Coercion et formes normales de tête]
-  \label{substi-coercion-hnf}
+  \label{coerce-hnf}
   Si $`G \typec c : T \suba U$ alors $`G \typec c' : \hnf{T}~\suba
   \hnf{U}$ avec $c = c'$ est dérivable par une dérivation plus
   petite ou égale.
@@ -80,7 +80,7 @@ existante.
 \end{proof}
 
 \begin{lemma}[Coercion de termes convertibles]
-  \label{subti-eqb-coercion-eqbres-id}
+  \label{coerce-eqbr-eq-id}
   Si $`G \typea T, U : s$, $T \eqbr U$ alors il existe $c$,
   $\subimpl{`G}{c}{T}{U}$ avec $c `= \ctxdot$.
 \end{lemma}
@@ -107,7 +107,7 @@ existante.
         
     On a donc:
     \begin{eqnarray*}
-      c & \hat{=} & \lambda x : \ip{A'}{`G}. c_2[\ctxdot~(c_1[x]) \\
+      c & \eqdef & \lambda x : \ip{A'}{`G}. c_2[\ctxdot~(c_1[x]) \\
       & `= & \lambda x : \ip{A'}{`G}. \ctxdot~x \\
       & =_{\eta} & \ctxdot
     \end{eqnarray*}
@@ -124,7 +124,7 @@ existante.
 
     On a donc:
     \begin{eqnarray*}
-      c & \hat{=} & \pair{\ip{\Sigma y : A'.B'}{`G}}
+      c & \eqdef & \pair{\ip{\Sigma y : A'.B'}{`G}}
       {c_1[\pi_1~\ctxdot]}
       {c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]} \\
       & `= & 
@@ -150,7 +150,7 @@ existante.
 
     On peut vérifier:
     \begin{eqnarray*}
-      c & \hat{=} & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{d}
+      c & \eqdef & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{d}
       {\ex{\ipG{`G}}{\ip{P'}{`G}[d/x]}} \\
       & `= & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{(\eltpit~\ctxdot)}
       {\ex{\ipG{`G}}{\ip{P'}{`G}[\eltpit~\ctxdot/x]}} \\

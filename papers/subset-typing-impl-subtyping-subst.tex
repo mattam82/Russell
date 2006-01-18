@@ -4,7 +4,7 @@
 \def\iGr{\ipG{\Gr}}
 
 \begin{lemma}[Coercion de sortes]
-  \label{subti-coercion-sorts}
+  \label{coerce-sorts}
   Si $\subimpl{`G}{e}{s}{T}$ ou $\timpl{`G}{e}{T}{s}$ alors $T
   \eqbr s$ et $e = \ctxdot$.
 \end{lemma}
@@ -20,7 +20,7 @@
 \end{proof}
 
 \begin{lemma}[Stabilité de la coercion par substitution]
-  \label{subti-coercion-subst}
+  \label{coerce-subst}
   Si $\talgo{\GD}{T, T'}{s}$, $\talgo{`G}{u}{U}$, alors
   $\begin{array}{lcl}
     \talgo{\GD}{t}{T} & "=>" & \ip{t[u/x]}{\Gr} `= \ip{t}{\GD}[\ip{u}{`G}/x] \\
@@ -66,7 +66,7 @@
       Par induction on a donc une dérivation de
       $\subimpl{\Gr}{d'}{u~\asux}{U'[u/x]}$ avec $d ' `=
       d\ipux$. 
-      Par le lemme \ref{substi-coercion-hnf} on a donc une dérivation de 
+      Par le lemme \ref{coerce-hnf} on a donc une dérivation de 
       $\subimpl{\Gr}{d''}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$ avec $d'' `=
       d'\ipux$. 
       
@@ -103,7 +103,7 @@
       
       On a donc:
       \begin{eqnarray*}
-        c' & \hat{=} &
+        c' & \eqdef &
         \elt{\ip{U'[u/x]}{\Gr}}
         {\ip{(\lambda y : (U'[u/x]).P[u/x])}{\Gr}}
         {d'}
@@ -128,7 +128,7 @@
       Alors on a $\hnf{T} = x~\as$ et $\hnf{T'} = x~\bs$ où $\as `=
       \bs$. Par substitutivité de l'équivalence, $\hnf{T}[u/x] `=
       \hnf{T'}[u/x]$, donc par le lemme
-      \ref{subti-eqb-coercion-eqbres-id}, on a
+      \ref{coerce-eqbr-eq-id}, on a
       $\subimpl{\Gr}{c'}{u~\asux}{u~\bsux}$ est dérivable et $c' `=
       \ctxdot = \ctxdot\ipux$.
     \end{itemize}
@@ -138,7 +138,7 @@
     On a $T = \hnf{T}$, $T' = \hnf{T'}$, $T \eqbr T'$ et $c `= \ctxdot$. 
     Par substitutivité de la $\beta\rho$-équivalence, on a aussi $T[u/x] \eqbr
     T'[u/x]$. 
-    Par le lemme \ref{subti-eqb-coercion-eqbres-id}, on
+    Par le lemme \ref{coerce-eqbr-eq-id}, on
     sait qu'il existe une coercion $c'$ telle que le jugement
     $\subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}$ est dérivable et $c' `= \ctxdot$.
     On a bien $c' `= c\ipux$.
@@ -257,7 +257,7 @@
       \firsteq{\ip{f~e}{\GD}\ipux}
       
       \step{Définition de l'interprétation}
-      {\hat{=}}(\pi_F[\ip{f}{\GD}])~(c_e[\ip{e}{\GD}])\ipux 
+      {\eqdef}(\pi_F[\ip{f}{\GD}])~(c_e[\ip{e}{\GD}])\ipux 
 
       \step{Définition de la substitution}
       {=}{(\pi_F\ipux[\ip{f}{\GD}\ipux])~(c_e\ipux[\ip{e}{\GD}\ipux])}
@@ -272,7 +272,7 @@
       {=}{\pi_{F[u/x]}[\ip{f'}{\Gr}]~c_{e'}[\ip{e'}{\Gr}]}
       
       \step{Définition de l'interprétation}
-      {\hat{=}}{\ip{(f~e)[u/x]}{\Gr}}
+      {\eqdef}{\ip{(f~e)[u/x]}{\Gr}}
     \end{array}\]
     
     \casethree{Prod}{Sigma}{Subset} Par induction.
@@ -291,13 +291,13 @@
       \firsteq{\ip{\lambda y : T.M}{\GD}\ipux}
       
       \step{Définition de l'interprétation}
-      {\hat{=}}{\lambda y : \ip{T}{\GD}\ipux.\ip{M}{\GD, y : T}\ipux}
+      {\eqdef}{\lambda y : \ip{T}{\GD}\ipux.\ip{M}{\GD, y : T}\ipux}
 
       \step{Application de l'hypothèse de récurrence}
       {`=}{\lambda y : \ip{T[u/x]}{\Gr}.\ip{M[u/x]}{\Gr, y : T[u/x]}}
 
       \step{Définition de l'interprétation}
-      {\hat{=}}{\ip{\lambda y : T[u/x].M[u/x]}{\Gr}}
+      {\eqdef}{\ip{\lambda y : T[u/x].M[u/x]}{\Gr}}
     \end{array}\]
       
     \casetwo{LetSum}{SumDep} \TODO{Par induction}
@@ -345,7 +345,7 @@ coercion de contexte explicite et vice-versa.
 \end{definition}
 
 \begin{lemma}[Stabilité par affaiblissement des coercions]
-  \label{narrowing-i-coercion}
+  \label{coerce-narrowing-coercion}
   Si $`r : `D \sub `G$, $\subimpl{`G}{c}{T}{T'}$ et $\ip{T'}{`D} `=
   \ip{T'}{`G}[`r]$, alors $\subimpl{`D}{c'}{T}{T'}$ et $c' `= c[`r]$.
 \end{lemma}
@@ -422,7 +422,7 @@ coercion de contexte explicite et vice-versa.
       \firsteq{c[`r]}
 
       \step{Définition}
-      {\hat{=}}
+      {\eqdef}
       {(\pair{\ip{\Sigma x : C.D}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]})[`r]}
       
       \step{Définition de la substitution, $x `; `r$}
@@ -435,7 +435,7 @@ coercion de contexte explicite et vice-versa.
       {=}{\pair{\ip{\Sigma x :
             C.D}{`D}}{c_1[`r][\pi_1~\ctxdot]}{c_2[`s][\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}
 
-      \step{Définition}{\hat{=}}{c'}
+      \step{Définition}{\eqdef}{c'}
       \end{array} 
       \]
       
@@ -464,7 +464,7 @@ coercion de contexte explicite et vice-versa.
      \firsteq{c[`r]}
 
      \step{Définition}
-     {\hat{=}}{(\elt{\ip{U}{`G}}
+     {\eqdef}{(\elt{\ip{U}{`G}}
        {\ip{(\lambda x : U.P)}{`G}}
        {d}
        {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}})[`r]}
@@ -482,7 +482,7 @@ coercion de contexte explicite et vice-versa.
        {\ex{\ipG{`D}}{\ip{P}{`D, x : U}[d[`r]/x]}}}
      
      \step{Définition}
-     {\hat{=}}{c'}
+     {\eqdef}{c'}
    \end{equations}
 
    \case{SubSub} Direct par induction.
@@ -496,12 +496,10 @@ de la coercion, la transitivité.
 
 
 \begin{lemma}[Stabilité par affaiblissement]
-  \label{narrowing-i-term}
-  Si $`r : `D \sub `G$, $`G \typea t : T$ alors 
-  $`D \typea t : T'$ et il existe $`a$, $\subimpl{`D}{`a}{T'}{T}$ avec
+  \label{coerce-narrowing-term}
+  Si $`r : `D \sub `G$, $\talgo{`G}{t}{T}$ alors 
+  $\talgo{`D}{t}{T'}$ et il existe $`a$, $\subimpl{`D}{`a}{T'}{T}$ avec
   $\ip{t}{`G}[`r] `= `a[\ip{t}{`D}]$.
-
-  Si $`G \typea T, T' : s$, $T \eqbr T'$ alors $\ip{T}{`G} \eqbr \ip{T'}{`G}$.
 \end{lemma}
 
 \begin{proof}
@@ -514,11 +512,9 @@ de la coercion, la transitivité.
   d'induction pour obtenir $\timpl{`D}{T}{s'}$ avec $`a$ tel que
   $\subimpl{`D}{`a}{s}{s'}$ et $\ip{T}{`G}[`r] `=
   `a[\ip{T}{`D}]$. Or comme $s$ est une sorte, on a $s' = s$ et $`a =
-  \ctxdot$. On a donc $\ip{T}{`G}[`r] `=
-  \ip{T}{`D}$. 
+  \ctxdot$. On a donc $\ip{T}{`G}[`r] `= \ip{T}{`D}$. 
 
-  Par induction mutuelle sur les dérivations de typage de $t$ et $T$, on
-  commence par la dérivation de $t$.
+  Par induction la dérivations de $t$.
 
   \begin{induction}
     \case{Var} 
@@ -532,8 +528,8 @@ de la coercion, la transitivité.
       {}
     \end{prooftree}    
     
-    Par définition de la coercion de contextes, il existe $c : y : T' \sub T
-    `: `r$. Soit $`a = c$, on a bien: $\ip{y}{`G}[`r] = c[y] =
+    Par définition de la coercion de contextes, il existe $c : (T' \sub
+    T) `: `r$. Soit $`a = c$, on a bien: $\ip{y}{`G}[`r] = c[y] =
     `a[\ip{y}{`D}]$.
     
     \case{App}
@@ -541,23 +537,23 @@ de la coercion, la transitivité.
     On a: 
     \begin{prooftree}
       \TAX{App}
-      {$`G \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
-      {$`G \seq e : E \quad `G \seq E, A : s$}
+      {$\talgo{`G}{f}{F} \quad \mualgo(F) = \Pi y : A. B$}
+      {$\talgo{`G}{e}{E} \quad \talgo{`G}{E, A}{s}$}
       {$E \sub A $}
-      {$`G \seq (f~e) : B [ e / y ]$}
+      {$\talgo{`G}{(f~e)}{B[ e / y ]}$}
       {}
     \end{prooftree}
     
-    et donc par induction, $`D \seq f : F'$ avec
+    et donc par induction, $\talgo{`D}{f}{F'}$ avec
     $\subimpl{`D}{`a_f}{F'}{F}$ et
-    $`D \seq e : E'$ avec $\subimpl{`D}{`a_e}{E'}{E}$.
+    $\talgo{`D}{e}{E'}$ avec $\subimpl{`D}{`a_e}{E'}{E}$.
 
     Par définition de l'interprétation, 
     \begin{eqnarray*}
       \ip{(f~e)}{`G}
       & = & (((\pi_F[\ip{f}{`G}])~(c_e[\ip{e}{`G}])) \\
       \text{ où } & & \\
-      \pi_F, \Pi y : A.B & = & \muimpl{F} \\
+      \pi_F & = & \coerce{`G}{F}{\Pi y : A.B} \\
       c_e & = & \coerce{`G}{E}{A}.
     \end{eqnarray*}
     
@@ -569,20 +565,15 @@ de la coercion, la transitivité.
       \ip{f~e}{`D}
       & = & (\pi_{F'}[\ip{f'}{`D}])~(c_{e'}[\ip{e'}{`D}]) \\
       \text{ où } & & \\
-      \pi_{F'},(\Pi y : A'.B')  & = & \muimpl{F'} \\
+      \pi_{F'}  & = & \coerce{`D}{F'}{\Pi y : A'.B'} \\
       c_{e'} & = & \coerce{`D}{E'}{A'}
     \end{eqnarray*}
 
-    On a $\muimpl{F} = \pi_F,(\Pi y : A.B)$, donc
-    $\subimpl{`G}{\pi_F}{F}{\Pi y : A.B}$ et 
-    par le lemme \ref{subti-coercion-subst} on obtient
-    $\subimpl{`D}{\pi_F[`r]}{F}{\Pi y : A.B}$. On peut appliquer ce
-    lemme puisque si $\muimpl{F} `= \Pi y : A.B$, alors clairement 
-    c'est que $\hnf{F} = \Pi y : A.B$ donc $\ip{F[u/x]}{`D} = \ip{\Pi y :
-      A[u/x].B[u/x]}{`D}$ \Problem{Il faudrait $F = \Pi y : A.B$}.
-    
+    On a $\subimpl{`G}{\pi_F}{F}{\Pi y : A.B}$, donc
+    par le lemme \ref{coerce-narrowing-coercion} on obtient
+    $\subimpl{`D}{\pi_F[`r]}{F}{\Pi y : A.B}$.
 
-    On a donc les coercions suivantes:
+    On a donc les coercions suivantes dans l'environnement $`D$:
     \[
     \xymatrix{
       F\ar[rr]_{\pi_F[`r]} & & 
@@ -597,11 +588,9 @@ de la coercion, la transitivité.
     $\lambda y : \ip{A}{`D}.c_2[\ctxdot~c_1[y]]$ où 
     $\subimpl{`D}{c_1}{A}{A'}$ et $\subimpl{`D, x : A}{c_2}{B'}{B}$.
 
-    Par le lemme \ref{subti-coercion-subst} on a
-    $\subimpl{`D}{c_e[`r]}{E}{A}$ \Problem{Encore un probleme
-      d'application du lemme, passe avec l'autre condition}.
+    Par le lemme \ref{coerce-subst} on a $\subimpl{`D}{c_e[`r]}{E}{A}$.
 
-    On a donc les coercions suivantes pour l'argument $e$:   
+    On a donc les coercions suivantes dans l'environnement $e$:   
     \[
     \xymatrix{
       E\ar[rr]_{c_e[`r]} & & 
@@ -610,28 +599,28 @@ de la coercion, la transitivité.
       \ar@{-->}[rr]^{c_{e'}} & & A'}
     \]
        
-
-    Ce diagramme commute, il existe donc une coercion $c_{E',A} `=
-    c_e[`r] `o `a_e : E' \sub A$.    
-    Par le lemme \ref{narrowing-i-coercion} on a donc
-    $\subimpl{`D, x : E'}{c_2'}{B'}{B}$ avec $c_2' `=
-    c_2[(c_e[`r])[`a_e[x]]/x]$.
-
-    Par le lemme \ref{subti-coercion-subst} \Problem{encore une fois, il
-    faut la condition} avec $`D \typec e : E'$ on obtient:
+    
+    Par transitivité, il existe donc une coercion $\subimpl{`D}{c_{E',A} `=
+      c_e[`r] `o `a_e}{E'}{A}$.    
+    Par le lemme \ref{coerce-narrowing-coercion} en utilisant la
+    coercion de contexte $\ctxdot, \ldots, c_{E',A} : (`D, x : E') \suba
+    `D, x : A$ et la dérivation de $c_2$ on a donc:
+    $\subimpl{`D, x : E'}{c_2'}{B'}{B}$ avec $c_2' `= c_2[(c_e[`r])[`a_e[x]]/x]$.
+    
+    Par le lemme \ref{coerce-subst} avec $`D \typec e : E'$ et la
+    dérivation de $c_2'$ on obtient:
     $\subimpl{`D}{c_2''}{B'[e/x]}{B[e/x]}$ avec \[c_2'' `=
-    c_2'[\ip{e}{`D}/x] `= c_2[(c_e[`r])[`a_e[e]]/x]\]. 
-
+    c_2'[\ip{e}{`D}/x] `= c_2[(c_e[`r])[`a_e[\ip{e}{`D}]]/x]\]
   
     Soit $`a = c_2''$, on peut vérifier:
     \[\begin{array}{ll}
       \firsteq{`a[\ip{f~e}{`D}]}
       
       \step{Définition de l'interprétation}
-      {=}{`a[(\pi_{F'}[\ip{f}{`D}])[c_{e'}[\ip{e}{`D}]]]}
+      {\eqdef}{`a[(\pi_{F'}[\ip{f}{`D}])[c_{e'}[\ip{e}{`D}]]]}
       
       \step{Définitions de $`a$ et $c_{e'}$}
-      {=}{c_2[c_e[`r]~[(`a_e[\ip{e}{`D}])]/x]~[
+      {`=}{c_2[c_e[`r]~[(`a_e[\ip{e}{`D}])]/x]~[
         ((\pi_{F'}[\ip{f}{`D}])~[(c_1 `o c_e[`r] `o `a_e)[\ip{e}{`D}]])]}
       
       \step{Définition de la composition}
@@ -642,77 +631,18 @@ de la coercion, la transitivité.
       {=}{c_f[(\pi_{F'}[\ip{f}{`D}])~[c_e[`r]~[`a_e[\ip{e}{`D}]]]]}
       
       \step{Commutation du diagramme 1}
-      {`=}
-      {(\pi_F[`r][`a_f[\ip{f}{`D}]]~[c_e[`r][`a_e~\ip{e}{`D}]])}
+      {`=}{(\pi_F[`r][`a_f[\ip{f}{`D}]]~[c_e[`r][`a_e~\ip{e}{`D}]])}
       
-      \step{Définitions de $`a_f$ et $`a_e$}{=}
-      {(\pi_F[`r][\ip{f}{`G}[`r]])~[c_e[`r][\ip{e}{`G}[`r]]]}
+      \step{Définitions de $`a_f$ et $`a_e$}
+      {`=}{(\pi_F[`r][\ip{f}{`G}[`r]])~[c_e[`r][\ip{e}{`G}[`r]]]}
 
-      \step{Définition de l'interprétation}{=}{\ip{f~e}{`G}[`r]}
+      \step{Définition de l'interprétation}{\eqdef}{\ip{f~e}{`G}[`r]}
       \vspace{0.2em}
     \end{array}\]
     
     \vspace{1cm}
     
     \TODO{Autres cas}
-  \end{induction}   
-
-  On fait maintenant l'induction sur la dérivation de $`G \typea T :
-  s$. Il suffit de prouver que si $T "->"_{\beta} T'$ alors $\ip{T}{`G}
-  `= \ip{T'}{`G}$.
-  \begin{induction}
-    \case{PropSet} On a $T = s = \ip{T}{`G}$, on doit donc montrer que
-    $\ip{T'}{`G} `= s$. 
-    Par induction sur la dérivation de $T'$.
-    Si $T'$ est une sorte c'est direct. $T'$ ne peut pas être une
-    variable, un type $\Pi, \Sigma, \{|\}$ ni une abstraction ou une
-    paire. Il ne reste que les redex.
-    
-    Si $T' : s$ est dérivé par \irule{App}, alors $W[u/x] = s$ donc $u =
-    s$ ou $W = s$. Dans le premier cas, on aurait une dérivation de $`G
-    \typea s : U$ et $`G \typec U : s'$, ce qui est impossible.
-    Dans le second cas, on a:
-    $`G \typea \Pi x : V.s : s_3$. Par inversion, $`G \typea V : s_1$,
-    $`G, x : V \typea s : s_2$ et $(s_1, s_2, s_3) `: \mathcal{R}$. Or
-    $s_2$ ne peut être que $\Type$, donc c'est impossible.
-    \Problem{$\listml : \Pi x : nat. Set$ n'est pas typable dans notre
-      système ?!, } 
-    
-    \case{Var} On a alors $T' \eqbr x$ et $`G \typea x : s : s'$ par
-    inversion du jugement de bonne formation.
-    Encore une fois seuls les jugement sur les rédex s'appliquent.
-
-
-    \case{App} 
-    Si $f~u$ est de la forme $(\lambda x : V.e)~u$ alors on a
-    $\ip{f~u}{`G} = (\lambda x : \ip{V}{`G}.\ip{e}{`G, x :
-      V})~c[\ip{u}{`G}] "->"_\beta \ip{e}{`G, x : V}[c[\ip{u}{`G}]/x]$
-    où $\subimpl{`G}{c}{U}{V}$. 
-    Supposons $T' = e[u/x]$, alors $\ip{T'}{`G} = \ip{e[u/x]}{`G}$.
-    Par inversion du jugement $\subimpl{`G}{\lambda x : V.e}{\Pi x :
-      V.W}$ on a $\subimpl{`G, x : V}{e}{W = s}$. On applique
-    l'hypothèse d'induction pour obtenir $\ip{e}{`G, x : V}[c] `=
-    `a[\ip{e}{`G, x : U}]$ en utilisant la coercion de contexte
-    $\ctxdot, \ldots, c : (`G, x : U) \sub (`G, x : V)$. La coercion
-    $`a$ est équivalente à l'identité car elle part de la sorte $s$.
-    On a donc: $\ip{e}{`G, x : V}[c] `= \ip{e}{`G, x : U}$. Par
-    substitutivité dans \CCI{} on obtient:
-    \[\ip{e}{`G, x : V}[c[x]/x][\ip{u}{`G}/x] `= \ip{e}{`G, x :
-      U}[\ip{u}{`G}/x]\]
-    Soit:
-    \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e}{`G, x :
-      U}[\ip{u}{`G}/x]\]
-    Enfin par le lemme de stabilité par substitution
-    \ref{subti-coercion-subst}, on obtient:
-    \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e[u/x]}{`G}\]
-
-    On a donc bien $\ip{(\lambda x : V.e)~u}{`G} `=
-    \ip{e[u/x]}{`G}$.
-    
-    Si $T = f~u'$ où $u `= u'$, alors:
-    $\ip{T} = (\pi_F[f])~(c[\ip{u}{`G}])$ et $\ip{T'} = (\pi_F[f])~(c'[\ip{u'}{`G}])$. 
-    On doit montrer que $c[\ip{u}{`G}] `= c'[\ip{u'}{`G}]]$. 
-    \Problem{Analyser tout les cas possibles ?}
   \end{induction}
 \end{proof}
 

@@ -34,7 +34,7 @@
 \BAX{SubSigma}
 {$\subimpl{#1}{c_1}{T}{U}$}
 {$\subimpl{#1, x : T}{c_2}{V}{W}$}
-{$\subimpl{#1}{(c_1[\pi_1~\ctxdot], c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot])}
+{$\subimpl{#1}{\pair{\ip{\Sigma x : U.W}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}
   {\Sigma x : T. V}{\Sigma x : U. W}$}
 {}
 }
@@ -42,14 +42,14 @@
 \newcommand{\SubSubI}[1][\Gamma]{%
 \UAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}$}
-{$\subimpl{#1}{c[\pi_1~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
+{$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
 {$T = \hnf{T} `^ \hnf{T} "/=" \{|\}$}
 }
 
 \newcommand{\SubSubIs}[1][\Gamma]{%
 \UAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}$}
-{$\subimpl{#1}{c[\pi_1~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
+{$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
 {}
 }
    

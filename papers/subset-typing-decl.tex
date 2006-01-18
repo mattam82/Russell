@@ -65,7 +65,9 @@ dans le système est définie par les règles suivantes:
   \hline
   \Prop & \Prop & \Prop & \text{Implication logique} & x <= 0 "->" x = 0  \\
   \Set & \Set & \Set & \text{Fonctions} & \Pi x : \nat. \nat \\
-  \Type & \Set & \Type & \text{Fonctions polymorphes} & \Pi A : \Set, A "->" A \\
+  \Type & \Set & \Type & \text{Fonctions polymorphes} & \Pi A : \Set, A
+  "->" A \\
+  \Set & \Type & \Type & \text{Types dépendants} & \sref{vector} : \nat "->" \Set : \Set "->" \Type \\
   \Set & \Prop & \Prop & \text{Termes dans les propositions} & 
   \Pi n : \nat. \Pi l : \text{list}~n. \text{length}~l = n \\
   \Type & \Prop & \Prop & \text{Imprédicativité de } \Prop & \Pi x : Prop. x `V `! x \\

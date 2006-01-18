@@ -1,144 +1,103 @@
-\def\iu{\ip{u}{\iG}}
-\def\tux{\ip{t[u/x]}{`G, `D[u/x]}}
-\def\cux{[c~\ip{u}{`G}/x]}
-\def\tcux{\ip{t}{\ipG{`G, x : V, `D}}[c~\ip{u}{`G}/x]}
-\def\GD{`G, x : V, `D}
-\def\Gr{`G, `D[u/x]}
-\def\iGD{\ipG{`G, x : V, `D}}
-\def\iGr{\ipG{`G, `D[u/x]}}
-
-Il nous faut tout d'abord un lemme supplémentaire sur la substitution
-dans le système algorithmique:
-
-\begin{lemma}[Substitutivité du typage algorithmique avec coercion]
-  \label{subst-coerce-algo}
-  \[\left.\begin{array}{l}
-      `G \typea u : U \\
-      \GD \typea t : T \\ 
-      U \suba V
-    \end{array}
-\right\} "=>"    
-`G, `D[u/x] \typea t[u/x] : T' \suba T[u/x]
-    \]
-\end{lemma}
-
-\begin{proof}
-  Par induction sur la dérivation de $\GD \typea t : T$.
-  
-  \typenva
-  \begin{induction}
-    \case{Var} On a deux cas:
-    \begin{itemize}
-    \item Si $y = x$, alors $T = V$. On a $t[u/x] = u$ donc $T' =
-      U$. Par hypothèse $U \suba V$ donc $T' \suba T[u/x]$ triviallement
-      ($x$ n'apparait pas dans $V$).
-
-    \item Sinon, $t[u/x] = y$ donc $T' = T[u/x]$ et on a $T' \suba T[u/x]$
-      par réflexivité de la coercion.
-    \end{itemize}
-    
-
-    \case{Prod}
-    Par induction, $\Gr \typea T[u/x] : s_1' \suba s_1[u/x]$ et $\Gr, x
-    : T[u/x]
-    \typea U[u/x] : s_2' \suba s_2[u/x]$. Or $s_1[u/x] = s_1$ et
-    $s_2[u/x] = s_2$. On en déduit par \irule{Prod}: 
-    $\Gr \typea (\Pi x : T.U)[u/x] : s_3 \suba s_3[u/x]$.
-
-    \case{Abs}
-    On a: 
-    \begin{prooftree}
-      \Abs
-    \end{prooftree}
-    
-    Par induction, $\Gr \typea (\Pi y : T.U)[u/x] : s' \suba s[u/x]$ et
-    $\Gr, y : T[u/x] \typea M[u/x] : U' \suba U[u/x]$.
-    Par le même raisonnement que précedemment, $s' = s[u/x] = s$.
-    On peut appliquer \irule{Abs} pour obtenir:
-    $\Gr \typea (\lambda y : T.M)[u/x] : \Pi y : T[u/x].U'$. Comme $U'
-    \suba U[u/x]$ on a $\Pi y : T[u/x].U' \suba \Pi y : T[u/x].U[u/x]$
-    et la propriété est vérifiée.
-
-    \case{App}
-    On a: 
-    \begin{prooftree}
-      \TAX{App}
-      {$\GD \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
-      {$\GD \seq e : E \quad \GD \seq E, A : s$}
-      {$E \sub A $}
-      {$\GD \seq (f~e) : B[ e / y ]$}
-      {}
-    \end{prooftree}
-    
-    Par induction, $\Gr \typea f[u/x] : F' \suba F[u/x]$ et $\Gr \typea
-    e[u/x] : E' \suba E[u/x]$ et $\Gr \typea E[u/x], A[u/x] : s$.
-    Comme $\mualgo(F) = \Pi y : A.B$, $\mualgo(F[u/x]) = \Pi y :
-    A[u/x].B[u/x]$ et par transitivité de la coercion, $F' \suba \Pi y :
-    A[u/x].B[u/x]$. On en déduit que $\mualgo(F') = \Pi y : A'.B'$ avec
-    $A[u/x] \suba A'$ et $B' \suba B[u/x]$.
-    Par substitutivité de la coercion, $E \suba A$ implique $E[u/x]
-    \suba A[u/x]$. On applique la transitivité pour obtenir $E' \suba
-    A'$. Par définition, si $E' \suba E[u/x]$ et $\Gr \typea E[u/x] : s$
-    alors $\Gr \typea E' : s$. De même pour $A'$.  
-
-    On peut donc appliquer \irule{App}:    
-    \begin{prooftree}
-      \TAX{App}
-      {$\GD \seq f[u/x] : F' \quad \mualgo(F') = \Pi y : A'. B'$}
-      {$\GD \seq e[u/x] : E' \quad \GD \seq E', A' : s$}
-      {$E' \sub A' $}
-      {$\GD \seq (f~e)[u/x] : B'[ e[u/x] / y ]$}
-      {}
-    \end{prooftree}
-    
-    Par substitutivité de la coercion, $B' \suba B[u/x]$ implique
-    $B'[e[u/x]/y] \suba B[u/x][e[u/x]/y]$. Or $B[u/x][e[u/x]/y] =
-    B[e/y][u/x]$ car $y$ n'apparait pas dans $u$. On a donc bien
-    $T' = B'[e[u/x]/y] \suba T[u/x] = B[e/y][u/x]$.
-     
-    \item[] Les autres cas passent aisément par induction.
-  \end{induction}
-  
-
-\end{proof}
-
-
-
 \begin{lemma}[Substitution et coercion]
-  Si $`G \typea u : U$ et $`G \typec c : U \suba V$ alors
-  \[\GD \typea t : T "=>"
-  \begin{array}{l}  
-    `E!`a, \Gr \typec `a : \typeafn{\Gr}{t[u/x]} \suba T[u/x],\\
-    `a \ip{t[u/x]}{\Gr} \eqbr \ip{t}{\GD}\cux
+  \label{coerce-subst-and-coercion}
+  Si $\talgo{`G}{u}{U}$ et $\subimpl{`G}{c}{U}{V}$ alors
+  \[\talgo{\GD}{t}{T} "=>"
+  \begin{array}{l}
+    \talgo{\Gr}{t[u/x]}{T'} \\
+    `E `a, \subimpl{\Gr}{`a}{T'}{T[u/x]},\\
+    `a \ip{t[u/x]}{\Gr} `= \ip{t}{\GD}\cux
   \end{array}\]
 \end{lemma}
 
-
 \begin{proof}
-  Ici, $\typeafn{\Gr}{t[u/x]}$ est l'égal du $T'$ du lemme précédent, il
-  est donc uniquement déterminé par l'algorithme de typage ce qui
-  entraine que $`a$ est unique.
   
   Si $\talgo{\GD}{t}{T}$, alors soit $`r$ la coercion de contextes
   $\ctxdot, \ldots, c, \ctxdot, \ldots : (`G, x : U, `D) \typec (`G, x
-  : V, `D)$. Par le lemme \ref{narrowing-i-term}, on a
+  : V, `D)$. Par le lemme \ref{coerce-narrowing-term}, on a
   $\talgo{`G, x : U, `D}{t}{T'}$ et il existe $`a$, 
-  \[\subimpl{`G, x : U, `D}{`a}{T'}{T} `^ \ip{t}{\GD}[`r] \eqbres
+  \[\subimpl{`G, x : U, `D}{`a}{T'}{T} `^ \ip{t}{\GD}[`r] `=
   `a[\ip{t}{`G, x : U, `D}]\]
   
-  Par substitutivité de la coercion, il existe $`a' \eqbres
+  Par substitutivité de la coercion, il existe $`a' `=
   `a[\ip{u}{`G}/x]$ telle que
   $\subimpl{\Gr}{`a'}{T'[u/x]}{T[u/x]}$. 
 
   On a donc, par substitutivité de l'équivalence:
-  \[\ip{t}{\GD}[c[x]/x][\ip{u}{`G}/x] \eqbres `a'[\ip{t}{`G, x : U,
+  \[\ip{t}{\GD}[c[x]/x][\ip{u}{`G}/x] `= `a'[\ip{t}{`G, x : U,
     `D}][\ip{u}{`G}/x]\]
   
-  Soit, par application du lemme de stabilité par affaiblissement:
-  \[\ip{t}{\GD}[c[\ip{u}{`G}]/x] \eqbres `a'[\ip{t[u/x]}{`G,
-    `D[u/x]}]\]
+  Comme $x `; \freevars{`a'}$, on a $`a'[\ip{t}{`G, x : U,
+    `D}][\ip{u}{`G}/x] = `a'[\ip{t}{`G, x : U,`D}[\ip{u}{`G}/x]]$.
+
+  Soit, par application du lemme de stabilité par substitution:
+  \[\ip{t}{\GD}[c[\ip{u}{`G}]/x] `= `a'[\ip{t[u/x]}{`G, `D[u/x]}]\]
   
   On a donc bien construit la coercion $`a'$ recherchée.
+\end{proof}
+
+\begin{theorem}[Conservation de l'équivalence]
+  \label{interp-eq}
+  Si $\talgo{`G}{T, T'}{s}$, $T \eqbr T'$ alors $\ip{T}{`G} `= \ip{T'}{`G}$.
+\end{theorem}
+
+\begin{proof}
+
+  Par induction sur la dérivation de $\talgo{`G}{T}{s}$.
+  Il suffit de prouver que si $T "->"_{\beta} T'$ alors $\ip{T}{`G}
+  `= \ip{T'}{`G}$.
+
+  \begin{induction}
+    \case{PropSet} On a $T = s = \ip{T}{`G}$, on doit donc montrer que
+    $\ip{T'}{`G} `= s$. 
+    Par induction sur la dérivation de $T'$.
+    Si $T'$ est une sorte c'est direct. $T'$ ne peut pas être une
+    variable, un type $\Pi, \Sigma, \{|\}$ ni une abstraction ou une
+    paire. Il ne reste que les redex.
+    
+    Si $T' : s$ est dérivé par \irule{App}, alors $W[u/x] = s$ donc $u =
+    s$ ou $W = s$. Dans le premier cas, on aurait une dérivation de $`G
+    \typea s : U$ et $`G \typec U : s'$, ce qui est impossible.
+    Dans le second cas, on a:
+    $`G \typea \Pi x : V.s : s_3$. Par inversion, $`G \typea V : s_1$,
+    $`G, x : V \typea s : s_2$ et $(s_1, s_2, s_3) `: \mathcal{R}$. Or
+    $s_2$ ne peut être que $\Type$, donc c'est impossible.
+    
+    \case{Var} On a alors $T' \eqbr x$ et $`G \typea x : s : s'$ par
+    inversion du jugement de bonne formation.
+    Encore une fois seuls les jugement sur les rédex s'appliquent.
+
+
+    \case{App} 
+    Si $f~u$ est de la forme $(\lambda x : V.e)~u$ alors on a
+    $\ip{f~u}{`G} = (\lambda x : \ip{V}{`G}.\ip{e}{`G, x :
+      V})~c[\ip{u}{`G}] "->"_\beta \ip{e}{`G, x : V}[c[\ip{u}{`G}]/x]$
+    où $\subimpl{`G}{c}{U}{V}$. 
+    Supposons $T' = e[u/x]$, alors $\ip{T'}{`G} = \ip{e[u/x]}{`G}$.
+    Par inversion du jugement $\subimpl{`G}{\lambda x : V.e}{\Pi x :
+      V.W}$ on a $\subimpl{`G, x : V}{e}{W = s}$. On applique
+    l'hypothèse d'induction pour obtenir $\ip{e}{`G, x : V}[c] `=
+    `a[\ip{e}{`G, x : U}]$ en utilisant la coercion de contexte
+    $\ctxdot, \ldots, c : (`G, x : U) \sub (`G, x : V)$. La coercion
+    $`a$ est équivalente à l'identité car elle part de la sorte $s$.
+    On a donc: $\ip{e}{`G, x : V}[c] `= \ip{e}{`G, x : U}$. Par
+    substitutivité dans \CCI{} on obtient:
+    \[\ip{e}{`G, x : V}[c[x]/x][\ip{u}{`G}/x] `= \ip{e}{`G, x :
+      U}[\ip{u}{`G}/x]\]
+    Soit:
+    \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e}{`G, x :
+      U}[\ip{u}{`G}/x]\]
+    Enfin par le lemme de stabilité par substitution
+    \ref{coerce-subst}, on obtient:
+    \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e[u/x]}{`G}\]
+
+    On a donc bien $\ip{(\lambda x : V.e)~u}{`G} `=
+    \ip{e[u/x]}{`G}$.
+    
+    Si $T = f~u'$ où $u `= u'$, alors:
+    $\ip{T} = (\pi_F[f])~(c[\ip{u}{`G}])$ et $\ip{T'} = (\pi_F[f])~(c'[\ip{u'}{`G}])$. 
+    On doit montrer que $c[\ip{u}{`G}] `= c'[\ip{u'}{`G}]]$. 
+    \Problem{Analyser tout les cas possibles ?}
+  \end{induction}
 \end{proof}
 
 On peut maintenant montrer notre théorème de correction.
@@ -146,14 +105,16 @@ On peut maintenant montrer notre théorème de correction.
 \setboolean{displayLabels}{false}
 \begin{theorem}[Correction de l'interprétation]
   \label{correct-interp}
-  Si $`G \typea t : T$ alors on a $\iG \typec \ip{t}{\iG} :
-  \ip{T}{\iG}$.
+  Si $\talgo{`G}{t}{T}$ alors on a $\tcoq{\iG}{\ip{t}{\iG}}{\ip{T}{\iG}}$.
   Si $\wf `G$ alors $\wf \iG$.
+  Si $\talgo{`G}{T, U}{s}$ et $T \suba U$ alors il existe $c$,
+  $\subimpl{`G}{c}{T}{U}$ et $\tcoq{\iG}{\lambda x :
+    \ip{T}.c[x]}{\ip{T}{`G} "->" \ip{U}{`G}}$.
 \end{theorem}
 
 \begin{proof}
-  Par induction mutuelle sur la dérivation de typage ou de bonne
-  formation.
+  Par induction mutuelle sur les dérivations de typage, bonne
+  formation et coercion.
 
   \begin{induction}
     \case{WfEmpty} Trivial.
@@ -168,8 +129,7 @@ On peut maintenant montrer notre théorème de correction.
 
     \case{PropSet}
     Direct par induction, $\iG \typec \ip{s}{\iG} = s :
-    \ip{\Type}{\iG} = \Type$. La deuxième condition est directe
-    par définition de l'interprétation.
+    \ip{\Type}{\iG} = \Type$. 
     
     \case{Var} On a:
     \begin{prooftree}
@@ -178,60 +138,40 @@ On peut maintenant montrer notre théorème de correction.
     Par induction, $\wf \iG$ et par simple inspection de la
     définition de l'interprétation des contextes, si $x : A `: `G$ alors
     $x : \ip{A}{`D} `: \iG$ pour $`D ``( `G$. Par affaiblissement
-    dans \CCI{}, on obtient aisément $\iG \typec x : \ip{A}{`D}$ 
-    à partir de  $\ipG{`D} \typec x : \ip{A}{\ipG{`D}}$. Or il est clair par
+    dans \CCI{}, on obtient aisément $\tcoq{\iG}{x}{\ip{A}{`D}}$ 
+    à partir de  $\tcoq{\ipG{`D}}{x}{\ip{A}{`D}}$. Or il est clair par
     la définition de l'interprétation que $\ip{A}{`D} = \ip{A}{`G}$  
-    si $`G$ est une extension de $`D$ puisqu'on utilise l'environnement
-    uniquement au moment de typer les variables et
-    $\iG(x) = \ipG{`D}(x)$ pour tout $x$ utilisé dans $A$.
-    On a donc $\iG \typec x : \ip{A}{\iG}$.
-    La deuxième condition est montrée par $\ip{x}{`G} = \iG(x) = 
-    \ip{A}{\ipG{`D}} = \ip{A}{\iG}$.
-      
+    puisque les variables libres de $A$ sont strictement contenues dans $`D$.
+
     \case{Prod} On a:
     \begin{prooftree}
       \Prod
     \end{prooftree}
     
-    Par induction $\iG \typec \ip{T}{\iG} : \ip{s_1}{\iG}
-    = s_1$ et $\ipG{`G, x : T} \typec \ip{U}{\ipG{`G, x : T}} :
-    \ip{s_2}{\ipG{`G, x : T}} = s_2$.
+    Par induction $\tcoq{\iG}{\ip{T}{\iG}}{\ip{s_1}{\iG} = s_1}$ et 
+    $\tcoq{\ipG{`G, x : T}}{\ip{U}{\ipG{`G, x : T}}}{\ip{s_2}{\ipG{`G, x : T}} = s_2}$.
     On déplie l'interprétation pour obtenir:
-    $\iG, x : \ip{T}{\iG} \typec \ip{U}{\iG{}, x : \ip{T}{\iG}} :
-    s_2$.
+    $\tcoq{\iG, x : \ip{T}{`G}}{\ip{U}{`G, x : T}}{s_2}$.
     
     Par \irule{Prod} dans \CCI, on obtient:
-    $\iG{} \typec \Pi x : \ip{T}{\iG}. \ip{U}{\iG{}, x : \ip{T}{\iG}}
-    : s_3$.
-    Or $\ip{\Pi x : T.U}{\iG} = \Pi x : \ip{T}{\iG}. \ip{U}{\iG{}, x
-      : \ip{T}{\iG}}$, donc on a bien:
-    $\iG \typec \ip{\Pi x : T.U}{\iG} : s_3 = \ip{s_3}{\iG}$.
-    La seconde condition est directe d'après la définition de $\mathcal{R}$ qui
-    est une fonction.
+    $\tcoq{\iG{}}{\Pi x : \ip{T}{`G}. \ip{U}{`G, x : T}}{s_3}$.
+    Or $\ip{\Pi x : T.U}{`G} = \Pi x : \ip{T}{`G}. \ip{U}{`G, x : T}$, donc on a bien:
+    $\tcoq{\iG}{\ip{\Pi x : T.U}{`G}}{s_3 = \ip{s_3}{`G}}$.
 
     \case{Abs} On a:
     \begin{prooftree}
       \Abs
     \end{prooftree}
     
-    Par induction $\iG \typec \ip{\Pi x : T.U}{\iG} : \ip{s}{\iG}$
-    et $\ipG{`G, x : T} \typec \ip{M}{\ipG{`G, x : T}} :
-    \ip{U}{\ipG{`G, x : T}}$.
+    Par induction $\tcoq{`G}{\ip{\Pi x : T.U}{`G}}{\ip{s}{`G}}$
+    et $\tcoq{\ipG{`G, x : T}}{\ip{M}{\ipG{`G, x : T}}}{\ip{U}{\ipG{`G, x : T}}}$.
     On déplie l'interprétation pour obtenir:
-    $\iG, x : \ip{T}{\iG} \typec \ip{M}{\iG{}, x : \ip{T}{\iG}} :
-    \ip{U}{\ipG{`G, x : T}}$.
+    $\tcoq{\iG, x : \ip{T}{`G}}{\ip{M}{`G, x : \ip{T}{\iG}}}{\ip{U}{\ipG{`G, x : T}}}$.
     
     Par \irule{Abs} dans \CCI, on obtient:
-    $\iG{} \typec \lambda x : \ip{T}{\iG}. \ip{M}{\iG{}, x : \ip{T}{\iG}}
-    : \ip{\Pi x : T.U}{\iG}$.
+    $\tcoq{\iG}{\lambda x : \ip{T}{`G}. \ip{M}{`G, x : T}}{\ip{\Pi x : T.U}{`G}}$.
     C'est équivalent à:
-    $\iG \typec \ip{\lambda x : T.U}{\iG} : \ip{\Pi x : T.U}{\iG}$.
-    La seconde condition se montre ainsi:
-    $\ip{\lambda x : T.M}{\iG} = \Pi x : \ip{T}{\iG}. \ip{M}{\iG, x :
-      \ip{T}{\iG}}$. Or par induction, 
-    $\ip{M}{\iG, x : \ip{T}{\iG}} = \ip{U}{\iG, x : \ip{T}{\iG}}$, donc 
-    $\ip{\lambda x : T.M}{\iG} = \Pi x : \ip{T}{\iG}. \ip{U}{\iG, x :
-      \ip{T}{\iG}} = \ip{\Pi x : T.U}{\iG}$.
+    $\tcoq{\iG}{\ip{\lambda x : T.U}{`G}}{\ip{\Pi x : T.U}{`G}}$.
     
     \case{App} On a:
     \begin{prooftree}
@@ -239,24 +179,128 @@ On peut maintenant montrer notre théorème de correction.
     \end{prooftree}
 
     C'est le cas intéressant puisqu'on ajoute ici des coercions.
-    Par induction, $\iG{} \typec \ip{f}{\iG} : \ip{T}{\iG}$,
-    $\iG{} \typec \ip{u}{\iG} : \ip{U}{\iG}$,
-    $\iG{} \typec \ip{U}{\iG}, \ip{V}{\iG} : \ip{s}{\iG}$.
+    Par induction, $\tcoq{\iG}{\ip{f}{\iG}}{\ip{T}{`G}}$,
+    $\tcoq{\iG}{\ip{u}{`G}}{\ip{U}{`G}}$ et
+    $\tcoq{\iG}{\ip{U}{`G}, \ip{V}{`G}}{\ip{s'}{`G} = s'}$.
     
     On procéde par étapes: d'abord la construction d'une fonction
-    $\pi \ip{f}{\iG} : \ip{\Pi x : V.W}{\iG}$ puis la construction de
-    l'argument $c \ip{u}{\iG} : \ip{V}{\iG}$. On n'a plus qu'à les
-    appliquer pour obtenir le jugement:
-    $\iG{} \typec \ip{f~u}{\iG} : \ip{W}{\iG, x :
-      \ip{V}{\iG}}[c~u/x]$.
-    Par substitutivité de l'interprétation, on a
-    $\ip{W}{\iG, x : \ip{V}{\iG}}[c~u/x] \eqbr
-    \ip{W[u/x]}{\iG}$ puisque les coercions de sorte à sorte ne peuvent
+    $\tcoq{\iG}{\pi[\ip{f}{`G}]}{\ip{\Pi x : V.W}{`G}}$ puis la construction de
+    l'argument $\tcoq{\iG}{c[\ip{u}{`G}]}{\ip{V}{`G}}$. On a ces deux
+    résultats par application de l'hypothèse de récurrence pour les coercions.
+    On n'a plus qu'à les appliquer pour obtenir le jugement:
+    $\tcoq{\iG}{\ip{f~u}{`G}}{\ip{W}{`G, x : V}[c[u]/x]}$.
+    Par le lemme \ref{coerce-subst-and-coercion}, on a
+    $\ip{W}{`G, x : V}[c[u]/x] `= \ip{W[u/x]}{`G}$ puisque les coercions de sorte à sorte ne peuvent
     être que l'identité. On peut donc déduire:
-    $\iG{} \typec \ip{f~u}{\iG} : \ip{W[u/x]}{\iG}$ par \irule{Conv}.
+    $\tcoq{\iG}{\ip{f~u}{`G}}{\ip{W[u/x]}{`G}}$ par \irule{Conv}.
 
-    \item[- \irule{Sigma}, \irule{Sum}, \irule{LetSum}, \irule{Subset}:]
-      Direct par induction ou un raisonnement similaire à \irule{App}.      
+  \item[-- \irule{Sigma}, \irule{Sum}, \irule{LetSum}, \irule{Subset}:]
+    Direct par induction ou un raisonnement similaire à \irule{App}.
+    
+  \case{SubConv}
+  Par le lemme \ref{interp-eq} on a $\ip{T}{`G} `= \ip{U}{`G}$, on peut
+  donc dériver:
+  \begin{prooftree}
+    \AXC{$\tcoq{\iG}{t}{\ip{T}{`G}}$}
+    \AXC{$\ip{T}{`G} `= \ip{U}{`G}$}
+    \BIC{$\tcoq{\iG}{c[t] = t}{\ip{U}{`G}}$}
+  \end{prooftree}
+  
+  \case{SubHnf}
+  Par induction on a $\tcoq{\iG}{t}{\ip{\hnf{T}}{`G}} "=>"
+  \tcoq{\iG}{c[t]}{\ip{\hnf{U}}{`G}}$.
+  A l'aide du lemme \ref{interp-eq} on peut dériver:
+  \begin{prooftree}
+    \AXC{$\tcoq{\iG}{t}{\ip{T}{`G}}$}
+    \AXC{$\ip{T}{`G} `= \ip{\hnf{T}}{`G}$}
+    \BIC{$\tcoq{\iG}{t}{\ip{\hnf{T}}{`G}}$}
+    \UIC{$\tcoq{\iG}{c[t]}{\ip{\hnf{U}}{`G}}$}
+    \AXC{$\ip{\hnf{U}}{`G} `= \ip{U}{`G}$}
+    \BIC{$\tcoq{\iG}{c[t]}{\ip{U}{`G}}$}
+  \end{prooftree}
+  
+  \case{SubProd} On a:
+  \begin{prooftree}
+    \SubProdI
+  \end{prooftree}
+  
+  Supposons $\tcoq{\iG}{t}{\ip{\Pi x : T.V}{`G}}$. Alors $c[t] = \lambda
+  x : \ip{U}{`G}.c_2[t~c_1[x]]$.
+  
+  Par induction, $\tcoq{\ipG{G, x : U}}{c_1[x]}{\ip{T}{`G}}$, donc par
+  \irule{App}, $\tcoq{\ipG{G, x : U}}{t~c_1[x]}{\ip{V}{`G, x :
+      T}[c_1[x]/x]}$. 
+  Par stabilité par affaiblissement (\ref{coerce-narrowing-term}), 
+  $\ip{V}{`G, x : T}[c_1[x]/x] `= \ip{V}{`G, x : U}$. On peut donc
+  dériver par \irule{SubConv}:
+  \[\tcoq{\ipG{G, x : U}}{t~c_1[x]}{\ip{V}{`G, x : V}}\] 
+  
+  Par induction, $\tcoq{\ipG{G, x : U}}{c_2[t~c_1[x]]}{\ip{W}{`G}}$,
+  donc par \irule{Abs}, \[\tcoq{\iG}{\lambda x :
+    \ip{U}{`G}. c_2[t~c_1[x]]}{\ip{\Pi x : U.W}{`G}}\]
+  
+  \case{SubSigma} On a:
+  \begin{prooftree}
+    \SubSigmaI
+  \end{prooftree}
+  
+  Ici, $c[t] = \pair{\ip{\Sigma x : U.W}{`G}}{c_1[\pi_1~t]}{c_2[\pi_1~t/x][\pi_2~t]}$.
+  Par application des règles de typage pour les projections:
+  $\tcoq{\iG}{\pi_1~t}{\ip{T}{`G}}$ et $\tcoq{\iG}{\pi_2~t}{\ip{V}{`G, x
+      : T}[\pi_1~t/x]}$.
+  
+  Par induction on obtient $\tcoq{\iG}{c_1[\pi_1~t]}{\ip{U}{`G}}$.
+  Par induction on a aussi
+  $\tcoq{\ipG{`G, x : T}}{\lambda y : \ip{V}{`G}.c_2[\pi_2~y]}{\ip{V}{`G} "->"
+    \ip{W}{`G}}$, où $y$ n'apparait pas dans $c_2$.
+
+  Par affaiblissement, on passe dans l'environnement $`G, t : \Sigma x :
+  T.V, x : T$:
+  \[\tcoq{\ipG{`G, t : \Sigma x : T.V, x : T}}
+  {\lambda y : \ip{V}{`G}.c_2[\pi_2~y]}
+  {\ip{V}{`G} "->" \ip{W}{`G}}\]
+
+  On peut alors substituer pour obtenir:
+  $\tcoq{\ipG{`G, t : \Sigma x : T.V}}{\lambda y :
+    \ip{V}{`G}[\pi_1~t/x].c_2[\pi_1~t/x][\pi_2~y]}
+  {\ip{V}{`G}[\pi_1~t/x] "->" \ip{W}{`G}[\pi_1~t/x]}$.
+  
+  Enfin on applique à $\pi_2~t$ pour obtenir:
+  $\tcoq{\ipG{`G, t : \Sigma x : T.V}}
+  {c_2[\pi_1~t/x][\pi_2~t]}{\ip{W}{`G}[\pi_1~t/x]}$.
+
+  On a bien:
+  \[\tcoq{\iG}{\lambda t : \ip{\Sigma x : T.V}{`G}.~\pair{\ip{\Sigma x :
+        U.W}{`G}}
+    {c_1[\pi_1~t]}{c_2[\pi_1~t/x][\pi_2~t]}}
+  {\ip{\Sigma x : T.V}{`G} "->" \ip{\Sigma x : U.W}{`G}}\]
+  
+  \case{SubProof} On a:
+  \begin{prooftree}
+    \SubProofI
+  \end{prooftree}
+  
+  Par induction, $\tcoq{\iG}{\lambda x :
+    \ip{T}{`G}. c[x]}{\ip{T}{`G}} "->" {\ip{U}{`G}}$ et
+  $\tcoq{\iG}{\mysubset{x}{\ip{U}{`G}}{\ip{P}{`G, x : U}}}{\Set}$.
+  
+  On a donc clairement:
+  \[\tcoq{\iG}{\lambda t : \ip{T}{`G}.
+    \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{c[t]}
+    {\ex{\iG}{\ip{P}{`G, x : U}[c[t]/x]}}}
+  {\ip{T}{`G} "->" \ip{\mysubset{x}{U}{P}}{`G}}\]
+      
+  \case{SubSub} On a:
+  \begin{prooftree}
+    \SubSubI
+  \end{prooftree}
+  
+  Par induction, $\tcoq{\iG}{\lambda x : \ip{U}{`G}.
+    c[x]}{\ip{U}{`G} "->" \ip{T}{`G}}$, on a bien:
+
+  \[\tcoq{\iG}{\lambda t :
+    \ip{\mysubset{x}{U}{P}}{`G}.c[\eltpit~t]}{\ip{\mysubset{x}{U}{P}}{`G} "->" \ip{T}{`G}}\]
+  
   \end{induction}
 \end{proof}
 

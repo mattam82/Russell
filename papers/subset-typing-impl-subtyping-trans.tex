@@ -1,6 +1,5 @@
-
-\begin{lemma}[Transitivité de la coercion]
-  \label{coerce-trans}
+\begin{lemma}[Transitivité de la coercion avec affaiblissement]
+  \label{coerce-trans-weak}
   S'il existe $c_1, c_2$ tels que $\subimpl{`G}{c_1}{S}{T}$ et
   $\subimpl{`D}{c_2}{T}{U}$ 
   avec $`r : `D \sub `G$ et $\ip{T}{`G}[`r] `= \ip{T}{`D}$,
@@ -131,7 +130,7 @@
       \end{prooftree}
 
       On peut construire une coercion de contextes de $`q = `r, d_1 : (`D, x : S) \sub (`G, x : X')$. 
-      Par le lemme \ref{narrowing-i-coercion} on obtient la dérivation
+      Par le lemme \ref{coerce-narrowing-coercion} on obtient la dérivation
       $\subimpl{`D, x : S}{c_2'}{Y}{Y'}$ de même
       taille que la dérivation de $c_2$ telle que $c_2' `= c_2[`q]$.      
       On obtient de même $\subimpl{`D}{c_1'}{X'}{X}$ avec $c_1' `= c_1[`r]$.
@@ -156,7 +155,7 @@
         \firsteq{d `o c[`r]}
 
         \step{Définition de $c$ et $d$}
-        {\hat{=}}{(\lambda x : \ip{S}{`D}.d_2[\ctxdot~d_1[x]]) `o (\lambda
+        {\eqdef}{(\lambda x : \ip{S}{`D}.d_2[\ctxdot~d_1[x]]) `o (\lambda
           y : \ip{X'}{`G}.c_2[\ctxdot~c_1[y]])[`r]}
         
         \step{Composition des contextes}
@@ -178,7 +177,7 @@
           \ip{S}{`D}.d_2[(c_2[`r][\ctxdot~c_1[`r][y]])[d_1[x]/y]]}
         
         \step{Définition de $`q$, $y `; d1[x]$}
-        {\hat{=}}{\lambda x : \ip{S}{`D}.d_2[c_2[`q][\ctxdot~c_1[`q][d_1[x]]]]}
+        {\eqdef}{\lambda x : \ip{S}{`D}.d_2[c_2[`q][\ctxdot~c_1[`q][d_1[x]]]]}
 
         \step{$d_2 `o c_2[`q] `= e_2$}
         {`=}{\lambda x : \ip{S}{`D}.e_2[\ctxdot~c_1[`q][d_1[x]]]}
@@ -187,7 +186,7 @@
         {`=}{\lambda x : \ip{S}{`D}.e_2[\ctxdot~e_1[x]]}
         
         \step{Définition}
-        {\hat{=}}{e}
+        {\eqdef}{e}
       \end{equations}      
       
       \case{SubProof}
@@ -213,7 +212,7 @@
       
       On peut vérifier que $d' `= d `o c[`r]$:
       \begin{eqnarray*}
-        d `o c[`r] & \hat{=} & (\elt{\ip{U'}{`D}}
+        d `o c[`r] & \eqdef & (\elt{\ip{U'}{`D}}
         {\ip{\lambda x : U'.P}{`D}}{e}
         {\ex{\ipG{`D}}{\ip{P}{`D}[e/x]}})[c[`r]] \\
         & = & \elt{\ip{U'}{`D}}
@@ -222,7 +221,7 @@
         & `= & \elt{\ip{U'}{`D}}
         {\ip{\lambda x : U'.P}{`D}}{f}
         {\ex{\ipG{`D}}{\ip{P}{`D}[f/x]}} \\
-        & \hat{=} & d'
+        & \eqdef & d'
       \end{eqnarray*}
       
     \end{induction}
@@ -262,7 +261,7 @@
         d `o c[`r] & `= & d `o c_1[\eltpit~\ctxdot][`r] \\
         & = & d `o c_1[`r][\eltpit~\ctxdot] \\
         & `= & f[\eltpit~\ctxdot] \\
-        & \hat{=} & c'
+        & \eqdef & c'
       \end{eqnarray*}
       
       \case{SubSigma}
@@ -277,7 +276,7 @@
       \end{prooftree}
       
       Par affaiblissement pour les coercions (lemme
-      \ref{narrowing-i-coercion}) on a $\subimpl{`D}{c_1'}{S}{X'}$ avec $c_1' `= c_1[`r]$.
+      \ref{coerce-narrowing-coercion}) on a $\subimpl{`D}{c_1'}{S}{X'}$ avec $c_1' `= c_1[`r]$.
       On peut aussi construire la coercion de contexte
       $`q = `r, \ctxdot : (`D, x : S) \sub (`G, x : S)$. Par le même lemme on obtient
       $\subimpl{`D, x : S}{c_2'}{T}{Y'}$ avec $c_2' `= c_2[`q] =
@@ -300,7 +299,7 @@
         \firsteq{d `o c[`r]}
 
         \step{Définition de $d$}
-        {\hat{=}}{\pair{\ip{\Sigma x :
+        {\eqdef}{\pair{\ip{\Sigma x :
               X.Y}{`D}}{d_1[\pi_1~\ctxdot]}{d_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]}[c[`r]]}
         
         \step{Substitution}
@@ -357,7 +356,7 @@
           {e_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}
         
         \step{Définition de $e$}
-        {\hat{=}}{e}
+        {\eqdef}{e}
       \end{equations}      
     \end{induction}
     
@@ -402,41 +401,49 @@
       application de \irule{SubProof} on obtient une coercion $c'$:
 
       \begin{eqnarray*}
-        c_2 `o c_1[`r] & = & 
+        c_2 `o c_1[`r] & \eqdef & 
         (\elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{c_2'}
-        {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[c_2'/x]}}) `o c_1[`r]
+        {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[c_2'/x]}}) `o c_1[`r] \\
         & = &
         \elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{c_2'[c_1[`r]]}
-        {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[c_2'[c_1[`r]]/x]}}
-        & = & \elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{d}
+        {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[c_2'[c_1[`r]]/x]}} \\
+        & `= & \elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{d}
         {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[d/x]}} \\
-        & = & c'
+        & \eqdef & c'
       \end{eqnarray*}
       
     \end{induction}
     
-    \case{SubSub}\quad
+    \case{SubSub}
     \begin{prooftree}
-      \AXC{$\subimpl{`G}{c}{S}{\hnf{T}}$}
-      \UIC{$\subimpl{`G}{d = c `o \pi_1}
-        {\mysubset{x}{S}{P}}{\hnf{T}}$}
-      \AXC{$\subimpl{`G}{e}{\hnf{T}}{\hnf{U}}$}
-      \BIC{$$}
+      \AXC{$\subimpl{`G}{c}{S'}{T}$}
+      \UIC{$\subimpl{`G}{d = c[\eltpit~\ctxdot]}{S = \mysubset{x}{S'}{P}}{T}$}
+      \AXC{$\subimpl{`D}{e}{T}{U}$}
+      \noLine\BIC{$$}
     \end{prooftree}
     
-    Par induction il existe une dérivation de $\subimpl{`G}{f `= e `o c}
-    {S}{U}$ n'utilisant pas \irule{SubTrans}. On peut donc dériver:
+    Par induction il existe une dérivation de $\subimpl{`D}{f `= e `o c[`r]}
+    {S'}{U}$. On peut donc dériver:
 
     \begin{prooftree}
-      \AXC{$\subimpl{`G}{f}{S}{U}$}
-      \UIC{$\subimpl{`G}{f `o \pi_1}
-        {\mysubset{x}{S}{P}}{U}$}
+      \AXC{$\subimpl{`D}{f}{S'}{U}$}
+      \UIC{$\subimpl{`D}{f[\eltpit~\ctxdot]}{S = \mysubset{x}{S'}{P}}{U}$}
     \end{prooftree}
     
-    On a bien $f `o \pi_1 `= e `o c `o \pi_1$.
+    On a bien $f[\eltpit~\ctxdot] `= (e `o c[`r])[\eltpit~\ctxdot] = e
+    `o c[`r][\eltpit~\ctxdot] = e `o c[\eltpit~\ctxdot][`r]~\eqdef~e `o
+    d[`r]$.
     
+    Dans le cas où \irule{SubSub} est utilisée à droite, la seule règle
+    applicable à gauche est \irule{SubProof} et l'on a déjà traité ce cas.
   \end{induction}
 \end{proof}
+
+\begin{corrolary}[Transitivité de la coercion]
+  \label{coerce-trans}
+  Si $\subimpl{`G}{c_1}{S}{T}$ et $\subimpl{`G}{c_2}{T}{U}$ alors il
+  existe $c `= c_2 `o c_1$ tel que $\subimpl{`G}{c}{S}{U}$.
+\end{corrolary}
 
 On peut maintenant énoncer le lemme de symmétrie:
 

@@ -33,6 +33,7 @@
 \def\mualgo{\mu_{\bullet}}
 \def\muimpl{\mu_{\Box}}
 
+\newcommand{\tcoq}[3]{#1 \typec #2 : #3}
 
 % \def\typenv#1{\typeout{Changing to #1 version}
 %   \def\typewf{\csname\string\type\string#1\string{wf}\endcsname}
@@ -213,6 +214,15 @@
 \newcommand{\pair}[3]{(#2, #3)_{#1}}
 \newcommand{\eltpit}{\sigma_1}
 \newcommand{\eltpip}{\sigma_2}
+
+\newcommand{\iu}{\ip{u}{\iG}}
+\newcommand{\tux}{\ip{t[u/x]}{`G, `D[u/x]}}
+\newcommand{\cux}{[c~\ip{u}{`G}/x]}
+\newcommand{\tcux}{\ip{t}{\ipG{`G, x : V, `D}}[c~\ip{u}{`G}/x]}
+\newcommand{\GD}{`G, x : V, `D}
+\newcommand{\Gr}{`G, `D[u/x]}
+\newcommand{\iGD}{\ipG{`G, x : V, `D}}
+\newcommand{\iGr}{\ipG{`G, `D[u/x]}}
 
 %%% Local Variables: 
 %%% mode: latex
