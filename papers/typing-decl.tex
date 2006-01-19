@@ -7,22 +7,22 @@
   
 \def\WfVar{
   \UAX{WfVar}
-  {$`G \type A : s$}
-  {$\seq `G, x : A$}
+  {$\tgen{`G}{A}{s}$}
+  {$\wf `G, x : A$}
   {$s `: \setproptype{} `^{} x `; `G$}
 }
 
 \def\PropSet{
   \UAX{PropSet}
   {$\wf `G$}
-  {$`G \seq s : \Type$}
+  {$\tgen{`G}{s}{\Type}$}
   {$s `: \{ \Prop, \Set \}$} 
 }
 
 \def\TypeType{
   \UAX{Type}
   {$\wf `G$}
-  {$`G \seq \Type(i) : \Type(i + 1)$}
+  {$\tgen{`G}{\Type(i)}{\Type(i + 1)}$}
   {$i `: `N$}
 }
 
@@ -30,88 +30,102 @@
 {\BAX{Var}
   {$\wf `G$}
   {$x : A `: `G$}
-  {$`G \seq x : A$}
+  {$\tgen{`G}{x}{A}$}
   {}
 }
 
 \def\Prod{
   \BAX{Prod}
-  {$`G \seq T : s_1$}
-  {$`G, x : T \seq U : s_2$}
-  {$`G \seq \Pi x : T.U : s_3$}
+  {$\tgen{`G}{T}{s_1}$}
+  {$\tgen{`G, x : T}{U}{s_2}$}
+  {$\tgen{`G}{\Pi x : T.U}{s_3}$}
   {$(s_1, s_2, s_3) `: \mathcal{R} `^{} x `; `G$}
 }
 
 \def\Abs{
   \BAX{Abs}
-  {$`G \seq \Pi x : T. U : s $}
-  {$`G, x : T \seq M : U $}
-  {$`G \seq \lambda x : T. M : \Pi x : T.U$}
+  {$\tgen{`G}{\Pi x : T. U}{s}$}
+  {$\tgen{`G, x : T}{M}{U }$}
+  {$\tgen{`G}{\lambda x : T. M}{\Pi x : T.U}$}
   {$x `; `G$}
 }
 
 \def\App{
   \BAX{App}
-  {$`G \seq f : \Pi x : V. W $}
-  {$`G \seq u : V $}
-  {$`G \seq (f u) : W [ u / x ]$}
+  {$\tgen{`G}{f}{\Pi x : V. W}$}
+  {$\tgen{`G}{u}{V}$}
+  {$\tgen{`G}{(f u)}{W [ u / x ]}$}
   {$$}
 }
 
 \def\LetIn{
   \BAX{LetIn}
-  {$`G \seq t : T $}
-  {$`G, x : T \seq v : V $}
-  {$`G \seq \letml~x = t~\inml~v : V[t / x]$}
+  {$\tgen{`G}{t}{T}$}
+  {$\tgen{`G, x : T}{v}{V}$}
+  {$\tgen{`G}{\letml~x = t~\inml~v}{V[t / x]}$}
   {$x `; `G$}
 }
 
 \def\SigmaR{
   \BAX{Sigma}
-  {$`G \seq T : s $}
-  {$`G, x : T \seq U : s $}
-  {$`G \seq \Sigma x : T.U : s $}
+  {$\tgen{`G}{T}{s}$}
+  {$\tgen{`G, x : T}{U}{s}$}
+  {$\tgen{`G}{\Sigma x : T.U}{s}$}
   {$s `: \{ \Prop, \Set \} `^{} x `; `G$} 
 }
 
 \def\Sum{
   \TAX{Sum}
-  {$`G \seq \Sigma x : T.U : s$}
-  {$`G \seq t : T $}
-  {$`G \seq u : U[t/x] $}
-  {$`G \seq (x := t, u : U) : \Sigma x : T.U$}
+  {$\tgen{`G}{\Sigma x : T.U}{s}$}
+  {$\tgen{`G}{t}{T}$}
+  {$\tgen{`G}{u}{U[t/x]}$}
+  {$\tgen{`G}{\pair{\Sigma x : T.U}{t}{u}}{\Sigma x : T.U}$}
   {}
 }
  
+\def\PiLeft{
+  \UAX{PiLeft}
+  {$\tgen{`G}{t}{`S x : T.U}$}
+  {$\tgen{`G}{\pi_1~t}{T}$}
+  {}
+}
+
+\def\PiRight{
+  \UAX{PiRight}
+  {$\tgen{`G}{t}{`S x : T.U}$}
+  {$\tgen{`G}{\pi_2~t}{U[\pi_1~t/x]}$}
+  {}
+}
+
 \def\LetSum{
   \BAX{LetSum}
-  {$`G \seq t : `S x : T. U $}
-  {$`G, x : T, u : U \seq v : V $}
-  {$`G \seq \letml~(x, u) = t~\inml~v : V$}
+  {$\tgen{`G}{t}{`S x : T. U}$}
+  {$\tgen{`G, x : T, u : U}{v}{V }$}
+  {$\tgen{`G}{\letml~(x, u) = t~\inml~v}{V}$}
   {$x,y `; `G$}
 }
 
 \def\Subset{
   \BAX{Subset}
-  {$`G \seq U : \Set$}
-  {$`G, x : U \seq P : \Prop $}
-  {$`G \seq \mysubset{x}{U}{P} : \Set$}
+  {$\tgen{`G}{U}{\Set}$}
+  {$\tgen{`G, x : U}{P}{\Prop}$}
+  {$\tgen{`G}{\mysubset{x}{U}{P}}{\Set}$}
   {$x `; `G$}
 }
 
 \def\LetSub{
   \UAX{LetSub}
-  {$`G \seq t : \mysubset{x}{T}{P}$}
-  {$`G \seq t : T$}
+  {$\tgen{`G}{t}{\mysubset{x}{T}{P}}$}
+  {$\tgen{`G}{t}{T}$}
   {}
 }
 
 \def\Subsum{
   \TAX{Subsum}
-  {$`G \seq T : s$}
-  {$`G \seq t : U$}
+  {$\tgen{`G}{T}{s}$}
+  {$\tgen{`G}{t}{U}$}
   {$U \sub T$} % `G \subt 
-  {$`G \seq t : T$}
+  {$\tgen{`G}{t}{T}$}
   {}
 }
 
@@ -119,10 +133,10 @@
 
 \def\Conv{
   \TAX{Conv}
-  {$`G \seq T : s$}
-  {$`G \seq t : U$}      
+  {$\tgen{`G}{T}{s}$}
+  {$\tgen{`G}{t}{U}$}      
   {$U \eqbr T$}
-  {$`G \seq t : T$}
+  {$\tgen{`G}{t}{T}$}
   {}
 }
 
@@ -163,7 +177,10 @@
     \Sum\DP
     
     \vspace{\infvspace}
-    \LetSum\DP
+%    \LetSum\DP
+    \PiLeft\DP
+    \quad
+    \PiRight\DP
 
     \vspace{\infvspace}
     \Subset\DP

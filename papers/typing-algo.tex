@@ -18,6 +18,22 @@
   {$x,y `; `G$}
 }
 
+\def\PiLeftA{
+  \BAX{PiLeft}
+  {$\tgen{`G}{t}{S}$}
+  {$\mualgo(S) = `S x : T.U$}
+  {$\tgen{`G}{\pi_1~t}{T}$}
+  {}
+}
+
+\def\PiRightA{
+  \BAX{PiRight}
+  {$\tgen{`G}{t}{S}$}
+  {$\mualgo(S) = `S x : T.U$}
+  {$\tgen{`G}{\pi_2~t}{U[\pi_1~t/x]}$}
+  {}
+}
+
 
 \def\SumInfA{
   \TAX{SumInf}
@@ -28,13 +44,23 @@
   {}
 }
 
-\def\SumDepA{
+\def\SumDepAold{
   \QAX{SumDep}
   {$`G \seq t : T$}
   {$`G \seq u : U'$}
   {$`G \seq \Sigma x : T.U : s$}
   {$`G \seq U' : s \quad U' \suba U[t/x]$}
   {$`G \seq (x \coloneqq~t, u : U) : \Sigma x : T.U$}
+  {}
+}
+
+\def\SumDepA{
+  \QAX{SumDep}
+  {$`G \seq t : T$}
+  {$`G \seq u : U'$}
+  {$`G \seq \Sigma x : T.U : s$}
+  {$`G \seq U' : s \quad U' \suba U[t/x]$}
+  {$`G \seq \pair{\Sigma x : T.U}{t}{u} : \Sigma x : T.U$}
   {}
 }
 
@@ -81,7 +107,10 @@
     \SumDepA\DP
     
     \vspace{\infvspace}
-    \LetSumA\DP
+    \PiLeftA\DP
+    \quad
+    \PiRightA\DP
+    %\LetSumA\DP
     
     \vspace{\infvspace}
     \Subset\DP

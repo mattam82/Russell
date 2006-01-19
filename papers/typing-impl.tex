@@ -223,6 +223,93 @@
 \end{figure}
 }
 
+\newcommand{\teq}[5]{#1 \typea #2 : #3 \eqbr #4 : #5}
+
+\newcommand{\BetaTeq}{
+  %\AXC{$\talgo{`G, x : X}{v}{T'} \quad T'[e/x] \sub T \quad T \sub U$}
+  %\AXC{$\talgo{`G}{e}{E} \quad X \sub E$}
+  \AXC{$T \sub U$}
+  \UIC{$\teq{`G}{(\lambda x : X.v)~e}{T}{v[e/x]}{U}$}
+}
+
+\newcommand{\PiLeftTeq}{
+  \AXC{$T \sub U$}
+  \UIC{$\teq{`G}{\pi_1~\pair{\Sigma x : T.V}{e_1}{e_2}}{T}{e_1}{U}$}
+}
+
+\newcommand{\PiRightTeq}{
+  \AXC{$T \sub U$}
+  \UIC{$\teq{`G}{\pi_2~\pair{\Sigma x : V.T}{e_1}{e_2}}{T}{e_2}{U}$}
+}
+
+\newcommand{\AppTeq}{
+  \AXC{$\teq{`G}{M}{S}{M'}{T} \quad \teq{`G}{N}{U}{N'}{V}$}
+  \AXC{$M \sub \Pi x : A.B \quad M' \sub \Pi x : C.D$}
+  \AXC{$U \sub A \quad V \sub C$}
+  \TIC{$\teq{`G}{M~N}{B[N/x]}{M'~N'}{D[N'/x]}$}
+}
+
+\newcommand{\PairTeq}{
+  \AXC{$\teq{`G}{e_1}{A}{e_2}{C}$}
+  \AXC{$\teq{`G, x : A}{e_2}{B}{e_2'}{D}$}
+  \BIC{$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{T}{\pair{\Sigma x : C.D}{e_1'}{e_2'}}{U}$}
+}
+
+\newcommand{\PiTeq}{
+  \AXC{$\teq{`G}{C}{s_1}{A}{s_1}$}
+  \AXC{$\teq{`G, x : A}{B}{s_2}{D}{s_2}$}
+  \BIC{$\teq{`G}{\Pi x : A.B}{s_3}{\Pi x : C.D}{s_3}$}
+}
+
+\newcommand{\SigmaTeq}{
+  \AXC{$\teq{`G}{A}{s_1}{C}{s_1}$}
+  \AXC{$\teq{`G, x : A}{B}{s_2}{D}{s_2}$}
+  \BIC{$\teq{`G}{`S x : A.B}{s_3}{`S x : C.D}{s_3}$}
+}
+
+\newcommand{\SubsetTeq}{
+  \AXC{$\teq{`G}{T}{\Set}{A}{\Set}$}
+  \AXC{$\teq{`G, x : T}{P}{\Prop}{P'}{\Prop}$}
+  \BIC{$\teq{`G}{\mysubset{x}{T}{P}}{\Set}{\mysubset{x}{U}{P'}}{\Set}$}
+}
+
+\newcommand{\teqfig}{
+  \begin{figure}[ht]
+    \begin{center}
+      
+      \BetaTeq\DP
+      
+      \vspace{\infvspace}
+      \PiLeftTeq\DP
+
+      \vspace{\infvspace}
+      \PiRightTeq\DP
+
+      \vspace{\infvspace}
+      \AppTeq\DP
+
+      \vspace{\infvspace}
+      \PairTeq\DP
+
+      \vspace{\infvspace}
+      \PiTeq\DP
+
+      \vspace{\infvspace}
+      \SigmaTeq\DP
+
+      \vspace{\infvspace}
+      \SubsetTeq\DP
+  \end{center}
+  \caption{Définition du jugement $\teq{`G}{t}{T}{u}{U}$}
+  \label{fig:teq-rules}
+\end{figure}
+
+}
+
+
+
+
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "subset-typing"

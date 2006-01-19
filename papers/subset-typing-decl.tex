@@ -63,7 +63,7 @@ dans le système est définie par les règles suivantes:
 \[\begin{array}{cccll}
   s_1 & s_2 & s_3 & \text{Habitants} & \text{Exemple} \\
   \hline
-  \Prop & \Prop & \Prop & \text{Implication logique} & x <= 0 "->" x = 0  \\
+  \Prop & \Prop & \Prop & \text{Implication logique} & x ``<= 0 "->" x = 0  \\
   \Set & \Set & \Set & \text{Fonctions} & \Pi x : \nat. \nat \\
   \Type & \Set & \Type & \text{Fonctions polymorphes} & \Pi A : \Set, A
   "->" A \\
@@ -71,8 +71,8 @@ dans le système est définie par les règles suivantes:
   \Set & \Prop & \Prop & \text{Termes dans les propositions} & 
   \Pi n : \nat. \Pi l : \text{list}~n. \text{length}~l = n \\
   \Type & \Prop & \Prop & \text{Imprédicativité de } \Prop & \Pi x : Prop. x `V `! x \\
-%  \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
-%    \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
+  % \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
+  %   \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
 \end{array}\]
 On a un système proche du \CCfull{} avec types $\Sigma$, mais
 avec \Set{} prédicatif (comme dans \Coq{}).

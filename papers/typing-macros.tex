@@ -34,6 +34,7 @@
 \def\muimpl{\mu_{\Box}}
 
 \newcommand{\tcoq}[3]{#1 \typec #2 : #3}
+\newcommand{\tgen}[3]{#1 \type #2 : #3}
 
 % \def\typenv#1{\typeout{Changing to #1 version}
 %   \def\typewf{\csname\string\type\string#1\string{wf}\endcsname}
@@ -88,6 +89,8 @@
 \def\SigmaRule{Sigma}
 \def\SumRule{Sum}
 \def\LetSumRule{Let-Sum}
+\def\PiLeftRule{Pi-1}
+\def\PiRightRule{Pi-2}
 \def\SumInfRule{Sum-Inf}
 \def\SumDepRule{Sum-Dep}
 \def\SubsetRule{Subset}
@@ -110,6 +113,17 @@
 \def\SubProofRule{Sub-Proof}
 \def\SubSubRule{Sub-Subset}
 \def\SubTransRule{Sub-Trans}
+
+\def\BetaTeqRule{Beta-eq}
+\def\PiLeftTeqRule{Pi-1-eq}
+\def\PiRightTeqRule{Pi-2-eq}
+\def\AppTeqRule{App-eq}
+\def\PairTeqRule{Pair-eq}
+\def\PiTeqRule{Prod-eq}
+\def\SigmaTeqRule{Sigma-eq}
+\def\SubsetTeqRule{Subset-eq}
+
+
 
 \def\ifstreq#1#2{\def\testa{#1}\def\testb{#2}\ifx\testa\testb }
 
@@ -149,39 +163,49 @@
 %% Should be able to work with \else...
 \newcommand{\inductionrule}[1]
 {\ifstreq{#1}{WfEmpty}{\WfEmptyRule}
-\fi\ifstreq{#1}{WfVar}\WfVarRule
-\fi\ifstreq{#1}{PropSet}\PropSetRule
-\fi\ifstreq{#1}{Type}\TypeRule
-\fi\ifstreq{#1}{Var}\VarRule
-\fi\ifstreq{#1}{Prod}\ProdRule
-\fi\ifstreq{#1}{Abs}\AbsRule
-\fi\ifstreq{#1}{LetIn}\LetInRule
-\fi\ifstreq{#1}{Sigma}\SigmaRule
-\fi\ifstreq{#1}{Sum}\SumRule
-\fi\ifstreq{#1}{LetSum}\LetSumRule
-\fi\ifstreq{#1}{App}\AppRule
-\fi\ifstreq{#1}{SumInf}\SumInfRule
-\fi\ifstreq{#1}{SumDep}\SumDepRule
-\fi\ifstreq{#1}{LetSub}\LetSubRule
-\fi\ifstreq{#1}{Subsum}\CoerceRule
-\fi\ifstreq{#1}{Coerce}\CoerceRule
-\fi\ifstreq{#1}{Conv}\ConvRule
-\fi\ifstreq{#1}{Subset}\SubsetRule
-\fi\ifstreq{#1}{SubRefl}\SubReflRule
-\fi\ifstreq{#1}{SubTrans}\SubTransRule
-\fi\ifstreq{#1}{SubConv}\SubConvRule
-\fi\ifstreq{#1}{SubHnf}\SubHnfRule
-\fi\ifstreq{#1}{SubEq}\SubEqRule
-\fi\ifstreq{#1}{SubProd}\SubProdRule
-\fi\ifstreq{#1}{SubSigma}\SubSigmaRule
-\fi\ifstreq{#1}{SubLeft}\SubLeftRule
-\fi\ifstreq{#1}{SubId}\SubIdRule
-\fi\ifstreq{#1}{SubBeta}\SubBetaRule
-\fi\ifstreq{#1}{SubRight}\SubRightRule
-\fi\ifstreq{#1}{SubProof}\SubProofRule
-\fi\ifstreq{#1}{SubSub}\SubSubRule
-\fi\ifstreq{#1}{*}\_
-\fi}
+\else\ifstreq{#1}{WfVar}{\WfVarRule}
+\else\ifstreq{#1}{PropSet}{\PropSetRule}
+\else\ifstreq{#1}{Type}{\TypeRule}
+\else\ifstreq{#1}{Var}{\VarRule}
+\else\ifstreq{#1}{Prod}{\ProdRule}
+\else\ifstreq{#1}{Abs}{\AbsRule}
+\else\ifstreq{#1}{LetIn}{\LetInRule}
+\else\ifstreq{#1}{Sigma}{\SigmaRule}
+\else\ifstreq{#1}{Sum}{\SumRule}
+\else\ifstreq{#1}{LetSum}{\LetSumRule}
+\else\ifstreq{#1}{PiLeft}{\PiLeftRule}
+\else\ifstreq{#1}{PiRight}{\PiRightRule}
+\else\ifstreq{#1}{App}{\AppRule}
+\else\ifstreq{#1}{SumInf}{\SumInfRule}
+\else\ifstreq{#1}{SumDep}{\SumDepRule}
+\else\ifstreq{#1}{LetSub}{\LetSubRule}
+\else\ifstreq{#1}{Subsum}{\CoerceRule}
+\else\ifstreq{#1}{Coerce}{\CoerceRule}
+\else\ifstreq{#1}{Conv}{\ConvRule}
+\else\ifstreq{#1}{Subset}{\SubsetRule}
+\else\ifstreq{#1}{SubRefl}{\SubReflRule}
+\else\ifstreq{#1}{SubTrans}{\SubTransRule}
+\else\ifstreq{#1}{SubConv}{\SubConvRule}
+\else\ifstreq{#1}{SubHnf}{\SubHnfRule}
+\else\ifstreq{#1}{SubEq}{\SubEqRule}
+\else\ifstreq{#1}{SubProd}{\SubProdRule}
+\else\ifstreq{#1}{SubSigma}{\SubSigmaRule}
+\else\ifstreq{#1}{SubLeft}{\SubLeftRule}
+\else\ifstreq{#1}{SubId}{\SubIdRule}
+\else\ifstreq{#1}{SubBeta}{\SubBetaRule}
+\else\ifstreq{#1}{SubRight}{\SubRightRule}
+\else\ifstreq{#1}{SubProof}{\SubProofRule}
+\else\ifstreq{#1}{SubSub}{\SubSubRule}
+\else\ifstreq{#1}{BetaTeq}{\BetaTeqRule}
+\else\ifstreq{#1}{PiLeftTeq}{\PiLeftTeqRule}
+\else\ifstreq{#1}{PiRightTeq}{\PiRightTeqRule}
+\else\ifstreq{#1}{AppTeq}{\AppTeqRule}
+\else\ifstreq{#1}{PairTeq}{\PairTeqRule}
+\else\ifstreq{#1}{PiTeq}{\PiTeqRule}
+\else\ifstreq{#1}{SigmaTeq}{\SigmaTeqRule}
+\else\ifstreq{#1}{SubsetTeq}{\SubsetTeqRule}
+\else\ifstreq{#1}{*}{\_}
+\else{#1}\fi\fi}
 
 \newcommand{\rulename}[1]{{\sc \inductionrule{#1}}}
 
@@ -217,8 +241,8 @@
 
 \newcommand{\iu}{\ip{u}{\iG}}
 \newcommand{\tux}{\ip{t[u/x]}{`G, `D[u/x]}}
-\newcommand{\cux}{[c~\ip{u}{`G}/x]}
-\newcommand{\tcux}{\ip{t}{\ipG{`G, x : V, `D}}[c~\ip{u}{`G}/x]}
+\newcommand{\cux}{[c[\ip{u}{`G}]/x]}
+\newcommand{\tcux}{\ip{t}{\ipG{`G, x : V, `D}}[c[\ip{u}{`G}]/x]}
 \newcommand{\GD}{`G, x : V, `D}
 \newcommand{\Gr}{`G, `D[u/x]}
 \newcommand{\iGD}{\ipG{`G, x : V, `D}}
