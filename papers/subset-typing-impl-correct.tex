@@ -59,139 +59,105 @@ On a la propriété suivante:
   Par induction sur la dérivation de $\teq{`G}{t}{T}{u}{U}$.
 
   \begin{induction}
-    \case{Transitivity}
-      On a $\teq{`G}{t}{T}{v}{V}$ et $\teq{`G}{v}{V}{t}{T}$, donc par
-      induction, il existe $`a, `b$ telles que:
-      $`a[\ip{t}{`G}] `= \ip{v}{`G}$ et $`b[\ip{v}{`G}] `= \ip{u}{`G}$
-      où $\subimpl{`G}{`a}{T}{V}$ et $\subimpl{`G}{`b}{V}{U}$. Par
-      transitivité de la coercion il existe $c `= `b `o `a$ telle que
-      $\subimpl{`G}{c}{T}{U}$. Clairement, $c[\ip{t}{`G}] `=
-      `b[`a[\ip{t}{`G}]] `= `b[\ip{v}{`G}] `= \ip{u}{`G}$.
-      
-    \case{Symetry}
-      On a $\teq{`G}{u}{U}{t}{T}$. Par induction, il existe $`a$,
-      $`a[\ip{u}{`G}] `= \ip{t}{`G}$ et $\subimpl{`G}{`a}{U}{T}$.
-      Par symmétrie de la coercion, il existe $c `= `a^{-1}$,
-      $\subimpl{`G}{c}{T}{U}$ et $c `o `a `= `a `o c `= \ctxdot$.
-      On a donc $c[`a[\ip{u}{`G}]] `= \ip{u}{`G} `=
-      `a^{-1}[\ip{t}{`G}]$. 
-      Par symétrie de l'équivalence, on obtient le résultat désiré:
-      $`a^{-1}[\ip{t}{`G} `= \ip{u}{`G}$. 
-      
-    \case{Reflexivity}
-      On a $\teq{`G}{t}{T}{t}{T}$. Par réflexivité de la coercion, c'est
-      trivial.
-      
+    \case{Transitivité}
+    On a $\teq{`G}{t}{T}{v}{V}$ et $\teq{`G}{v}{V}{t}{T}$, donc par
+    induction, il existe $`a, `b$ telles que:
+    $`a[\ip{t}{`G}] `= \ip{v}{`G}$ et $`b[\ip{v}{`G}] `= \ip{u}{`G}$
+    où $\subimpl{`G}{`a}{T}{V}$ et $\subimpl{`G}{`b}{V}{U}$. Par
+    transitivité de la coercion il existe $c `= `b `o `a$ telle que
+    $\subimpl{`G}{c}{T}{U}$. Clairement, $c[\ip{t}{`G}] `=
+    `b[`a[\ip{t}{`G}]] `= `b[\ip{v}{`G}] `= \ip{u}{`G}$.
+    
+    \case{Symétrie}
+    On a $\teq{`G}{u}{U}{t}{T}$. Par induction, il existe $`a$,
+    $`a[\ip{u}{`G}] `= \ip{t}{`G}$ et $\subimpl{`G}{`a}{U}{T}$.
+    Par symmétrie de la coercion, il existe $c `= `a^{-1}$,
+    $\subimpl{`G}{c}{T}{U}$ et $c `o `a `= `a `o c `= \ctxdot$.
+    On a donc $c[`a[\ip{u}{`G}]] `= \ip{u}{`G} `=
+    `a^{-1}[\ip{t}{`G}]$. 
+    Par symétrie de l'équivalence, on obtient le résultat désiré:
+    $`a^{-1}[\ip{t}{`G} `= \ip{u}{`G}$. 
+    
+    \case{Réflexivité}
+    On a $\teq{`G}{t}{T}{t}{T}$. Par réflexivité de la coercion, c'est
+    trivial.
+    
     \case{BetaTeq}
-      On a $\ip{(\lambda x : X.v)~e}{`G} = (\lambda x : \ip{X}{`G}.\ip{v}{`G, x :
-        X})~c[\ip{e}{`G}] "->"_\beta \ip{v}{`G, x : X}[c[\ip{e}{`G}]/x]$
-      où $\talgo{`G}{e}{E}$, $\subimpl{`G}{c}{X}{E}$.
-      On doit montrer qu'il existe $`a$ tel que 
-      $\ip{v}{`G, x : X}[c[\ip{e}{`G}]/x] `= `a[\ip{v[e/x]}]$.
-      Par inversion de $\talgo{`G}{(\lambda x : X.v)~e}{T}$ on a 
-      $\talgo{`G, x : X}{v}{V}$ tel que $V[e/x] = T$.
-
-      On applique lemme de substitution et coercion
-      \ref{coerce-subst-and-coercion} avec $\talgo{`G}{e}{E}$,
-      $\subimpl{`G}{c}{X}{E}$ et cette dérivation. On obtient:
-      $`a[\ip{v[e/x]}{`G} `= \ip{v}{`G, x : X}[c[\ip{e}{`G}]/x]$, soit
-      le résultat désiré.
-
+    On a $\ip{(\lambda x : X.v)~e}{`G} = (\lambda x : \ip{X}{`G}.\ip{v}{`G, x :
+      X})~c[\ip{e}{`G}] "->"_\beta \ip{v}{`G, x : X}[c[\ip{e}{`G}]/x]$
+    où $\talgo{`G}{e}{E}$, $\subimpl{`G}{c}{X}{E}$.
+    On doit montrer qu'il existe $`a$ tel que 
+    $\ip{v}{`G, x : X}[c[\ip{e}{`G}]/x] `= `a[\ip{v[e/x]}]$.
+    Par inversion de $\talgo{`G}{(\lambda x : X.v)~e}{T}$ on a 
+    $\talgo{`G, x : X}{v}{V}$ tel que $V[e/x] = T$.
+    
+    On applique lemme de substitution et coercion
+    \ref{coerce-subst-and-coercion} avec $\talgo{`G}{e}{E}$,
+    $\subimpl{`G}{c}{X}{E}$ et cette dérivation. On obtient:
+    $`a[\ip{v[e/x]}{`G} `= \ip{v}{`G, x : X}[c[\ip{e}{`G}]/x]$, soit
+    le résultat désiré.
+    
     \case{PiLeftTeq}
-      On a $\ip{\pi_1~\pair{\Sigma x : T.V}{e_1}{e_2}}{`G} \eqdef
-      \pi_1~\ip{\pair{\Sigma x : T.V}{e_1}{e_2}}{`G} =
-      \pi_1~\pair{\ip{\Sigma x : T.V}{`G}}{\ip{e_1}{`G}}{\ip{e_2}{`G}}
-      "->"_{\pi_1} \ip{e_1}{`G}$. On peut donc prendre
-      $\subimpl{`G}{`a}{T}{U}$.
+    On a $\ip{\pi_1~\pair{\Sigma x : T.V}{e_1}{e_2}}{`G} \eqdef
+    \pi_1~\ip{\pair{\Sigma x : T.V}{e_1}{e_2}}{`G} =
+    \pi_1~\pair{\ip{\Sigma x : T.V}{`G}}{\ip{e_1}{`G}}{\ip{e_2}{`G}}
+    "->"_{\pi_1} \ip{e_1}{`G}$. On peut donc prendre
+    $\subimpl{`G}{`a}{T}{T} `= \ctxdot$.
+    
+    \case{PiRightTeq}
+    On a $\ip{\pi_2~\pair{\Sigma x : T.V}{e_1}{e_2}}{`G} \eqdef
+    \pi_2~\ip{\pair{\Sigma x : T.V}{e_1}{e_2}}{`G} =
+    \pi_2~\pair{\ip{\Sigma x : T.V}{`G}}{\ip{e_1}{`G}}{\ip{e_2}{`G}}
+    "->"_{\pi_2} \ip{e_1}{`G}$. On peut donc prendre
+    $\subimpl{`G}{`a}{T}{T} `= \ctxdot$.
+    
+    \case{AppTeq} On a
+    \begin{prooftree}
+      \AppTeq
+    \end{prooftree}
+    
+    On a:
+    \[\ip{M~N}{`G} \eqdef \pi_S[\ip{M}{`G}]~c[\ip{N}{`G}] `^ 
+    \ip{M'~N'}{`G} \eqdef \pi_T[\ip{M'}{`G}]~c'[\ip{N'}{`G}]\]
+    où 
+    \begin{eqnarray*}
+      \pi_S & = & \coerce{`G}{S}{(\Pi x : A.B)} \\
+      \pi_T & = & \coerce{`G}{T}{(\Pi x : C.D)} \\
+      c & = & \coerce{`G}{U}{A} \\
+      c' & = & \coerce{`G}{V}{C}
+    \end{eqnarray*}
       
-      
-      
-      
+    Par induction, il exite $`a, `b$, telles que:
+    \[\subimpl{`G}{`a}{S}{T} `^ `a[\ip{M}{`G}] `= \ip{M'}{`G} \]
+    \[\subimpl{`G}{`b}{U}{V} `^ `b[\ip{N}{`G}] `= \ip{N'}{`G} \]
+    
+    On a donc les coercions suivantes:
+    \[
+    \xymatrix{
+      S\ar[rr]_{\pi_S}\ar[d]_{`a} & & 
+      \Pi x : A.B\ar@{-->}[d]^{`a'} \\
+      T\ar[rr]^{\pi_T} & & \Pi x : C.D}
+    \quad
+    \xymatrix{
+      U\ar[rr]_{c}\ar[d]_{`b} & & 
+      A\ar@{-->}[d]^{`b'} \\
+      V\ar[rr]^{c'} & & C}
+    \]
+
+    La coercion $`a'$ est nécessairement de la forme $\lambda x :
+    \ip{C}{`G}.c_2[\ctxdot~c_1[x]]$.
     
 
-      
-      Par inversion du jugement $\talgo{`G}{(\lambda x : X.v)~e}{T}$
-      on a $\talgo{`G, x : X}{v}{V}$ où $T = V[e/x]$.
-      On applique
-      l'hypothèse d'induction pour obtenir $\ip{v}{`G, x : X}[c] `=
-      `a[\ip{v}{`G, x : U}]$ en utilisant la coercion de contexte
-      $\ctxdot, \ldots, c : (`G, x : U) \sub (`G, x : V)$. La coercion
-      $`a$ est équivalente à l'identité car elle part de la sorte $s$.
-      On a donc: $\ip{e}{`G, x : V}[c] `= \ip{e}{`G, x : U}$. Par
-      substitutivité dans \CCI{} on obtient:
-      \[\ip{e}{`G, x : V}[c[x]/x][\ip{u}{`G}/x] `= \ip{e}{`G, x :
-        U}[\ip{u}{`G}/x]\]
-      Soit:
-      \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e}{`G, x :
-        U}[\ip{u}{`G}/x]\]
-      Enfin par le lemme de stabilité par substitution
-      \ref{coerce-subst}, on obtient:
-      \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e[u/x]}{`G}\]
-      
-      On a donc bien $\ip{(\lambda x : V.e)~u}{`G} `=
-      \ip{e[u/x]}{`G}$.
 
+
+
+
+      
+   
 
     \end{induction}
     
 
-
-
-%   Il suffit de prouver que si $T "->"_{\beta} T'$ alors $\ip{T}{`G}
-%   `= \ip{T'}{`G}$.
-
-%   \begin{induction}
-%     \case{PropSet} On a $T = s = \ip{T}{`G}$, on doit donc montrer que
-%     $\ip{T'}{`G} `= s$. 
-%     Par induction sur la dérivation de $T'$.
-%     Si $T'$ est une sorte c'est direct. $T'$ ne peut pas être une
-%     variable, un type $\Pi, \Sigma, \{|\}$ ni une abstraction ou une
-%     paire. Il ne reste que les redex.
-    
-%     Si $T' : s$ est dérivé par \irule{App}, alors $W[u/x] = s$ donc $u =
-%     s$ ou $W = s$. Dans le premier cas, on aurait une dérivation de $`G
-%     \typea s : U$ et $`G \typec U : s'$, ce qui est impossible.
-%     Dans le second cas, on a:
-%     $`G \typea \Pi x : V.s : s_3$. Par inversion, $`G \typea V : s_1$,
-%     $`G, x : V \typea s : s_2$ et $(s_1, s_2, s_3) `: \mathcal{R}$. Or
-%     $s_2$ ne peut être que $\Type$, donc c'est impossible.
-    
-%     \case{Var} On a alors $T' \eqbr x$ et $`G \typea x : s : s'$ par
-%     inversion du jugement de bonne formation.
-%     Encore une fois seuls les jugement sur les rédex s'appliquent.
-
-
-%     \case{App} 
-%     Si $f~u$ est de la forme $(\lambda x : V.e)~u$ alors on a
-%     $\ip{f~u}{`G} = (\lambda x : \ip{V}{`G}.\ip{e}{`G, x :
-%       V})~c[\ip{u}{`G}] "->"_\beta \ip{e}{`G, x : V}[c[\ip{u}{`G}]/x]$
-%     où $\subimpl{`G}{c}{U}{V}$. 
-%     Supposons $T' = e[u/x]$, alors $\ip{T'}{`G} = \ip{e[u/x]}{`G}$.
-%     Par inversion du jugement $\subimpl{`G}{\lambda x : V.e}{\Pi x :
-%       V.W}$ on a $\subimpl{`G, x : V}{e}{W = s}$. On applique
-%     l'hypothèse d'induction pour obtenir $\ip{e}{`G, x : V}[c] `=
-%     `a[\ip{e}{`G, x : U}]$ en utilisant la coercion de contexte
-%     $\ctxdot, \ldots, c : (`G, x : U) \sub (`G, x : V)$. La coercion
-%     $`a$ est équivalente à l'identité car elle part de la sorte $s$.
-%     On a donc: $\ip{e}{`G, x : V}[c] `= \ip{e}{`G, x : U}$. Par
-%     substitutivité dans \CCI{} on obtient:
-%     \[\ip{e}{`G, x : V}[c[x]/x][\ip{u}{`G}/x] `= \ip{e}{`G, x :
-%       U}[\ip{u}{`G}/x]\]
-%     Soit:
-%     \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e}{`G, x :
-%       U}[\ip{u}{`G}/x]\]
-%     Enfin par le lemme de stabilité par substitution
-%     \ref{coerce-subst}, on obtient:
-%     \[\ip{e}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{e[u/x]}{`G}\]
-
-%     On a donc bien $\ip{(\lambda x : V.e)~u}{`G} `=
-%     \ip{e[u/x]}{`G}$.
-    
-%     Si $T = f~u'$ où $u `= u'$, alors:
-%     $\ip{T} = (\pi_F[f])~(c[\ip{u}{`G}])$ et $\ip{T'} = (\pi_F[f])~(c'[\ip{u'}{`G}])$. 
-%     On doit montrer que $c[\ip{u}{`G}] `= c'[\ip{u'}{`G}]]$. 
-%     \Problem{Analyser tout les cas possibles ?}
-%   \end{induction}
 \end{proof}
 
 On peut maintenant montrer notre théorème de correction.

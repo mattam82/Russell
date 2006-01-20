@@ -228,49 +228,67 @@
 \newcommand{\BetaTeq}{
   %\AXC{$\talgo{`G, x : X}{v}{T'} \quad T'[e/x] \sub T \quad T \sub U$}
   %\AXC{$\talgo{`G}{e}{E} \quad X \sub E$}
-  \AXC{$T \sub U$}
-  \UIC{$\teq{`G}{(\lambda x : X.v)~e}{T}{v[e/x]}{U}$}
+  \UAX{BetaTeq}
+  {$T \sub U$}
+  {$\teq{`G}{(\lambda x : X.v)~e}{T}{v[e/x]}{U}$}
+  {}
 }
 
 \newcommand{\PiLeftTeq}{
-  \AXC{$T \sub U$}
-  \UIC{$\teq{`G}{\pi_1~\pair{\Sigma x : T.V}{e_1}{e_2}}{T}{e_1}{U}$}
+  \UAX{PiLeftTeq}
+  {}
+  {$\teq{`G}{\pi_1~\pair{\Sigma x : T.V}{e_1}{e_2}}{T}{e_1}{T}$}
+  {}
 }
 
 \newcommand{\PiRightTeq}{
-  \AXC{$T \sub U$}
-  \UIC{$\teq{`G}{\pi_2~\pair{\Sigma x : V.T}{e_1}{e_2}}{T}{e_2}{U}$}
+  \UAX{PiRightTeq}
+  {}
+  {$\teq{`G}{\pi_2~\pair{\Sigma x : V.T}{e_1}{e_2}}{T}{e_2}{T}$}
+  {}
 }
 
 \newcommand{\AppTeq}{
-  \AXC{$\teq{`G}{M}{S}{M'}{T} \quad \teq{`G}{N}{U}{N'}{V}$}
-  \AXC{$M \sub \Pi x : A.B \quad M' \sub \Pi x : C.D$}
-  \AXC{$U \sub A \quad V \sub C$}
-  \TIC{$\teq{`G}{M~N}{B[N/x]}{M'~N'}{D[N'/x]}$}
+  \QAX{AppTeq}
+  {$\teq{`G}{M}{S}{M'}{T} \quad \teq{`G}{N}{U}{N'}{V}$}
+  {$S \sub \Pi x : A.B \quad T \sub \Pi x : C.D$}
+  {$U \sub A$}
+  {$V \sub C$}
+  {$\teq{`G}{M~N}{B[N/x]}{M'~N'}{D[N'/x]}$}
+  {}
 }
 
 \newcommand{\PairTeq}{
-  \AXC{$\teq{`G}{e_1}{A}{e_2}{C}$}
-  \AXC{$\teq{`G, x : A}{e_2}{B}{e_2'}{D}$}
-  \BIC{$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{T}{\pair{\Sigma x : C.D}{e_1'}{e_2'}}{U}$}
+  \BAX{PairTeq}
+  {$\teq{`G}{e_1}{A}{e_2}{C}$}
+  {$\teq{`G, x : A}{e_2}{B}{e_2'}{D}$}
+  {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{T}{\pair{\Sigma x :
+        C.D}{e_1'}{e_2'}}{U}$}
+  {}
 }
 
 \newcommand{\PiTeq}{
-  \AXC{$\teq{`G}{C}{s_1}{A}{s_1}$}
-  \AXC{$\teq{`G, x : A}{B}{s_2}{D}{s_2}$}
-  \BIC{$\teq{`G}{\Pi x : A.B}{s_3}{\Pi x : C.D}{s_3}$}
+  \BAX{PiTeq}
+  {$\teq{`G}{C}{s_1}{A}{s_1}$}
+  {$\teq{`G, x : A}{B}{s_2}{D}{s_2}$}
+  {$\teq{`G}{\Pi x : A.B}{s_3}{\Pi x : C.D}{s_3}$}
+  {}
 }
 
 \newcommand{\SigmaTeq}{
-  \AXC{$\teq{`G}{A}{s_1}{C}{s_1}$}
-  \AXC{$\teq{`G, x : A}{B}{s_2}{D}{s_2}$}
-  \BIC{$\teq{`G}{`S x : A.B}{s_3}{`S x : C.D}{s_3}$}
+  \BAX{SigmaTeq}
+  {$\teq{`G}{A}{s_1}{C}{s_1}$}
+  {$\teq{`G, x : A}{B}{s_2}{D}{s_2}$}
+  {$\teq{`G}{`S x : A.B}{s_3}{`S x : C.D}{s_3}$}
+  {}
 }
 
 \newcommand{\SubsetTeq}{
-  \AXC{$\teq{`G}{T}{\Set}{A}{\Set}$}
-  \AXC{$\teq{`G, x : T}{P}{\Prop}{P'}{\Prop}$}
-  \BIC{$\teq{`G}{\mysubset{x}{T}{P}}{\Set}{\mysubset{x}{U}{P'}}{\Set}$}
+  \BAX{SubsetTeq}
+  {$\teq{`G}{T}{\Set}{A}{\Set}$}
+  {$\teq{`G, x : T}{P}{\Prop}{P'}{\Prop}$}
+  {$\teq{`G}{\mysubset{x}{T}{P}}{\Set}{\mysubset{x}{U}{P'}}{\Set}$}
+  {}
 }
 
 \newcommand{\teqfig}{

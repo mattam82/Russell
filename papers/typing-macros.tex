@@ -114,46 +114,29 @@
 \def\SubSubRule{Sub-Subset}
 \def\SubTransRule{Sub-Trans}
 
-\def\BetaTeqRule{Beta-eq}
-\def\PiLeftTeqRule{Pi-1-eq}
-\def\PiRightTeqRule{Pi-2-eq}
-\def\AppTeqRule{App-eq}
-\def\PairTeqRule{Pair-eq}
-\def\PiTeqRule{Prod-eq}
-\def\SigmaTeqRule{Sigma-eq}
-\def\SubsetTeqRule{Subset-eq}
+\def\BetaTeqRule{$\beta$-$`=$}
+\def\PiLeftTeqRule{$\Pi_1$-$`=$}
+\def\PiRightTeqRule{$\Pi-2$-$`=$}
+\def\AppTeqRule{App-$`=$}
+\def\PairTeqRule{Pair-$`=$}
+\def\PiTeqRule{Prod-$`=$}
+\def\SigmaTeqRule{Sigma-$`=$}
+\def\SubsetTeqRule{Subset-$`=$}
 
-
-
-\def\ifstreq#1#2{\def\testa{#1}\def\testb{#2}\ifx\testa\testb }
+\newcommand{\ifstreq}[4]{\ifthenelse{\equal{#1}{#2}}{#3}{#4}}
 
 \def\inductionon#1{
   \ifstreq{#1}{typing-decl}{Par induction sur la dérivation de typage.}
-  \else\ifstreq{#1}{typing-algo}{Par induction sur la dérivation de
-    typage dans le système algorithmique.}
-  \else\ifstreq{#1}{typing-impl}{Par induction sur la dérivation de
-    typage.}
-  \else\ifstreq{#1}{subtyping-decl}{Par induction sur la dérivation de
-    sous-typage.}
-  \else\ifstreq{#1}{subtyping-algo}{Par induction sur la dérivation de
-    sous-typage dans le système algorithmique.}
-  \else\ifstreq{#1}{subtyping-impl}{Par induction sur la dérivation de
-    sous-typage.}
-  \fi}
-
-\def\inductionon#1{
-  \ifstreq{#1}{typing-decl}Par induction sur la dérivation de typage.
-  \else\ifstreq{#1}{typing-algo}Par induction sur la dérivation de
-    typage dans le système algorithmique.
-    \else\ifstreq{#1}{typing-impl}Par induction sur la dérivation de
-    typage.
-  \else\ifstreq{#1}{subtyping-decl}Par induction sur la dérivation de
-    sous-typage.
-  \else\ifstreq{#1}{subtyping-algo}Par induction sur la dérivation de
-    sous-typage dans le système algorithmique.
-  \else\ifstreq{#1}{subtyping-impl}Par induction sur la dérivation de
-    sous-typage.
-  \fi}
+  {\ifstreq{#1}{typing-algo}{Par induction sur la dérivation de
+      typage dans le système algorithmique.}
+    {\ifstreq{#1}{typing-impl}{Par induction sur la dérivation de
+        typage.}
+      {\ifstreq{#1}{subtyping-decl}{Par induction sur la dérivation de
+          sous-typage.}
+        {\ifstreq{#1}{subtyping-algo}{Par induction sur la dérivation de
+            sous-typage dans le système algorithmique.}
+          {\ifstreq{#1}{subtyping-impl}{Par induction sur la dérivation de
+              sous-typage.}}}}}}}
 
 \newenvironment{induction}[1][text=\empty]{
   \if#1\empty\text\else\inductionon{#1}\fi
@@ -163,49 +146,48 @@
 %% Should be able to work with \else...
 \newcommand{\inductionrule}[1]
 {\ifstreq{#1}{WfEmpty}{\WfEmptyRule}
-\else\ifstreq{#1}{WfVar}{\WfVarRule}
-\else\ifstreq{#1}{PropSet}{\PropSetRule}
-\else\ifstreq{#1}{Type}{\TypeRule}
-\else\ifstreq{#1}{Var}{\VarRule}
-\else\ifstreq{#1}{Prod}{\ProdRule}
-\else\ifstreq{#1}{Abs}{\AbsRule}
-\else\ifstreq{#1}{LetIn}{\LetInRule}
-\else\ifstreq{#1}{Sigma}{\SigmaRule}
-\else\ifstreq{#1}{Sum}{\SumRule}
-\else\ifstreq{#1}{LetSum}{\LetSumRule}
-\else\ifstreq{#1}{PiLeft}{\PiLeftRule}
-\else\ifstreq{#1}{PiRight}{\PiRightRule}
-\else\ifstreq{#1}{App}{\AppRule}
-\else\ifstreq{#1}{SumInf}{\SumInfRule}
-\else\ifstreq{#1}{SumDep}{\SumDepRule}
-\else\ifstreq{#1}{LetSub}{\LetSubRule}
-\else\ifstreq{#1}{Subsum}{\CoerceRule}
-\else\ifstreq{#1}{Coerce}{\CoerceRule}
-\else\ifstreq{#1}{Conv}{\ConvRule}
-\else\ifstreq{#1}{Subset}{\SubsetRule}
-\else\ifstreq{#1}{SubRefl}{\SubReflRule}
-\else\ifstreq{#1}{SubTrans}{\SubTransRule}
-\else\ifstreq{#1}{SubConv}{\SubConvRule}
-\else\ifstreq{#1}{SubHnf}{\SubHnfRule}
-\else\ifstreq{#1}{SubEq}{\SubEqRule}
-\else\ifstreq{#1}{SubProd}{\SubProdRule}
-\else\ifstreq{#1}{SubSigma}{\SubSigmaRule}
-\else\ifstreq{#1}{SubLeft}{\SubLeftRule}
-\else\ifstreq{#1}{SubId}{\SubIdRule}
-\else\ifstreq{#1}{SubBeta}{\SubBetaRule}
-\else\ifstreq{#1}{SubRight}{\SubRightRule}
-\else\ifstreq{#1}{SubProof}{\SubProofRule}
-\else\ifstreq{#1}{SubSub}{\SubSubRule}
-\else\ifstreq{#1}{BetaTeq}{\BetaTeqRule}
-\else\ifstreq{#1}{PiLeftTeq}{\PiLeftTeqRule}
-\else\ifstreq{#1}{PiRightTeq}{\PiRightTeqRule}
-\else\ifstreq{#1}{AppTeq}{\AppTeqRule}
-\else\ifstreq{#1}{PairTeq}{\PairTeqRule}
-\else\ifstreq{#1}{PiTeq}{\PiTeqRule}
-\else\ifstreq{#1}{SigmaTeq}{\SigmaTeqRule}
-\else\ifstreq{#1}{SubsetTeq}{\SubsetTeqRule}
-\else\ifstreq{#1}{*}{\_}
-\else{#1}\fi\fi}
+{\ifstreq{#1}{WfVar}{\WfVarRule}
+{\ifstreq{#1}{PropSet}{\PropSetRule}
+{\ifstreq{#1}{Type}{\TypeRule}
+{\ifstreq{#1}{Var}{\VarRule}
+{\ifstreq{#1}{Prod}{\ProdRule}
+{\ifstreq{#1}{Abs}{\AbsRule}
+{\ifstreq{#1}{LetIn}{\LetInRule}
+{\ifstreq{#1}{Sigma}{\SigmaRule}
+{\ifstreq{#1}{Sum}{\SumRule}
+{\ifstreq{#1}{LetSum}{\LetSumRule}
+{\ifstreq{#1}{PiLeft}{\PiLeftRule}
+{\ifstreq{#1}{PiRight}{\PiRightRule}
+{\ifstreq{#1}{App}{\AppRule}
+{\ifstreq{#1}{SumInf}{\SumInfRule}
+{\ifstreq{#1}{SumDep}{\SumDepRule}
+{\ifstreq{#1}{LetSub}{\LetSubRule}
+{\ifstreq{#1}{Subsum}{\CoerceRule}
+{\ifstreq{#1}{Coerce}{\CoerceRule}
+{\ifstreq{#1}{Conv}{\ConvRule}
+{\ifstreq{#1}{Subset}{\SubsetRule}
+{\ifstreq{#1}{SubRefl}{\SubReflRule}
+{\ifstreq{#1}{SubTrans}{\SubTransRule}
+{\ifstreq{#1}{SubConv}{\SubConvRule}
+{\ifstreq{#1}{SubHnf}{\SubHnfRule}
+{\ifstreq{#1}{SubEq}{\SubEqRule}
+{\ifstreq{#1}{SubProd}{\SubProdRule}
+{\ifstreq{#1}{SubSigma}{\SubSigmaRule}
+{\ifstreq{#1}{SubLeft}{\SubLeftRule}
+{\ifstreq{#1}{SubId}{\SubIdRule}
+{\ifstreq{#1}{SubBeta}{\SubBetaRule}
+{\ifstreq{#1}{SubRight}{\SubRightRule}
+{\ifstreq{#1}{SubProof}{\SubProofRule}
+{\ifstreq{#1}{SubSub}{\SubSubRule}
+{\ifstreq{#1}{BetaTeq}{\BetaTeqRule}
+{\ifstreq{#1}{PiLeftTeq}{\PiLeftTeqRule}
+{\ifstreq{#1}{PiRightTeq}{\PiRightTeqRule}
+{\ifstreq{#1}{AppTeq}{\AppTeqRule}
+{\ifstreq{#1}{PairTeq}{\PairTeqRule}
+{\ifstreq{#1}{PiTeq}{\PiTeqRule}
+{\ifstreq{#1}{SigmaTeq}{\SigmaTeqRule}
+{\ifstreq{#1}{SubsetTeq}{\SubsetTeqRule}
+{\ifstreq{#1}{*}{\_}{#1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
 \newcommand{\rulename}[1]{{\sc \inductionrule{#1}}}
 
