@@ -27,7 +27,7 @@
     Les seules règles pouvant s'appliquer a la fin de la dérivation de
     $c_2$ sont donc \irule{SubConv}, \irule{SubHnf} et \irule{SubProof}.
 
-    \begin{itemize}
+    \begin{induction}
       \case{SubConv} Alors on a $U = \hnf{U} "/=" \Pi, \Sigma, \{|\}$.
       La coercion composée est alors $\ctxdot `o \ctxdot$. C'est bien la coercion
       dérivée pour le jugement $\subimpl{`D}{\ctxdot}{S}{U}$ par \irule{SubConv}.
@@ -49,9 +49,9 @@
       Par induction, il existe une coercion $d' `= d `o c_1[`r] = d$ telle que
       $\subimpl{`D}{d'}{S}{U'}$. On applique \irule{SubProof} pour obtenir
       la coercion $c$ de $S$ à $U$. Clairement $c `= c_2 `o c_1[`r] =
-      c_2 `o [] = c_2$.
+      c_2 `o \ctxdot = c_2$.
       
-    \end{itemize}
+    \end{induction}
     
     Supposons maintenant que la dérivation de $c_2$ termine par une
     application de \irule{SubConv}. Alors $T$ et $U$ sont en forme
@@ -59,7 +59,7 @@
     Les seules règles pouvant apparaître en racine de la dérivation de
     $c_1$ sont donc \irule{SubConv}, \irule{SubHnf} et \irule{SubSub}.
 
-    \begin{itemize}
+    \begin{induction}
       \case{SubConv} Alors on a $S = \hnf{S} "/=" \Pi, \Sigma, \{|\}$.
       La coercion composée est alors $\ctxdot `o \ctxdot$. C'est bien la coercion
       dérivée pour le jugement $\subimpl{`D}{\ctxdot}{S}{U}$ par \irule{SubConv}.
@@ -82,7 +82,7 @@
       la coercion $c = d[`r][\eltpit~\ctxdot]$ de $S$ à $U$. On a \[c =
       d[`r][\eltpit~\ctxdot] = d[\eltpit~\ctxdot][`r] `= c_2 `o c_1[`r] \]
 
-    \end{itemize}
+    \end{induction}
 
     \case{SubHnf}\quad
     \begin{prooftree}
@@ -139,8 +139,8 @@
       obtient par induction avec les dérivations de $c_1'$ et $d_1$
       d'une part et $c_2'$ et $d_2$ d'autre part, deux coercions
       $e_1, e_2$ telles que:
-      \[\subimpl{`D}{e_1 `= c_1' `o d_1}{S}{X} `^
-      \subimpl{`D, x : S}{e_2 `= d_2 `o c_2'}{Y}{T}\]
+      \[\subimpl{`D}{e_1 `= c_1[`r] `o d_1}{S}{X} `^
+      \subimpl{`D, x : S}{e_2 `= d_2 `o c_2[`r]}{Y}{T}\]
       
       On en déduit:
       \begin{prooftree}
@@ -196,7 +196,7 @@
         \AXC{$\subimpl{`D}{e}{\Pi x : X'.Y'}{U'}$}
         \UIC{$\subimpl{`D}{d = \elt{\ip{U'}{`D}}
             {\ip{\lambda x : U'.P}{`D}}{e}
-            {\ex{\ipG{`D}}{\ip{P}{`D}[e/x]}}}
+            {\ex{\ipG{`D, x : U'}}{\ip{P}{`D}[e/x]}}}
           {\Pi x : X'.Y'}{\mysubset{y}{U'}{P}}$}
       \end{prooftree}
 
@@ -445,7 +445,7 @@
   existe $c `= c_2 `o c_1$ tel que $\subimpl{`G}{c}{S}{U}$.
 \end{corrolary}
 
-On peut maintenant énoncer le lemme de symmétrie:
+On peut maintenant énoncer le lemme de symétrie:
 
 \begin{lemma}[Symétrie de la coercion]
   \label{coerce-sym}
@@ -453,7 +453,7 @@ On peut maintenant énoncer le lemme de symmétrie:
   \subimpl{`G}{c^{-1}}{B}{A}$ et $c^{-1} `o c `= \ctxdot `= c `o c^{-1}$.
 \end{lemma}
 \begin{proof}
-  On sait que le jugement $\subi$ est symmétrique, c'est à dire qu'on a
+  On sait que le jugement $\suba$ est symmétrique, c'est à dire qu'on a
   l'existence des inverses. On utilise la transitivité pour montrer le
   reste du lemme. Si $\subimpl{`G}{c}{A}{B}$ et
   $\subimpl{`G}{c^{-1}}{B}{A}$ alors il existe des coercions $f$ et
@@ -461,8 +461,7 @@ On peut maintenant énoncer le lemme de symmétrie:
   $\subimpl{`G}{f `= c^{-1} `o c}{A}{A}$ et $\subimpl{`G}{f^{-1}
     `= c `o c^{-1}}{B}{B}$. Par réflexivité (lemme \ref{coerce-refl})
   et unicité des coercions, $f `=
-  \ctxdot$ et $f^{-1} `= \ctxdot$. En général $f$ et
-  $f'$ sont en forme $\eta$-longue.
+  \ctxdot$ et $f^{-1} `= \ctxdot$.
 \end{proof}
 
 %%% Local Variables: 

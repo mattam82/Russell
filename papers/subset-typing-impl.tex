@@ -15,7 +15,7 @@ utilisation de la coercion n'était pas incorrecte.
 \subsection{Interprétation}
 On définit l'interprétation $\ip{t}{`G}$ par récurrence sur la forme des
 termes (figure \ref{fig:interp}). Cette interprétation renvoie
-un terme $t'$ réecrit bien typé dans l'environnement \CCI{} $\ipG{`G}$.
+un terme $t'$ réecrit que l'on montrera bien typé dans l'environnement \CCI{} $\ipG{`G}$.
 
 \begin{definition}[Interprétation des contextes]
   \label{ctx-interp}
@@ -85,7 +85,7 @@ On formalise donc les coercions par des contextes d'évaluation classiques.
 
 \begin{definition}[Substitution et composition de coercions]
   La substitution (l'application) dans un contexte d'évaluation est notée $c[d]$, elle
-  remplace toutes les occurences de $\ctxdot$ dans $c$ par $d$.
+  remplace toutes les occurrences de $\ctxdot$ dans $c$ par $d$.
 
   Le composition de deux coercions notée $c `o d$ est égale à $c[d]$,
   son élément neutre est $\ctxdot$.
@@ -116,15 +116,17 @@ Notre opération de mise en forme normale de tête est définie de la façon suivant
   \label{fig:hnfdef}
 \end{figure}
 
+On note donc $\hnf{T}$ la forme normale de tête $T$ et $\nf{T}$ la forme normale
+de $T$.
+
 \begin{figure}[h]
   \[\begin{array}{llcll}
     (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
     (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
     (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
     (\eta) & (\lambda x : X.e~x) & = & e & \text{si $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
-    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \\ %\text{si $e : \Sigma x : X. Y$} \\
-    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \\ %\text{si $e :
-                                %%\mysubset{x}{E}{P}$} \\
+    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{si $e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \text{si $e : \mysubset{x}{E}{P}$} \\
     (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{si $t
       `= t'$}
   \end{array}\]
@@ -134,7 +136,21 @@ Notre opération de mise en forme normale de tête est définie de la façon suivant
 
 On utilise l'équivalence $\eqbpers$ définie comme la clôture réflexive,
 symétrique et transitive de la relation définie figure
-\ref{fig:eqcci}. Cette relation sera dénotée par $`=$ pour plus de clarté.
+\ref{fig:eqcci}. Cette relation sera dénotée par $`=$ pour plus de
+clarté. Cette relation contient la $\beta$-réduction et les projections
+pour les sommes dépendantes, mais aussi des relations nécessaires pour
+supporter l'interprétation de termes de \lng{} dans le langage. On a
+donc la règle $\eta$ pour l'abstraction et $\rho$ pour le
+\emph{surjective pairing} qui s'applique aux sommes dépendantes et aux
+objets de type sous-ensemble. Enfin on a une forme limitée
+d'indifférence aux preuves pour les objets de type sous-ensemble.
+On ajoute une règle de typage au système de \CCI{} pour typer les
+existentielles:
+\begin{prooftree}
+  \AXC{$\tcoq{`G}{P}{\Prop}$}
+  \UIC{$\tcoq{`G}{\ex{`G}{P}}{P}$}
+\end{prooftree}
+
 % enrichie avec les
 %existentielles, on étend donc la relation aux existentielles de la façon
 %suivante: \[\ex{`G}{P} \eqbres \ex{`G'}{P'} `= `G \eqbres `G' `^ P \eqbres P'\]
@@ -144,7 +160,7 @@ symétrique et transitive de la relation définie figure
 Le système figure \ref{fig:coerce-impl-rules} dérive les termes de
 coercion. Il a de bonnes propriétés pour la preuve et l'implémentation
 telles que l'unicité et l'admissibilité de la transitivité que nous
-montrerons plus tard.
+montrerons plus tard. 
 
 \subsection{Propriétés}
 On veut montrer que si l'on a un jugement valide dans notre système
@@ -169,15 +185,13 @@ Dans le système algorithmique, on peut très bien dériver
 $\Pi n : \nat. \sref{list}~n \suba \Pi n :
 \mysubset{x}{\nat}{P}.\listml~n$ puisque $\mysubset{x}{\nat}{P} \suba
 \nat$ et $\listml~n \eqbr \listml~n$.
-Si l'on réécrit vers \CCI{}, on n'aura plus les même types
-de départ pour dériver le jugement puisqu'on part de types \Coq~valides.
-Ici, une coercion a été insérée dans le second type, en effet, $\ip{\Pi n :
-\mysubset{x}{\nat}{P}.\listml~n}{`G} = \Pi n :
+Si l'on interprète ces deux types, une coercion va être insérée dans le
+second type: $\ip{\Pi n : \mysubset{x}{\nat}{P}.\listml~n}{`G} = \Pi n :
 \mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. La coercion générée doit donc
 avoir pour type: $\Pi n : \nat. \listml~n "->" \Pi n :
-\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$. 
-Seulement, et c'est là la
-preuve que l'intuition de la coercion par prédicats est bonne, on peut
+\mysubset{x}{\nat}{P}.\listml~(\pi_1~n)$, mais elle est dérivée en se
+basant seulement sur les types algorithmiques. On peut vérifier ici
+que l'intuition de la coercion par prédicats est bonne, puisqu'on peut
 dériver ce jugement:
 
 \begin{prooftree}
@@ -212,7 +226,7 @@ de typage suivante:
     {\Pi n : \ip{\mysubset{x}{\nat}{P}}{`G}.\listml~(\pi_1~x)}$}
 \end{prooftree}
 
-On arrive crée donc bien un terme de type $\ip{\Pi n :
+On crée donc bien un terme de type $\ip{\Pi n :
   \mysubset{x}{\nat}{P}.\listml~n}{`G}$ en appliquant la coercion a un
 terme de type $\ip{\Pi n : \nat. \listml~n}{`G}$, c'est l'effet recherché.
 

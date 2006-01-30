@@ -44,7 +44,7 @@
 % }
 
 \newcommand{\typenvd}{
-  \typeout{Changing to declarative version}
+%  \typeout{Changing to declarative version}
   %\def\typewf{\typewf}
   \def\type{\typed}
   \def\subt{\subtd}
@@ -53,7 +53,7 @@
 }
 
 \newcommand{\typenva}{
-  \typeout{Changing to algorithmic version}
+%  \typeout{Changing to algorithmic version}
   %\def\typewf{\typewf}
   \def\type{\typea}
   \def\subt{\subta}
@@ -62,7 +62,7 @@
 }
 
 \newcommand{\typenvi}{
-  \typeout{Changing to implementation version}
+%  \typeout{Changing to implementation version}
   %\def\typewf{\typewf}
   \def\type{\typei}
   \def\subt{\subti}
@@ -138,10 +138,27 @@
           {\ifstreq{#1}{subtyping-impl}{Par induction sur la dérivation de
               sous-typage.}}}}}}}
 
+\newcounter{inductiondepth}
+
 \newenvironment{induction}[1][text=\empty]{
   \if#1\empty\text\else\inductionon{#1}\fi
-  \begin{list}{Unset default item}{}}
-  {\end{list}}
+  \addtocounter{inductiondepth}{1}
+  \begin{list}{Unset default item}{\setlength{\leftmargin}{35pt}}}
+  {\end{list}\addtocounter{inductiondepth}{-1}}
+
+\newcommand{\inductioncasepoint}{
+  \ifthenelse{\equal{\value{inductiondepth}}{1}}%
+  {--}{\ifthenelse{\equal{\value{inductiondepth}}{2}}%
+    {\textbullet}{--}}}
+
+\newcommand{\case}[1]{\item[\inductioncasepoint{}] \rulename{#1} :}
+\newcommand{\caseother}[1]{\item[\inductioncasepoint{}] #1}
+\newcommand{\casetwo}[2]{\item[-- \rulename{#1}, \rulename{#2} :]}
+\def\casethree#1#2#3{\item[-- \rulename{#1}, \rulename{#2},
+  \rulename{#3} :]}
+\def\casefour#1#2#3#4{\item[-- \rulename{#1}, \rulename{#2},
+  \rulename{#3}, \rulename{#4} :]}
+
 
 %% Should be able to work with \else...
 \newcommand{\inductionrule}[1]
@@ -198,12 +215,6 @@
 
 \def\rulelabel{\rulename}
 
-\def\case#1{\item[-- \rulename{#1} :]}
-\newcommand{\casetwo}[2]{\item[-- \rulename{#1}, \rulename{#2} :]}
-\def\casethree#1#2#3{\item[-- \rulename{#1}, \rulename{#2},
-  \rulename{#3} :]}
-\def\casefour#1#2#3#4{\item[-- \rulename{#1}, \rulename{#2},
-  \rulename{#3}, \rulename{#4} :]}
 
 \def\infvspace{1em}
 

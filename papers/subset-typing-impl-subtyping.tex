@@ -3,13 +3,9 @@
   Si $`G \typea T, U : s$ alors si $\subimpl{`G}{c}{T}{U}$ et
   $\subimpl{`G}{c'}{T}{U}$ alors $c = c'$.
 \end{lemma}
-
 \begin{proof}
-  Par induction lexicographique sur la paire de dérivations de $c$ et $c'$.
-  Seule la régle \irule{SubHnf} peut s'appliquer n'importe quand. 
-  Supposons que la dérivation de $c$ se termine par une application de \irule{SubHnf}.
-  Quelque soit la dernière règle appliquée dans la dérivation de $c'$,
-  on a $T = \hnf{T}$ et $U = \hnf{U}$. Par induction on a donc $c = c'$.
+  Par simple inspection des règles, on remarque qu'une seule règle
+  s'applique suivant la forme de $T$.
 \end{proof}
 
 On peut donc raisonner comme ceci: si l'on parvient à construire une
@@ -21,7 +17,6 @@ existante.
   Si $\timpl{`G}{A}{s}$ alors il existe $c$, $\subimpl{`G}{c}{A}{A}$ et
   $c `= \ctxdot$.
 \end{lemma}
-
 \begin{proof}
   Par induction sur le nombre de constructeurs $\Pi, \Sigma, \{|\}$ dans
   la forme normale de $A$.
@@ -72,30 +67,27 @@ existante.
   \hnf{U}$ avec $c = c'$ est dérivable par une dérivation plus
   petite ou égale.
 \end{lemma}
-
 \begin{proof}
   Par idempotence de la mise en forme normale de tête, on a la même
   dérivation dans le cas où la dernière règle appliquée était
   \irule{SubHnf}, sinon c'est trivial.
 \end{proof}
 
+On va maintenant généraliser la réflexivité aux termes convertibles.
+
 \begin{lemma}[Coercion de termes convertibles]
   \label{coerce-eqbr-eq-id}
-  Si $`G \typea T, U : s$, $T \eqbr U$ alors il existe $c$,
+  Si $\talgo{`G}{T, U}{s}$, $T \eqbr U$ alors il existe $c$,
   $\subimpl{`G}{c}{T}{U}$ avec $c `= \ctxdot$.
 \end{lemma}
-
 \begin{proof}
   Par induction sur le nombre de constructeurs $\Pi, \Sigma, \{|\}$ dans
-  les formes normales de $T$ et $U$ (on note $\nf{T}$ la forme normale
-  de $T$).
+  les formes normales de $T$ et $U$.
 
   \begin{itemize}  
   \item Si $\nf{T}$ n'a pas pour symbole de tête, $\Pi, \Sigma$ ou
     $\{|\}$, alors \irule{SubConv} est la seule règle applicable et on
-    a $c = \ctxdot$. On a donc traité les cas ou le nombre de symboles
-    $\Pi, \Sigma, \{|\}$ dans $T$ et $U$ est supérieur ou égal à zéro, seulement
-    s'il n'apparaît pas en tête. On traite maintenant le seul autre cas possible.
+    a $c = \ctxdot$. 
 
   \item Si $\hnf{T} = \Pi y : A.B$, alors $\hnf{U} = \Pi y : A'.B'$ avec $A
     \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 `= \ctxdot}{A'}{A}$
@@ -114,11 +106,11 @@ existante.
     
   \item Si $\hnf{T} = \Sigma y : A.B$ alors $\hnf{U} = \Sigma y : A'.B'$ avec $A
     \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 `= \ctxdot}{A}{A'}$
-    et $\subimpl{`G, x : A}{c_2 `= \ctxdot}{B}{B'}$ ($\nf{A},
+    et $\subimpl{`G, y : A}{c_2 `= \ctxdot}{B}{B'}$ ($\nf{A},
     \nf{A'}, \nf{B}, \nf{B'}$ sont des
     sous-termes stricts de $\nf{T}$ et $\nf{U}$). On peut donc dériver: 
     $\subimpl{`G}{\pair{\ip{\Sigma y :
-          A'.B'}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}    
+          A'.B'}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/y]}}    
     {\Sigma y : A.B}{\Sigma y : A'.B'}$. Puis par application de
     \irule{SubHnf}, la coercion de $T$ à $U$.
 
@@ -126,14 +118,21 @@ existante.
     \begin{eqnarray*}
       c & \eqdef & \pair{\ip{\Sigma y : A'.B'}{`G}}
       {c_1[\pi_1~\ctxdot]}
-      {c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]} \\
+      {c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/y]} \\
       & `= & 
+      \pair{\ip{\Sigma y : A'.B'}{`G}}
+      {\pi_1~\ctxdot}
+      {(\pi_2~\ctxdot)[\pi_1~\ctxdot/y]} \\
+      & = & 
       \pair{\ip{\Sigma y : A'.B'}{`G}}
       {\pi_1~\ctxdot}
       {\pi_2~\ctxdot} \\
       & =_\rho & \ctxdot
     \end{eqnarray*}
     
+    La substitution est inutile puisque dans un contexte où $\ctxdot :
+    \Sigma y : A.B$, $y `; \pi_2~\ctxdot$.
+
   \item Le cas des sous-ensembles est un peu différent.
     Si $\hnf{T} = \mysubset{x}{T'}{P}$ alors $\hnf{U} =
     \mysubset{x}{U'}{P'}$ avec $T' \eqbr U'$ et $P \eqbr P'$.
@@ -142,7 +141,7 @@ existante.
       \AXC{$\subimpl{`G}{c' `= \ctxdot}{T'}{U'}$}
       \UIC{$\subimpl{`G}{d = c'[\eltpit~\ctxdot]}{\mysubset{x}{T'}{P}}{U'}$}
       \UIC{$\subimpl{`G}{c = \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{d}
-          {\ex{\ipG{`G}}{\ip{P'}{`G}[d/x]}}}{\mysubset{x}{T'}{P}}{\mysubset{x}{U'}{P'}}$}
+          {\ex{\ipG{`G}}{\ip{P'}{`G, x : U'}[d/x]}}}{\mysubset{x}{T'}{P}}{\mysubset{x}{U'}{P'}}$}
       \UIC{$\subimpl{`G}{c}{T}{U}$}
     \end{prooftree}
     
@@ -151,14 +150,23 @@ existante.
     On peut vérifier:
     \begin{eqnarray*}
       c & \eqdef & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{d}
-      {\ex{\ipG{`G}}{\ip{P'}{`G}[d/x]}} \\
+      {\ex{\ipG{`G}}{\ip{P'}{`G, x : U'}[d/x]}} \\
       & `= & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{(\eltpit~\ctxdot)}
-      {\ex{\ipG{`G}}{\ip{P'}{`G}[\eltpit~\ctxdot/x]}} \\
+      {\ex{\ipG{`G}}{\ip{P'}{`G, x : U'}[\eltpit~\ctxdot/x]}} \\
       & =_\sigma & \elt{\ip{U'}{`G}}{\ip{\lambda x : U'.P'}{`G}}{(\eltpit~\ctxdot)}
       {(\eltpip~\ctxdot)} \\
       & =_\rho & \ctxdot
-    \end{eqnarray*}
+    \end{eqnarray*}    
     
+    On fait ici un usage très libéral de l'indifférence aux preuves. En
+    effet nous ne pouvons pas encore montrer que $\eltpip~\ctxdot :
+    \ip{P'}{`G, x : U'}[\eltpit~\ctxdot/x]$ puisqu'on sait seulement
+    que dans le contexte où $\ctxdot : \ip{\mysubset{x}{T'}{P}}{`G}$,
+    $\eltpit~\ctxdot : \ip{P}{`G, x : T'}[\eltpit~\ctxdot/x]$. Montrer
+    que les interprétations de $P$ et $P'$ sont équivalentes requiert la
+    stabilité de la convertibilité par interprétation, ce que nous
+    montrerons plus tard.
+  
   \end{itemize}
 \end{proof}
 
