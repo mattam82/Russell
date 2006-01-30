@@ -20,13 +20,16 @@
 \end{proof}
 
 \begin{lemma}[Affaiblissement et interprétation]
-  Si $\talgo{`G}{t}{T}$ alors pour tout $`D `) `G$, $\ip{t}{`G} =
+  \label{interp-weak}
+  Si $\talgo{`G}{t}{T}$ alors pour tout $`D ``=) `G$, $\ip{t}{`G} =
   \ip{t}{`D}$.
 \end{lemma}
 \begin{proof}
   Les seuls endroits où les environnement sont utilisés dans
-  l'interprétation est lors de la construction des existentielles.
-  \Problem{Faux, on fixe le contexte à ce moment là}.
+  l'interprétation est lors des appels à la fonction de typage
+  algorithmique, or on a bien la propriété que si $\talgo{`G}{t}{T}$
+  alors $\talgo{`D}{t}{T}$ quand $`G ``(= `D$ par affaiblissement. Cette
+  propriété est donc bien vérifiée.
 \end{proof}
 
 \begin{lemma}[Stabilité de la coercion par substitution]
@@ -52,10 +55,13 @@
     \begin{induction}
       \caseother{$`D = []$} Alors on a:
       \begin{prooftree}
-        \AXC{$\talgo{`G}{U}{s}$}
-        \UIC{$\wf{`G, x : U}$}
+        \UAX{}
+        {$\tgen{`G}{U}{s}$}
+        {$\wf `G, x : U$}
+        {$s `: \setproptype{} `^{} x `; `G$}
       \end{prooftree}
-      Clairement $\ipG{\Gr} = \ipG{`G} = \ipG{`G, x : U}[\ip{u}{`G}/x]$.
+      Clairement $\ipG{\Gr} = \ipG{`G} = \ipG{`G, x : U}[\ip{u}{`G}/x]$
+      puisque $x `; `G$.
 
       \caseother{$`D = `D', x : A$}
       Alors on a:
@@ -64,9 +70,9 @@
         \UIC{$\wf{`G, x : U, `D', y : A}$}
       \end{prooftree}
       
-      Par induction on a $\ip{A[u/x]}{`G, `D'[u/x]} `=
-      \ip{A}{`G, x : U, `D'}[\ip{u}{`G}/x]$ et $\ipG{`G, x : U,
-        `D'}[\ip{u}{`G}/x] `= \ipG{`G, `D'[u/x]}$, donc
+      Par induction on a \[\ip{A[u/x]}{`G, `D'[u/x]} `=
+      \ip{A}{`G, x : U, `D'}[\ip{u}{`G}/x] `^ \ipG{`G, x : U,
+        `D'}[\ip{u}{`G}/x] `= \ipG{`G, `D'[u/x]}\] donc
       \begin{eqnarray*}
         \ipG{\Gr} & = & \ipG{`G, `D'[u/x], A'[u/x]} \\
         & \eqdef & \ipG{`G, `D'[u/x]}, \ip{A'[u/x]}{`G, `D'[u/x]} \\
@@ -107,7 +113,7 @@
         \BIC{$\subimpl{\GD}{c}{x~\as}{\hnf{T'} = \mysubset{y}{U'}{P}}$}
       \end{prooftree}
       avec \[c = \elt{\ip{U'}{\GD}}{\ip{\lambda x : U'.P}{\GD}}{d}
-      {\ex{\ipG{\GD}}{\ip{P}{\GD, y : U'}[d/y]}}\]
+      {\ex{\ip{P}{\GD, y : U'}[d/y]}}\]
 
       Par induction on a donc une dérivation de
       $\subimpl{\Gr}{d'}{u~\asux}{U'[u/x]}$ avec $d ' `=
@@ -132,7 +138,7 @@
         \UIC{$\subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}$}
       \end{prooftree}
       avec \[c' = \elt{\ip{U'[u/x]}{\Gr}}{\ip{\lambda y : U'[u/x].P[u/x]}{\Gr}}{d'}
-      {\ex{\ipG{\Gr}}{\ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y]}}\]
+      {\ex{\ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y]}}\]
 
       On a aussi:
       \begin{eqnarray*}
@@ -141,15 +147,9 @@
         & `= & \ip{P}{\GD, y : U'}\ipux[d\ipux/y] \\
         & = & \ip{P}{\GD, y : U'}[d/y]\ipux
       \end{eqnarray*}
-      
-      Soit $A = \ipG{\Gr} \typec \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y]$ et
-      $B = \ipG{\GD} \typec \ip{P}{\GD, y : U'}[d/y]$. On a
-      $A `= B\ipux$ car $\ipG{\Gr} `= \ipG{\GD}\ipux = \ipG{`G}, \ipG{`D}\ipux$ 
-      par application de l'hypothèse d'induction sur la dérivation de
-      $\wf{\GD}$ contenue dans $\talgo{\GD}{\mysubset{y}{U'}{P}}{\Set}$.
-      et les conclusion des existentielles sont convertibles par le résultat précédent.
-      
-      On a donc:
+
+      Soit \[A \eqdef \ip{P[u/x]}{\Gr, y : U'[u/x]}[d'/y] `^ B \eqdef
+      \ip{P}{\GD, y : U'}[d/y]\] on a donc:
       \begin{eqnarray*}
         c' & \eqdef &
         \elt{\ip{U'[u/x]}{\Gr}}
@@ -165,8 +165,8 @@
         \elt{\ip{U'}{\GD}\ipux}
         {\ip{\lambda y : U'.P}{\GD}\ipux}
         {d\ipux}
-        {?_A} \\
-        & `= &
+        {(?_B)\ipux} \\
+        & = &
         (\elt{\ip{U'}{\GD}}{\ip{\lambda y : U'.P}{\GD}}{d}
         {?_B})\ipux \\
         & = & c\ipux
@@ -193,32 +193,17 @@
       
       Par induction, on a une dérivation de
       $\subimpl{\Gr}{c''}{U'[u/x]}{u~\asux}$ avec $c'' `= c'\ipux$.
-      Ici, il est possible que la forme normale de tête de $T'[u/x]$ ait
-      pour symbôle de tête un constructeur de type sous-ensemble, on va
-      donc faire une induction sur le nombre de constructeurs $\{|\}$
-      dans la forme normale de $T'[u/x]$.
-      \begin{induction}
-        \caseother{0:} Alors $\hnf{u~\asux} "/=" \{|\}$ et on peut appliquer
-        \irule{SubSub} pour obtenir:
-        \[\subimpl{\Gr}{c''[\eltpit~\ctxdot]}{\hnf{T[u/x]}}{\hnf{T'[u/x]}}\]
-        Clairement $c''[\eltpit~\ctxdot] `= c'[\ipux][\eltpit~\ctxdot] = 
-        c[\ipux]$.
-        
-        \caseother{n:}
-        On a la dérivation:
-        \begin{prooftree}        
-          \AXC{$\subimpl{\Gr}{d'}{\hnf{T}}{U''}$}
-          \AXC{$\timpl{\Gr}{\mysubset{y}{U''}{P'}}{\Set}$}
-          \BIC{$\subimpl{\Gr}{d}{\hnf{T}}{\hnf{u~\asux} = \mysubset{y}{U''}{P'}}$}
-          \UIC{$\subimpl{\Gr}{d}{\hnf{T}}{u~\asux}$}
-        \end{prooftree}
-        avec \[d = \elt{\ip{U''}{\Gr}}{\ip{\lambda y : U''.P'}{\Gr}}{d'}
-        {\ex{\ipG{\Gr}}{\ip{P'}{\Gr, y : U''}[d'/y]}}\]
-        
-        On veut montrer que $d `= c\ipux$ \Problem{Comment le montrer?}          
-        Par induction, $\subimpl{\Gr}{d'}{\hnf{T}}{U''}$
-      \end{induction}
+      On peut donc dériver:
+      \begin{prooftree}
+        \AXC{$\subimpl{\Gr}{c''}{U'[u/x]}{u~\asux}$}
+        \UIC{$\subimpl{\Gr}{c''[\eltpit~\ctxdot]}
+          {\hnf{T[u/x]} =
+            \mysubset{y}{U'[u/x]}{P[u/x]}}{\hnf{T'[u/x]}}$}
+        \UIC{$\subimpl{\Gr}{c''[\eltpit~\ctxdot]}{T[u/x]}{T'[u/x]}$}
+      \end{prooftree}      
       
+      Clairement, $c''[\eltpit~\ctxdot] `= c'\ipux[\eltpit~\ctxdot] =
+      c'[\eltpit~\ctxdot]\ipux = c\ipux$.
     \end{induction}
     
 
@@ -255,7 +240,7 @@
     on a donc bien $c' `= c\ipux$. \Problem{Changer l'HR en demandant
       l'hyp pour le typage vrai pour les types en coercion?}
    
-    \casethree{SubSigma}{SubProof}{SubSub} Idem, direct par induction.
+    \caseother{\irule{SubSigma}, \irule{SubProof}, \irule{SubSub}} Idem, direct par induction.
   
     \case{PropSet} Trivial.
     
@@ -360,7 +345,7 @@
       {\eqdef}{\ip{(f~e)[u/x]}{\Gr}}
     \end{array}\]
     
-    \casethree{Prod}{Sigma}{Subset} Par induction.
+    \caseother{\irule{Prod}, \irule{Sigma}, \irule{Subset}} Par induction.
 
     \case{Abs}
     \typenva
@@ -534,7 +519,7 @@ coercion de contexte explicite et vice-versa.
        {c = \elt{\ip{U}{`G}}
          {\ip{(\lambda x : U.P)}{`G}}
          {d}
-         {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}}}
+         {\ex{\ip{P}{`G, x : U}[d/x]}}}
        {T}{\mysubset{x}{U}{P}}$}
      {}
    \end{prooftree}
@@ -543,7 +528,7 @@ coercion de contexte explicite et vice-versa.
    \[\subimpl{`D}{c' = \elt{\ip{U}{`D}}
      {\ip{(\lambda x : U.P)}{`D}}
      {d[`r]}
-     {\ex{\ipG{`D}}{\ip{P}{`D, x : U}[d[`r]/x]}}}
+     {\ex{\ip{P}{`D, x : U}[d[`r]/x]}}}
    {T}{\mysubset{x}{U}{P}}\]
    
    On a bien $c[`r] `= c'$, car:
@@ -554,19 +539,19 @@ coercion de contexte explicite et vice-versa.
      {\eqdef}{(\elt{\ip{U}{`G}}
        {\ip{(\lambda x : U.P)}{`G}}
        {d}
-       {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x]}})[`r]}
+       {\ex{\ip{P}{`G, x : U}[d/x]}})[`r]}
 
      \step{Condition $\ip{\mysubset{x}{U}{P}}{`D} `= \ip{\mysubset{x}{U}{P}}{`G}[`r]$}
      {`=}{\elt{\ip{U}{`D}}
        {\ip{(\lambda x : U.P)}{`D}}
        {d[`r]}
-       {\ex{\ipG{`G}}{\ip{P}{`G, x : U}[d/x][`r]}}}
+       {\ex{\ip{P}{`G, x : U}[d/x][`r]}}}
      
      \step{Indifférence aux preuves}
      {=_\sigma}{\elt{\ip{U}{`D}}
        {\ip{(\lambda x : U.P)}{`D}}
        {d[`r]}
-       {\ex{\ipG{`D}}{\ip{P}{`D, x : U}[d[`r]/x]}}}
+       {\ex{\ip{P}{`D, x : U}[d[`r]/x]}}}
      
      \step{Définition}
      {\eqdef}{c'}

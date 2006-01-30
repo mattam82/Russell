@@ -35,6 +35,8 @@
 
 \newcommand{\tcoq}[3]{#1 \typec #2 : #3}
 \newcommand{\tgen}[3]{#1 \type #2 : #3}
+\newcommand{\talgo}[3]{#1 \typea #2 : #3}
+\newcommand{\subalgo}[3]{#1 \typea #2 \suba #3}
 
 % \def\typenv#1{\typeout{Changing to #1 version}
 %   \def\typewf{\csname\string\type\string#1\string{wf}\endcsname}
@@ -152,13 +154,9 @@
     {\textbullet}{--}}}
 
 \newcommand{\case}[1]{\item[\inductioncasepoint{}] \rulename{#1} :}
-\newcommand{\caseother}[1]{\item[\inductioncasepoint{}] #1}
-\newcommand{\casetwo}[2]{\item[-- \rulename{#1}, \rulename{#2} :]}
-\def\casethree#1#2#3{\item[-- \rulename{#1}, \rulename{#2},
-  \rulename{#3} :]}
-\def\casefour#1#2#3#4{\item[-- \rulename{#1}, \rulename{#2},
-  \rulename{#3}, \rulename{#4} :]}
-
+\newcommand{\casetwo}[2]{\item[\inductioncasepoint{}] \rulename{#1}, \rulename{#2} :}
+\newcommand{\casenil}{\item[\inductioncasepoint{}]\xspace}
+\newcommand{\caseother}[1]{\item[\inductioncasepoint{}] #1 :}
 
 %% Should be able to work with \else...
 \newcommand{\inductionrule}[1]
@@ -225,7 +223,7 @@
 
 \newcommand{\coerce}[3]{\sref{coerce}_{#1}~#2~#3}
 \newcommand{\coercehnf}[3]{\hnf{\sref{coerce}}_{#1}~#2~#3}
-\newcommand{\ex}[2]{?_{#1 \vdash #2}}
+\newcommand{\ex}[1]{?_{#1}}
 \def\iG{\ipG{`G}}
 
 \newcommand{\pair}[3]{(#2, #3)_{#1}}

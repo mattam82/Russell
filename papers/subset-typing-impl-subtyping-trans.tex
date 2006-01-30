@@ -43,7 +43,7 @@
       \begin{prooftree}
         \AXC{$\subimpl{`D}{d}{T}{U'}$}
         \UIC{$\subimpl{`D}{c_2 = {\elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P}{`D}}{d}
-              {\ex{\ipG{`G}}{\ip{P}{`D}[d/x]}}}}{T}{U = \mysubset{x}{U'}{P}}$}
+              {\ex{\ip{P}{`D}[d/x]}}}}{T}{U = \mysubset{x}{U'}{P}}$}
       \end{prooftree}
 
       Par induction, il existe une coercion $d' `= d `o c_1[`r] = d$ telle que
@@ -196,7 +196,7 @@
         \AXC{$\subimpl{`D}{e}{\Pi x : X'.Y'}{U'}$}
         \UIC{$\subimpl{`D}{d = \elt{\ip{U'}{`D}}
             {\ip{\lambda x : U'.P}{`D}}{e}
-            {\ex{\ipG{`D, x : U'}}{\ip{P}{`D}[e/x]}}}
+            {\ex{\ip{P}{`D}[e/x]}}}
           {\Pi x : X'.Y'}{\mysubset{y}{U'}{P}}$}
       \end{prooftree}
 
@@ -206,7 +206,7 @@
         \AXC{$\subimpl{`D}{f}{\Pi x : X.Y}{U'}$}
         \UIC{$\subimpl{`D}{d' = \elt{\ip{U'}{`D}}
             {\ip{\lambda x : U'.P}{`D}}{f}
-            {\ex{\ipG{`D}}{\ip{P}{`D}[f/x]}}}
+            {\ex{\ip{P}{`D}[f/x]}}}
           {\Pi x : X.Y}{U}$}
       \end{prooftree}
       
@@ -214,13 +214,13 @@
       \begin{eqnarray*}
         d `o c[`r] & \eqdef & (\elt{\ip{U'}{`D}}
         {\ip{\lambda x : U'.P}{`D}}{e}
-        {\ex{\ipG{`D}}{\ip{P}{`D}[e/x]}})[c[`r]] \\
+        {\ex{\ip{P}{`D}[e/x]}})[c[`r]] \\
         & = & \elt{\ip{U'}{`D}}
         {\ip{\lambda x : U'.P}{`D}}{e[c[`r]]}
-        {\ex{\ipG{`D}}{\ip{P}{`D}[e[c[`r]]/x]}} \\
+        {\ex{\ip{P}{`D}[e[c[`r]]/x]}} \\
         & `= & \elt{\ip{U'}{`D}}
         {\ip{\lambda x : U'.P}{`D}}{f}
-        {\ex{\ipG{`D}}{\ip{P}{`D}[f/x]}} \\
+        {\ex{\ip{P}{`D}[f/x]}} \\
         & \eqdef & d'
       \end{eqnarray*}
       
@@ -234,7 +234,7 @@
       \AXC{$\subimpl{`D, x : X'}{d_2}{Y'}{Y}$}
       \BIC{$\subimpl{`D}
         {d = \pair{\ip{\Sigma x :
-              X.Y}{`D}}{d_1[\pi_1~\ctxdot]}{d_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}
+              X.Y}{`D}}{d_1[\pi_1~\ctxdot]}{d_2[\pi_2~\ctxdot][{\pi_1~\ctxdot}/x]}}
         {\Sigma x : X'.Y'}{\Sigma x : X.Y}$}
       \noLine\BIC{}
     \end{prooftree}
@@ -366,7 +366,7 @@
       \AXC{$\subimpl{`G}{e}{S}{T}$}
       \UIC{$\subimpl{`G}{c_1 = 
           \elt{\ip{T}{`G}}{\ip{\lambda x :T.P}{`G}}{e}
-          {\ex{\ipG{`G}}{\ip{P}{`G, x : T}[e/x]}}}
+          {\ex{\ip{P}{`G, x : T}[e/x]}}}
         {S}{\mysubset{x}{T}{P}}$}
       \AXC{$\subimpl{`D}{c_2}{\mysubset{x}{T}{P}}{U}$}
       \noLine\BIC{} 
@@ -382,7 +382,7 @@
       \begin{eqnarray*}
         c_2 `o c_1[`r] & `= & c_2'[\eltpit~\ctxdot] `o c_1[`r] \\
         & = & c_2'[\eltpit~\ctxdot] `o (\elt{\ip{T}{`G}}{\ip{\lambda x :T.P}{`G}}{e}
-        {\ex{\ipG{`G}}{\ip{P}{`G, x : T}[e/x]}})[`r] \\
+        {\ex{\ip{P}{`G, x : T}[e/x]}})[`r] \\
         & "->"_{\sigma_1} & c_2'[e[`r]] \\
         & `= & c'
       \end{eqnarray*}
@@ -392,7 +392,7 @@
         \AXC{$\subimpl{`D}{c_2'}{\mysubset{x}{T}{P}}{U'}$}
         \UIC{$\subimpl{`D}{c_2 = 
             \elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{c_2'}
-            {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[c_2'/x]}}}
+            {\ex{\ip{P'}{`D, x : U'}[c_2'/x]}}}
           {\mysubset{x}{T}{P}}{\mysubset{x}{U'}{P'}}$}
       \end{prooftree}
       
@@ -403,12 +403,12 @@
       \begin{eqnarray*}
         c_2 `o c_1[`r] & \eqdef & 
         (\elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{c_2'}
-        {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[c_2'/x]}}) `o c_1[`r] \\
+        {\ex{\ip{P'}{`D, x : U'}[c_2'/x]}}) `o c_1[`r] \\
         & = &
         \elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{c_2'[c_1[`r]]}
-        {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[c_2'[c_1[`r]]/x]}} \\
+        {\ex{\ip{P'}{`D, x : U'}[c_2'[c_1[`r]]/x]}} \\
         & `= & \elt{\ip{U'}{`D}}{\ip{\lambda x : U'.P'}{`D}}{d}
-        {\ex{\ipG{`D}}{\ip{P'}{`D, x : U'}[d/x]}} \\
+        {\ex{\ip{P'}{`D, x : U'}[d/x]}} \\
         & \eqdef & c'
       \end{eqnarray*}
       

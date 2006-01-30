@@ -97,8 +97,8 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 \setboolean{displayLabels}{false}
 \begin{proof}
   \begin{induction}[typing-algo]
-  \item[- \irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
-    \irule{Sigma}, \irule{Sum}:] règles inchangées.
+    \caseother{\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
+      \irule{Sigma}, \irule{Sum}} règles inchangées.
     
     \case{LetSum}
     On a 
@@ -186,18 +186,18 @@ On peut maintenant montrer:
   
   \def\seq{\suba}.
   
-  \begin{itemize}
-  \item[$\hnf{T} = \Pi x : X.Y$:]
+  \begin{induction}
+    \caseother{$\hnf{T} = \Pi x : X.Y$}
     Alors $\hnf{U} = \Pi y : V.W$ et $X \eqbr V$, $Y \eqbr W$
     d'après le lemme \ref{conversion-pi}.
     Par induction $X \sub Y$ et $V \sub W$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
-  \item[$\hnf{T} = \Sigma x : X.Y$:]
+    \caseother{$\hnf{T} = \Sigma x : X.Y$}
     Alors $\hnf{U} = \Sigma y : V.W$, avec $X \eqbr V$ et $Y \eqbr
     W$. Par induction et application de \irule{SubSigma}.
     
-  \item[$\hnf{T} `= \mysubset{x}{X}{P}$:] 
+    \caseother{$\hnf{T} `= \mysubset{x}{X}{P}$}
     On a alors $\hnf{U} = \mysubset{x}{X'}{P'}$ avec $X \eqbr X'$, $P \eqbr
     P'$, et la propriété est vraie par \irule{SubLeft} et \irule{SubRight}:
     
@@ -209,10 +209,10 @@ On peut maintenant montrer:
       \UIC{$\mysubset{x}{X}{P} \sub \mysubset{x}{X'}{P'}$}
     \end{prooftree}
 
-  \item[Sinon:]
+    \caseother{Sinon}
     On applique obligatoirement \irule{SubConv} et l'on a la prémisse $T
     \eqbr U$, c'est donc direct.
-  \end{itemize}
+  \end{induction}
 \end{proof}
 
 Il n'y a pas de problème d'identification de sortes dans ce système,
@@ -360,7 +360,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
       \end{prooftree}
     
       Par cas sur la dérivation de $\Pi x : C.D \sub \hnf{U}$.
-      \begin{itemize}
+      \begin{induction}
         \case{SubConv} Trivial.
         \case{SubProd} Alors on a
         \begin{prooftree}
@@ -402,7 +402,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
         
         Car $\Pi x : C.D \sub E$ est une dérivation plus petite que $T
         \sub U$.
-      \end{itemize}
+      \end{induction}
             
       \case{SubSigma} De façon équivalente au produit.
     
@@ -417,7 +417,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
       \end{prooftree}
       Encore une fois, par cas sur la dérivation de $\mysubset{y}{C}{P}
       = \hnf{T} \sub \hnf{U}$:
-      \begin{itemize}
+      \begin{induction}
         \case{SubConv} Trivial.
         \case{SubSub} On a:
         \begin{prooftree}
@@ -435,7 +435,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
         
         Les dérivations $\hnf{S} \sub C$ et $C \sub \hnf{U}$ étant bien
         plus petites que $S \sub T$ et $T \sub U$.     
-      \end{itemize}
+      \end{induction}
       
       \case{SubSub} De même:
       \begin{prooftree}
@@ -477,7 +477,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 
     On n'a seulement à traiter le cas ou $\Pi x : C.D \sub U$ est dérivé par
     \irule{SubProd} ou \irule{SubProof}.
-    \begin{itemize}
+    \begin{induction}
       \case{SubProd} Alors on a
         \begin{prooftree}
           \AXC{$E \sub C$}
@@ -517,7 +517,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
         
         Car $\Pi x : C.D \sub E$ est une dérivation plus petite que $T
         \sub U$.
-      \end{itemize}
+      \end{induction}
 
 
 
@@ -676,7 +676,7 @@ dérivations ne change pas.
     La conclusion est $\typewf `G, x : S, `D$
     
     \begin{induction}[text=Par induction sur la taille de $`D$]
-    \item[\protect{$`D = []$}]
+      \caseother{$`D = []$}
       La racine de la dérivation est de la forme:
       \begin{prooftree}
         \UAX{WfVar}
@@ -686,7 +686,7 @@ dérivations ne change pas.
       \end{prooftree}
       On a donc $`G \type S' : s$, et par \irule{WfVar}, $\typewf `G, x : S'$.  
       
-    \item[\protect{$`D `= `D', y : U$}]
+      \caseother{$`D `= `D', y : U$}
       La racine de la dérivation est de la forme:
       \begin{prooftree}
         \UAX{WfVar}
@@ -801,17 +801,17 @@ pouvoir prouver la complétude.
 
     \case{WfVar}
     Par induction sur $`D$.
-    \begin{itemize}
-    \item[\protect{$`D = []$}]
+    \begin{induction}
+    \caseother{$`D = []$}
       On a alors $`G \typea U : s$ donc $\wf `G$ et trivialement, $\wf
       `G, `D[u/x]$.
 
-    \item[\protect{$`D = `D', y : T$}]
+    \caseother{$`D = `D', y : T$}
       On a alors $`G, x : U, `D' \typea T : s$ et par induction
       $`G, `D'[u/x] \typea T[u/x] : s[u/x] = s$. Donc on peut appliquer
       \irule{WfVar} pour obtenir $\wf `G, `D'[u/x], y : T[u/x]$ soit
       $\wf `G, `D[u/x]$
-    \end{itemize}
+    \end{induction}
     
     \case{PropSet}
     La substitution n'a aucun effet et $`G, `D[u/x]$ est bien
@@ -880,14 +880,14 @@ pouvoir prouver la complétude.
   \typenva
   \begin{induction}
     \case{Var} On a deux cas:
-    \begin{itemize}
-    \item Si $y = x$, alors $T = V$. On a $t[u/x] = u$ donc $T' =
+    \begin{induction}
+      \caseother{Si $y = x$} alors $T = V$. On a $t[u/x] = u$ donc $T' =
       U$. Par hypothèse $U \suba V$ donc $T' \suba T[u/x]$ triviallement
       ($x$ n'apparait pas dans $V$).
-
-    \item Sinon, $t[u/x] = y$ donc $T' = T[u/x]$ et on a $T' \suba T[u/x]$
+      
+      \caseother{Sinon} $t[u/x] = y$ donc $T' = T[u/x]$ et on a $T' \suba T[u/x]$
       par réflexivité de la coercion.
-    \end{itemize}
+    \end{induction}
     
 
     \case{Prod}
@@ -935,20 +935,20 @@ pouvoir prouver la complétude.
 
     On peut donc appliquer \irule{App}:    
     \begin{prooftree}
-      \TAX{App}
+      \TAXWide{App}
       {$\GD \seq f[u/x] : F' \quad \mualgo(F') = \Pi y : A'. B'$}
-      {$\GD \seq e[u/x] : E' \quad \GD \seq E', A' : s$}
-      {$E' \sub A' $}
+      {$\GD \seq e[u/x] : E'$}
+      {$\GD \seq E', A' : s \quad E' \sub A' $}
       {$\GD \seq (f~e)[u/x] : B'[ e[u/x] / y ]$}
       {}
     \end{prooftree}
     
     Par substitutivité de la coercion, $B' \suba B[u/x]$ implique
-    $B'[e[u/x]/y] \suba B[u/x][e[u/x]/y]$. Or $B[u/x][e[u/x]/y] =
-    B[e/y][u/x]$ car $y$ n'apparait pas dans $u$. On a donc bien
+    $B'[e[u/x]/y] \suba B[u/x][e[u/x]/y]$. Or \[B[u/x][e[u/x]/y] =
+    B[e/y][u/x]\] car $y$ n'apparait pas dans $u$. On a donc bien
     $T' = B'[e[u/x]/y] \suba T[u/x] = B[e/y][u/x]$.
      
-    \item[] Les autres cas passent aisément par induction.
+    \casenil Les autres cas passent aisément par induction.
   \end{induction}
   
 \end{proof}

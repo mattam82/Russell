@@ -105,7 +105,7 @@ normale de tête (figure \ref{fig:hnfdef}) puis à la dérivation
 par rapport au test de conversion dans la prémisse de \irule{SubConv}.
 
 Notre opération de mise en forme normale de tête est définie de la façon suivante:
-\begin{figure}[h]
+\begin{figure}[ht]
   \[\begin{array}{lcll}
     \hnf{((\lambda x : T.e)~v)} & = & \hnf{e[v/x]} & \\
     \hnf{\pi_1~(x, y)} & = & \hnf{x} & \\
@@ -119,7 +119,7 @@ Notre opération de mise en forme normale de tête est définie de la façon suivant
 On note donc $\hnf{T}$ la forme normale de tête $T$ et $\nf{T}$ la forme normale
 de $T$.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \[\begin{array}{llcll}
     (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
     (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
@@ -148,7 +148,7 @@ On ajoute une règle de typage au système de \CCI{} pour typer les
 existentielles:
 \begin{prooftree}
   \AXC{$\tcoq{`G}{P}{\Prop}$}
-  \UIC{$\tcoq{`G}{\ex{`G}{P}}{P}$}
+  \UIC{$\tcoq{`G}{\ex{P}}{P}$}
 \end{prooftree}
 
 % enrichie avec les
