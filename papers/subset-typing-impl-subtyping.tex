@@ -85,6 +85,42 @@ donne le même terme de coercion.
   directement déchargées par l'assistant de preuve.
 \end{proof}
 
+\begin{lemma}[Coercion et sortage]
+  \label{coerce-sorting}
+  Si $\talgo{`G}{T}{s_1}$, $\talgo{`G}{U}{s_2}$ et
+  $\subalgo{`G}{T}{U}$ alors $s_1 = s_2$.
+\end{lemma}
+\begin{proof}
+  Par induction sur la dérivation de coercion.
+  \begin{induction}
+    \casetwo{SubConv}{SubHnf} Trivial.
+    
+    \case{SubProd} Par induction et application de la règle
+    \irule{Prod} ; on repose sur le fait que la relation $\mathcal{R}$
+    est fonctionnelle.
+
+    \case{SubSigma} Direct par induction et application de la règle
+    \irule{Sigma}.
+
+    \case{SubSub}
+    \begin{prooftree}
+      \AXC{$\subalgo{`G}{T'}{U}$}
+      \UIC{$\subalgo{`G}{\mysubset{x}{T'}{P}}{U}$}
+    \end{prooftree}
+    Si $\talgo{`G}{\mysubset{x}{T'}{P}}{s_1}$, alors $s_1 = \Set$ et $\talgo{`G}{T'}{\Set}$.
+    Donc par induction, $\talgo{`G}{U}{\Set = s_2}$.
+
+    \case{SubProof}
+    \begin{prooftree}
+      \AXC{$\subalgoimpl{`G}{T}{U}$}
+      \AXC{$\talgo{`G}{\mysubset{x}{U}{P}}{\Set}$}
+      \BIC{$\subalgo{`G}{T}{\mysubset{x}{U}{P}}$}
+    \end{prooftree}
+    
+    Par inversion du jugement de typage, on a $\talgo{`G}{U}{\Set}$,
+    donc par application de l'hypothèse d'induction, $\talgo{`G}{T}{\Set}$.
+  \end{induction}
+\end{proof}
 
 \begin{lemma}[Coercion et formes normales de tête]
   \label{coerce-hnf}
@@ -108,13 +144,13 @@ On va maintenant généraliser la réflexivité aux termes convertibles.
 \begin{proof}
   Par induction sur le nombre de constructeurs $\Pi, \Sigma, \{|\}$ dans
   les formes normales de $T$ et $U$.
-
-  \begin{itemize}  
-  \item Si $\nf{T}$ n'a pas pour symbole de tête, $\Pi, \Sigma$ ou
+  
+  \begin{induction}  
+  \casenil Si $\nf{T}$ n'a pas pour symbole de tête, $\Pi, \Sigma$ ou
     $\{|\}$, alors \irule{SubConv} est la seule règle applicable et on
     a $c = \ctxdot$. 
 
-  \item Si $\hnf{T} = \Pi y : A.B$, alors $\hnf{U} = \Pi y : A'.B'$ avec $A
+  \casenil Si $\hnf{T} = \Pi y : A.B$, alors $\hnf{U} = \Pi y : A'.B'$ avec $A
     \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 `= \ctxdot}{A'}{A}$
     et $\subimpl{`G, x : A'}{c_2 `= \ctxdot}{B}{B'}$ ($\nf{A}, \nf{A'}, \nf{B}, \nf{B'}$ sont des
     sous-termes stricts de $\nf{T}$ et $\nf{U}$). On peut donc dériver: 
@@ -129,7 +165,7 @@ On va maintenant généraliser la réflexivité aux termes convertibles.
       & =_{\eta} & \ctxdot
     \end{eqnarray*}
     
-  \item Si $\hnf{T} = \Sigma y : A.B$ alors $\hnf{U} = \Sigma y : A'.B'$ avec $A
+  \casenil Si $\hnf{T} = \Sigma y : A.B$ alors $\hnf{U} = \Sigma y : A'.B'$ avec $A
     \eqbr A'$, $B \eqbr B'$. Par induction, $\subimpl{`G}{c_1 `= \ctxdot}{A}{A'}$
     et $\subimpl{`G, y : A}{c_2 `= \ctxdot}{B}{B'}$ ($\nf{A},
     \nf{A'}, \nf{B}, \nf{B'}$ sont des
@@ -158,7 +194,7 @@ On va maintenant généraliser la réflexivité aux termes convertibles.
     La substitution est inutile puisque dans un contexte où $\ctxdot :
     \Sigma y : A.B$, $y `; \pi_2~\ctxdot$.
 
-  \item Le cas des sous-ensembles est un peu différent.
+  \casenil Le cas des sous-ensembles est un peu différent.
     Si $\hnf{T} = \mysubset{x}{T'}{P}$ alors $\hnf{U} =
     \mysubset{x}{U'}{P'}$ avec $T' \eqbr U'$ et $P \eqbr P'$.
     La dérivation va avoir la forme suivante:
@@ -192,7 +228,7 @@ On va maintenant généraliser la réflexivité aux termes convertibles.
     stabilité de la convertibilité par interprétation, ce que nous
     montrerons plus tard.
   
-  \end{itemize}
+  \end{induction}
 \end{proof}
 
 \input{subset-typing-impl-subtyping-subst}

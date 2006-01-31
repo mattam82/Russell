@@ -51,12 +51,14 @@ un terme $t'$ réecrit que l'on montrera bien typé dans l'environnement \CCI{} $\
     \ip{\Sigma x : T.U}{`G} 
     & = & \Sigma x : \ip{T}{`G}.\ip{U}{`G, x : T} & \\
     & \\
-    \ip{x \coloneqq t, u : U}{`G}
+    \ip{\pair{\Sigma x : T.U}{t}{u}}{`G}
     & = & \letml~t' = \ip{t}{`G}~\inml & \\
+    & & \letml~T' = \typeafn{`G}{t}~\inml& \\
+    & & \letml~ct = \coerce{`G}{T'}{T}~\inml& \\
     & & \letml~U' = \typeafn{`G}{u}~\inml& \\
     & & \letml~u' = \ip{u}{`G}~\inml & \\
-    & & \letml~c = \coerce{`G}{U'}{U[t/x]}~\inml & \\
-    & & (t', c~u') & \\
+    & & \letml~cu = \coerce{`G}{U'}{U[t/x]}~\inml & \\
+    & & \pair{\ip{\Sigma x : T.U}{`G}}{ct[t']}{cu[u']} & \\
     & \\
     \ip{\pi_i~t}{`G} 
     & = & \letml~t' = \ip{t}{`G}~\inml & i `: \{ 1, 2 \} \\

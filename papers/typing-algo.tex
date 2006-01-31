@@ -1,65 +1,65 @@
 
-\def\AppA{
+\newcommand{\AppA}[1][\Gamma]{
 \TAX{App}
-{$\talgo{`G}{f}{T} \quad \mualgo(T) = \Pi x : V. W : s$}
-{$\talgo{`G}{u}{U} \quad \talgo{`G}{U, V}{s'}$}
-{$\subalgo{`G}{U}{V} $}
-{$\talgo{`G}{(f u)}{W [ u / x ]}$}
+{$\talgo{#1}{f}{T} \quad \mualgo(T) = \Pi x : V. W : s$}
+{$\talgo{#1}{u}{U} \quad \talgo{#1}{U, V}{s'}$}
+{$\subalgo{#1}{U}{V} $}
+{$\talgo{#1}{(f u)}{W [ u / x ]}$}
 {}
 }
 
-\def\LetSumA{
+\newcommand{\LetSumA}[1][\Gamma]{
   \TAX{LetSum}
-  {$`G \seq t : S$}
+  {$#1 \seq t : S$}
   {$\mualgo(S) = `S x : T. U $}
-  {$`G, x : T, u : U \seq v : V $}
-  {$`G \seq \letml~(x, u) = t~\inml~v : V$}
-  {$x,y `; `G$}
+  {$#1, x : T, u : U \seq v : V $}
+  {$#1 \seq \letml~(x, u) = t~\inml~v : V$}
+  {$x,y `; #1$}
 }
 
-\def\PiLeftA{
+\newcommand{\PiLeftA}[1][\Gamma]{
   \BAX{PiLeft}
-  {$\tgen{`G}{t}{S}$}
+  {$\tgen{#1}{t}{S}$}
   {$\mualgo(S) = `S x : T.U$}
-  {$\tgen{`G}{\pi_1~t}{T}$}
+  {$\tgen{#1}{\pi_1~t}{T}$}
   {}
 }
 
-\def\PiRightA{
+\newcommand{\PiRightA}[1][\Gamma]{
   \BAX{PiRight}
-  {$\tgen{`G}{t}{S}$}
+  {$\tgen{#1}{t}{S}$}
   {$\mualgo(S) = `S x : T.U$}
-  {$\tgen{`G}{\pi_2~t}{U[\pi_1~t/x]}$}
+  {$\tgen{#1}{\pi_2~t}{U[\pi_1~t/x]}$}
   {}
 }
 
 
-\def\SumInfA{
+\newcommand{\SumInfA}[1][\Gamma]{
   \TAX{SumInf}
-  {$`G \seq t : T $}
-  {$`G \seq u : U $}
-  {$`G \seq \Sigma \_ : T.U : s$}
-  {$`G \seq (t, u) : \Sigma \_ : T.U$}
+  {$#1 \seq t : T $}
+  {$#1 \seq u : U $}
+  {$#1 \seq \Sigma \_ : T.U : s$}
+  {$#1 \seq (t, u) : \Sigma \_ : T.U$}
   {}
 }
 
-\def\SumDepAold{
+\newcommand{\SumDepAold}[1][\Gamma]{
   \QAX{SumDep}
-  {$`G \seq t : T$}
-  {$`G \seq u : U'$}
-  {$`G \seq \Sigma x : T.U : s$}
-  {$`G \seq U' : s \quad U' \suba U[t/x]$}
-  {$`G \seq (x \coloneqq~t, u : U) : \Sigma x : T.U$}
+  {$#1 \seq t : T$}
+  {$#1 \seq u : U'$}
+  {$#1 \seq \Sigma x : T.U : s$}
+  {$#1 \seq U' : s \quad U' \suba U[t/x]$}
+  {$#1 \seq (x \coloneqq~t, u : U) : \Sigma x : T.U$}
   {}
 }
 
-\def\SumDepA{
+\newcommand{\SumDepA}[1][\Gamma]{
   \QAX{SumDep}
-  {$`G \seq t : T$}
-  {$`G \seq u : U'$}
-  {$`G \seq \Sigma x : T.U : s$}
-  {$`G \seq U' : s \quad U' \suba U[t/x]$}
-  {$`G \seq \pair{\Sigma x : T.U}{t}{u} : \Sigma x : T.U$}
+  {$#1 \seq t : T' \quad T' \suba T$}
+  {$#1 \seq u : U'$}
+  {$#1 \seq \Sigma x : T.U : s$}
+  {$#1 \seq U' : s \quad U' \suba U[t/x]$}
+  {$#1 \seq \pair{\Sigma x : T.U}{t}{u} : \Sigma x : T.U$}
   {}
 }
 

@@ -2,7 +2,7 @@
 
 \newcommand{\SubConvI}[1][\Gamma]{
 \UAX{SubConv}
-{$T \eqbr U$}
+{$T \eqbr U \quad \talgo{`G}{T, U}{s}$}
 {$\subimpl{#1}{\ctxdot}{T}{U}$}
 {$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U}$}
 }
@@ -16,14 +16,14 @@
 
 \newcommand{\SubHnfI}[1][\Gamma]{
 \UAX{SubHnf}
-{$\subimpl{#1}{c}{\hnf{T}}{\hnf{U}}$}
+{$\subimpl{#1}{c}{\hnf{T}}{\hnf{U}} \quad \talgo{`G}{T,U}{s}$}
 {$\subimpl{#1}{c}{T}{U}$}
 {$T "/=" \hnf{T} `V U "/=" \hnf{U}$} 
 }
 
 \newcommand{\SubProdI}[1][\Gamma]{%
   \BAX{SubProd}
-  {$\subimpl{#1}{c_1}{U}{T} : s$}
+  {$\subimpl{#1}{c_1}{U}{T}$}
   {$\subimpl{#1, x : U}{c_2}{V}{W}$}  
   {$\subimpl{#1}{\lambda x : \ip{U}{#1}. c_2[\ctxdot~(c_1[x])]}
     {\Pi x : T.V}{\Pi x : U.W}$}
