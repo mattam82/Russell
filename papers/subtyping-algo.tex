@@ -16,10 +16,11 @@
 
 \newcommand{\subalgoimpl}[4]{#1 \typea #3 \suba #4}
 \newcommand{\SubConvA}[1][\Gamma]{
-\UAX{SubConv}
-{$T \eqbr U$}
-{$\subalgoimpl{#1}{\ctxdot}{T}{U}$}
-{$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U}$}
+  \BAX{SubConv}
+  {$T \eqbr U$}
+  {$\tgen{#1}{T,U}{s}$}
+  {$\subalgoimpl{#1}{\ctxdot}{T}{U}$}
+  {$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U}$}
 }
 
 \newcommand{\SubConvAs}[1][\Gamma]{
@@ -30,15 +31,16 @@
 }
 
 \newcommand{\SubHnfA}[1][\Gamma]{
-\UAX{SubHnf}
+\BAX{SubHnf}
 {$\subalgoimpl{#1}{c}{\hnf{T}}{\hnf{U}}$}
+{$\tgen{#1}{T,U}{s}$}
 {$\subalgoimpl{#1}{c}{T}{U}$}
 {$T "/=" \hnf{T} `V U "/=" \hnf{U}$} 
 }
 
 \newcommand{\SubProdA}[1][\Gamma]{%
   \BAX{SubProd}
-  {$\subalgoimpl{#1}{c_1}{U}{T} : s$}
+  {$\subalgoimpl{#1}{c_1}{U}{T}$}
   {$\subalgoimpl{#1, x : U}{c_2}{V}{W}$}  
   {$\subalgoimpl{#1}{\lambda x : \ip{U}{#1}. c_2[\ctxdot~(c_1[x])]}
     {\Pi x : T.V}{\Pi x : U.W}$}
@@ -69,9 +71,8 @@
 }
    
 \newcommand{\SubProofA}[1][\Gamma]{%
-  \BAX{SubProof}
+  \UAX{SubProof}
   {$\subalgoimpl{#1}{c}{T}{U}$}
-  {$\talgo{#1}{\mysubset{x}{U}{P}}{\Set}$}
   {$\subalgoimpl{#1}
     {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
       {\ex{\ipG{#1}}{\ip{P}{#1, x : U}[c/x]}}}

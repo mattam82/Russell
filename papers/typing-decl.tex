@@ -1,144 +1,142 @@
-\def\WfEmpty{
+\newcommand{\WfEmptyFull}[1]{
   \UAX{WfEmpty}
   {}
   {$\seq []$}
   {}
 }  
+\newcommand{\WfEmpty}[1][\Gamma]{\WfEmptyFull{#1}}
   
-\def\WfVar{
+\newcommand{\WfVarFull}[4]{
   \UAX{WfVar}
-  {$\tgen{`G}{A}{s}$}
-  {$\wf `G, x : A$}
-  {$s `: \setproptype{} `^{} x `; `G$}
+  {$\tgen{#1}{#2}{#3}$}
+  {$\wf #1, #4 : #2$}
+  {$#3 `: \setproptype{} `^{} #4 `; #1$}
 }
+\newcommand{\WfVar}[1][\Gamma]{\WfVarFull{#1}{A}{s}{x}}
 
-\def\PropSet{
+\newcommand{\PropSetFull}[2]{
   \UAX{PropSet}
-  {$\wf `G$}
-  {$\tgen{`G}{s}{\Type}$}
-  {$s `: \{ \Prop, \Set \}$} 
+  {$\wf #1$}
+  {$\tgen{#1}{#2}{\Type}$}
+  {$#2 `: \{ \Prop, \Set \}$} 
 }
+\newcommand{\PropSet}[1][\Gamma]{\PropSetFull{#1}{s}}
 
-\def\TypeType{
+
+\newcommand{\TypeTypeFull}[1]{
   \UAX{Type}
-  {$\wf `G$}
-  {$\tgen{`G}{\Type(i)}{\Type(i + 1)}$}
+  {$\wf #1$}
+  {$\tgen{#1}{\Type(i)}{\Type(i + 1)}$}
   {$i `: `N$}
 }
+\newcommand{\TypeType}[1][\Gamma]{\TypeTypeFull{#1}}
 
-\def\Var
-{\BAX{Var}
-  {$\wf `G$}
-  {$x : A `: `G$}
-  {$\tgen{`G}{x}{A}$}
+\newcommand{\VarFull}[3]{
+  \BAX{Var}
+  {$\wf #1$}
+  {$#2 : #3 `: #1$}
+  {$\tgen{#1}{#2}{#3}$}
   {}
 }
+\newcommand{\Var}[1][\Gamma]{\VarFull{#1}{x}{A}} 
 
-\def\Prod{
+\newcommand{\ProdFull}[7]{
   \BAX{Prod}
-  {$\tgen{`G}{T}{s_1}$}
-  {$\tgen{`G, x : T}{U}{s_2}$}
-  {$\tgen{`G}{\Pi x : T.U}{s_3}$}
-  {$(s_1, s_2, s_3) `: \mathcal{R} `^{} x `; `G$}
+  {$\tgen{#1}{#2}{#3}$}
+  {$\tgen{#1, #4 : #2}{#5}{#6}$}
+  {$\tgen{#1}{\Pi #4 : #2.#5}{#7}$}
+  {$(#3, #6, #7) `: \mathcal{R} `^{} #4 `; #1$}
 }
+\newcommand{\Prod}[1][\Gamma]{\ProdFull{#1}{T}{s_1}{x}{U}{s_2}{s_3}}
 
-\def\Abs{
+\newcommand{\AbsFull}[6]{
   \BAX{Abs}
-  {$\tgen{`G}{\Pi x : T. U}{s}$}
-  {$\tgen{`G, x : T}{M}{U }$}
-  {$\tgen{`G}{\lambda x : T. M}{\Pi x : T.U}$}
-  {$x `; `G$}
+  {$\tgen{#1}{\Pi #2 : #3.#4}{#5}$}
+  {$\tgen{#1, #2 : #3}{#6}{#4}$}
+  {$\tgen{#1}{\lambda #2 : #3. #6}{\Pi #2 : #3.#4}$}
+  {$#2 `; #1$}
 }
 
-\def\App{
+\newcommand{\Abs}[1][\Gamma]{\AbsFull{#1}{x}{T}{U}{s}{M}}
+
+ \newcommand{\AppFull}[6]{
   \BAX{App}
-  {$\tgen{`G}{f}{\Pi x : V. W}$}
-  {$\tgen{`G}{u}{V}$}
-  {$\tgen{`G}{(f u)}{W [ u / x ]}$}
+  {$\tgen{#1}{#2}{\Pi #3 : #4. #5}$}
+  {$\tgen{#1}{#6}{#4}$}
+  {$\tgen{#1}{(#2 #6)}{#5 [ #6 / #3 ]}$}
   {$$}
 }
 
-\def\LetIn{
-  \BAX{LetIn}
-  {$\tgen{`G}{t}{T}$}
-  {$\tgen{`G, x : T}{v}{V}$}
-  {$\tgen{`G}{\letml~x = t~\inml~v}{V[t / x]}$}
-  {$x `; `G$}
-}
+\newcommand{\App}[1][\Gamma]{\AppFull{#1}{f}{x}{V}{W}{u}}
 
-\def\SigmaR{
+\newcommand{\SigmaRFull}[5]{
   \BAX{Sigma}
-  {$\tgen{`G}{T}{s}$}
-  {$\tgen{`G, x : T}{U}{s}$}
-  {$\tgen{`G}{\Sigma x : T.U}{s}$}
-  {$s `: \{ \Prop, \Set \} `^{} x `; `G$} 
+  {$\tgen{#1}{#2}{#3}$}
+  {$\tgen{#1, #4 : #2}{#5}{#3}$}
+  {$\tgen{#1}{\Sigma #4 : #2.#5}{#3}$}
+  {$#3 `: \{ \Prop, \Set \} `^{} #4 `; #1$} 
 }
+\newcommand{\SigmaR}[1][\Gamma]{\SigmaRFull{#1}{T}{s}{x}{U}}
 
-\def\Sum{
-  \TAX{Sum}
-  {$\tgen{`G}{\Sigma x : T.U}{s}$}
-  {$\tgen{`G}{t}{T}$}
-  {$\tgen{`G}{u}{U[t/x]}$}
-  {$\tgen{`G}{\pair{\Sigma x : T.U}{t}{u}}{\Sigma x : T.U}$}
+\newcommand{\SumDepFull}[7][\Gamma]{
+  \TAX{SumDep}
+  {$\tgen{#1}{\Sigma #2 : #5. #6}{#7}$}
+  {$\tgen{#1}{#3}{#5}$}
+  {$\tgen{#1}{#4}{#6[#3 / #2]}$}
+  {$\tgen{#1}{\pair{\Sigma #2 : #5.#6}{#3}{#4}}{\Sigma #2 : #5.#6}$}
   {}
 }
+
+\newcommand{\SumDep}[1][\Gamma]{\SumDepFull[#1]{x}{t}{u}{T}{U}{s}}
  
-\def\PiLeft{
+\newcommand{\PiLeftFull}[5][\Gamma]{
   \UAX{PiLeft}
-  {$\tgen{`G}{t}{`S x : T.U}$}
-  {$\tgen{`G}{\pi_1~t}{T}$}
+  {$\tgen{#1}{#2}{`S #3 : #4.#5}$}
+  {$\tgen{#1}{\pi_1~#2}{#4}$}
   {}
 }
+\newcommand{\PiLeft}[1][\Gamma]{\PiLeftFull[#1]{t}{x}{T}{U}}
 
-\def\PiRight{
+\newcommand{\PiRightFull}[5][\Gamma]{
   \UAX{PiRight}
-  {$\tgen{`G}{t}{`S x : T.U}$}
-  {$\tgen{`G}{\pi_2~t}{U[\pi_1~t/x]}$}
+  {$\tgen{#1}{#2}{`S #3 : #4.#5}$}
+  {$\tgen{#1}{\pi_2~#2}{#5[\pi_1~#2/#3]}$}
   {}
 }
+\newcommand{\PiRight}[1][\Gamma]{\PiRightFull[#1]{t}{x}{T}{U}}
 
-\def\LetSum{
-  \BAX{LetSum}
-  {$\tgen{`G}{t}{`S x : T. U}$}
-  {$\tgen{`G, x : T, u : U}{v}{V }$}
-  {$\tgen{`G}{\letml~(x, u) = t~\inml~v}{V}$}
-  {$x,y `; `G$}
-}
 
-\def\Subset{
+\newcommand{\SubsetFull}[4]{
   \BAX{Subset}
-  {$\tgen{`G}{U}{\Set}$}
-  {$\tgen{`G, x : U}{P}{\Prop}$}
-  {$\tgen{`G}{\mysubset{x}{U}{P}}{\Set}$}
-  {$x `; `G$}
+  {$\tgen{#1}{#3}{\Set}$}
+  {$\tgen{#1, #2 : #3}{#4}{\Prop}$}
+  {$\tgen{#1}{\mysubset{#2}{#3}{#4}}{\Set}$}
+  {$#2 `; #1$}
 }
+\newcommand{\SubsetR}[1][\Gamma]{\SubsetFull{#1}{x}{U}{P}}
 
-\def\LetSub{
-  \UAX{LetSub}
-  {$\tgen{`G}{t}{\mysubset{x}{T}{P}}$}
-  {$\tgen{`G}{t}{T}$}
-  {}
-}
 
-\def\Subsum{
+\newcommand{\SubsumFull}[5]{
   \TAX{Subsum}
-  {$\tgen{`G}{T}{s}$}
-  {$\tgen{`G}{t}{U}$}
-  {$U \sub T$} % `G \subt 
-  {$\tgen{`G}{t}{T}$}
+  {$\tgen{#1}{#2}{#3}$}
+  {$\tgen{#1}{#4}{#5}$}
+  {$#5 \sub #2$} % #1 \subt 
+  {$\tgen{#1}{#4}{#2}$}
   {}
 }
+\newcommand{\Subsum}[1][\Gamma]{\SubsumFull{#1}{T}{s}{t}{U}} 
 
 \def\Coerce{\Subsum}
 
-\def\Conv{
+\newcommand{\ConvFull}[5]{
   \TAX{Conv}
-  {$\tgen{`G}{T}{s}$}
-  {$\tgen{`G}{t}{U}$}      
-  {$U \eqbr T$}
-  {$\tgen{`G}{t}{T}$}
+  {$\tgen{#1}{#2}{#3}$}
+  {$\tgen{#1}{#4}{#5}$}
+  {$#5 \eqbr #2$}
+  {$\tgen{#1}{#4}{#2}$}
   {}
 }
+\newcommand{\Conv}[1][\Gamma]{\ConvFull{#1}{T}{s}{t}{U}}
 
 \def\typedFig
 {
@@ -167,33 +165,23 @@
     \vspace{\infvspace}
     \App\DP
 
-%     \vspace{\infvspace}
-%     \LetIn\DP
-    
     \vspace{\infvspace}
     \SigmaR\DP
 
     \vspace{\infvspace}
-    \Sum\DP
+    \SumDep\DP
     
     \vspace{\infvspace}
-%    \LetSum\DP
     \PiLeft\DP
     \quad
     \PiRight\DP
 
     \vspace{\infvspace}
-    \Subset\DP
-
-%%     \vspace{\infvspace}
-%%     \LetSub\DP
+    \SubsetR\DP
 
     \vspace{\infvspace}
     \Subsum\DP
-    
-%%    \vspace{\infvspace}
-%%    \Conv\DP
-    
+      
   \end{center}
   \caption{Calcul de coercion par prédicats - version déclarative}
   \label{fig:typing-decl-rules}

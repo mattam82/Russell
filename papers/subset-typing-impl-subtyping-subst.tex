@@ -111,8 +111,7 @@
       \case{SubProof} On a:
       \begin{prooftree}
         \AXC{$\subimpl{\GD}{d}{x~\as}{U'}$}
-        \AXC{$\talgo{\GD}{\mysubset{y}{U'}{P}}{\Set}$}
-        \BIC{$\subimpl{\GD}{c}{x~\as}{\hnf{T'} = \mysubset{y}{U'}{P}}$}
+        \UIC{$\subimpl{\GD}{c}{x~\as}{\hnf{T'} = \mysubset{y}{U'}{P}}$}
       \end{prooftree}
       avec \[c = \elt{\ip{U'}{\GD}}{\ip{\lambda x : U'.P}{\GD}}{d}
       {\ex{\ip{P}{\GD, y : U'}[d/y]}}\]
@@ -124,10 +123,10 @@
       $\subimpl{\Gr}{d''}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$ avec $d'' `=
       d'\ipux$. 
       
-      Par inversion du jugement
-      $\timpl{\GD}{\mysubset{y}{U'}{P}}{\Set}$ on a 
+      Par le lemme \ref{coerce-sorting} on a
+      $\timpl{\GD}{\mysubset{y}{U'}{P}}{\Set}$, et par inversion
       $\timpl{\GD}{U'}{\Set}$ et $\timpl{\GD, y : U'}{P}{\Prop}$. On
-      peut appliquer l'hypothèse d'induction pour obtenir:
+      peut donc appliquer l'hypothèse d'induction pour obtenir:
       $\ip{U'[u/x]}{\Gr} `= \ip{U'}{\GD}\ipux$ et
       $\ip{P[u/x]}{\Gr, y : U'[u/x]} `= \ip{P}{\GD, y : U'}\ipux$. 
       Par substitutivité on a aussi $\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$.
@@ -135,8 +134,7 @@
       \begin{prooftree}
         \AXC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{\hnf{(U'[u/x])}}$}
         \UIC{$\subimpl{\Gr}{d'}{\hnf{(u~\asux)}}{U'[u/x]}$}
-        \AXC{$\timpl{\Gr}{\mysubset{y}{U'[u/x]}{P[u/x]}}{\Set}$}
-        \BIC{$\subimpl{\Gr}{c'}{\hnf{T[u/x]}}{\hnf{(T'[u/x])} = \mysubset{y}{U'[u/x]}{P[u/x]}}$}
+        \UIC{$\subimpl{\Gr}{c'}{\hnf{T[u/x]}}{\hnf{(T'[u/x])} = \mysubset{y}{U'[u/x]}{P[u/x]}}$}
         \UIC{$\subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}$}
       \end{prooftree}
       avec \[c' = \elt{\ip{U'[u/x]}{\Gr}}{\ip{\lambda y : U'[u/x].P[u/x]}{\Gr}}{d'}
@@ -157,20 +155,20 @@
         \elt{\ip{U'[u/x]}{\Gr}}
         {\ip{(\lambda y : U'[u/x].P[u/x])}{\Gr}}
         {d'}
-        {?_A} \\
+        {\ex{A}} \\
         & `= &
         \elt{\ip{U'[u/x]}{\Gr}}
         {\ip{\lambda y : U'[u/x].P[u/x]}{\Gr}}
         {d\ipux}
-        {?_A} \\
+        {\ex{A}} \\
         & `= &
         \elt{\ip{U'}{\GD}\ipux}
         {\ip{\lambda y : U'.P}{\GD}\ipux}
         {d\ipux}
-        {(?_B)\ipux} \\
+        {(\ex{B})\ipux} \\
         & = &
         (\elt{\ip{U'}{\GD}}{\ip{\lambda y : U'.P}{\GD}}{d}
-        {?_B})\ipux \\
+        {\ex{B}})\ipux \\
         & = & c\ipux
       \end{eqnarray*}
       
@@ -224,7 +222,7 @@
       \AXC{$\subimpl{\GD}{c_1}{A'}{A}$}
       \AXC{$\subimpl{\GD, y : A'}{c_2}{B}{B'}$}
       \BIC{$\subimpl{\GD}
-        {\lambda x : \ip{A'}{\GD}.~c_2[\ctxdot~c_1[x]]}
+        {\lambda y : \ip{A'}{\GD}.~c_2[\ctxdot~c_1[y]]}
         {\Pi y : A.B}{\Pi y : A'.B'}$}
     \end{prooftree}
     
@@ -236,17 +234,17 @@
         {\Pi y : A[u/x].B[u/x]}{\Pi y : A'[u/x].B'[u/x]}$}
     \end{prooftree}
     
-    où \[c' = \lambda x : \ip{A'[u/x]}{\Gr}.~c_2'[\ctxdot~c_1'[x]] `^ c_1'
-    `= c_1\ipux `^ c_2' `= c_2\ipux\]
+    où \[c' = \lambda y : \ip{A'[u/x]}{\Gr}.~c_2'[\ctxdot~c_1'[y]] \quad c_1'
+    `= c_1\ipux \quad c_2' `= c_2\ipux\]
 
-    On a $\talgo{`G}{\Pi y : A'.B'}{s}$, donc par inversion,
-    $\talgo{\GD}{A'}{s_1}$. On applique l'hypothèse d'induction
+    Par le lemme de coercion et sortage (\ref{coerce-sorting}), avec
+    $\talgo{\GD}{\Pi y : A'.B', \Pi y : A.B}{s}$ on a
+    $\talgo{\GD}{A', A}{s_1}$. On applique l'hypothèse d'induction
     pour obtenir $\ip{A'[u/x]}{\Gr} `= \ip{A'}{\GD}\ipux$.
     On a donc bien $c' `= c\ipux$. 
-    \Problem{Ca n'est pas une sous dérivation}
-   
+    
     \caseother{\irule{SubSigma}, \irule{SubProof}, \irule{SubSub}} Idem, direct par induction.
-  
+    
     \case{PropSet} Trivial.
     
     \case{Var} 
@@ -377,43 +375,30 @@
       
     \case{SumDep} On a
     \begin{prooftree}
-      \QAX{}
-      {$\GD \seq t : T$}
-      {$\GD \seq v : U'$}
-      {$\GD \seq \Sigma y : T.U : s$}
-      {$\GD \seq U' : s \quad U' \suba U[t/y]$}
-      {$\GD \seq \pair{\Sigma y : T.U}{t}{v} : \Sigma y : T.U$}
-      {}
+      \SumDepAFull[\GD]{y}{t}{v}{T}{V}{s}{T'}{V'}
     \end{prooftree}
     et le jugement substitué:    
     \begin{prooftree}
-      \SAX{}
-      {$\Gr \seq t[u/x] : T[u/x]$}
-      {$\Gr \seq v[u/x] : U'[u/x]$}
-      {$\Gr \seq (\Sigma y : T.U)[u/x] : s$}
-      {$\Gr \seq U'[u/x] : s$}
-      {$U'[u/x] \suba U[u/x][t[u/x]/y]$}
-      {$\Gr \seq (\pair{\Sigma y : T.U}{t}{u})[u/x] : (\Sigma y : T.U)[u/x]$}
-      {}
+      \SumDepAFullWide[\Gr]{y}{t[u/x]}{v[u/x]}{T[u/x]}{V[u/x]}{s}{T'[u/x]}{V'[u/x]}
     \end{prooftree}
     
-    On a $U[u/x][t[u/x]/y] = U[t/y][u/x]$ puisque $y `; \freevars{u}$.
-    Ici on a une coercion $\subimpl{\GD}{c}{U'}{U[t/y]}$. Par induction
-    on obtient $\subimpl{\Gr}{c'}{U'[u/x]}{U[t/y][u/x]}$ avec $c' `= c\ipux$.
+    On a $V[u/x][t[u/x]/y] = V[t/y][u/x]$ puisque $y `; \freevars{u}$.
+    Ici on a une coercion $\subimpl{\GD}{c}{V'}{V[t/y]}$. Par induction
+    on obtient $\subimpl{\Gr}{c'}{V'[u/x]}{V[t/y][u/x]}$ avec $c' `= c\ipux$.
 
     \begin{equations}
-      \firsteq{\ip{\pair{\Sigma x : T.U}{t}{v}}{\GD}\ipux}
+      \firsteq{\ip{\pair{\Sigma x : T.V}{t}{v}}{\GD}\ipux}
       
       \step{Définition de l'interprétation}
       {\eqdef}{\pair{\ip{\Sigma x :
-            T.U}{\GD}}{\ip{t}{\GD}}{c[\ip{v}{\GD}]}\ipux}
+            T.V}{\GD}}{\ip{t}{\GD}}{c[\ip{v}{\GD}]}\ipux}
       
       \step{Application de l'hypothèse de récurrence}
       {`=}{\pair{\ip{(\Sigma x :
-            T.U)[u/x]}{\Gr}}{\ip{t[u/x]}{\Gr}}{c'[\ip{v[u/x]}{\Gr}]}}
+            T.V)[u/x]}{\Gr}}{\ip{t[u/x]}{\Gr}}{c'[\ip{v[u/x]}{\Gr}]}}
 
       \step{Définition de l'interprétation}
-      {\eqdef}{\ip{(\pair{\Sigma x : T.U}{t}{u})[u/x]}{\Gr}}
+      {\eqdef}{\ip{(\pair{\Sigma x : T.V}{t}{u})[u/x]}{\Gr}}
     \end{equations}
     
     \case{PiLeft} On a
@@ -483,10 +468,6 @@
       \step{Définition de l'interprétation}
       {\eqdef}{\ip{\pi_2~t[u/x]}{\Gr}}
     \end{equations}
-    
-    
-
-
 
   \end{induction}
 \end{proof}
@@ -610,17 +591,17 @@ coercion de contexte explicite et vice-versa.
 
       \step{Définition}
       {\eqdef}
-      {(\pair{\ip{\Sigma x : C.D}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_1~\ctxdot/x][\pi_2~\ctxdot]})[`r]}
+      {(\pair{\ip{\Sigma x : C.D}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/x]})[`r]}
       
       \step{Définition de la substitution, $x `; `r$}
-      {=}{\pair{\ip{\Sigma x : C.D}{`G}[`r]}{c_1[`r][\pi_1~\ctxdot]}{c_2[`r][\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}
+      {=}{\pair{\ip{\Sigma x : C.D}{`G}[`r]}{c_1[`r][\pi_1~\ctxdot]}{c_2[`r][\pi_2~\ctxdot][\pi_1~\ctxdot/x]}}
 
       \step{Condition}
-      {=}{\pair{\ip{\Sigma x : C.D}{`D}}{c_1[`r][\pi_1~\ctxdot]}{c_2[`r][\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}
+      {=}{\pair{\ip{\Sigma x : C.D}{`D}}{c_1[`r][\pi_1~\ctxdot]}{c_2[`r][\pi_2~\ctxdot][\pi_1~\ctxdot/x]}}
 
       \step{Coercion identité dans $`s$}
       {=}{\pair{\ip{\Sigma x :
-            C.D}{`D}}{c_1[`r][\pi_1~\ctxdot]}{c_2[`s][\pi_1~\ctxdot/x][\pi_2~\ctxdot]}}
+            C.D}{`D}}{c_1[`r][\pi_1~\ctxdot]}{c_2[`s][\pi_2~\ctxdot][\pi_1~\ctxdot/x]}}
 
       \step{Définition}{\eqdef}{c'}
       \end{array} 
@@ -940,14 +921,14 @@ de la coercion, la transitivité.
     $`a_t[\ip{t}{`D}] = \ip{t}{`G}[`r]$.
     Par transitivité de la coercion, on a $\subimpl{`D}{`a_{S'} `= \mu_S[`r]
       `o `a_t}{S'}{\Sigma x : T.U}$.
-    On en déduit qu'il existe $T',U'$ tels que $\muimpl{S'} = \Sigma x :
+    On en déduit qu'il existe $T',U'$ tels que $\mualgo{S'} = \Sigma x :
     T'.U'$ et qu'il existe une coercion $`b$ telle que
     \[\subimpl{`D}{`b = \pair{\Sigma x :
         T.U}{c_1[\pi_1~\ctxdot]}{c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/x]}}
     {\Sigma x : T'.U'}{\Sigma x : T.U}\]
-    avec $`b `o \mu_{S'} `= \mu_S `o `a_t$.
+    avec $`b `o \mu_{S'} `= \mu_S[`r] `o `a_t$.
 
-    Soit $`a = c_1$, $\subimpl{`D}{c_1}{T'}{T}$.
+    Soit $`a = c_1$, on a bien $\subimpl{`D}{`a}{T'}{T}$.
     
     On a:
     \begin{equations}
@@ -957,10 +938,10 @@ de la coercion, la transitivité.
       {\eqdef}{c_1[\pi_1~\mu_{S'}[\ip{t}{`D}]]}
 
       \step{$\pi_1~`b = c_1[\pi_1~\ctxdot]$}
-      {=}{(\pi_1~`b)[\mu_S'[\ip{t}{`D}]]}
-
+      {=}{(\pi_1~`b)[\mu_{S'}[\ip{t}{`D}]]}
+      
       \step{Définition de la substitution dans les contextes}
-      {=}{\pi_1~(`b[\mu_S'[\ip{t}{`D}]])}
+      {=}{\pi_1~(`b[\mu_{S'}[\ip{t}{`D}]])}
 
       \step{Transitivité}
       {`=}{\pi_1~\mu_S[`r][`a_t[\ip{t}{`D}]]}
@@ -972,7 +953,79 @@ de la coercion, la transitivité.
       {\eqdef}{\ip{\pi_1~t}{`G}[`r]}
     \end{equations}
 
-    \case{PiRight} \TODO{...}
+    \case{PiRight}
+    \begin{prooftree}
+      \PiRightA
+    \end{prooftree}
+    
+    On nomme $\mu_S$ la coercion de $S$ à $\Sigma x : T.U$. 
+    Par le lemme \ref{coerce-narrowing-coercion} on obtient:
+    $\subimpl{`D}{\mu_S[`r]}{S}{\Sigma x : T.U}$. 
+
+    On peut peut appliquer l'hypothèse d'induction sur
+    $\talgo{`G}{t}{S}$ pour dériver:
+    \begin{prooftree}
+      \AXC{$\talgo{`D}{t}{S'}$}
+      \AXC{$\mualgo{S'} = \Sigma x : T'.U'$}
+      \BIC{$\talgo{`D}{\pi_1~t}{T'}$}
+    \end{prooftree}
+
+    Par induction, il existe $`a_t$, $\subimpl{`D}{`a_t}{S'}{S}$ et
+    $`a_t[\ip{t}{`D}] = \ip{t}{`G}[`r]$.
+    Par transitivité de la coercion, on sait qu'il existe une coercion
+    de $S'$ à $\Sigma x : T.U$.
+    On en déduit qu'il existe $T',U'$ tels que $\mualgo{S'} = \Sigma x :
+    T'.U'$ et qu'il existe une coercion $`b$ telle que
+    \[\subimpl{`D}{`b = \pair{\Sigma x :
+        T.U}{c_1[\pi_1~\ctxdot]}{c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/x]}}
+    {\Sigma x : T'.U'}{\Sigma x : T.U}\]
+    avec $`b `o \mu_{S'} `= \mu_S[`r] `o `a_t$.
+    
+    On a donc les coercions suivantes dans l'environnement $`D$:
+    \[
+    \xymatrix{
+      S\ar[rr]_{\mu_S[`r]} & & 
+      \Sigma x : T.U \\
+      S'\ar[u]^{`a_t}
+      \ar[rr]^{\mu_{S'}} & & \Sigma x : T'.U'\ar@{-->}[u]^{`b}}
+    \]
+    
+    Par substitution pour les coercions, avec les dérivation de $\pi_1~t$
+    et de $c_2$ on obtient:
+    $\subimpl{`D}{c_2' `= c_2[\ip{\pi_1~t}{`D}/x]}{U'[\pi_1~t/x]}{U[\pi_1~t/x]}$.
+    
+    Soit $`a = c_2'$.    
+    On a:
+    \begin{equations}
+      \firsteq{`a[\ip{\pi_2~t}{`D}]}
+      
+      \step{Définition de $c_2'$}
+      {`=}{c_2[\ip{\pi_1~t}{`D}/x][\ip{\pi_2~t}{`D}]}
+      
+      \step{Définition de l'interprétation}
+      {\eqdef}{c_2[\pi_1~\mu_{S'}[\ip{t}{`D}]/x][\ip{\pi_2~t}{`D}]}
+
+      \step{Définition de l'interprétation}
+      {\eqdef}{c_2[\pi_1~\mu_{S'}[\ip{t}{`D}]/x][\pi_2~\mu_{S'}[\ip{t}{`D}]]}
+
+      \step{$\ctxdot `; \ip{t}{`D} `^ x `; \freevars{t}$}
+      {\eqdef}{c_2[\pi_2~\mu_{S'}[\ip{t}{`D}]][\pi_1~\mu_{S'}[\ip{t}{`D}]/x]}
+
+      \step{$\pi_2~`b = c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/x]$}
+      {=}{(\pi_2~`b)[\mu_{S'}[\ip{t}{`D}]]}
+
+      \step{Définition de la substitution dans les contextes}
+      {=}{\pi_2~(`b[\mu_{S'}[\ip{t}{`D}]])}
+
+      \step{Transitivité}
+      {`=}{\pi_2~\mu_S[`r][`a_t[\ip{t}{`D}]]}
+
+      \step{Hypothèse d'induction}
+      {`=}{\pi_2~\mu_S[`r][\ip{t}{`G}[`r]]}
+
+      \step{Définition de l'interprétation}
+      {\eqdef}{\ip{\pi_2~t}{`G}[`r]}
+    \end{equations}
 
   \end{induction}
 \end{proof}

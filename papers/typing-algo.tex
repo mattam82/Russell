@@ -1,67 +1,54 @@
-
-\newcommand{\AppA}[1][\Gamma]{
+\newcommand{\AppAFull}[9][\Gamma]{
 \TAX{App}
-{$\talgo{#1}{f}{T} \quad \mualgo(T) = \Pi x : V. W : s$}
-{$\talgo{#1}{u}{U} \quad \talgo{#1}{U, V}{s'}$}
-{$\subalgo{#1}{U}{V} $}
-{$\talgo{#1}{(f u)}{W [ u / x ]}$}
+{$\tgen{#1}{#2}{#3} \quad \mualgo(#3) = \Pi #4 : #5. #6 : #7$}
+{$\tgen{#1}{#8}{#9} \quad \tgen{#1}{#9, #5}{#7'}$}
+{$\subalgo{#1}{#9}{#5} $}
+{$\tgen{#1}{(#2 #8)}{#6 [ #8 / #4 ]}$}
 {}
 }
 
-\newcommand{\LetSumA}[1][\Gamma]{
-  \TAX{LetSum}
-  {$#1 \seq t : S$}
-  {$\mualgo(S) = `S x : T. U $}
-  {$#1, x : T, u : U \seq v : V $}
-  {$#1 \seq \letml~(x, u) = t~\inml~v : V$}
-  {$x,y `; #1$}
-}
+\newcommand{\AppA}[1][\Gamma]{\AppAFull[#1]{f}{T}{x}{V}{W}{s}{u}{U}}
 
-\newcommand{\PiLeftA}[1][\Gamma]{
+\newcommand{\PiLeftAFull}[6][\Gamma]{
   \BAX{PiLeft}
-  {$\tgen{#1}{t}{S}$}
-  {$\mualgo(S) = `S x : T.U$}
-  {$\tgen{#1}{\pi_1~t}{T}$}
+  {$\tgen{#1}{#2}{#3}$}
+  {$\mualgo(#3) = `S #4 : #5.#6$}
+  {$\tgen{#1}{\pi_1~#2}{#5}$}
   {}
 }
 
-\newcommand{\PiRightA}[1][\Gamma]{
+\newcommand{\PiLeftA}[1][\Gamma]{\PiLeftAFull[#1]{t}{S}{x}{T}{U}}
+
+\newcommand{\PiRightAFull}[6][\Gamma]{
   \BAX{PiRight}
-  {$\tgen{#1}{t}{S}$}
-  {$\mualgo(S) = `S x : T.U$}
-  {$\tgen{#1}{\pi_2~t}{U[\pi_1~t/x]}$}
+  {$\tgen{#1}{#2}{#3}$}
+  {$\mualgo(#3) = `S #4 : #5.#6$}
+  {$\tgen{#1}{\pi_2~#2}{#6[\pi_1~#2/#4]}$}
   {}
 }
 
+\newcommand{\PiRightA}[1][\Gamma]{\PiRightAFull[#1]{t}{S}{x}{T}{U}}
 
-\newcommand{\SumInfA}[1][\Gamma]{
-  \TAX{SumInf}
-  {$#1 \seq t : T $}
-  {$#1 \seq u : U $}
-  {$#1 \seq \Sigma \_ : T.U : s$}
-  {$#1 \seq (t, u) : \Sigma \_ : T.U$}
+\newcommand{\SumDepAFull}[9][\Gamma]{
+  \TAX{SumDep}
+  {$\tgen{#1}{\Sigma #2 : #5.#6}{#7}$}
+  {$\tgensub{#1}{#3}{#8}{#5}$}
+  {$\tgensub{#1}{#4}{#9}{#6[#3/#2]}$}
+  {$\tgen{#1}{\pair{\Sigma #2 : #5.#6}{#3}{#4}}{\Sigma #2 : #5.#6}$}
   {}
 }
 
-\newcommand{\SumDepAold}[1][\Gamma]{
-  \QAX{SumDep}
-  {$#1 \seq t : T$}
-  {$#1 \seq u : U'$}
-  {$#1 \seq \Sigma x : T.U : s$}
-  {$#1 \seq U' : s \quad U' \suba U[t/x]$}
-  {$#1 \seq (x \coloneqq~t, u : U) : \Sigma x : T.U$}
+\newcommand{\SumDepAFullWide}[9][\Gamma]{
+  \TAXWide{SumDep}
+  {$\tgen{#1}{\Sigma #2 : #5.#6}{#7}$}
+  {$\tgensub{#1}{#3}{#8}{#5}$}
+  {$\tgensub{#1}{#4}{#9}{#6[#3/#2]}$}
+  {$\tgen{#1}{\pair{\Sigma #2 : #5.#6}{#3}{#4}}{\Sigma #2 : #5.#6}$}
   {}
 }
 
-\newcommand{\SumDepA}[1][\Gamma]{
-  \QAX{SumDep}
-  {$#1 \seq t : T' \quad T' \suba T$}
-  {$#1 \seq u : U'$}
-  {$#1 \seq \Sigma x : T.U : s$}
-  {$#1 \seq U' : s \quad U' \suba U[t/x]$}
-  {$#1 \seq \pair{\Sigma x : T.U}{t}{u} : \Sigma x : T.U$}
-  {}
-}
+\newcommand{\SumDepA}[1][\Gamma]{\SumDepAFull[#1]{x}{t}{u}{T}{U}{s}{T'}{U'}}
+
 
 \def\typeaFig{
 \begin{figure}[t]
@@ -89,19 +76,13 @@
     
     \vspace{\infvspace}
     \Abs\DP
-
+    
     \vspace{\infvspace}
     \AppA\DP
-
-%    \vspace{\infvspace}
-%    \LetIn\DP
     
     \vspace{\infvspace}
     \SigmaR\DP
-
-%    \vspace{\infvspace}
-%    \SumInfA\DP
-
+    
     \vspace{\infvspace}
     \SumDepA\DP
     
@@ -109,10 +90,9 @@
     \PiLeftA\DP
     \quad
     \PiRightA\DP
-    %\LetSumA\DP
-    
+        
     \vspace{\infvspace}
-    \Subset\DP
+    \SubsetR\DP
   \end{center}
   \caption{Calcul de coercion par prédicats - version algorithmique}
   \label{fig:typing-algo-rules}

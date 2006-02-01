@@ -99,19 +99,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
   \begin{induction}[typing-algo]
     \caseother{\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
       \irule{Sigma}, \irule{Sum}} règles inchangées.
-    
-    \case{LetSum}
-    On a 
-    \begin{prooftree}
-      \LetSumA
-    \end{prooftree}
-    
-    Par induction, $`G \typed t : S$, et par le lemme \ref{mu-coercion}
-    et la correction de la coercion $S \subd \Sigma x : T. U$.
-    On peut donc dériver $`G \typed t : \Sigma x : T.U$ à l'aide de \irule{Coerce}.
-    On peut directement appliquer \irule{LetSum} à cette prémisse et à
-    l'hypothèse d'induction $`G, x : T, y : U \typed v : V$.
-    
+       
     \case{App} On a:
     \def\fCenter{\typea}
     \begin{prooftree}
@@ -125,6 +113,18 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
     Par le lemme \ref{correct-coercion}, et l'hypothèse $`G \typed u :
     U$, on obtient $`G \typed u : V$ par \irule{Coerce}.
     Donc, par \irule{App}, on a bien $`G \typed f u : W[u/x]$.
+    
+    \case{SumDep}
+    On a 
+    \begin{prooftree}
+      \SumDepA
+    \end{prooftree}
+    
+    Par induction, $`G \typed t : S$, et par le lemme \ref{mu-coercion}
+    et la correction de la coercion $S \subd \Sigma x : T. U$.
+    On peut donc dériver $`G \typed t : \Sigma x : T.U$ à l'aide de \irule{Coerce}.
+    On peut directement appliquer \irule{LetSum} à cette prémisse et à
+    l'hypothèse d'induction $`G, x : T, y : U \typed v : V$.
   \end{induction}  
 \end{proof}
 
@@ -1049,7 +1049,7 @@ système de typage vis-à-vis du système déclaratif.
     \case{Sum}\quad
     \typenvd
     \begin{prooftree}
-      \Sum
+      \SumDep
     \end{prooftree}
     \typenva
     
@@ -1072,31 +1072,31 @@ système de typage vis-à-vis du système déclaratif.
       {}
     \end{prooftree} 
         
-    \case{LetSum} On a
+    \case{PiLeft} On a \TODO{...}
     \typenvd
     \begin{prooftree}
-      \LetSum
+      \PiLeft
     \end{prooftree}
     
-    \typenva
-    Par induction, $`E S, `G \typea t : S \suba \Sigma x : T.U$ et 
-    $`E V', `G, x: T, y : U \typea v : V' \suba V$.
-    On a $\mualgo(S) = \Sigma x : T'.U'$ avec $T' \suba T$ et $U'
-    \suba U$. Par restriction on peut donc dériver $`G, x : T', y : U'
-    \seq v : V'' \suba V'$.
+%     \typenva
+%     Par induction, $`E S, `G \typea t : S \suba \Sigma x : T.U$ et 
+%     $`E V', `G, x: T, y : U \typea v : V' \suba V$.
+%     On a $\mualgo(S) = \Sigma x : T'.U'$ avec $T' \suba T$ et $U'
+%     \suba U$. Par restriction on peut donc dériver $`G, x : T', y : U'
+%     \seq v : V'' \suba V'$.
     
-    On a donc la dérivation suivante dans le système algorithmique:
-    \begin{prooftree}
-      \TAX{LetSum}
-      {$`G \seq t : S$}
-      {$\mualgo(S) = `S x : T'. U'$}
-      {$`G, x : T', y : U' \seq v : V''$}
-      {$`G \seq \letml~(x, u) = t~\inml~v : V''$}
-      {}
-    \end{prooftree}
+%     On a donc la dérivation suivante dans le système algorithmique:
+%     \begin{prooftree}
+%       \TAX{LetSum}
+%       {$`G \seq t : S$}
+%       {$\mualgo(S) = `S x : T'. U'$}
+%       {$`G, x : T', y : U' \seq v : V''$}
+%       {$`G \seq \letml~(x, u) = t~\inml~v : V''$}
+%       {}
+%     \end{prooftree}
     
-    Comme $V'' \suba V' \suba V$, la propriété est vraie par
-    transitivité de la coercion.
+%     Comme $V'' \suba V' \suba V$, la propriété est vraie par
+%     transitivité de la coercion.
 
     \casetwo{Conv}{Coerce}
     Dans les deux cas on a inductivement $`E T', `G \typea t : T'

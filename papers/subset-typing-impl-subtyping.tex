@@ -88,7 +88,8 @@ donne le même terme de coercion.
 \begin{lemma}[Coercion et sortage]
   \label{coerce-sorting}
   Si $\talgo{`G}{T}{s_1}$, $\talgo{`G}{U}{s_2}$ et
-  $\subalgo{`G}{T}{U}$ alors $s_1 = s_2$.
+  $\subalgo{`G}{T}{U}$ alors $s_1 = s_2$ et la taille des dérivations de
+  sortage est plus petite que la taille de la dérivation de coercion.
 \end{lemma}
 \begin{proof}
   Par induction sur la dérivation de coercion.
@@ -112,15 +113,22 @@ donne le même terme de coercion.
 
     \case{SubProof}
     \begin{prooftree}
-      \AXC{$\subalgoimpl{`G}{T}{U}$}
-      \AXC{$\talgo{`G}{\mysubset{x}{U}{P}}{\Set}$}
-      \BIC{$\subalgo{`G}{T}{\mysubset{x}{U}{P}}$}
+      \AXC{$\subalgo{`G}{T}{U'}$}
+      \UIC{$\subalgo{`G}{T}{\mysubset{x}{U'}{P}}$}
     \end{prooftree}
     
-    Par inversion du jugement de typage, on a $\talgo{`G}{U}{\Set}$,
-    donc par application de l'hypothèse d'induction, $\talgo{`G}{T}{\Set}$.
+    Par inversion du jugement de typage
+    $\talgo{`G}{\mysubset{x}{U'}{P}}{s_2}$, on a $s_2 = \Set$ et $\talgo{`G}{U'}{\Set}$,
+    donc par application de l'hypothèse d'induction,
+    $\talgo{`G}{T}{\Set}$.
   \end{induction}
 \end{proof}
+
+Ce lemme montre que nous avons suffisament de conditions de sortes dans
+nos règles pour assurer qu'en n'importe quel point d'une dérivation de
+coercion commençant par deux types bien sortés, nous travaillons sur des
+types de même sorte, et que nous pouvons appliquer nos hypothèses
+d'induction mutuelle aux jugement de sortage correspondants.
 
 \begin{lemma}[Coercion et formes normales de tête]
   \label{coerce-hnf}

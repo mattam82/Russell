@@ -43,7 +43,7 @@
 \UAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}$}
 {$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
-{$T = \hnf{T} `^ \hnf{T} "/=" \{|\}$}
+{$T = \hnf{T}$}
 }
 
 \newcommand{\SubSubIs}[1][\Gamma]{%
@@ -54,9 +54,8 @@
 }
    
 \newcommand{\SubProofI}[1][\Gamma]{%
-  \BAX{SubProof}
+  \UAX{SubProof}
   {$\subimpl{#1}{c}{T}{U}$}
-  {$\timpl{#1}{\mysubset{x}{U}{P}}{\Set}$}
   {$\subimpl{#1}
     {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
       {\ex{\ip{P}{#1, x : U}[c/x]}}}

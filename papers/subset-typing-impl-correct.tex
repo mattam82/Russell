@@ -1,39 +1,50 @@
+On peut combiner les lemmes de substitution et affaiblissement en un
+lemme puissant.
+\def\GVD{`G, x : V, `D}
 \begin{lemma}[Substitution et coercion]
   \label{coerce-subst-and-coercion}
   Si $\talgo{`G}{u}{U}$ et $\subimpl{`G}{c}{U}{V}$ alors
-  \[\talgo{\GD}{t}{T} "=>"
+  \[\talgo{\GVD}{t}{T} "=>"
   \begin{array}{l}
     \talgo{\Gr}{t[u/x]}{T'} \\
     `E `a, \subimpl{\Gr}{`a}{T'}{T[u/x]},\\
-    `a[\ip{t[u/x]}{\Gr}] `= \ip{t}{\GD}\cux
+    `a[\ip{t[u/x]}{\Gr}] `= \ip{t}{\GVD}\cux
   \end{array}\]
 \end{lemma}
-
 \begin{proof}
   
-  Si $\talgo{\GD}{t}{T}$, alors soit $`r$ la coercion de contextes
+  Si $\talgo{\GVD}{t}{T}$, alors soit $`r$ la coercion de contextes
   $\ctxdot, \ldots, c, \ctxdot, \ldots : (`G, x : U, `D) \typec (`G, x
   : V, `D)$. Par le lemme \ref{coerce-narrowing-term}, on a
-  $\talgo{`G, x : U, `D}{t}{T'}$ et il existe $`a$, 
-  \[\subimpl{`G, x : U, `D}{`a}{T'}{T} `^ \ip{t}{\GD}[`r] `=
-  `a[\ip{t}{`G, x : U, `D}]\]
+  $\talgo{\GD}{t}{T'}$ et il existe $`a$, 
+  \[\subimpl{\GD}{`a}{T'}{T} `^ \ip{t}{\GVD}[`r] `=
+  `a[\ip{t}{\GD}]\]
   
   Par substitutivité de la coercion, il existe $`a' `=
   `a[\ip{u}{`G}/x]$ telle que
   $\subimpl{\Gr}{`a'}{T'[u/x]}{T[u/x]}$. 
 
   On a donc, par substitutivité de l'équivalence:
-  \[\ip{t}{\GD}[c[x]/x][\ip{u}{`G}/x] `= `a'[\ip{t}{`G, x : U,
+  \[\ip{t}{\GVD}[c[x]/x][\ip{u}{`G}/x] `= `a'[\ip{t}{`G, x : U,
     `D}][\ip{u}{`G}/x]\]
   
   Comme $x `; \freevars{`a'}$, on a $`a'[\ip{t}{`G, x : U,
     `D}][\ip{u}{`G}/x] = `a'[\ip{t}{`G, x : U,`D}[\ip{u}{`G}/x]]$.
 
   Soit, par application du lemme de stabilité par substitution:
-  \[\ip{t}{\GD}[c[\ip{u}{`G}]/x] `= `a'[\ip{t[u/x]}{`G, `D[u/x]}]\]
+  \[\ip{t}{\GVD}[c[\ip{u}{`G}]/x] `= `a'[\ip{t[u/x]}{`G, `D[u/x]}]\]
   
   On a donc bien construit la coercion $`a'$ recherchée.
 \end{proof}
+ 
+Son corrolaire nous intéresse particulièrement pour la preuve de
+correction:
+\begin{corrolary}[Substitution dans un type et interprétation]
+  \label{coerce-subst-in-type}
+  Si $\talgo{`G}{u}{U}$, $\subimpl{`G}{c}{U}{V}$ et
+  $\talgo{`G, x : V}{T}{s}$ alors $\ip{T[u/x]}{`G} `= \ip{T}{`G, x :
+    V}[c[\ip{u}{`G}]/x]$.
+\end{corrolary}
 
 On définit l'équivalence typée figure \ref{fig:teq-rules}.
 
@@ -85,7 +96,7 @@ On a la propriété suivante:
     \case{BetaTeq}
     On a $\ip{(\lambda x : X.v)~e}{`G} = (\lambda x : \ip{X}{`G}.\ip{v}{`G, x :
       X})~c[\ip{e}{`G}] "->"_\beta \ip{v}{`G, x : X}[c[\ip{e}{`G}]/x]$
-    où $\talgo{`G}{e}{E}$, $\subimpl{`G}{c}{X}{E}$.
+    où $\talgo{`G}{e}{E}$, $\subimpl{`G}{c}{E}{X}$.
     On doit montrer qu'il existe $`a$ tel que 
     $\ip{v}{`G, x : X}[c[\ip{e}{`G}]/x] `= `a[\ip{v[e/x]}]$.
     Par inversion de $\talgo{`G}{(\lambda x : X.v)~e}{T}$ on a 
@@ -93,7 +104,7 @@ On a la propriété suivante:
     
     On applique lemme de substitution et coercion
     \ref{coerce-subst-and-coercion} avec $\talgo{`G}{e}{E}$,
-    $\subimpl{`G}{c}{X}{E}$ et cette dérivation. On obtient:
+    $\subimpl{`G}{c}{E}{X}$ et cette dérivation. On obtient:
     $`a[\ip{v[e/x]}{`G} `= \ip{v}{`G, x : X}[c[\ip{e}{`G}]/x]$, soit
     le résultat désiré.
     
@@ -147,7 +158,7 @@ On a la propriété suivante:
     La coercion $`a'$ est nécessairement de la forme $\lambda x :
     \ip{C}{`G}.c_2[\ctxdot~c_1[x]]$.
     
-
+    
 
 
 
@@ -248,9 +259,9 @@ On peut maintenant montrer notre théorème de correction.
     l'argument $\tcoq{\iG}{c[\ip{u}{`G}]}{\ip{V}{`G}}$. On a ces deux
     résultats par application de l'hypothèse de récurrence pour les coercions.
     On n'a plus qu'à les appliquer pour obtenir le jugement:
-    $\tcoq{\iG}{\ip{f~u}{`G}}{\ip{W}{`G, x : V}[c[u]/x]}$.
+    $\tcoq{\iG}{\ip{f~u}{`G}}{\ip{W}{`G, x : V}[c[\ip{u}{`G}]/x]}$.
     Par le lemme \ref{coerce-subst-and-coercion}, on a
-    $\ip{W}{`G, x : V}[c[u]/x] `= \ip{W[u/x]}{`G}$ puisque les coercions de sorte à sorte ne peuvent
+    $\ip{W}{`G, x : V}[c[\ip{u}{`G}]/x] `= \ip{W[u/x]}{`G}$ puisque les coercions de sorte à sorte ne peuvent
     être que l'identité. On peut donc déduire:
     $\tcoq{\iG}{\ip{f~u}{`G}}{\ip{W[u/x]}{`G}}$ par \irule{Conv}.
 
