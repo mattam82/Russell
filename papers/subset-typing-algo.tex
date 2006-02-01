@@ -31,8 +31,8 @@ sous-ensemble en tête d'un type, par exemple: $\mualgo(\mysubset{f}{\nat
 \subsection{Notations}
 On note $\hnf{x}$ la mise en forme normale de tête de $x$ selon la
 réduction définie précédemment. On note $\eqdef$ l'égalité
-définitionelle.
-
+définitionelle. On omet le contexte pour le jugement de coercion
+lorsqu'il est dérivable du contexte.
 
 \setboolean{displayLabels}{true}
 \typenva
@@ -46,7 +46,7 @@ sera nécessaire pour la correction du typage:
 
 \begin{theorem}[Correction de la coercion]
   \label{correct-coercion}
-  Si $U \suba V$ alors $U \subd V$.
+  Si $\subalgo{`G}{U}{V}$ alors $U \subd V$.
 \end{theorem}
 
 \begin{proof}
@@ -70,7 +70,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 
 \begin{lemma}[$\mualgo$ et coercion]
   \label{mu-coercion}
-  $T \suba \mualgo(T)$.
+  Si $\talgo{`G}{T}{s}$ alors $\subalgo{`G}{T}{\mualgo(T)}$.
 \end{lemma}
 
 \begin{proof}
@@ -81,7 +81,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 
 \begin{lemma}[Conservation des sortes par $\mu$]
   \label{mu-sorts}
-  Si $`G \type S : s$ alors $`G \type \mu~S : s$
+  Si $\talgo{`G}{S}{s}$ alors $\talgo{`G}{\mu~S}{s}$
 \end{lemma}
 
 \begin{proof}
@@ -91,7 +91,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
 
 \begin{theorem}[Correction du typage]
   \label{correct-typing}
-  Si $`G \typea t : T$ alors $`G \typed t : T$
+  Si $\talgo{`G}{t}{T}$ alors $\tdecl{`G}{t}{T}$
 \end{theorem}
 
 \setboolean{displayLabels}{false}
@@ -100,7 +100,7 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
     \caseother{\irule{WfEmpty},\irule{WfVar},\irule{PropSet},\irule{Var},\irule{Prod},\irule{Abs},
       \irule{Sigma}, \irule{Sum}} règles inchangées.
        
-    \case{App} On a:
+    \case{App} On a
     \def\fCenter{\typea}
     \begin{prooftree}
       \AppA
@@ -110,8 +110,8 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
     lemme \ref{mu-coercion} et la correction de la coercion.
     On peut donc dériver $`G \typed f : \Pi x : V.W$ à l'aide de la règle
     \irule{Coerce}.
-    Par le lemme \ref{correct-coercion}, et l'hypothèse $`G \typed u :
-    U$, on obtient $`G \typed u : V$ par \irule{Coerce}.
+    Par le lemme \ref{correct-coercion} appliqué à $\talgo{`G}{U}{V}$
+    et l'hypothèse $`G \typed u : U$, on obtient $`G \typed u : V$ par \irule{Coerce}.
     Donc, par \irule{App}, on a bien $`G \typed f u : W[u/x]$.
     
     \case{SumDep}
@@ -120,11 +120,24 @@ On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
       \SumDepA
     \end{prooftree}
     
-    Par induction, $`G \typed t : S$, et par le lemme \ref{mu-coercion}
+    Par induction et correction de la coercion, on peut dériver:
+    $\tdecl{`G}{t}{T}$ et $\tdecl{`G}{u}{U[t/x]}$. On a
+    $\tdecl{`G}{\Sigma x : T.U}{s}$, on peut donc appliquer
+    \irule{SumDep}
+
+    \case{PiRight} On a
+    \begin{prooftree}
+      \PiRightA
+    \end{prooftree}
+
+    Par induction, $\tdecl{`G}{t}{S}$, et par le lemme \ref{mu-coercion}
     et la correction de la coercion $S \subd \Sigma x : T. U$.
-    On peut donc dériver $`G \typed t : \Sigma x : T.U$ à l'aide de \irule{Coerce}.
-    On peut directement appliquer \irule{LetSum} à cette prémisse et à
-    l'hypothèse d'induction $`G, x : T, y : U \typed v : V$.
+    On peut donc dériver $\tdecl{`G}{t}{\Sigma x : T.U}$ à l'aide de \irule{Coerce}.
+    On peut directement appliquer \irule{PiRight} à cette prémisse pour
+    obtenir $\tdecl{`G}{\pi_2~t}{U[\pi_1~t/x]}$.
+    De même pour \irule{PiLeft}.
+
+
   \end{induction}  
 \end{proof}
 
@@ -133,8 +146,8 @@ que ses jugements valides sont bien inclus dans ceux du système
 déclaratif, il faut maintenant montrer qu'il les inclut tous (ou presque!).
 
 \begin{subsubsection}{Notations}
-On introduit la notation $`G \typea T, U : s$ pour $`G \typea T : s `^
-`G \typea U : s$.
+On introduit la notation $\talgo{`G}{T, U}{s}$ pour $\talgo{`G}{T}{s} `^
+\talgo{`G}{U}{s}$.
 \end{subsubsection}
 
 \subsection{Complétude et décidabilité}
@@ -176,26 +189,109 @@ Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
   \eqbr U'$.
 \end{lemma}
 
+La restriction montre que notre notion de coercion est correcte
+vis-à-vis du typage. On peut dériver les mêmes jugements dans des
+contextes où les variables ont des types équivalents. Ici la taille des
+dérivations ne change pas.
+
+\begin{lemma}[Restriction]
+  \label{narrowing-a}
+  \[ `G \seq S, S' : s, S' \sub S "=>" 
+  \left\{ \begin{array}{lcl}
+      \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
+      & `^{} & \\
+      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T' \suba T 
+    \end{array}
+  \right. \]
+\end{lemma}
+
+\begin{proof}
+  On peut remarquer que si $T `: \setproptype$ alors $T'$ doit être égal
+  à $T$ par définition de la coercion.
+
+  Par induction sur la taille de la dérivation de typage ou de bonne formation.
+    
+  \begin{induction}
+    \case{WfEmpty} Trivial.
+    
+    \case{WfVar} 
+    La conclusion est $\typewf `G, x : S, `D$
+    
+    \begin{induction}[text=Par induction sur la taille de $`D$]
+      \caseother{$`D = []$}
+      La racine de la dérivation est de la forme:
+      \begin{prooftree}
+        \UAX{WfVar}
+        {$`G \type S : s$}
+        {$\wf `G, x : S$}
+        {$s `: \setproptype$}
+      \end{prooftree}
+      On a donc $`G \type S' : s$, et par \irule{WfVar}, $\typewf `G, x : S'$.  
+      
+      \caseother{$`D `= `D', y : U$}
+      La racine de la dérivation est de la forme:
+      \begin{prooftree}
+        \UAX{WfVar}
+        {$`G, x : S, `D' \type U : s$}
+        {$\wf `G, x : S, `D', y : U$}
+        {$s `: \setproptype$}
+      \end{prooftree}
+      Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : s$,
+      on a donc bien $\typewf `G, x : S', `D', y : U$ par \irule{WfVar}.
+    \end{induction}
+    
+    \case{PropSet}
+    Par induction, $\typewf `G, x : S', `D$, on applique simplement la règle.
+    
+    \case{Var}
+    Par induction, $\typewf `G, x : S', `D$. La seule différence avec le
+    contexte précédent est le type associé à $x$, donc si $t \not= x$, on
+    peut simplement réappliquer \irule{Var}. Si $t `= x$ on a la
+    dérivation:
+
+    \begin{prooftree}
+      \BAX{Var}
+      {$\wf `G, x : S', `D$}
+      {$x : S' `: `G$}
+      {$`G, x : S', `D \seq x : S'$}
+      {}
+    \end{prooftree}
+    
+    On a bien $S' \suba S$, la propriété est donc bien vérifiée.
+    
+    \case{Prod} 
+    Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
+    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
+    $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
+  \end{induction}
+\end{proof}
+
 On peut maintenant montrer:
 \begin{lemma}[Conservation de la conversion par coercion]
   \label{conversion-coercion}
-  Si $`G \typea T, U : s$ et $T \eqbr U$ alors $T \suba U$.
+  Si $\talgo{`G}{T, U}{s}$ et $T \eqbr U$ alors $\subalgo{`G}{T}{U}$.
 \end{lemma}
 \begin{proof}
   Par induction sur la forme de $\hnf{T}$.
   
-  \def\seq{\suba}.
+  \def\seq{\suba}
   
   \begin{induction}
     \caseother{$\hnf{T} = \Pi x : X.Y$}
-    Alors $\hnf{U} = \Pi y : V.W$ et $X \eqbr V$, $Y \eqbr W$
+    Alors $\hnf{U} = \Pi x : V.W$ et $X \eqbr V$, $Y \eqbr W$
     d'après le lemme \ref{conversion-pi}.
-    Par induction $X \sub Y$ et $V \sub W$. 
+    On a $\talgo{`G, x : X}{Y}{s}$ et $\talgo{`G, x : V}{W}{s}$. 
+    Par induction $\subalgo{`G}{V}{X}$.
+    On peut donc appliquer le lemme de restriction pour obtenir:
+    $\talgo{`G, x : V}{Y, W}{s}$ de taille inférieure ou égale aux
+    dérivations de $\talgo{\hnf{T}}{\hnf{U}}{s}$.
+    On applique l'hypothèse d'induction pour obtenir $\subalgo{`G, x : V}{Y}{W}$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
     \caseother{$\hnf{T} = \Sigma x : X.Y$}
-    Alors $\hnf{U} = \Sigma y : V.W$, avec $X \eqbr V$ et $Y \eqbr
-    W$. Par induction et application de \irule{SubSigma}.
+    Alors $\hnf{U} = \Sigma x : V.W$, avec $X \eqbr V$ et $Y \eqbr
+    W$. Par induction et application de \irule{SubSigma} en utilisant la
+    restriction pour la deuxième prémisse.
     
     \caseother{$\hnf{T} `= \mysubset{x}{X}{P}$}
     On a alors $\hnf{U} = \mysubset{x}{X'}{P'}$ avec $X \eqbr X'$, $P \eqbr
@@ -256,7 +352,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 
 \begin{lemma}[Coercion et conversion]
   \label{coercion-conversion}
-  Si $`G \type S,T,U : s$, $S \eqbr T$ et $T \sub U$ alors $S \sub U$
+  Si $\talgo{`G}{S,T,U}{s}$, $S \eqbr T$ et $T \sub U$ alors $\subalgo{`G}{S}{U}$
 \end{lemma}
 
 \begin{proof}
@@ -519,22 +615,22 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
         \sub U$.
       \end{induction}
 
-
-
     
   \end{induction}
 \end{proof}
 
 \begin{corrolary}[Complétude de la coercion]
   \label{complete-coercion}
-  Si $U \subd V$ alors $U \suba V$.
+  Si $\talgo{`G}{U,V}{s}$, $U \subd V$ alors $\subalgo{`G}{U}{V}$.
 \end{corrolary}
 
 \begin{proof}
   Les règles des deux systèmes sont les mêmes excepté \irule{SubTrans}
   qui est admissible dans le système algorithmique. De plus
   l'application restreinte de la conversion ne change pas les jugements
-  dérivables (lemme \ref{conversion-coercion}).
+  dérivables (lemme \ref{conversion-coercion}). Le fait de forcer les
+  types à être bien sortés assure juste que l'on a les mêmes relations.
+  \Problem{Que faire pour éviter ça?}
 \end{proof}
 
 En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
@@ -647,83 +743,6 @@ On a besoin de quelques lemmes pour montrer que notre système où
   \end{induction}
 \end{proof}  
 
-La restriction montre que notre notion de coercion est correcte
-vis-à-vis du typage. On peut dériver les mêmes jugements dans des
-contextes où les variables ont des types équivalents. Ici la taille des
-dérivations ne change pas.
-
-\begin{lemma}[Restriction]
-  \label{narrowing-a}
-  \[ `G \seq S, S' : s, S' \sub S "=>" 
-  \left\{ \begin{array}{lcl}
-      \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
-      & `^{} & \\
-      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T' \suba T 
-    \end{array}
-  \right. \]
-\end{lemma}
-
-\begin{proof}
-  On peut remarquer que si $T `: \setproptype$ alors $T'$ doit être égal
-  à $T$ par définition de la coercion.
-
-  Par induction sur la taille de la dérivation de typage ou de bonne formation.
-    
-  \begin{induction}
-    \case{WfEmpty} Trivial.
-    
-    \case{WfVar} 
-    La conclusion est $\typewf `G, x : S, `D$
-    
-    \begin{induction}[text=Par induction sur la taille de $`D$]
-      \caseother{$`D = []$}
-      La racine de la dérivation est de la forme:
-      \begin{prooftree}
-        \UAX{WfVar}
-        {$`G \type S : s$}
-        {$\wf `G, x : S$}
-        {$s `: \setproptype$}
-      \end{prooftree}
-      On a donc $`G \type S' : s$, et par \irule{WfVar}, $\typewf `G, x : S'$.  
-      
-      \caseother{$`D `= `D', y : U$}
-      La racine de la dérivation est de la forme:
-      \begin{prooftree}
-        \UAX{WfVar}
-        {$`G, x : S, `D' \type U : s$}
-        {$\wf `G, x : S, `D', y : U$}
-        {$s `: \setproptype$}
-      \end{prooftree}
-      Par induction sur la dérivation de typage $`G, x : S', `D' \seq U : s$,
-      on a donc bien $\typewf `G, x : S', `D', y : U$ par \irule{WfVar}.
-    \end{induction}
-    
-    \case{PropSet}
-    Par induction, $\typewf `G, x : S', `D$, on applique simplement la règle.
-    
-    \case{Var}
-    Par induction, $\typewf `G, x : S', `D$. La seule différence avec le
-    contexte précédent est le type associé à $x$, donc si $t \not= x$, on
-    peut simplement réappliquer \irule{Var}. Si $t `= x$ on a la
-    dérivation:
-
-    \begin{prooftree}
-      \BAX{Var}
-      {$\wf `G, x : S', `D$}
-      {$x : S' `: `G$}
-      {$`G, x : S', `D \seq x : S'$}
-      {}
-    \end{prooftree}
-    
-    On a bien $S' \suba S$, la propriété est donc bien vérifiée.
-    
-    \case{Prod} 
-    Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
-    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
-    $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
-  \end{induction}
-\end{proof}
-
 Il nous faut montrer des lemmes faisant intervenir la substitution pour
 pouvoir prouver la complétude.
 \begin{lemma}[Substitutivité de $\mualgo$]
@@ -751,50 +770,20 @@ pouvoir prouver la complétude.
   $\Pi y : U'[u/x].V'[u/x] \eqbr \Pi y : U[u/x].V[u/x]$.
 \end{proof}
 
-\begin{lemma}[Substitutivité de la coercion]
-  \label{substitutive-coercion}
-  Si $U \suba T$ alors pour tout $u$, $U[u/x] \suba T[u/x]$.
-\end{lemma}
-
-\begin{proof}
-  \begin{induction}[subtyping-algo]
-    \case{SubConv}
-    Direct par préservation de l'équivalence $\eqbr$ par substitution.
-    
-    \case{SubHnf}
-    Par induction, $(\hnf{U})[u/x] \suba (\hnf{T})[u/x]$. 
-    Par le lemme \ref{coercion-hnf}, $\hnf{((\hnf{U})[u/x])} \suba
-    \hnf{((\hnf{T})[u/x])}$. 
-    Donc $\hnf{U[u/x]}~\suba \hnf{T[u/x]}$ et par \irule{SubHnf}, 
-    $U[u/x] \suba T[u/x]$.
-
-    \case{SubProd}
-    Par induction $U[u/x] \suba T[u/x]$ et $V[u/x] \suba W[u/x]$, donc
-    $\Pi y : T[u/x].V[u/x] \suba \Pi y : U[u/x].W[u/x]$. La propriété
-    est donc bien vérifiée.
-    
-    \case{SubSigma} Direct par induction.
-    
-    \case{SubSub} Par induction, $U'[u/x] \suba V[u/x]$. On applique
-    \irule{SubLeft} pour obtenir $\mysubset{y}{U'[u/x]}{P} \suba V[u/x]$. 
-    
-    \case{SubRight} Direct par induction.
-  \end{induction}
-\end{proof}
-
 \begin{lemma}[Substitutivité du typage]
   \label{substitutive-typing}
   Si $`G \typea u : U$ alors
   \[ \left\{ \begin{array}{lcl}
       `G, x : U, `D \typea t : T & "=>" & `G, `D[u/x] \typea t[u/x] : T[u/x] \\
-      \wf `G, x : U, `D & "=>" & \wf `G, `D[u/x]
+      \wf `G, x : U, `D & "=>" & \wf `G, `D[u/x] \\
+      \subalgo{`G, x : U, `D}{U}{T} & "=>" & \subalgo{`G, `D[u/x]}{U[u/x]}{T[u/x]}
     \end{array}\right. \]
 \end{lemma}
 
 \begin{proof}
   \typenva
-  Par induction mutuelle sur la dérivation de typage $`G, x : U, `D
-  \typea t : T$ ou $\wf `G, x : U, `D$.
+  Par induction mutuelle sur les dérivation de typage, bonne formation
+  et coercion.
   
   \begin{induction}
     \case{WfEmpty} Trivial.
@@ -846,7 +835,53 @@ pouvoir prouver la complétude.
     $`G, `D[u/x] \typea (f[u/x]~a[u/x]) : W[u/x][a[u/x]/y]$. Or
     $W[u/x][a[u/x]/y] = W[a/y][u/x]$ ($y `; \freevars{u}$). On a donc bien $`G, `D[u/x] \typea (f~a)[u/x] :
     (W[a/y])[u/x]$.
-    On a un raisonnement similaire pour \irule{LetSum}.
+
+    \case{PiLeft}
+    Par induction on a $\talgo{`G, `D[u/x]}{t[u/x]}{S[u/x]}$, et par
+    substitutivité de $\mualgo$ on a aussi $\mualgo{S[u/x]} = \Sigma y :
+    T[u/x].U[u/x]$.
+    Il suffit alors d'appliquer \irule{PiLeft}
+
+    \case{PiRight}
+    De même on se retrouve avec $\talgo{`G, `D[u/x]}{t[u/x]}{S[u/x]}$,
+    et $\mualgo{S[u/x]} = \Sigma y : T[u/x].U[u/x]$.
+    Il suffit alors d'appliquer \irule{PiRight} pour obtenir:
+    $\talgo{`G, `D[u/x]}{\pi_2~t[u/x]}{U[u/x][\pi_1~t[u/x]/y] =
+      U[\pi_1~t/y][u/x]}$ car $y `; \freevars{u}$.
+
+    \case{SumDep} On a:
+    \begin{prooftree}
+      \SumDepAFull[\GD]{y}{t}{v}{T}{V}{s}{T'}{V'}      
+    \end{prooftree}
+    
+    Par induction et application de \irule{SumDep}, en utilisant la transitivité:
+    \begin{prooftree}
+      \SumDepAFullWide[\Gr]{y}{t[u/x]}{v[u/x]}{T[u/x]}{U[u/x]}{s}{T'[u/x]}{V'[u/x]}
+    \end{prooftree}
+    
+    \case{SubConv}
+    Direct par préservation de l'équivalence $\eqbr$ par substitution et
+    application de l'hypothèse d'induction pour le typage.
+    
+    \case{SubHnf}
+    Par induction, $(\hnf{U})[u/x] \suba (\hnf{T})[u/x]$. 
+    Par le lemme \ref{coercion-hnf}, $\hnf{((\hnf{U})[u/x])} \suba
+    \hnf{((\hnf{T})[u/x])}$. 
+    Donc $\hnf{U[u/x]}~\suba \hnf{T[u/x]}$ et par \irule{SubHnf}, 
+    $U[u/x] \suba T[u/x]$.
+
+    \case{SubProd}
+    Par induction $U[u/x] \suba T[u/x]$ et $V[u/x] \suba W[u/x]$, donc
+    $\Pi y : T[u/x].V[u/x] \suba \Pi y : U[u/x].W[u/x]$. La propriété
+    est donc bien vérifiée.
+    
+    \case{SubSigma} Direct par induction.
+    
+    \case{SubSub} Par induction, $U'[u/x] \suba V[u/x]$. On applique
+    \irule{SubLeft} pour obtenir $\mysubset{y}{U'[u/x]}{P} \suba V[u/x]$. 
+    
+    \case{SubRight} Direct par induction.
+
   \end{induction}
   
 \end{proof}
@@ -956,7 +991,7 @@ pouvoir prouver la complétude.
 On a maintenant tout les ingrédients pour montrer la complétude de notre
 système de typage vis-à-vis du système déclaratif.
 
-\setboolean{displayLabels}{true}
+\setboolean{displayLabels}{false}
 \begin{theorem}[Complétude du typage]
   \label{complete-typing}
   Si $`G \typed t : T$ alors $`E U, `G \typea t : U \sub T$.
@@ -970,8 +1005,7 @@ système de typage vis-à-vis du système déclaratif.
   \begin{induction}
     \case{WfEmpty} Trivial.
     
-    \case{WfVar}\quad
-    \typenvd
+    \case{WfVar} \typenvd
     \begin{prooftree}
       \WfVar
     \end{prooftree}
@@ -981,7 +1015,7 @@ système de typage vis-à-vis du système déclaratif.
     
     \case{PropSet} Trivial.
 
-    \case{Var}\quad
+    \case{Var}
     \typenvd
     \begin{prooftree}
       \Var
@@ -989,7 +1023,7 @@ système de typage vis-à-vis du système déclaratif.
     Par induction $\typewf `G$ et $x : A `: `G$ , direct par
     \irule{Var}.
     
-    \case{Prod}\quad
+    \case{Prod}
     \typenvd
     \begin{prooftree}
       \Prod
@@ -998,7 +1032,7 @@ système de typage vis-à-vis du système déclaratif.
     Direct par induction et le fait qu'une sorte ne peut être en relation
     qu'avec elle même.
         
-    \case{Abs} \quad
+    \case{Abs}
     \typenvd
     \begin{prooftree}
       \Abs
@@ -1032,7 +1066,7 @@ système de typage vis-à-vis du système déclaratif.
     \end{prooftree}
     
     Par substitutivité de la coercion (lemme
-    \ref{substitutive-coercion}), $W'[u/x] \suba W[u/x]$, la propriété
+    \ref{substitutive-typing}), $W'[u/x] \suba W[u/x]$, la propriété
     est donc bien vérifiée.
     
     \case{Sigma}\quad
@@ -1046,7 +1080,7 @@ système de typage vis-à-vis du système déclaratif.
     les sortes $s$, $s'$ et $s''$ doivent être égales. C'est direct
     par \irule{Sigma}.
 
-    \case{Sum}\quad
+    \case{SumDep}\quad
     \typenvd
     \begin{prooftree}
       \SumDep
@@ -1071,12 +1105,20 @@ système de typage vis-à-vis du système déclaratif.
       {$`G \seq (x \coloneqq~t, u : U) : \Sigma x : T'.U$}
       {}
     \end{prooftree} 
-        
-    \case{PiLeft} On a \TODO{...}
+    
+    \casetwo{PiLeft}{PiRight} On a
     \typenvd
     \begin{prooftree}
       \PiLeft
     \end{prooftree}
+    Par induction, $`E T', \talgosub{`G}{t}{T'}{\Sigma x : T.U}$. On en
+    déduit que $\mualgo{T'} = \Sigma x : T'.U'$ avec
+    $\subalgo{`G}{T'}{T}$ et $\subalgo{`G, x : T'}{U'}{U}$.
+    Clairement, $\talgosub{`G}{\pi_1~t}{T'}{T}$ et
+    $\talgosub{`G}{\pi_2~t}{U'[\pi_1~t/x]}{U[\pi_1~t/x]}$ par
+    substitutivité de la coercion.
+    
+
     
 %     \typenva
 %     Par induction, $`E S, `G \typea t : S \suba \Sigma x : T.U$ et 
