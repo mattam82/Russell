@@ -46,18 +46,34 @@ correction:
     V}[c[\ip{u}{`G}]/x]$.
 \end{corrolary}
 
+On va maintenant s'attacher à montrer que l'équivalence du système
+algorithmique est préservée par interprétation. Pour cela, on défini une
+nouvelle relation qui contient à la fois la coercion et l'équivalence.
 On définit l'équivalence typée figure \ref{fig:teq-rules}.
-
+\setboolean{displayLabels}{true}
 \teqfig
+
+On considère sa clôture réflexive, symétrique et transitive.
 
 On a la propriété suivante:
 \begin{definition}[Equivalence typée]
   Si $\talgo{`G}{t}{T}$, $\talgo{`G}{u}{U}$, alors
-  $\teq{`G}{t}{T}{u}{U}$~\ssi~$t \eqbr u$ et $T \sub U$.
+  $\teq{`G}{t}{T}{u}{U}$~\ssi~$t \eqbr u$ et $U \sub T$.
 \end{definition}
 
 \begin{proof}
-  De gauche à droite, c'est trivial.
+  De gauche à droite, c'est trivial par induction. De droite à gauche:
+  il suffit de considérer la relation $"->"_{\beta\rho}$, puisque la
+  relation $\teq{`G}{t}{T}{u}{U}$ est une équivalence.
+  On va donc montrer que si $t "->"_{\beta\rho} u$ alors
+  $\teq{`G}{t}{T}{u}{U}$.
+  \begin{induction}
+    \caseother{$(\lambda x : X.v)~e "->"_\beta v[e/x]$}. 
+    C'est la première règle, direct.
+    \caseother{$\pi_1,\pi_2$} De même.
+    \casenil \TODO{passage au contexte}.
+  \end{induction}
+  
 \end{proof}
 
 \begin{theorem}[Conservation de l'équivalence]
@@ -151,15 +167,56 @@ On a la propriété suivante:
     \quad
     \xymatrix{
       U\ar[rr]_{c}\ar[d]_{`b} & & 
-      A\ar@{-->}[d]^{`b'} \\
-      V\ar[rr]^{c'} & & C}
+      A \\
+      V\ar[rr]^{c'} & & C\ar@{-->}[u]^{`b'}}
     \]
 
     La coercion $`a'$ est nécessairement de la forme $\lambda x :
-    \ip{C}{`G}.c_2[\ctxdot~c_1[x]]$.
-    
+    \ip{C}{`G}.c_2[\ctxdot~c_1[x]]$ où $\subimpl{`G}{c_1 = `b'}{C}{A}$ et
+    $\subimpl{`G, x : C}{c_2}{B}{D}$.
+    Par le lemme \ref{coerce-subst} avec $\talgo{`G}{N'}{V}$,
+    $\subimpl{`G}{c'}{V}{C}$ et $\subalgo{`G, x : C}{c_2}{B}{D}$ on a:
+    $\subimpl{`G}{c_2' `= c_2[c'[\ip{N'}{`G}]/x]}{B[N'/x]}{D[N'/x]}$. Or
+    comme $B[N'/x] \eqbr B[N/x]$ on a $\subimpl{`G}{c_2'}{B[N/x]}{D[N'/x]}$.
+    Soit $`a = c_2'$.
+
+    On a bien:
+    \begin{equations}
+      \firsteq{`a[\ip{M~N}{`G}]}
+      
+      \step{Définition de l'interprétation}
+      {\eqdef}{`a[\pi_S[\ip{M}{`G}]~c[\ip{N}{`G}]]}
+
+      \step{Définition de $`a$}
+      {\eqdef}{c_2[c'[\ip{N'}{`G}]/x][\pi_S[\ip{M}{`G}]~c[\ip{N}{`G}]]}
+
+      \step{Hypothèse sur $`b$}
+      {`=}{c_2[c'[`b[\ip{N}{`G}]]/x][\pi_S[\ip{M}{`G}]~c[\ip{N}{`G}]]}
+      
+      \step{Commutation du diagrame pour l'argument}
+      {`=}{c_2[c'[`b[\ip{N}{`G}]]/x][\pi_S[\ip{M}{`G}]~(`b'[c'[`b[\ip{N}{`G}]]])}
+
+      \step{Définition de $`a'$}
+      {`=}{`a'[\pi_S[\ip{M}{`G}]]~(c'[`b[\ip{N}{`G}]])}
+        
+      \step{Commutation du diagramme pour la fonction}
+      {`=}{\pi_T[`a[\ip{M}{`G}]]~(c'[`b[\ip{N}{`G}]])}
+
+      \step{Hypothèses sur $`a$ et $`b$}
+      {`=}{\pi_T[\ip{M'}{`G}]~(c'[\ip{N'}{`G}])}
+
+      \step{Définition de l'interprétation}
+      {\eqdef}{\ip{M'~N'}{`G}}
+    \end{equations}
     
 
+    \case{PairTeq}
+    
+
+
+    \case{ProdTeq}
+    \case{SigmaTeq}
+    \case{SubsetTeq}    
 
 
 

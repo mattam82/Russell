@@ -223,36 +223,38 @@
 \end{figure}
 }
 
+\newcommand{\teqone}[5]{#1 \typea #2 : #3 "->"_{\beta\rho} #4 : #5}
+
 \newcommand{\teq}[5]{#1 \typea #2 : #3 \eqbr #4 : #5}
 
 \newcommand{\BetaTeq}{
   %\AXC{$\talgo{`G, x : X}{v}{T'} \quad T'[e/x] \sub T \quad T \sub U$}
   %\AXC{$\talgo{`G}{e}{E} \quad X \sub E$}
   \UAX{BetaTeq}
-  {$T \sub U$}
+  {$\subalgo{`G}{U}{T}$}
   {$\teq{`G}{(\lambda x : X.v)~e}{T}{v[e/x]}{U}$}
   {}
 }
 
 \newcommand{\PiLeftTeq}{
   \UAX{PiLeftTeq}
-  {}
-  {$\teq{`G}{\pi_1~\pair{\Sigma x : T.V}{e_1}{e_2}}{T}{e_1}{T}$}
+  {$\subalgo{`G}{U}{T}$}
+  {$\teq{`G}{\pi_1~\pair{\Sigma x : T.V}{e_1}{e_2}}{T}{e_1}{U}$}
   {}
 }
 
 \newcommand{\PiRightTeq}{
   \UAX{PiRightTeq}
-  {}
-  {$\teq{`G}{\pi_2~\pair{\Sigma x : V.T}{e_1}{e_2}}{T}{e_2}{T}$}
+  {$\subalgo{`G}{U}{T}$}
+  {$\teq{`G}{\pi_2~\pair{\Sigma x : V.T}{e_1}{e_2}}{T}{e_2}{U}$}
   {}
 }
 
 \newcommand{\AppTeq}{
   \QAX{AppTeq}
-  {$\teq{`G}{M}{S}{M'}{T} \quad \teq{`G}{N}{U}{N'}{V}$}
+  {$\teq{`G}{M}{S}{M'}{T}$}
   {$S \sub \Pi x : A.B \quad T \sub \Pi x : C.D$}
-  {$U \sub A$}
+  {$\teq{`G}{N}{U}{N'}{V} \quad U \sub A$}
   {$V \sub C$}
   {$\teq{`G}{M~N}{B[N/x]}{M'~N'}{D[N'/x]}$}
   {}
@@ -317,8 +319,8 @@
 
       \vspace{\infvspace}
       \SubsetTeq\DP
-  \end{center}
-  \caption{Définition du jugement $\teq{`G}{t}{T}{u}{U}$}
+    \end{center}
+    \caption{Définition du jugement $\teq{`G}{t}{T}{u}{U}$}
   \label{fig:teq-rules}
 \end{figure}
 
