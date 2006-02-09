@@ -1119,27 +1119,6 @@ système de typage vis-à-vis du système déclaratif.
     substitutivité de la coercion.
     
 
-    
-%     \typenva
-%     Par induction, $`E S, `G \typea t : S \suba \Sigma x : T.U$ et 
-%     $`E V', `G, x: T, y : U \typea v : V' \suba V$.
-%     On a $\mualgo(S) = \Sigma x : T'.U'$ avec $T' \suba T$ et $U'
-%     \suba U$. Par restriction on peut donc dériver $`G, x : T', y : U'
-%     \seq v : V'' \suba V'$.
-    
-%     On a donc la dérivation suivante dans le système algorithmique:
-%     \begin{prooftree}
-%       \TAX{LetSum}
-%       {$`G \seq t : S$}
-%       {$\mualgo(S) = `S x : T'. U'$}
-%       {$`G, x : T', y : U' \seq v : V''$}
-%       {$`G \seq \letml~(x, u) = t~\inml~v : V''$}
-%       {}
-%     \end{prooftree}
-    
-%     Comme $V'' \suba V' \suba V$, la propriété est vraie par
-%     transitivité de la coercion.
-
     \casetwo{Conv}{Coerce}
     Dans les deux cas on a inductivement $`E T', `G \typea t : T'
     \suba T$. Avec \irule{Conv} on a $T \eqbr S$, donc $T' \suba S$ par
@@ -1198,3 +1177,4 @@ pour s'assurer qu'ils sont corrects.
 %%% TeX-master: "subset-typing"
 %%% LaTeX-command: "TEXINPUTS=\"style:$TEXINPUTS\" latex"
 %%% End: 
+ 
