@@ -30,8 +30,8 @@
 \def\judgerw{~{\mbox{$"~>"$}}~}
 \def\wf{\judgewf}
 
-\def\mualgo{\mu_{\bullet}}
-\def\muimpl{\mu_{\Box}}
+\newcommand{\mualgo}[1]{\mu_{\bullet}(#1)}
+\newcommand{\muimpl}[1]{\mu_{\Box}(#1)}
 
 \newcommand{\tcoq}[3]{#1 \typec #2 : #3}
 \newcommand{\tgen}[3]{#1 \type #2 : #3}

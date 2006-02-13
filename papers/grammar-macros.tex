@@ -1,14 +1,14 @@
 \newcommand{\termgrammar}
 {$\begin{array}{lcl}
     `a & \Coloneqq & x \\
-    & | & \funml{}~x~:~`t "=>" `a \\
+    & | & \lambda x : `t "=>" `a \\
     & | & `a~`a \\ 
     & | & `a~`t \\
     & | & \text{\emph{constante}} \\
 % & | & (`a,~`a) \\
-    & | & (x \coloneqq `a,~`a~: `t) \\
+    & | & \pair{\Sigma x : `t.`t}{`a}{`a} \\
 %    & | & \letml~x = `a ~\inml~`a \\
-    & | & \letml~(x, y) = `a ~\inml~ `a
+    & | & \pi_1~`a `| \pi_2~`a
 
 %    & | & \ifml~`a~\thenml~`a~\elseml~`a
   \end{array}$}
@@ -21,7 +21,7 @@
     & | & \text{\emph{constante}} \\
     & | & `t * `t \\
     & | & \Sigma x : `t. `t \\
-    & | & \lambda{}~x~:~s "=>" `t \\
+    & | & \lambda x : s "=>" `t \\
     & | & `t~`a \\
     & | & \Pi x : `t. `t \\
     & | & \mysubset{x}{`t}{`t}
@@ -32,7 +32,7 @@
     `t & \Coloneqq & x \\
     & | & `t~`t \\
     & | & `t~`a \\
-    & | & \lambda{}~x~:~`t "=>" `t \\
+    & | & \lambda x : `t "=>" `t \\
     & | & \Pi x : `t. `t \\
     & | & \Sigma x : `t. `t \\
 %    & | & `t * `t \\

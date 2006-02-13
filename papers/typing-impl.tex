@@ -227,6 +227,20 @@
 
 \newcommand{\teq}[5]{#1 \typea #2 : #3 \eqbr #4 : #5}
 
+\newcommand{\VarTeq}{
+  \UAX{VarTeq}
+  {}
+  {$\teq{`G}{x}{X}{x}{X}$}
+  {}
+}
+
+\newcommand{\SortTeq}{
+  \UAX{SortTeq}
+  {}
+  {$\teq{`G}{s}{\Type}{s}{\Type}$}
+  {$s `: \setprop$}
+}
+
 \newcommand{\BetaTeq}{
   %\AXC{$\talgo{`G, x : X}{v}{T'} \quad T'[e/x] \sub T \quad T \sub U$}
   %\AXC{$\talgo{`G}{e}{E} \quad X \sub E$}
@@ -250,22 +264,32 @@
   {}
 }
 
+\newcommand{\LambdaTeq}{
+  \BAX{LambdaTeq}
+  {$\teq{`G}{X}{s_1}{X'}{s_1}$}
+  {$\teq{`G, x : X'}{v}{Y}{v'}{Y'}$}
+  {$\teq{`G}{\lambda x : X.v}{\Pi x : X.Y}{\lambda x : X'.v'}{\Pi x : X'.Y'}$}
+  {}
+}
+
 \newcommand{\AppTeq}{
   \QAX{AppTeq}
   {$\teq{`G}{M}{S}{M'}{T}$}
-  {$S \sub \Pi x : A.B \quad T \sub \Pi x : C.D$}
-  {$\teq{`G}{N}{U}{N'}{V} \quad U \sub A$}
-  {$V \sub C$}
+  {$\mualgo{S} = \Pi x : A.B \quad \mualgo{T} = \Pi x : C.D$}
+  {$\teq{`G}{N}{U}{N'}{V} \quad \subalgo{`G}{U}{A}$}
+  {$\subalgo{`G}{V}{C}$}
   {$\teq{`G}{M~N}{B[N/x]}{M'~N'}{D[N'/x]}$}
   {}
 }
 
 \newcommand{\PairTeq}{
-  \BAX{PairTeq}
-  {$\teq{`G}{e_1}{A}{e_2}{C}$}
-  {$\teq{`G, x : A}{e_2}{B}{e_2'}{D}$}
-  {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{T}{\pair{\Sigma x :
-        C.D}{e_1'}{e_2'}}{U}$}
+  \QAX{PairTeq}
+  {$\teq{`G}{e_1}{A'}{e_1'}{C'}$}
+  {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
+  {$\teq{`G, x : A'}{e_2}{B'}{e_2'}{D'}$}
+  {$\subalgo{`G}{B'}{B[e_1/x]} \quad \subalgo{`G}{D'}{D[e_1/x]}$}
+  {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{\Sigma x : A.B}{\pair{\Sigma x :
+        C.D}{e_1'}{e_2'}}{\Sigma x : C.D}$}
   {}
 }
 
@@ -296,7 +320,12 @@
 \newcommand{\teqfig}{
   \begin{figure}[ht]
     \begin{center}
-      
+      \VarTeq\DP
+
+      \vspace{\infvspace}
+      \SortTeq\DP
+
+      \vspace{\infvspace}
       \BetaTeq\DP
       
       \vspace{\infvspace}
@@ -304,6 +333,9 @@
 
       \vspace{\infvspace}
       \PiRightTeq\DP
+
+      \vspace{\infvspace}
+      \LambdaTeq\DP
 
       \vspace{\infvspace}
       \AppTeq\DP

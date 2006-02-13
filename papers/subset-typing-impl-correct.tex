@@ -63,19 +63,92 @@ On a la propriété suivante:
 
 \begin{proof}
   De gauche à droite, c'est trivial par induction. De droite à gauche:
-  il suffit de considérer la relation $"->"_{\beta\rho}$, puisque la
-  relation $\teq{`G}{t}{T}{u}{U}$ est une équivalence.
-  On va donc montrer que si $t "->"_{\beta\rho} u$ alors
-  $\teq{`G}{t}{T}{u}{U}$.
+  il suffit de considérer la relation $"->"_{\beta\rho}$.
+  En effet, si $t \eqbr u$ alors il existe $v$ tel que $t
+  "->>"_{\beta\rho} v$ et $u "->>"_{\beta\rho} v$ par confluence de la
+  réduction. Pour tout $`G, t, T$ tels que $\talgo{`G}{t}{T}$ on a
+  par réduction du sujet $\talgo{`G}{t'}{T'}$ avec $T' \sub T$ pour tout $t'$ tel que $t "->"_{\beta\rho} t'$. 
+  Il suffit alors de montrer que $\teq{`G}{t}{T}{t'}{T'}$. 
+  Par applications répétées de ce résultat et
+  en utilisant la transitivité de l'équivalence typée, on
+  obtient $\teq{`G}{t}{T}{v}{V}$ et $\teq{`G}{u}{U}{v}{V}$. On applique enfin
+  symétrie et transitivité pour obtenir le résultat $\teq{`G}{t}{T}{u}{U}$.
+  
+  On va donc montrer que pour tout $`G, t, T$, $\talgo{`G}{t}{T}$, 
+  pour tout $u$ tel que $t "->"_{\beta\rho} u$ et $\talgo{`G}{u}{U}$ on a
+  $\teq{`G}{t}{T}{u}{U}$. On a déjà par réduction du sujet que $U \sub
+  T$.
+  Par induction sur la dérivation de typage de $t$.
   \begin{induction}
     \caseother{$(\lambda x : X.v)~e "->"_\beta v[e/x]$}. 
     C'est la première règle, direct.
     \caseother{$\pi_1,\pi_2$} De même.
-    \casenil \TODO{passage au contexte}.
+    \caseother{$f~e "->" f'~e$} Par inversion de $\talgo{`G}{f~e}{T}$ on
+    a $\talgo{`G}{f}{F}$, $\mualgo{F} = \Pi x : A.B$ où $T = B[e/x]$,
+    $\talgo{`G}{e}{E}$ et $\subalgo{`G}{E}{A}$. Par
+    induction on a donc $\teq{`G}{f}{F}{f'}{F'}$ où $\subalgo{`G}{F'}{F}$. Par le
+    lemme sur la coercion et $\mualgo{}$ on a $\mualgo{F'} = \Pi x :
+    A'.B'$ et $\subalgo{`G}{\Pi x : A'.B'}{\Pi x : A.B}$. On a donc $\subalgo{`G}{A}{A'}$ et
+    par transitivité de la coercion $\subalgo{`G}{E}{A'}$. On peut donc
+    appliquer la règle \irule{AppTeq}. Pour obtenir:
+    \begin{prooftree}
+      \QAX{AppTeq}
+      {$\teq{`G}{f}{F}{f'}{F'}$}
+      {$\mualgo{F} = \Pi x : A.B \quad \mualgo{F'} = \Pi x : A'.B'$}
+      {$\teq{`G}{e}{E}{e}{E} \quad \subalgo{`G}{E}{A}$}
+      {$\subalgo{`G}{E}{A'}$}
+      {$\teq{`G}{f~e}{B[e/x]}{f'~e}{B'[e/x]}$}
+      {}
+    \end{prooftree}
+    
+    \caseother{$f~e "->" f~e'$} Par \irule{AppTeq} on obtient
+    $\teq{`G}{f~e}{B[e/x]}{f~e'}{B[e'/x]}$.
+
+    \caseother{$\lambda x : X.v "->" \lambda x : X'.v$}
+    Direct par \irule{LambdaTeq}.
+
+    \caseother{$\lambda x : X.v "->" \lambda x : X.v'$}
+    Direct par \irule{LambdaTeq}. On a $\teq{`G, x : X}{v}{Y}{v'}{Y'}$
+    par induction sur la prémisse $\talgo{`G, x : X}{v}{Y}$.
+    \begin{prooftree}
+      \BAX{LambdaTeq}
+      {$\teq{`G}{X}{s_1}{X}{s_1}$}
+      {$\teq{`G, x : X}{v}{Y}{v'}{Y'}$}
+      {$\teq{`G}{\lambda x : X.v}{\Pi x : X.Y}{\lambda x : X.v'}{\Pi x : X.Y'}$}
+      {}
+    \end{prooftree}
+    
+    \caseother{$\pair{\Sigma x : A.B}{e_1}{e_2} "->" \pair{\Sigma x :
+        A.B}{e_1'}{e_2}$}
+    Par application de \irule{PairTeq}. On a
+    $\teq{`G}{e_1}{A'}{e_1'}{C'}$ par induction sur la prémisse
+    $\talgo{`G}{e_1}{A'}$. On a $\subalgo{`G}{C'}{A'}$ en utilisant
+    l'autre sens de l'équivalence qu'on cherche à prouver.
+    On en déduit $\subalgo{`G}{C'}{A}$ par transitivité de la coercion
+    avec $\subalgo{`G}{A'}{A}$.
+    D'autre part, comme $e_1 \eqbr e_1'$ et $B \eqbr B'$ on a $B[e_1/x]
+    \eqbr B'[e_1'/x]$. Il existe donc une coercion de $B'$ à $B[e_1/x]$.
+
+    \begin{prooftree}
+      \QAX{PairTeq}
+      {$\teq{`G}{e_1}{A'}{e_1'}{C'}$}
+      {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
+      {$\teq{`G, x : A'}{e_2}{B'}{e_2}{B'}$}
+      {$\subalgo{`G}{B'}{B[e_1/x]} \quad \subalgo{`G}{B'}{B[e_1'/x]}$}
+      {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{\Sigma x : A.B}{\pair{\Sigma x :
+            A.B}{e_1'}{e_2}}{\Sigma x : A.B}$}
+      {}
+    \end{prooftree}
+    
+    De façon équivalente pour la réduction dans la deuxième composante.
+
+    \casenil Direct par induction pour les types produits, sommes et sous-ensemble.
+
   \end{induction}
   
 \end{proof}
 
+\setboolean{displayLabels}{false}
 \begin{theorem}[Conservation de l'équivalence]
   \label{interp-eq}
   Si $\talgo{`G}{t}{T}$, $\talgo{`G}{u}{U}$, $t \eqbr u$ et $T \sub U$ alors
@@ -144,7 +217,7 @@ On a la propriété suivante:
     \end{prooftree}
     
     On a:
-    \[\ip{M~N}{`G} \eqdef \pi_S[\ip{M}{`G}]~c[\ip{N}{`G}] `^ 
+    \[\ip{M~N}{`G} \eqdef \pi_S[\ip{M}{`G}]~c[\ip{N}{`G}] \text{ et }
     \ip{M'~N'}{`G} \eqdef \pi_T[\ip{M'}{`G}]~c'[\ip{N'}{`G}]\]
     où 
     \begin{eqnarray*}
@@ -155,8 +228,8 @@ On a la propriété suivante:
     \end{eqnarray*}
       
     Par induction, il exite $`a, `b$, telles que:
-    \[\subimpl{`G}{`a}{S}{T} `^ `a[\ip{M}{`G}] `= \ip{M'}{`G} \]
-    \[\subimpl{`G}{`b}{U}{V} `^ `b[\ip{N}{`G}] `= \ip{N'}{`G} \]
+    \[\subimpl{`G}{`a}{S}{T} \text{ et } `a[\ip{M}{`G}] `= \ip{M'}{`G} \]
+    \[\subimpl{`G}{`b}{U}{V} \text{ et } `b[\ip{N}{`G}] `= \ip{N'}{`G} \]
     
     On a donc les coercions suivantes:
     \[
@@ -210,23 +283,119 @@ On a la propriété suivante:
     \end{equations}
     
 
-    \case{PairTeq}
+    \case{PairTeq} 
+    \begin{prooftree}
+      \QAX{PairTeq}
+      {$\teq{`G}{e_1}{A'}{e_1'}{C'}$}
+      {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
+      {$\teq{`G, x : A'}{e_2}{B'}{e_2'}{D'}$}
+      {$\subalgo{`G}{B'}{B[e_1/x]} \quad \subalgo{`G}{D'}{D[e_1'/x]}$}
+      {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{\Sigma x : A.B}{\pair{\Sigma x :
+            C.D}{e_1'}{e_2'}}{\Sigma x : C.D}$}
+      {}
+    \end{prooftree}
     
+    On a $\ip{\pair{\Sigma x : A.B}{e_1}{e_2}}{`G} = 
+    \pair{\ip{\Sigma x :
+        A.B}{`G}}{c_1[\ip{e_1}{`G}]}{c_2[\ip{e_2}{`G}]}$ et
+    $\ip{\pair{\Sigma x : C.D}{e_1'}{e_2'}}{`G} = 
+    \pair{\ip{\Sigma x :
+        C.D}{`G}}{c_1'[\ip{e_1'}{`G}]}{c_2'[\ip{e_2'}{`G}]}$ où:
+    \begin{eqnarray*}
+      c_1 & = & \coerce{`G}{A'}{A} \\
+      c_1' & = & \coerce{`G}{C'}{C} \\
+      c_2 & = & \coerce{`G}{B'}{B[e_1/x]} \\
+      c_2' & = & \coerce{`G}{D'}{D[e_1'/x]}
+    \end{eqnarray*}
 
+    Par induction il existe $`a, `b$ telles que:
+    \[\subimpl{`G}{`a}{A'}{C'} \text{ et } `a[\ip{e_1}{`G}] `= \ip{e_1'}{`G} \]
+    \[\subimpl{`G}{`b}{B'}{D'} \text{ et } `b[\ip{e_2}{`G}] `= \ip{e_2'}{`G} \]
 
-    \case{ProdTeq}
-    \case{SigmaTeq}
-    \case{SubsetTeq}    
+    On a $\subalgo{`G}{\Sigma x : A.B}{\Sigma x : C.D}$, on en déduit qu'il
+    existe la dérivation suivante: 
+    \begin{prooftree}
+      \AXC{$\subimpl{`G}{d_1}{A}{C}$}
+      \AXC{$\subimpl{`G, x : A}{d_2}{B}{D}$}
+      \BIC{$\subimpl{`G}{d = \pair{\ip{\Sigma x :
+              C.D}{d_1[\pi_1~\ctxdot]}{d_2[\pi_2~\ctxdot][\pi_1~\ctxdot/x]}
+          }}{\Sigma x : A.B}{\Sigma x : C.D}$}      
+    \end{prooftree}
+    
+    Par symétrie et transitivité de la coercion on a $\subimpl{d_1 `=
+      c_1' `o `a `o c_1^{-1}}{A}{C}$.
+    
+    Par transitivité, il existe aussi une coercion $d_2'$ telle que
+    $\subimpl{`G}{d_2}{B[e_1/x]}{D[e_1'/x]}$ et $d_2 `= c_2' `o `b `o
+    c_2^{-1}$.
+    Or par affaiblissement des coercions on a: $\subimpl{`G, x :
+      A'}{d_2[c_1[x]/x]}{B}{D}$.
+    On peut appliquer le lemme de substitutivité pour les coercion afin
+    d'obtenir une dérivation de $\subimpl{`G, x :
+      A}{d_2[c_1[\ip{e_1}{`G}]/x]}{B[e_1/x]}{D[e_1/x]}$.
+    Par unicité des coercions, on a $d_2'[c_1[\ip{e_1}{`G}]/x] `= d_2$.
 
+    On peut vérifier:
+    \begin{equations}
+      \firsteq{d[\ip{\pair{\Sigma x : A.B}{e_1}{e_2}}{`G}]}
 
+      \step{Définition de l'interprétation}
+      {\eqdef}{d[\pair{\ip{\Sigma x :
+            A.B}{`G}}{c_1[\ip{e_1}{`G}]}{c_2[\ip{e_2}{`G}]}]}
 
+      \step{Définition de $d$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {d_1[c_1[\ip{e_1}{`G}]]}{d_2[c_2[\ip{e_2}{`G}]][c_1[\ip{e_1}{`G}/x]]}}
+
+      \step{Définition de $d_1$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {(c_1' `o `a `o c_1^{-1})[c_1[\ip{e_1}{`G}]]}{d_2[c_2[\ip{e_2}{`G}]][c_1[\ip{e_1}{`G}/x]]}}
+
+      \step{$c_1^{-1} `o c_1 `= \ctxdot$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {c_1'[`a[\ip{e_1}{`G}]]}{d_2[c_2[\ip{e_2}{`G}]][c_1[\ip{e_1}{`G}/x]]}}
       
-   
+      \step{Hypothèse sur $`a$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {c_1'[\ip{e_1'}{`G}]}{d_2[c_2[\ip{e_2}{`G}]][c_1[\ip{e_1}{`G}/x]]}}
+
+      \step{Définition de la substitution, $x `; e_2$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {c_1'[\ip{e_1'}{`G}]}{d_2[c_1[\ip{e_1}{`G}/x]][c_2[\ip{e_2}{`G}]]}}
+
+      \step{Définition de $d_2$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {c_1'[\ip{e_1'}{`G}]}{d_2'[c_2[\ip{e_2}{`G}]]}}
+
+      \step{Définition de $d_2'$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {c_1'[\ip{e_1'}{`G}]}{(c_2' `o `b `o c_2^{-1})[c_2[\ip{e_2}{`G}]]}}
+
+      \step{$c_2^{-1} `o c_2 `= \ctxdot$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {c_1'[\ip{e_1'}{`G}]}{c_2'[`b[\ip{e_2}{`G}]]}}
+
+      \step{Hypothèse sur $`b$}
+      {\eqdef}{\pair{\ip{\Sigma x : C.D}{`G}}
+        {c_1'[\ip{e_1'}{`G}]}{c_2'[\ip{e_2'}{`G}]}}
+      
+      \step{Définition de l'interprétation}
+      {\eqdef}{\ip{\pair{\Sigma x : C.D}{e_1'}{e_2'}}{`G}}
+    \end{equations}            
+
+    \caseother{\irule{ProdTeq}, \irule{SigmaTeq}, \irule{SubsetTeq}} La
+    traduction est un homomorphisme sur ces termes, c'est donc direct
+    par induction.
 
     \end{induction}
     
 
 \end{proof}
+
+\begin{corrolary}[Conservation de l'équivalence pour les types]
+  Si $\talgo{`G}{T,U}{s}$ et $T \eqbr U$ alors $\ip{T}{`G} `=
+  \ip{U}{`G}$.
+\end{corrolary}
 
 On peut maintenant montrer notre théorème de correction.
 
