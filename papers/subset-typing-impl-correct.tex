@@ -52,6 +52,7 @@ nouvelle relation qui contient à la fois la coercion et l'équivalence.
 On définit l'équivalence typée figure \ref{fig:teq-rules}.
 \setboolean{displayLabels}{true}
 \teqfig
+\setboolean{displayLabels}{false}
 
 On considère sa clôture réflexive, symétrique et transitive.
 
@@ -130,11 +131,12 @@ On a la propriété suivante:
     \eqbr B'[e_1'/x]$. Il existe donc une coercion de $B'$ à $B[e_1/x]$.
 
     \begin{prooftree}
-      \QAX{PairTeq}
+      \SAX{PairTeq}
       {$\teq{`G}{e_1}{A'}{e_1'}{C'}$}
-      {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
       {$\teq{`G, x : A'}{e_2}{B'}{e_2}{B'}$}
-      {$\subalgo{`G}{B'}{B[e_1/x]} \quad \subalgo{`G}{B'}{B[e_1'/x]}$}
+      {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
+      {$\subalgo{`G}{B'}{B[e_1/x]}$}
+      {$\subalgo{`G}{B'}{B[e_1'/x]}$}
       {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{\Sigma x : A.B}{\pair{\Sigma x :
             A.B}{e_1'}{e_2}}{\Sigma x : A.B}$}
       {}
@@ -181,6 +183,43 @@ On a la propriété suivante:
     \case{Réflexivité}
     On a $\teq{`G}{t}{T}{t}{T}$. Par réflexivité de la coercion, c'est
     trivial.
+    
+    \case{VarTeq}
+    De même, $`a = \ctxdot$.
+
+    \case{SortTeq}
+    Trivial.
+
+    \case{LambdaTeq}
+    Par induction on a $\subimpl{`G}{`a = \ctxdot}{s_1}{s_1}$, $\ip{X}{`G} `=
+    \ip{X'}{`G}$ et $\subimpl{`G, x : X'}{`b}{Y}{Y'}$ avec
+    $`b[\ip{v}{`G, x : X'}] = \ip{v'}{`G, x : X'}$.
+
+    On obtient donc le jugement $\subimpl{`G}{c = (\lambda x :
+      \ip{X'}{`G}.`b[\ctxdot~\ctxdot[x]])}{\Pi x : X.Y}{\Pi x : X'.Y'}$
+    par \irule{SubProd}. On a bien:
+    
+    \begin{equations}
+      \firsteq{c[\ip{\lambda x : X.v}{`G}]}
+      
+      \step{Définition de l'interprétation}
+      {\eqdef}{c[\lambda x : \ip{X}{`G}.\ip{v}{`G, x : X}]}
+
+      \step{Définition de $c$}
+      {`=}{\lambda x : \ip{X'}{`G}.`b[(\lambda x : \ip{X}{`G}.\ip{v}{`G, x : X})~x]}
+
+      \step{Réduction}
+      {"->"_\beta}{\lambda x : \ip{X'}{`G}.`b[\ip{v}{`G, x : X}]}
+
+      \step{Lemme \ref{coerce-narrowing-term-eqbr}: $\ip{v}{`G, x : X} `= \ip{v}{`G, x : X'}$}
+      {`=}{\lambda x : \ip{X'}{`G}.`b[\ip{v}{`G, x : X'}]}
+
+      \step{Hypothèse sur $`b$}
+      {`=}{\lambda x : \ip{X'}{`G}.\ip{v'}{`G, x : X'}}
+
+      \step{Définition de l'interprétation}
+      {`=}{\ip{\lambda x : X'.v'}{`G}}
+    \end{equations}
     
     \case{BetaTeq}
     On a $\ip{(\lambda x : X.v)~e}{`G} = (\lambda x : \ip{X}{`G}.\ip{v}{`G, x :
@@ -285,11 +324,12 @@ On a la propriété suivante:
 
     \case{PairTeq} 
     \begin{prooftree}
-      \QAX{PairTeq}
+      \SAX{PairTeq}
       {$\teq{`G}{e_1}{A'}{e_1'}{C'}$}
-      {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
       {$\teq{`G, x : A'}{e_2}{B'}{e_2'}{D'}$}
-      {$\subalgo{`G}{B'}{B[e_1/x]} \quad \subalgo{`G}{D'}{D[e_1'/x]}$}
+      {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
+      {$\subalgo{`G}{B'}{B[e_1/x]}$}
+      {$\subalgo{`G}{D'}{D[e_1'/x]}$}
       {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{\Sigma x : A.B}{\pair{\Sigma x :
             C.D}{e_1'}{e_2'}}{\Sigma x : C.D}$}
       {}
@@ -399,7 +439,6 @@ On a la propriété suivante:
 
 On peut maintenant montrer notre théorème de correction.
 
-\setboolean{displayLabels}{false}
 \begin{theorem}[Correction de l'interprétation]
   \label{correct-interp}
   Si $\talgo{`G}{t}{T}$ alors on a $\tcoq{\iG}{\ip{t}{\iG}}{\ip{T}{\iG}}$.

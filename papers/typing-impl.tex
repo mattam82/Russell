@@ -283,11 +283,12 @@
 }
 
 \newcommand{\PairTeq}{
-  \QAX{PairTeq}
+  \SAX{PairTeq}
   {$\teq{`G}{e_1}{A'}{e_1'}{C'}$}
-  {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
   {$\teq{`G, x : A'}{e_2}{B'}{e_2'}{D'}$}
-  {$\subalgo{`G}{B'}{B[e_1/x]} \quad \subalgo{`G}{D'}{D[e_1/x]}$}
+  {$\subalgo{`G}{A'}{A} \quad \subalgo{`G}{C'}{C}$}
+  {$\subalgo{`G}{B'}{B[e_1/x]}$}
+  {$\subalgo{`G}{D'}{D[e_1/x]}$}
   {$\teq{`G}{\pair{\Sigma x : A.B}{e_1}{e_2}}{\Sigma x : A.B}{\pair{\Sigma x :
         C.D}{e_1'}{e_2'}}{\Sigma x : C.D}$}
   {}

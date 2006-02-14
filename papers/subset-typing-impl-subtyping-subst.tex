@@ -737,7 +737,7 @@ de la coercion, la transitivité.
     On a $\subimpl{`G}{\pi_F}{F}{\Pi y : A.B}$, donc
     par le lemme \ref{coerce-narrowing-coercion} on obtient
     $\subimpl{`D}{\pi_F[`r]}{F}{\Pi y : A.B}$. On peut appliquer ce
-    lemme puisque $\ip{Pi y : A.B}{`D} `= \ip{\Pi y : A.B}{`G}[`r]$ par
+    lemme puisque $\ip{\Pi y : A.B}{`D} `= \ip{\Pi y : A.B}{`G}[`r]$ par
     induction ($`a$ est nécessairement l'identité).
 
     On a donc les coercions suivantes dans l'environnement $`D$:
@@ -1028,6 +1028,26 @@ de la coercion, la transitivité.
     \end{equations}
 
   \end{induction}
+\end{proof}
+
+On a besoin d'une spécialisation de ce lemme lorsque les types sont équivalents:
+\begin{lemma}[Equivalence et interprétation]
+  \label{coerce-narrowing-term-eqbr}
+  Si $\talgo{`G}{U, U'}{s}$ et $U \eqbr U'$ alors:
+  \begin{itemize}
+  \item si $\talgo{`G, x : U, `D}{t}{T}$, alors $\talgo{`G, x : U', `D}{t}{T'}$ avec $T \eqbr T'$ et $\ip{t}{`G, x : U, `D} `= \ip{t}{`G, x : U', `D}$;
+  \item si $\subalgo{`G, x : U, `D}{T}{T'}$ alors $\subalgo{`G, x : U', `D}{T}{T'}$.
+  \end{itemize}
+\end{lemma}
+
+\begin{proof}
+  Pour la première partie, la preuve suit le même schéma que la précédente. Il suffit de vérifier
+  que l'on a toujours $`a `= \ctxdot$. Par exemple, dans le cas de l'application, on
+  a $`a_f `= `a_e `= \ctxdot$. On en déduit que $c_f `= \ctxdot$ et
+  $c_1 `= c_2 `= \ctxdot$. Clairement $c_2'' `= \ctxdot$. 
+  
+  Pour la seconde partie, c'est direct par induction en utilisant la
+  première partie.
 \end{proof}
 
 \input{subset-typing-impl-correct}
