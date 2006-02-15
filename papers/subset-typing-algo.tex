@@ -22,11 +22,11 @@ typage algorithmique.
 
 Il nous a fallu changer quelque peu les règles pour obtenir le système
 algorithmique. En particulier, on a utilisé la fonction $\mu_0$ de \PVS{}
-\cite{PVS-Semantics:TR} renommée $\mualgo$ (figure \ref{fig:mualgo-definition})
+\cite{PVS-Semantics:TR} renommée $\mualgo{}$ (figure \ref{fig:mualgo-definition})
 ici pour opérer des
 \emph{décompréhensions}. Cette fonction efface les constructeurs de type
-sous-ensemble en tête d'un type, par exemple: $\mualgo(\mysubset{f}{\nat
-"->" \nat}{f~0 = 0}) = \nat "->" \nat$. On verra son utilité dans la suite.
+sous-ensemble en tête d'un type, par exemple: $\mualgo{\mysubset{f}{\nat
+"->" \nat}{f~0 = 0}} = \nat "->" \nat$. On verra son utilité dans la suite.
 
 \subsection{Notations}
 On note $\hnf{x}$ la mise en forme normale de tête de $x$ selon la
@@ -65,18 +65,18 @@ sera nécessaire pour la correction du typage:
   \end{prooftree}
 \end{proof}
 
-On a besoin d'un lemme sur l'opération $\mualgo$ définie figure
+On a besoin d'un lemme sur l'opération $\mualgo{}$ définie figure
 \ref{fig:mualgo-definition}.
 
-\begin{lemma}[$\mualgo$ et coercion]
+\begin{lemma}[$\mualgo{}$ et coercion]
   \label{mu-coercion}
-  Si $\talgo{`G}{T}{s}$ alors $\subalgo{`G}{T}{\mualgo(T)}$.
+  Si $\talgo{`G}{T}{s}$ alors $\subalgo{`G}{T}{\mualgo{T}}$.
 \end{lemma}
 
 \begin{proof}
-  Il suffit de suivre la définition de $\mualgo$. La mise en forme
+  Il suffit de suivre la définition de $\mualgo{}$. La mise en forme
   normale de tête est équivalente à l'utilisation de \irule{SubHnf} dans notre jugement de
-  coercion. $\mualgo$ est en fait l'application répétée de la règle \irule{SubSub}.
+  coercion. $\mualgo{}$ est en fait l'application répétée de la règle \irule{SubSub}.
 \end{proof}
 
 \begin{lemma}[Conservation des sortes par $\mu$]
@@ -324,15 +324,15 @@ dérivation possible la faisant intervenir.
 
 \typenva
 Tout d'abord quelques lemmes nécessaires pour la preuve:
-\begin{lemma}[Coercion et $\mualgo$]
+\begin{lemma}[Coercion et $\mualgo{}$]
   \label{coercion-mu}
   \quad
   \begin{itemize}
-  \item Si $\Pi x : X.Y \sub U$ alors $\mualgo(U) = \Pi x : X'.Y'$ et $X' \sub
+  \item Si $\Pi x : X.Y \sub U$ alors $\mualgo{U} = \Pi x : X'.Y'$ et $X' \sub
     X$, $Y \sub Y'$.
-  \item Si $\Sigma x : X.Y \sub U$ alors $\mualgo(U) = \Sigma x : X'.Y'$ et $X \sub
+  \item Si $\Sigma x : X.Y \sub U$ alors $\mualgo{U} = \Sigma x : X'.Y'$ et $X \sub
     X'$, $Y \sub Y'$.
-  \item Pour tout $S,U$, $S \sub \mualgo(U)$ \ssi~$S \sub U$.
+  \item Pour tout $S,U$, $S \sub \mualgo{U}$ \ssi~$S \sub U$.
   \end{itemize}
 \end{lemma}
 \begin{proof}
@@ -345,9 +345,9 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
   peut trouver dans la preuve (en partant de la racine) la première
   utilisation de la règle \irule{SubProof}. A partir de là, on cherche
   la première utilisation d'une règle autre que \irule{SubProof} ou 
-  \irule{SubSub}. On a une dérivation de $S' \suba \mualgo(U)$, on
+  \irule{SubSub}. On a une dérivation de $S' \suba \mualgo{U}$, on
   peut réappliquer les règles \irule{SubSub} oubliées précédemment 
-  pour obtenir la preuve de $S \suba \mualgo(U)$.
+  pour obtenir la preuve de $S \suba \mualgo{U}$.
 \end{proof}
 
 \begin{lemma}[Coercion et conversion]
@@ -682,18 +682,18 @@ On a besoin de quelques lemmes pour montrer que notre système où
 
 \begin{lemma}[$\beta$-equivalence et $\mualgo$]
   \label{beta-mu}
-  Si $X \sub Y$ et $\mualgo(Y) = \Sigma x : T.U$ alors $\mualgo(X) = \Sigma x : T'.U'$
+  Si $X \sub Y$ et $\mualgo{Y} = \Sigma x : T.U$ alors $\mualgo{X} = \Sigma x : T'.U'$
   et $T' \sub T$, $U' \sub U$.
-  Si $X \sub Y$ et $\mualgo(Y) = \Pi x : T.U$ alors $\mualgo(X) = \Pi x :
+  Si $X \sub Y$ et $\mualgo{Y} = \Pi x : T.U$ alors $\mualgo{X} = \Pi x :
   T'.U'$ et $T \sub T'$, $U' \sub U$.
 \end{lemma}
 \begin{proof}
   Par induction sur la dérivation de coercion, on fait le cas pour $\Sigma$.
   \begin{induction}  
-    \case{SubConv} Trivial, puisqu'on aura $\mualgo(X) = \mualgo(Y)$.
+    \case{SubConv} Trivial, puisqu'on aura $\mualgo{X} = \mualgo{Y}$.
 
-    \case{SubHnf} Trivial puisque pour tout $x$, $\mualgo(x) =
-    \mualgo(\hnf{x})$.
+    \case{SubHnf} Trivial puisque pour tout $x$, $\mualgo{x} =
+    \mualgo{\hnf{x}}$.
     
     \case{SubProd} Impossible, $\mualgo$ ne traversant pas les produits.
 
@@ -701,12 +701,12 @@ On a besoin de quelques lemmes pour montrer que notre système où
     \sub \Sigma x : T.U$.
     
     \case{SubLeft} Ici, $Y `= \mysubset{x}{V}{P}$, on peut donc déduire que
-    $\mualgo(Y) = \mualgo(V) = \Sigma x : T.U$. On 
+    $\mualgo{Y} = \mualgo{V} = \Sigma x : T.U$. On 
     applique l'hypothèse de récurrence avec $X \sub V$ et on obtient:
-    $\mualgo(X) = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo{X} = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
 
     \case{SubRight} Ici, $X `= \mysubset{x}{V}{P}$. Par induction, 
-    $\mualgo(V) = \mualgo(X) = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
+    $\mualgo{V} = \mualgo{X} = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
   \end{induction}
 \end{proof}
 
@@ -747,9 +747,9 @@ Il nous faut montrer des lemmes faisant intervenir la substitution pour
 pouvoir prouver la complétude.
 \begin{lemma}[Substitutivité de $\mualgo$]
   \label{substitutive-mu}
-  Si $\mualgo(T) = \Pi y : U.V$ alors $\mualgo(T[u/x]) = \Pi y :
+  Si $\mualgo{T} = \Pi y : U.V$ alors $\mualgo{T[u/x]} = \Pi y :
   U[u/x].V[u/x]$.
-  Si $\mualgo(T) = \Sigma y : U.V$ alors $\mualgo(T[u/x]) = \Sigma y : U[u/x].V[u/x]$.
+  Si $\mualgo{T} = \Sigma y : U.V$ alors $\mualgo{T[u/x]} = \Sigma y : U[u/x].V[u/x]$.
 \end{lemma}
 
 \begin{proof}
@@ -758,15 +758,15 @@ pouvoir prouver la complétude.
 
   Il suffit de suivre la définition de $\mualgo$.
   Si $T$ est de la forme $\mysubset{y}{V}{P}$ alors
-  on a $\mualgo(V) = \Pi y : U.V$ et par induction
-  $\mualgo(V[u/x]) = \Pi y : U[u/x].V[u/x]$.
-  Il s'ensuit directement que $\mualgo(T[u/x]) = \Pi y :
+  on a $\mualgo{V} = \Pi y : U.V$ et par induction
+  $\mualgo{V[u/x]} = \Pi y : U[u/x].V[u/x]$.
+  Il s'ensuit directement que $\mualgo{T[u/x]} = \Pi y :
   U[u/x].V[u/x]$.
 
-  Si $T$ est différent d'un type sous-ensemble alors $\mualgo(T) = T$.
+  Si $T$ est différent d'un type sous-ensemble alors $\mualgo{T} = T$.
   Donc $T \eqbr \Pi y : U.V$. Il s'ensuit que $T$ est de la forme $\Pi y
   : U'.W'$ et donc $T[u/x] = \Pi y : U'[u/x].V'[u/x] =
-  \mualgo(T[u/x])$. Par substitutivité de la conversion, il s'ensuit que 
+  \mualgo{T[u/x]}$. Par substitutivité de la conversion, il s'ensuit que 
   $\Pi y : U'[u/x].V'[u/x] \eqbr \Pi y : U[u/x].V[u/x]$.
 \end{proof}
 
@@ -827,8 +827,8 @@ pouvoir prouver la complétude.
     \case{App}
     On étudie le cas de l'application qui requiert un lemme supplémentaire.
     Par induction, on a $`G, `D[u/x] \typea f[u/x] : T[u/x]$ et
-    $`G, `D[u/x] \typea a[u/x] : A[u/x]$. Si $\mualgo(T) = \Pi y :
-    V.W$ alors $\mualgo(T[u/x]) = \Pi y : V[u/x].W[u/x]$ (lemme
+    $`G, `D[u/x] \typea a[u/x] : A[u/x]$. Si $\mualgo{T} = \Pi y :
+    V.W$ alors $\mualgo{T[u/x]} = \Pi y : V[u/x].W[u/x]$ (lemme
     \ref{substitutive-mu}). Par induction, on a aussi $`G, `D[u/x] \typea
     A[u/x],V[u/x] : s$. Enfin, par substitutivité de la coercion on a $A[u/x]
     \suba V[u/x]$. On peut donc appliquer \irule{App} pour obtenir 
@@ -950,7 +950,7 @@ pouvoir prouver la complétude.
     On a: 
     \begin{prooftree}
       \TAX{App}
-      {$\GD \seq f : F \quad \mualgo(F) = \Pi y : A. B$}
+      {$\GD \seq f : F \quad \mualgo{F} = \Pi y : A. B$}
       {$\GD \seq e : E \quad \GD \seq E, A : s$}
       {$E \sub A $}
       {$\GD \seq (f~e) : B[ e / y ]$}
@@ -959,9 +959,9 @@ pouvoir prouver la complétude.
     
     Par induction, $\Gr \typea f[u/x] : F' \suba F[u/x]$ et $\Gr \typea
     e[u/x] : E' \suba E[u/x]$ et $\Gr \typea E[u/x], A[u/x] : s$.
-    Comme $\mualgo(F) = \Pi y : A.B$, $\mualgo(F[u/x]) = \Pi y :
+    Comme $\mualgo{F} = \Pi y : A.B$, $\mualgo{F[u/x]} = \Pi y :
     A[u/x].B[u/x]$ et par transitivité de la coercion, $F' \suba \Pi y :
-    A[u/x].B[u/x]$. On en déduit que $\mualgo(F') = \Pi y : A'.B'$ avec
+    A[u/x].B[u/x]$. On en déduit que $\mualgo{F'} = \Pi y : A'.B'$ avec
     $A[u/x] \suba A'$ et $B' \suba B[u/x]$.
     Par substitutivité de la coercion, $E \suba A$ implique $E[u/x]
     \suba A[u/x]$. On applique la transitivité pour obtenir $E' \suba
@@ -971,7 +971,7 @@ pouvoir prouver la complétude.
     On peut donc appliquer \irule{App}:    
     \begin{prooftree}
       \TAXWide{App}
-      {$\GD \seq f[u/x] : F' \quad \mualgo(F') = \Pi y : A'. B'$}
+      {$\GD \seq f[u/x] : F' \quad \mualgo{F'} = \Pi y : A'. B'$}
       {$\GD \seq e[u/x] : E'$}
       {$\GD \seq E', A' : s \quad E' \sub A' $}
       {$\GD \seq (f~e)[u/x] : B'[ e[u/x] / y ]$}
@@ -1052,13 +1052,13 @@ système de typage vis-à-vis du système déclaratif.
     Par induction, $`E T, `G \typea f : T \suba \Pi x : V. W$ et
     $`E U, `G \subta u : U \sub V$.
     
-    Si $T \suba \Pi x : V.W$ alors $\mualgo(T) = \Pi x : V'.W'$ avec
+    Si $T \suba \Pi x : V.W$ alors $\mualgo{T} = \Pi x : V'.W'$ avec
     $V \suba V'$ et $W' \suba W$ (lemme \ref{beta-mu}).
 
     Par transitivité de la coercion: $U \suba V'$, on peut donc dériver 
     \begin{prooftree}
       \TAX{App}
-      {$`G \seq f : T \quad \mualgo(T) = \Pi x : V'. W'$}
+      {$`G \seq f : T \quad \mualgo{T} = \Pi x : V'. W'$}
       {$`G \seq u : U \quad `G \seq U, V' : s$}
       {$U \suba V'$}
       {$`G \seq (f u) : W' [ u / x ]$}

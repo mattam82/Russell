@@ -212,11 +212,11 @@
 \def\typemuiFig{
 \begin{figure}[ht]
   \begin{eqnarray*}
-    \muimpl'~(\mysubset{x}{U}{P})   & "=>" & \letml~(f, t) = \muimpl'~(\hnf{U})~\inml~(f `o
+    \muimplprim{\mysubset{x}{U}{P}}   & "=>" & \letml~(f, t) = \muimplprim{\hnf{U}}~\inml~(f `o
     \pi_1, t) \\
-    \muimpl'~(T)                        & "=>"  & (\sref{id}, T) \\
+    \muimplprim{T}                        & "=>"  & (\sref{id}, T) \\
     \\
-    \muimpl~(T) & = & \muimpl' (\hnf{T})
+    \muimpl{T} & = & \muimplprim{\hnf{T}}
   \end{eqnarray*}
   \caption{Définition de $\muimpl$}
   \label{fig:muimpl-definition}

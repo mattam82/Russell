@@ -273,7 +273,7 @@
     \typenva
     \begin{prooftree}
       \TAX{}
-      {$\GD \seq f : F \quad \mualgo(F) = \Pi y : A. B : s$}
+      {$\GD \seq f : F \quad \mualgo{F} = \Pi y : A. B : s$}
       {$\GD \seq e : E \quad `G \seq E, A : s$}
       {$E \sub A$}
       {$\GD \seq (f~e) : B [ e / y ]$}
@@ -301,7 +301,7 @@
     \begin{prooftree}
       \SAX{App}
       {$\Gr \seq f[u/x] : F[u/x]$}
-      {$\mualgo(F[u/x]) = \Pi y : A[u/x]. B[u/x] : s$}
+      {$\mualgo{F[u/x]} = \Pi y : A[u/x]. B[u/x] : s$}
       {$\Gr \seq e[u/x] : E[u/x]$}
       {$`G \seq E[u/x], A[u/x] : s$}
       {$E[u/x] \sub A[u/x]$}
@@ -405,7 +405,7 @@
     \begin{prooftree}
       \BAX{PiLeft}
       {$\tgen{\GD}{t}{S}$}
-      {$\mualgo(S) = `S y : T.U$}
+      {$\mualgo{S} = `S y : T.U$}
       {$\tgen{\GD}{\pi_1~t}{T}$}
       {}
     \end{prooftree}
@@ -413,7 +413,7 @@
     \begin{prooftree}
       \BAX{PiLeft}
       {$\tgen{\Gr}{t[u/x]}{S[u/x]}$}
-      {$\mualgo(S[u/x]) = (`S y : T.U)[u/x]$}
+      {$\mualgo{S[u/x]} = (`S y : T.U)[u/x]$}
       {$\tgen{\Gr}{\pi_1~t[u/x]}{T[u/x]}$}
       {}
     \end{prooftree}
@@ -439,7 +439,7 @@
     \begin{prooftree}
       \BAX{}
       {$\tgen{\GD}{t}{S}$}
-      {$\mualgo(S) = `S y : T.U$}
+      {$\mualgo{S} = `S y : T.U$}
       {$\tgen{\GD}{\pi_2~t}{U[\pi_1~t/y]}$}
       {}
     \end{prooftree}
@@ -447,7 +447,7 @@
     \begin{prooftree}
       \BAX{}
       {$\tgen{\Gr}{t[u/x]}{S[u/x]}$}
-      {$\mualgo(S[u/x]) = (`S y : T.U)[u/x]$}
+      {$\mualgo{S[u/x]} = (`S y : T.U)[u/x]$}
       {$\tgen{\Gr}{\pi_1~t[u/x]}{U[u/x][\pi_1~t[u/x]/y] = U[\pi_1~t/y][u/x]}$}
       {}
     \end{prooftree}
@@ -705,7 +705,7 @@ de la coercion, la transitivité.
     On a: 
     \begin{prooftree}
       \TAX{App}
-      {$\talgo{`G}{f}{F} \quad \mualgo(F) = \Pi y : A. B$}
+      {$\talgo{`G}{f}{F} \quad \mualgo{F} = \Pi y : A. B$}
       {$\talgo{`G}{e}{E} \quad \talgo{`G}{E, A}{s}$}
       {$E \sub A $}
       {$\talgo{`G}{(f~e)}{B[ e / y ]}$}

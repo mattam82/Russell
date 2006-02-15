@@ -1,6 +1,6 @@
 \newcommand{\AppAFull}[9][\Gamma]{
 \TAX{App}
-{$\tgen{#1}{#2}{#3} \quad \mualgo(#3) = \Pi #4 : #5. #6 : #7$}
+{$\tgen{#1}{#2}{#3} \quad \mualgo{#3} = \Pi #4 : #5. #6 : #7$}
 {$\tgen{#1}{#8}{#9} \quad \tgen{#1}{#9, #5}{#7'}$}
 {$\subalgo{#1}{#9}{#5} $}
 {$\tgen{#1}{(#2 #8)}{#6 [ #8 / #4 ]}$}
@@ -12,7 +12,7 @@
 \newcommand{\PiLeftAFull}[6][\Gamma]{
   \BAX{PiLeft}
   {$\tgen{#1}{#2}{#3}$}
-  {$\mualgo(#3) = `S #4 : #5.#6$}
+  {$\mualgo{#3} = `S #4 : #5.#6$}
   {$\tgen{#1}{\pi_1~#2}{#5}$}
   {}
 }
@@ -22,7 +22,7 @@
 \newcommand{\PiRightAFull}[6][\Gamma]{
   \BAX{PiRight}
   {$\tgen{#1}{#2}{#3}$}
-  {$\mualgo(#3) = `S #4 : #5.#6$}
+  {$\mualgo{#3} = `S #4 : #5.#6$}
   {$\tgen{#1}{\pi_2~#2}{#6[\pi_1~#2/#4]}$}
   {}
 }
@@ -102,10 +102,10 @@
 \def\typemuaFig{
   \begin{figure}[ht]
     \begin{eqnarray*}
-      \mualgo'(\mysubset{x}{U}{P}) & "=>" & \mualgo'(\downarrow{U}) \\
-      \mualgo'(x)                & "=>" & x \\
+      \mualgoprim{\mysubset{x}{U}{P}} & "=>" & \mualgoprim{\downarrow{U}} \\
+      \mualgoprim{x}                & "=>" & x \\
       \\
-      \mualgo(x) & "=>" & \mualgo' (\downarrow{x})
+      \mualgo{x} & "=>" & \mualgoprim{\downarrow{x}}
     \end{eqnarray*}
     \caption{Définition de $\mualgo$}
     \label{fig:mualgo-definition}
