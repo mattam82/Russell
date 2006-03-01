@@ -1,7 +1,8 @@
 Definition div_prop (a b q r : nat) := r < b /\ a = b * q + r.
-
-Recursive program mydiv (a : nat) { wf lt proof lt_wf } :
-  { b : nat | b <> O } -> { (q, r) : nat * nat | div_prop a b q r } :=
+Require Import Lt.
+Require Import Wf_nat.
+Recursive program mydiv (a : nat) using lt proof lt_wf  :
+  { b : nat | neq b O } -> { q & { r : nat * nat | div_prop a b q r } } :=
   fun { b : nat | b <> O } =>
     if lt_ge_dec a b
       then (q := O, a : { r : nat | div_prop a b q r })

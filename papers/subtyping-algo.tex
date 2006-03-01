@@ -57,15 +57,17 @@
 }
 
 \newcommand{\SubSubA}[1][\Gamma]{%
-\UAX{SubSub}
+\BAX{SubSub}
 {$\subalgoimpl{#1}{c}{U}{T}$}
+{$\talgo{#1}{\mysubset{x}{U}{P}}{\Set}$}
 {$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
-{$T = \hnf{T} `^ \hnf{T} "/=" \{|\}$}
+{$T = \hnf{T}$}
 }
 
 \newcommand{\SubSubAs}[1][\Gamma]{%
-\UAX{SubSub}
+\BAX{SubSub}
 {$\subalgoimpl{#1}{c}{U}{T}$}
+{$\talgo{#1}{\mysubset{x}{U}{P}}{\Set}$}
 {$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
 {}
 }

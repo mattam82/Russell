@@ -31,6 +31,9 @@
       U'.Q}{`G}}{c[\eltpit~\ctxdot]}{\ex{\ip{Q}{`G, x :
         U'}[c[\eltpit~\ctxdot]/x]}}
   = c'$.
+
+  La confluence locale suffit puisqu'il n'est pas possible d'appliquer
+  d'autres règles que ces deux là si ces deux là sont applicables.
 \end{proof}
 
 On peut donc raisonner comme ceci: si l'on parvient à construire une
@@ -57,10 +60,9 @@ donne le même terme de coercion.
 
   \begin{prooftree}
     \AXC{$\subimpl{`G}{c' `= \ctxdot}{U}{U}$}
-    \UIC{$\subimpl{`G}{d = c'[\eltpit~\ctxdot]}{U}{U}$}
+    \UIC{$\subimpl{`G}{d = c'[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{U}$}
     \UIC{$\subimpl{`G}{c = \elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{d}
-        {\ex{\ip{P}{`G, x : U}[d/x]}}}{\mysubset{x}{U}{P}}{U}$}
-    \UIC{$\subimpl{`G}{c}{\hnf{A} = \mysubset{x}{U}{P}}{\mysubset{x}{U}{P}}$}
+        {\ex{\ip{P}{`G, x : U}[d/x]}}}{\hnf{A} = \mysubset{x}{U}{P}}{\mysubset{x}{U}{P}}$}
     \UIC{$\subimpl{`G}{c}{A}{A}$}
   \end{prooftree}
 
@@ -89,7 +91,7 @@ donne le même terme de coercion.
   \label{coerce-sorting}
   Si $\talgo{`G}{T}{s_1}$, $\talgo{`G}{U}{s_2}$ et
   $\subalgo{`G}{T}{U}$ alors $s_1 = s_2$ et la taille des dérivations de
-  sortage est plus petite que la taille de la dérivation de coercion.
+  sortage $\talgo{`G}{T,U}{s}$ est plus petite que la taille de la dérivation de coercion.
 \end{lemma}
 \begin{proof}
   Par induction sur la dérivation de coercion.

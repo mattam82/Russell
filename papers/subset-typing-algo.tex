@@ -40,6 +40,42 @@ lorsqu'il est dérivable du contexte.
 \typemuaFig
 \subtaFig
 
+Voici quelques propriétés élémentaires du système:
+
+\begin{lemma}[Bonne formation des contextes]
+  \label{wf-contexts-a}
+  Si $`G \type t : T$ alors $\typewf `G$.
+\end{lemma}
+\begin{proof}
+  \inductionon{typing-decl}
+\end{proof}
+
+\begin{fact}[Inversion du jugement de bonne formation]
+  \label{inversion-wf-a}
+  Si $\typewf `G, x : U$ alors il existe $s$, $`G \type U : s$ et $s `: \setproptype$.
+\end{fact}
+
+\begin{lemma}[Affaiblissement]
+  \label{weakening-a}
+  Si $`G, `D \type t : T$ alors pour tout $x : S `; `G, `D$ tel que
+  $\wf `G, x : S, `D$ on a $`G, x : S, `D \type t : T$
+\end{lemma}
+
+\begin{proof}
+  \begin{induction}[typing-decl]
+    \case{PropSet} Trivial.
+
+    \case{Var}
+    On a $x : S `; `G, `D$, donc $`G, x : S, `D \type y : T$ est toujours dérivable.
+    
+    \case{Prod}
+    Par induction $`G, x : S, `D \type T : s1$ et $`G, x : S, `D,
+    y : T \type U : s2$. On applique \irule{Prod} pour obtenir 
+    $`G, x : S, `D \type \Pi x : T.U : s2$. De même pour le reste des règles.
+  \end{induction}
+\end{proof}  
+
+
 \subsection{Correction}
 On montre tout d'abord la correction de la coercion algorithmique qui
 sera nécessaire pour la correction du typage:
@@ -79,14 +115,14 @@ On a besoin d'un lemme sur l'opération $\mualgo{}$ définie figure
   coercion. $\mualgo{}$ est en fait l'application répétée de la règle \irule{SubSub}.
 \end{proof}
 
-\begin{lemma}[Conservation des sortes par $\mu$]
+\begin{lemma}[Conservation des sortes par $\mualgo{}$]
   \label{mu-sorts}
-  Si $\talgo{`G}{S}{s}$ alors $\talgo{`G}{\mu~S}{s}$
+  Si $\talgo{`G}{S}{s}$ alors $\talgo{`G}{\mualgo{S}}{s}$
 \end{lemma}
 
 \begin{proof}
-  Par le simple fait que si $S = \mysubset{x}{U}{P}$ alors $S : \Set$ et
-  $U : \Set$ (par \irule{Subset}), sinon $S = \mu~S$.
+  Par le simple fait que si $S = \mysubset{x}{U}{P}$ et
+  $\talgo{G}{S}{s}$ alors $S : \Set$ et $U : \Set$ (par \irule{Subset}), sinon $S = \mualgo{S}$.
 \end{proof}
 
 \begin{theorem}[Correction du typage]
@@ -110,7 +146,7 @@ On a besoin d'un lemme sur l'opération $\mualgo{}$ définie figure
     lemme \ref{mu-coercion} et la correction de la coercion.
     On peut donc dériver $`G \typed f : \Pi x : V.W$ à l'aide de la règle
     \irule{Coerce}.
-    Par le lemme \ref{correct-coercion} appliqué à $\talgo{`G}{U}{V}$
+    Par le lemme \ref{correct-coercion} appliqué à $\subalgo{`G}{U}{V}$
     et l'hypothèse $`G \typed u : U$, on obtient $`G \typed u : V$ par \irule{Coerce}.
     Donc, par \irule{App}, on a bien $`G \typed f u : W[u/x]$.
     
@@ -170,13 +206,6 @@ et sans la règle \irule{SubTrans}.
 On va montrer que les deux systèmes de coercion sont équivalents vis-à-vis de la conversion. On montrera plus tard pourquoi on peut éliminer la
 règle de transitivité.
 
-On rappelle qu'on considère qu'on peut appliquer la normalisation de
-tête \irule{ConvHnf} avant toute
-application d'une règle de typage ou coercion. Ainsi on peut très bien
-dériver $((\lambda x : \Set.x)~\nat) \suba \mysubset{x}{\nat}{P}$ puisque 
-$\hnf{((\lambda x : \Set.x)~\nat)} = \nat$ et $\nat \suba
-\mysubset{x}{\nat}{P}$ par \irule{SubProof} et \irule{SubConv}.
-
 Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
 \begin{lemma}
   \label{conversion-pi}
@@ -189,26 +218,24 @@ Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
   \eqbr U'$.
 \end{lemma}
 
-La restriction montre que notre notion de coercion est correcte
-vis-à-vis du typage. On peut dériver les mêmes jugements dans des
-contextes où les variables ont des types équivalents. Ici la taille des
-dérivations ne change pas.
+L'affaiblissement montre que notre notion de coercion joue un rôle
+similaire à la seule conversion vis-à-vis du typage. On peut dériver les mêmes jugements dans des
+contextes où les variables ont des types équivalents par la coercion.
+Ici la taille des dérivations ne change pas.
 
-\begin{lemma}[Restriction]
+\begin{lemma}[Affaiblissement]
   \label{narrowing-a}
   \[ `G \seq S, S' : s, S' \sub S "=>" 
   \left\{ \begin{array}{lcl}
       \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
       & `^{} & \\
-      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T' \suba T 
+      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T \text{ si $T `: \setproptype$} \\
+      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T' \suba T \text{ sinon }
     \end{array}
   \right. \]
 \end{lemma}
 
 \begin{proof}
-  On peut remarquer que si $T `: \setproptype$ alors $T'$ doit être égal
-  à $T$ par définition de la coercion.
-
   Par induction sur la taille de la dérivation de typage ou de bonne formation.
     
   \begin{induction}
@@ -262,9 +289,10 @@ dérivations ne change pas.
     \case{Prod} 
     Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
     y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
-    $`G, x : S' \type \Pi x : T.U : s2$. De même pour le reste des règles.
+    $`G, x : S', `D \type \Pi x : T.U : s3$. De même, direct par induction pour le reste des règles.
   \end{induction}
 \end{proof}
+
 
 On peut maintenant montrer:
 \begin{lemma}[Conservation de la conversion par coercion]
@@ -272,7 +300,8 @@ On peut maintenant montrer:
   Si $\talgo{`G}{T, U}{s}$ et $T \eqbr U$ alors $\subalgo{`G}{T}{U}$.
 \end{lemma}
 \begin{proof}
-  Par induction sur la forme de $\hnf{T}$.
+  Par induction sur le nombre de constructeurs $\Pi, \Sigma, \{|\}$ dans
+  la forme normale complète de $T$.
   
   \def\seq{\suba}
   
@@ -282,9 +311,8 @@ On peut maintenant montrer:
     d'après le lemme \ref{conversion-pi}.
     On a $\talgo{`G, x : X}{Y}{s}$ et $\talgo{`G, x : V}{W}{s}$. 
     Par induction $\subalgo{`G}{V}{X}$.
-    On peut donc appliquer le lemme de restriction pour obtenir:
-    $\talgo{`G, x : V}{Y, W}{s}$ de taille inférieure ou égale aux
-    dérivations de $\talgo{\hnf{T}}{\hnf{U}}{s}$.
+    On peut donc appliquer le lemme de restriction pour obtenir
+    $\talgo{`G, x : V}{Y, W}{s}$.
     On applique l'hypothèse d'induction pour obtenir $\subalgo{`G, x : V}{Y}{W}$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
@@ -313,10 +341,7 @@ On peut maintenant montrer:
 
 Il n'y a pas de problème d'identification de sortes dans ce système,
 contrairement au système $\lambda~C_\leq$ de Gang Chen \cite{ChenPhD},
-puisqu'on n'a pas de cumulativité. Le seul fait que les arguments sont
-tous les deux sortés avec la même sorte
-avant de dériver le jugement de coercion nous assure que l'on ne fera
-pas d'identification erronée.
+puisqu'on n'a pas de cumulativité. 
 
 On va maintenant montrer que la règle \irule{SubTrans} est admissible
 dans notre système algorithmique. On montre ceci en l'éliminant de toute
@@ -336,7 +361,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
   \end{itemize}
 \end{lemma}
 \begin{proof}
-  Par induction sur les dérivations de $\suba$ et la définition de $\mualgo$.
+  Par induction sur les dérivations de $\suba$ et la définition de $\mualgo{}$.
 
   Dans le dernier cas, de gauche à droite on construit la dérivation en
   ajoutant des applications de \irule{SubProof} et dans l'autre sens on
@@ -358,7 +383,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 \begin{proof}
   Par simple inspection des règles on voit que le jugement ne peut
   distinguer deux termes $\beta$-équivalents (ils ont forcément les
-  mêmes formes normales de tête).
+  mêmes constructeurs de tête appliqués à des termes équivalents).
 \end{proof}
 
 \begin{lemma}[Coercion et formes normales de tête]
@@ -388,235 +413,145 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 \end{lemma}
 
 \begin{proof} 
-  %\TODO{Dans \cite{Pierce:TypeSystems}, voir p. 420}
   On procède par élimination de la règle \irule{SubTrans} dans toute
   dérivation de $S \sub U$.
   Par induction sur l'ordre lexicographique $< depth(S \sub T) +
   depth(T \sub U), depth(S \sub U) >$.
-  On peut supposer sans perte de généralité qu'il n'y a pas
+  On peut supposer qu'il n'y a pas
   d'applications successive de la règle \irule{SubHnf} dans nos
-  dérivations, par idempotence de la mise en forme normale de tête.
+  dérivations, par idempotence de la mise en forme normale de tête et
+  les conditions $T = \hnf{T} `^ U = \hnf{U}$ de cette règle.
   
   \begin{induction}
-
-    \casetwo{SubConv}{*}\quad
-    \begin{prooftree}
-      \AXC{$S \eqbr T$}
-      \UIC{$S \sub T$}
-      \AXC{$T \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-    
-    Par le lemme \ref{coercion-conversion}, on élimine trivialement \irule{SubTrans}.
-
-    \casetwo{SubHnf}{*}\quad
-    \begin{prooftree}
-      \AXC{$\hnf{S}~\sub \hnf{T}$}
-      \UIC{$S \sub T$}
-      \AXC{$T \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-
-    Par le lemme \ref{coercion-hnf}, il existe une dérivation de 
-    $\hnf{T} \sub \hnf{U}$ de taille plus petite ou égale à la
-    dérivation de $T \sub U$ on peut donc se ramener au cas:
-
-    \begin{prooftree}
-      \AXC{$\hnf{S}~\sub \hnf{T}$}
-      \UIC{$S \sub T$}
-      \AXC{$\hnf{T} \sub \hnf{U}$}
-      \UIC{$T \sub U$}
-      \BIC{$S \sub U$}
-    \end{prooftree}
-
-    
-    Par cas sur la dérivation de $\hnf{S} \sub \hnf{T}$
-    \begin{induction}
-      \case{SubConv}\quad
-      \begin{prooftree}
-        \AXC{$\hnf{S} \eqbr \hnf{T}$}
-        \UIC{$\hnf{S}~\sub \hnf{T}$}
-        \UIC{$S \sub T$}
-        \AXC{$\hnf{T} \sub \hnf{U}$}
-        \UIC{$T \sub U$}
-        \BIC{$S \sub U$}
-      \end{prooftree}
-      
-      Par le lemme \ref{coercion-conversion}.
-      
-      \case{SubProd}\quad
-      \begin{prooftree}
-        \AXC{$C \sub A$}
-        \AXC{$B \sub D$}
-        \BIC{$\hnf{S}=\Pi x : A.B~\sub \Pi x : C.D = \hnf{T}$}
-        \UIC{$S \sub T$}
-        \AXC{$\hnf{T} = \Pi x : C.D \sub \hnf{U}$}
-        \UIC{$T \sub U$}
-        \BIC{$S \sub U$}
-      \end{prooftree}
-    
-      Par cas sur la dérivation de $\Pi x : C.D \sub \hnf{U}$.
-      \begin{induction}
-        \case{SubConv} Trivial.
-        \case{SubProd} Alors on a
-        \begin{prooftree}
-          \AXC{$E \sub C$}
-          \AXC{$D \sub F$}
-          \BIC{$\Pi x : C.D \sub \Pi x : E.F$}
-        \end{prooftree}
-        
-        On a donc la dérivation:
-        \begin{prooftree}
-          \AXC{$E \sub C$}\AXC{$C \sub A$}
-          \BIC{$E \sub A$}
-          
-          \AXC{$B \sub D$}\AXC{$D \sub F$}
-          \BIC{$B \sub F$}
-          \BIC{$\hnf{S} = \Pi x : A.B \sub \Pi x : E.F = \hnf{U}$}
-          \UIC{$S \sub U$}
-        \end{prooftree}
-        
-        La taille des dérivations de $E \sub C$, $C \sub A$ et $B \sub
-        D$, $D \sub F$ étant plus
-        petites que $S \sub T$ et $T \sub U$, on élimine bien la transitivité dans ce cas.
-
-        \case{SubProof} On a:
-        \begin{prooftree}
-          \AXC{$\Pi x : C.D \sub E$}
-          \UIC{$\Pi x : C.D \sub \mysubset{y}{E}{P}$}
-        \end{prooftree}
-
-        Par induction, on a:
-
-        \begin{prooftree}
-          \AXC{$\Pi x : A.B \sub \Pi x : C.D$}
-          \AXC{$\Pi x : C.D \sub E$}
-          \BIC{$\Pi x : A.B \sub E$}          
-          \UIC{$\hnf{S} = \Pi x : A.B \sub \mysubset{y}{E}{P} = \hnf{U}$}
-          \UIC{$S \sub U$}
-        \end{prooftree}
-        
-        Car $\Pi x : C.D \sub E$ est une dérivation plus petite que $T
-        \sub U$.
-      \end{induction}
-            
-      \case{SubSigma} De façon équivalente au produit.
-    
-      \case{SubProof}\quad
-      \begin{prooftree}
-        \AXC{$\hnf{S} \sub C$}
-        \UIC{$\hnf{S}~\sub \mysubset{y}{C}{P} = \hnf{T}$}
-        \UIC{$S \sub T$}
-        \AXC{$\mysubset{y}{C}{P} = \hnf{T} \sub \hnf{U}$}
-        \UIC{$T \sub U$}
-        \BIC{$S \sub U$}
-      \end{prooftree}
-      Encore une fois, par cas sur la dérivation de $\mysubset{y}{C}{P}
-      = \hnf{T} \sub \hnf{U}$:
-      \begin{induction}
-        \case{SubConv} Trivial.
-        \case{SubSub} On a:
-        \begin{prooftree}
-          \AXC{$C \sub \hnf{U}$}
-          \UIC{$\mysubset{y}{C}{P} = \hnf{T} \sub \hnf{U}$}
-        \end{prooftree}
-        
-        Par induction, on peut donc dériver:
-        \begin{prooftree}
-          \AXC{$\hnf{S} \sub C$}
-          \AXC{$C \sub \hnf{U}$}
-          \BIC{$\hnf{S} \sub \hnf{U}$}
-          \UIC{$S \sub U$}
-        \end{prooftree}
-        
-        Les dérivations $\hnf{S} \sub C$ et $C \sub \hnf{U}$ étant bien
-        plus petites que $S \sub T$ et $T \sub U$.     
-      \end{induction}
-      
-      \case{SubSub} De même:
-      \begin{prooftree}
-        \AXC{$A \sub \hnf{T}$}
-        \UIC{$\hnf{S} = \mysubset{y}{A}{P}~\sub \hnf{T}$}
-        \UIC{$S \sub T$}
-        \AXC{$\hnf{T} \sub \hnf{U}$}
-        \UIC{$T \sub U$}
-        \BIC{$S \sub U$}
-      \end{prooftree}
-
-      Se réecrit en:
-      \begin{prooftree}
-        \AXC{$A \sub \hnf{T}$}
-        \AXC{$\hnf{T} \sub \hnf{U}$}
-        \BIC{$A \sub \hnf{U}$}
-        \UIC{$\hnf{S} = \mysubset{y}{A}{P}~\sub \hnf{U}$}
-        \UIC{$S \sub U$}
-      \end{prooftree}
-    \end{induction}
+  \casetwo{SubConv}{*}\quad
+  \begin{prooftree}
+    \AXC{$S \eqbr T$}
+    \UIC{$S \sub T$}
+    \AXC{$T \sub U$}
+    \BIC{$S \sub U$}
+  \end{prooftree}
   
-    On peut faire le même raisonnement par cas sur la dérivation de
-    $\hnf{T} \sub \hnf{U}$. On peut donc se restreindre aux cas ou l'on
-    n'utilise plus la règle \irule{SubHnf} dans les prémisses de \irule{SubConv}.
-        
-    Les cas restants se montrent de façon similaire à leurs équivalents
-    dans la preuve pour le cas \irule{SubHnf}. Par exemple pour le
-    produit:
-
+  Par le lemme \ref{coercion-conversion}, on élimine trivialement \irule{SubTrans}.
+  
+  \casetwo{SubHnf}{*}\quad
+  \begin{prooftree}
+    \AXC{$\hnf{S}~\sub \hnf{T}$}
+    \UIC{$S \sub T$}
+    \AXC{$T \sub U$}
+    \BIC{$S \sub U$}
+  \end{prooftree}
+  
+  Par le lemme \ref{coercion-hnf}, il existe une dérivation de 
+  $\hnf{T} \sub \hnf{U}$ de taille plus petite ou égale à la
+  dérivation de $T \sub U$ on peut donc se ramener au cas:
+  
+  \begin{prooftree}
+    \AXC{$\hnf{S}~\sub \hnf{T}$}
+    \UIC{$S \sub T$}
+    \AXC{$\hnf{T} \sub \hnf{U}$}
+    \UIC{$T \sub U$}
+    \BIC{$S \sub U$}
+  \end{prooftree}
     
-    \case{SubProd}\quad
+  Par application de l'hypothèse d'induction on a une dérivation de 
+  $S \sub U$.
+  
+  On peut faire le même raisonnement si la dérivation de $T \sub U$ se
+  termine par une application de \irule{SubHnf}.
+  On peut donc se restreindre aux cas où l'on
+  n'utilise ni la règle \irule{SubHnf} ni la règle \irule{SubConv}
+  dans les prémisses.
+  
+  \case{SubProd}\quad
+  \begin{prooftree}
+    \AXC{$C \sub A$}
+    \AXC{$B \sub D$}
+    \BIC{$\Pi x : A.B \sub \Pi x : C.D$}
+    \AXC{$\Pi x : C.D \sub U$}
+    \BIC{$\Pi x : A.B \sub U$}
+  \end{prooftree}
+
+  On n'a seulement à traiter le cas ou $\Pi x : C.D \sub U$ est dérivé par
+  \irule{SubProd} ou \irule{SubProof}.
+  \begin{induction}
+    \case{SubProd} Alors on a
     \begin{prooftree}
-      \AXC{$C \sub A$}
-      \AXC{$B \sub D$}
-      \BIC{$\Pi x : A.B \sub \Pi x : C.D$}
-      \AXC{$\Pi x : C.D \sub U$}
-      \BIC{$\Pi x : A.B \sub U$}
+      \AXC{$E \sub C$}
+      \AXC{$D \sub F$}
+      \BIC{$\Pi x : C.D \sub \Pi x : E.F$}
+    \end{prooftree}
+    
+    On a donc la dérivation:
+    \begin{prooftree}
+      \AXC{$E \sub C$}\AXC{$C \sub A$}
+      \BIC{$E \sub A$}
+      
+      \AXC{$B \sub D$}\AXC{$D \sub F$}
+      \BIC{$B \sub F$}
+      \BIC{$S = \Pi x : A.B \sub \Pi x : E.F = U$}
+    \end{prooftree}
+    
+    La taille des dérivations de $E \sub C$, $C \sub A$ et $B \sub
+    D$, $D \sub F$ étant plus
+    petites que $\Pi x : A.B \sub \Pi x : C.D$ et $\Pi x : C.D \sub
+    \Pi x : E.F$, on élimine bien la transitivité dans ce cas.
+
+    \case{SubProof} On a:
+    \begin{prooftree}
+      \AXC{$\Pi x : C.D \sub E$}
+      \UIC{$\Pi x : C.D \sub \mysubset{y}{E}{P}$}
     \end{prooftree}
 
-    On n'a seulement à traiter le cas ou $\Pi x : C.D \sub U$ est dérivé par
-    \irule{SubProd} ou \irule{SubProof}.
-    \begin{induction}
-      \case{SubProd} Alors on a
-        \begin{prooftree}
-          \AXC{$E \sub C$}
-          \AXC{$D \sub F$}
-          \BIC{$\Pi x : C.D \sub \Pi x : E.F$}
-        \end{prooftree}
-        
-        On a donc la dérivation:
-        \begin{prooftree}
-          \AXC{$E \sub C$}\AXC{$C \sub A$}
-          \BIC{$E \sub A$}
-          
-          \AXC{$B \sub D$}\AXC{$D \sub F$}
-          \BIC{$B \sub F$}
-          \BIC{$S = \Pi x : A.B \sub \Pi x : E.F = U$}
-        \end{prooftree}
-        
-        La taille des dérivations de $E \sub C$, $C \sub A$ et $B \sub
-        D$, $D \sub F$ étant plus
-        petites que $\Pi x : A.B \sub \Pi x : C.D$ et $\Pi x : C.D \sub
-        \Pi x : E.F$, on élimine bien la transitivité dans ce cas.
+    Par induction, on a:
 
-        \case{SubProof} On a:
-        \begin{prooftree}
-          \AXC{$\Pi x : C.D \sub E$}
-          \UIC{$\Pi x : C.D \sub \mysubset{y}{E}{P}$}
-        \end{prooftree}
-
-        Par induction, on a:
-
-        \begin{prooftree}
-          \AXC{$\Pi x : A.B \sub \Pi x : C.D$}
-          \AXC{$\Pi x : C.D \sub E$}
-          \BIC{$\Pi x : A.B \sub E$}          
-          \UIC{$S = \Pi x : A.B \sub \mysubset{y}{E}{P} = U$}
-        \end{prooftree}
-        
-        Car $\Pi x : C.D \sub E$ est une dérivation plus petite que $T
-        \sub U$.
-      \end{induction}
-
+    \begin{prooftree}
+      \AXC{$\Pi x : A.B \sub \Pi x : C.D$}
+      \AXC{$\Pi x : C.D \sub E$}
+      \BIC{$\Pi x : A.B \sub E$}          
+      \UIC{$S = \Pi x : A.B \sub \mysubset{y}{E}{P} = U$}
+    \end{prooftree}
     
+    Car $\Pi x : C.D \sub E$ est une dérivation plus petite que $T
+    \sub U$.
   \end{induction}
+  
+  \case{SubSigma} De façon équivalente au produit.
+  
+  \case{SubProof}
+  \begin{prooftree}
+    \AXC{$S \sub C$}
+    \UIC{$S \sub T = \mysubset{y}{C}{P}$}
+    \AXC{$T \sub U$}
+    \BIC{$S \sub U$}
+  \end{prooftree}
+  
+  Encore une fois, par cas sur la dérivation de $\mysubset{y}{C}{P}
+  = T \sub U$:
+  \begin{induction}
+    \case{SubConv} Trivial.
+    \case{SubSub} On a:
+    \begin{prooftree}
+      \AXC{$C \sub U$}
+      \UIC{$\mysubset{y}{C}{P} = T \sub U$}
+    \end{prooftree}
+    
+    Par induction, on obtient directement $S \sub U$ avec les
+    dérivations de $S \sub C$ et $C \sub U$.     
+    
+    \case{SubProof}
+    On a:
+    \begin{prooftree}
+      \AXC{$T \sub D$}
+      \UIC{$\mysubset{y}{C}{P} = T \sub \mysubset{y}{D}{Q} = U$}
+    \end{prooftree}
+    
+    On a donc une dérivation de $S \sub D$ par application de
+    l'hypothèse d'induction. On en déduit une dérivation de $S \sub
+    \mysubset{y}{D}{Q} = U$ par \irule{SubProof}.
+  \end{induction}
+  
+  \case{SubSub} De même.
+\end{induction}
 \end{proof}
 
 \begin{corrolary}[Complétude de la coercion]
@@ -672,15 +607,15 @@ notre théorème est le suivant:
 $`G \typed t : T "=>" `G \typea t : U \suba T$. Le typage algorithmique
 assigne bien un seul type à un terme $t$ mais comme on a des coercions, le
 type inféré $U$ peut être un peu différent du type $T$. Dans notre cas
-particulier $U$ sera certainement un type moins riche que $T$ (par
+particulier $U$ sera peut-être un type moins riche que $T$ (par
 exemple $\nat$ par rapport à $\mysubset{x}{\nat}{P}$). Lorsque l'on
 développera des programmes, on donnera une spécification forte et l'on
 fera une coercion entre le type inféré et la spécification pour obtenir
 au final (après réécriture dans \Coq) un terme du type $T$ le plus riche.
 On a besoin de quelques lemmes pour montrer que notre système où
-\irule{Coerce} a été éliminé est complet:
+la règle \irule{Coerce} a été éliminée est complet:
 
-\begin{lemma}[$\beta$-equivalence et $\mualgo$]
+\begin{lemma}[$\mualgo{}$ et types produits et sommes]
   \label{beta-mu}
   Si $X \sub Y$ et $\mualgo{Y} = \Sigma x : T.U$ alors $\mualgo{X} = \Sigma x : T'.U'$
   et $T' \sub T$, $U' \sub U$.
@@ -695,57 +630,24 @@ On a besoin de quelques lemmes pour montrer que notre système où
     \case{SubHnf} Trivial puisque pour tout $x$, $\mualgo{x} =
     \mualgo{\hnf{x}}$.
     
-    \case{SubProd} Impossible, $\mualgo$ ne traversant pas les produits.
+    \case{SubProd} Impossible, $\mualgo{}$ ne traversant pas les produits.
 
     \case{SubSigma} Direct, on a une dérivation de $\Sigma x : T'. U'
     \sub \Sigma x : T.U$.
     
-    \case{SubLeft} Ici, $Y `= \mysubset{x}{V}{P}$, on peut donc déduire que
+    \case{SubProof} Ici, $Y `= \mysubset{x}{V}{P}$, on peut donc déduire que
     $\mualgo{Y} = \mualgo{V} = \Sigma x : T.U$. On 
     applique l'hypothèse de récurrence avec $X \sub V$ et on obtient:
     $\mualgo{X} = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
 
-    \case{SubRight} Ici, $X `= \mysubset{x}{V}{P}$. Par induction, 
+    \case{SubSub} Ici, $X `= \mysubset{x}{V}{P}$. Par induction, 
     $\mualgo{V} = \mualgo{X} = \Sigma x : T'.U' `^ T' \sub T `^ U' \sub U$.
   \end{induction}
 \end{proof}
 
-\begin{lemma}[Bonne formation des contextes]
-  \label{wf-contexts-a}
-  Si $`G \type t : T$ alors $\typewf `G$.
-\end{lemma}
-\begin{proof}
-  \inductionon{typing-decl}
-\end{proof}
-
-\begin{fact}[Inversion du jugement de bonne formation]
-  \label{inversion-wf-a}
-  Si $\typewf `G, x : U$ alors il existe $s$, $`G \type U : s$ et $s `: \setproptype$.
-\end{fact}
-
-\begin{lemma}[Affaiblissement]
-  \label{weakening-a}
-  Si $`G, `D \type t : T$ alors pour tout $x : S `; `G, `D$ tel que
-  $\wf `G, x : S, `D$, $`G, x : S, `D \type t : T$
-\end{lemma}
-
-\begin{proof}
-  \begin{induction}[typing-decl]
-    \case{PropSet} Trivial.
-
-    \case{Var}
-    On a $x : S `; `G, `D$, donc $`G, x : S, `D \type y : T$ est toujours dérivable.
-    
-    \case{Prod}
-    Par induction $`G, x : S, `D \type T : s1$ et $`G, x : S, `D,
-    y : T \type U : s2$. On applique \irule{Prod} pour obtenir 
-    $`G, x : S, `D \type \Pi x : T.U : s2$. De même pour le reste des règles.
-  \end{induction}
-\end{proof}  
-
 Il nous faut montrer des lemmes faisant intervenir la substitution pour
 pouvoir prouver la complétude.
-\begin{lemma}[Substitutivité de $\mualgo$]
+\begin{lemma}[Substitutivité de $\mualgo{}$]
   \label{substitutive-mu}
   Si $\mualgo{T} = \Pi y : U.V$ alors $\mualgo{T[u/x]} = \Pi y :
   U[u/x].V[u/x]$.
@@ -754,20 +656,19 @@ pouvoir prouver la complétude.
 
 \begin{proof}
   On montre la propriété pour les produits, la preuve est similaire pour
-  les sommes. Par induction sur la taille de $T$.
+  les sommes. Par induction sur le nombre de constructeurs $\Pi, \Sigma,
+  \{|\}$ dans la forme normale complète de $T$.
 
-  Il suffit de suivre la définition de $\mualgo$.
-  Si $T$ est de la forme $\mysubset{y}{V}{P}$ alors
+  Il suffit de suivre la définition de $\mualgo{}$.
+  Si $\hnf{T}$ est de la forme $\mysubset{y}{V}{P}$ alors
   on a $\mualgo{V} = \Pi y : U.V$ et par induction
   $\mualgo{V[u/x]} = \Pi y : U[u/x].V[u/x]$.
   Il s'ensuit directement que $\mualgo{T[u/x]} = \Pi y :
   U[u/x].V[u/x]$.
 
-  Si $T$ est différent d'un type sous-ensemble alors $\mualgo{T} = T$.
-  Donc $T \eqbr \Pi y : U.V$. Il s'ensuit que $T$ est de la forme $\Pi y
-  : U'.W'$ et donc $T[u/x] = \Pi y : U'[u/x].V'[u/x] =
-  \mualgo{T[u/x]}$. Par substitutivité de la conversion, il s'ensuit que 
-  $\Pi y : U'[u/x].V'[u/x] \eqbr \Pi y : U[u/x].V[u/x]$.
+  Si $\hnf{T}$ est différent d'un type sous-ensemble alors $\mualgo{T} = \hnf{T}$.
+  On a alors $\hnf{T} = \Pi y : U.V$ et donc $\hnf{T[u/x]} = \Pi y : U[u/x].V[u/x] =
+  \mualgo{T[u/x]}$.
 \end{proof}
 
 \begin{lemma}[Substitutivité du typage]
@@ -820,9 +721,9 @@ pouvoir prouver la complétude.
     Par induction  $`G, `D[u/x] \typea T[u/x] : s_1[u/x]$ et
     $`G, `D[u/x], y : T[u/x] \typea M[u/x] : s_2[u/x]$. 
     On peut appliquer \irule{Prod} pour obtenir $`G, `D[u/x] \typea \Pi
-    y : T[u/x].M[u/x] : s_2[u/x]$ soit $`G, `D[u/x] \typea (\Pi y :
-    T.M)[u/x] : s_2[u/x]$.
-    De façon similaire pour les autres cas.
+    y : T[u/x].M[u/x] : s_2$ soit $`G, `D[u/x] \typea (\Pi y :
+    T.M)[u/x] : s_2$.
+    De façon similaire pour les autres constructeurs de types.
 
     \case{App}
     On étudie le cas de l'application qui requiert un lemme supplémentaire.
@@ -838,7 +739,7 @@ pouvoir prouver la complétude.
 
     \case{PiLeft}
     Par induction on a $\talgo{`G, `D[u/x]}{t[u/x]}{S[u/x]}$, et par
-    substitutivité de $\mualgo$ on a aussi $\mualgo{S[u/x]} = \Sigma y :
+    substitutivité de $\mualgo{}$ on a aussi $\mualgo{S[u/x]} = \Sigma y :
     T[u/x].U[u/x]$.
     Il suffit alors d'appliquer \irule{PiLeft}
 
@@ -854,11 +755,13 @@ pouvoir prouver la complétude.
       \SumDepAFull[\GD]{y}{t}{v}{T}{V}{s}{T'}{V'}      
     \end{prooftree}
     
-    Par induction et application de \irule{SumDep}, en utilisant la transitivité:
+    Par induction et application de \irule{SumDep}:
     \begin{prooftree}
-      \SumDepAFullWide[\Gr]{y}{t[u/x]}{v[u/x]}{T[u/x]}{U[u/x]}{s}{T'[u/x]}{V'[u/x]}
+      \SumDepAFullWide[\Gr]{y}{t[u/x]}{v[u/x]}{T[u/x]}{V[u/x]}{s}{T'[u/x]}{V'[u/x]}
     \end{prooftree}
-    
+   
+    On a bien $V[u/x][t[u/x]/y] = V[t/y][u/x]$ car $y `; \freevars{u}$.
+
     \case{SubConv}
     Direct par préservation de l'équivalence $\eqbr$ par substitution et
     application de l'hypothèse d'induction pour le typage.
@@ -886,107 +789,11 @@ pouvoir prouver la complétude.
   
 \end{proof}
 
-\begin{lemma}[Substitutivité du typage avec coercion]
+\begin{corrolary}[Substitutivité du typage avec coercion]
   \label{substitutive-typing-coercion}
   Si $`G, x : V \typea t : T \sub U$ et $`G \typea u : V$
   alors $`G \typed t[u/x] : T[u/x] \sub U[u/x]$.
-\end{lemma}
-
-\begin{proof}
-  Par substitutivité du typage (\ref{substitutive-typing}) on a $`G \typed t[u/x] : T[u/x]$.
-  Par le lemme précédent $T[u/x] \suba U[u/x]$.
-\end{proof}
-
-\begin{lemma}[Substitutivité du typage avec coercion et affaiblissement]
-  \label{subst-coerce-algo}
-  \[\left.\begin{array}{l}
-      `G \typea u : U \\
-      \GD \typea t : T \\ 
-      U \suba V
-    \end{array}
-\right\} "=>"    
-`G, `D[u/x] \typea t[u/x] : T' \suba T[u/x]
-    \]
-\end{lemma}
-
-\begin{proof}
-  Par induction sur la dérivation de $\GD \typea t : T$.
-  
-  \typenva
-  \begin{induction}
-    \case{Var} On a deux cas:
-    \begin{induction}
-      \caseother{Si $y = x$} alors $T = V$. On a $t[u/x] = u$ donc $T' =
-      U$. Par hypothèse $U \suba V$ donc $T' \suba T[u/x]$ triviallement
-      ($x$ n'apparait pas dans $V$).
-      
-      \caseother{Sinon} $t[u/x] = y$ donc $T' = T[u/x]$ et on a $T' \suba T[u/x]$
-      par réflexivité de la coercion.
-    \end{induction}
-    
-
-    \case{Prod}
-    Par induction, $\Gr \typea T[u/x] : s_1' \suba s_1[u/x]$ et $\Gr, x
-    : T[u/x]
-    \typea U[u/x] : s_2' \suba s_2[u/x]$. Or $s_1[u/x] = s_1$ et
-    $s_2[u/x] = s_2$. On en déduit par \irule{Prod}: 
-    $\Gr \typea (\Pi x : T.U)[u/x] : s_3 \suba s_3[u/x]$.
-
-    \case{Abs}
-    On a: 
-    \begin{prooftree}
-      \Abs
-    \end{prooftree}
-    
-    Par induction, $\Gr \typea (\Pi y : T.U)[u/x] : s' \suba s[u/x]$ et
-    $\Gr, y : T[u/x] \typea M[u/x] : U' \suba U[u/x]$.
-    Par le même raisonnement que précedemment, $s' = s[u/x] = s$.
-    On peut appliquer \irule{Abs} pour obtenir:
-    $\Gr \typea (\lambda y : T.M)[u/x] : \Pi y : T[u/x].U'$. Comme $U'
-    \suba U[u/x]$ on a $\Pi y : T[u/x].U' \suba \Pi y : T[u/x].U[u/x]$
-    et la propriété est vérifiée.
-
-    \case{App}
-    On a: 
-    \begin{prooftree}
-      \TAX{App}
-      {$\GD \seq f : F \quad \mualgo{F} = \Pi y : A. B$}
-      {$\GD \seq e : E \quad \GD \seq E, A : s$}
-      {$E \sub A $}
-      {$\GD \seq (f~e) : B[ e / y ]$}
-      {}
-    \end{prooftree}
-    
-    Par induction, $\Gr \typea f[u/x] : F' \suba F[u/x]$ et $\Gr \typea
-    e[u/x] : E' \suba E[u/x]$ et $\Gr \typea E[u/x], A[u/x] : s$.
-    Comme $\mualgo{F} = \Pi y : A.B$, $\mualgo{F[u/x]} = \Pi y :
-    A[u/x].B[u/x]$ et par transitivité de la coercion, $F' \suba \Pi y :
-    A[u/x].B[u/x]$. On en déduit que $\mualgo{F'} = \Pi y : A'.B'$ avec
-    $A[u/x] \suba A'$ et $B' \suba B[u/x]$.
-    Par substitutivité de la coercion, $E \suba A$ implique $E[u/x]
-    \suba A[u/x]$. On applique la transitivité pour obtenir $E' \suba
-    A'$. Par définition, si $E' \suba E[u/x]$ et $\Gr \typea E[u/x] : s$
-    alors $\Gr \typea E' : s$. De même pour $A'$.  
-
-    On peut donc appliquer \irule{App}:    
-    \begin{prooftree}
-      \TAXWide{App}
-      {$\GD \seq f[u/x] : F' \quad \mualgo{F'} = \Pi y : A'. B'$}
-      {$\GD \seq e[u/x] : E'$}
-      {$\GD \seq E', A' : s \quad E' \sub A' $}
-      {$\GD \seq (f~e)[u/x] : B'[ e[u/x] / y ]$}
-      {}
-    \end{prooftree}
-    
-    Par substitutivité de la coercion, $B' \suba B[u/x]$ implique
-    $B'[e[u/x]/y] \suba B[u/x][e[u/x]/y]$. Or \[B[u/x][e[u/x]/y] =
-    B[e/y][u/x]\] car $y$ n'apparait pas dans $u$. On a donc bien
-    $T' = B'[e[u/x]/y] \suba T[u/x] = B[e/y][u/x]$.
-     
-    \casenil Les autres cas passent aisément par induction.
-  \end{induction}
-  
-\end{proof}
+\end{corrolary}
 
 On a maintenant tout les ingrédients pour montrer la complétude de notre
 système de typage vis-à-vis du système déclaratif.
@@ -994,7 +801,9 @@ système de typage vis-à-vis du système déclaratif.
 \setboolean{displayLabels}{false}
 \begin{theorem}[Complétude du typage]
   \label{complete-typing}
-  Si $`G \typed t : T$ alors $`E U, `G \typea t : U \sub T$.
+  Si $`G \typed T : s$ alors $`G \typea T : s$.
+  Si $`G \typed t : T$ alors $`E U, `G \typea t : U$, $`G \typea T, U :
+  s$ et $U \sub T$.
   Si $\typewf `G$ dans le système déclaratif alors $\typewf `G$ dans le
   système algorithmique.
 \end{theorem}
@@ -1021,7 +830,8 @@ système de typage vis-à-vis du système déclaratif.
       \Var
     \end{prooftree}
     Par induction $\typewf `G$ et $x : A `: `G$ , direct par
-    \irule{Var}.
+    \irule{Var}. On vérifie que si $A$ est une sorte on dérive bien la
+    même sorte dans le système algorithmique.
     
     \case{Prod}
     \typenvd
@@ -1029,18 +839,17 @@ système de typage vis-à-vis du système déclaratif.
       \Prod
     \end{prooftree}
     
-    Direct par induction et le fait qu'une sorte ne peut être en relation
-    qu'avec elle même.
-        
+    Direct par induction et le fait que $\mathcal{R}$ est fonctionnelle.
+            
     \case{Abs}
     \typenvd
     \begin{prooftree}
       \Abs
     \end{prooftree}
-    Par induction $`E U', `G, x : T \typea M : U' \suba U$.
-    Or cela implique $`G, x : T \typea U' : s$, donc on peut dériver
-    $`G \typea \Pi x : T.U' : s$. On a donc bien $`G \typea \lambda x :
-    T.M : \Pi x : T.U' \suba \Pi x : T.U$.
+    Par induction $`E U', `G, x : T \typea M : U' \suba U$ et $`G, x : T
+    \typea U', U : s$. On peut donc dériver
+    $`G \typea \Pi x : T.U' : s$. On a bien $`G \typea \lambda x :
+    T.M : \Pi x : T.U' \suba \Pi x : T.U$ et les deux types ont la même sorte.
     
     \case{App} On a 
     \typenvd
@@ -1067,7 +876,10 @@ système de typage vis-à-vis du système déclaratif.
     
     Par substitutivité de la coercion (lemme
     \ref{substitutive-typing}), $W'[u/x] \suba W[u/x]$, la propriété
-    est donc bien vérifiée.
+    est donc bien vérifiée. Les conditions de sortes sont vérifiées du
+    fait que $\mualgo{}$ conserve les sortes, donc $`G \typea T, \Pi x :
+    V'.W', \Pi x : V.W : s$ puis par inversion, $`G, x : V \typea W', W
+    : s$ et enfin par subtitutivité, $`G \typea W'[u/x], W[u/x] : s$.
     
     \case{Sigma}\quad
     \typenvd
@@ -1075,10 +887,8 @@ système de typage vis-à-vis du système déclaratif.
       \SigmaR
     \end{prooftree}
 
-    Par induction $`E s', `G \typea T : s' \sub s$ et $`E s'', `G, x : T 
-    \typea U : s' \suba s$ où $s `: \{ \Prop, \Set \}$. Encore une fois  
-    les sortes $s$, $s'$ et $s''$ doivent être égales. C'est direct
-    par \irule{Sigma}.
+    Par induction $`G \typea T : s$ et $`G, x : T \typea U : s$ où $s `:
+    \{ \Prop, \Set \}$. C'est direct par \irule{Sigma}.
 
     \case{SumDep}\quad
     \typenvd
@@ -1088,7 +898,7 @@ système de typage vis-à-vis du système déclaratif.
     \typenva
     
     Ici, l'annotation nous force à utiliser le jugement de coercion.
-    Par induction, $`E s', \Sigma x : T.U : s' \suba s$, $`E T', `G
+    Par induction, $\Sigma x : T.U : s$, $`E T', `G
     \type t : T' \suba T$ et $`E U', `G \typea u : U' \suba U[t/x]$.
     On peut montrer $`G \type \Sigma x : T'.U : s$.
     En effet, par inversion de $`G \seq \Sigma x : T.U : s$ on a

@@ -36,14 +36,14 @@
 
 \begin{lemma}[Stabilité de la coercion par substitution]
   \label{coerce-subst}
-  Si $\talgo{\GD}{T, T'}{s}$, $\talgo{`G}{u}{U}$, alors
-  $\begin{array}{lcl}
+  Si $\talgo{`G}{u}{U}$, alors
+  \[\begin{array}{lcl}
     \wf{\GD} & "=>" & \ipG{\Gr} `= \ipG{\GD}[\ip{u}{`G}/x] \\
     \talgo{\GD}{t}{T} & "=>" & \ip{t[u/x]}{\Gr} `= \ip{t}{\GD}[\ip{u}{`G}/x] \\
     \subimpl{\GD}{c}{T}{T'} 
     & "=>" & \subimpl{\Gr}{c'}{T[u/x]}{T'[u/x]}
     `^ c' `= c[\ip{u}{`G}/x]
-  \end{array}$
+  \end{array}\]
 \end{lemma}
 
 \begin{proof}
@@ -76,8 +76,8 @@
       \ip{A}{`G, x : U, `D'}[\ip{u}{`G}/x] `^ \ipG{`G, x : U,
         `D'}[\ip{u}{`G}/x] `= \ipG{`G, `D'[u/x]}\] donc
       \begin{eqnarray*}
-        \ipG{\Gr} & = & \ipG{`G, `D'[u/x], A'[u/x]} \\
-        & \eqdef & \ipG{`G, `D'[u/x]}, \ip{A'[u/x]}{`G, `D'[u/x]} \\
+        \ipG{\Gr} & = & \ipG{`G, `D'[u/x], A[u/x]} \\
+        & \eqdef & \ipG{`G, `D'[u/x]}, \ip{A[u/x]}{`G, `D'[u/x]} \\
         & = & \ipG{`G, x : U, `D'}[\ip{u}{`G}/x], \ip{A}{`G, x : U,
           `D'}[\ip{u}{`G}/x] \\
         & = & \ipG{`G, x : U, `D', A}[\ip{u}{`G}/x] \\
@@ -260,11 +260,11 @@
     \typenvi
 
     \begin{induction}
-      \caseother{} Si $x "/=" y$, alors par définition de l'interprétation,
+      \casenil{} Si $x "/=" y$, alors par définition de l'interprétation,
       on doit montrer
       $\ip{y[u/x]}{\Gr} = y = \ip{y}{\GD}\ipux$.
       
-      \caseother{} Sinon, $t[u/x] = u$ et $\ip{u}{\Gr} = \ip{x}{\GD}\ipux =
+      \casenil{} Sinon, $t[u/x] = u$ et $\ip{u}{\Gr} = \ip{x}{\GD}\ipux =
       \ip{u}{\GD}$. On utilise ici le fait que $\ip{t}{`G} = \ip{t}{`D}$
       si $\talgo{`G}{t}{T}$ pour tout $`D$ incluant $`G$ (lemme \ref{interp-weak}).
     \end{induction}
@@ -274,8 +274,8 @@
     \begin{prooftree}
       \TAX{}
       {$\GD \seq f : F \quad \mualgo{F} = \Pi y : A. B : s$}
-      {$\GD \seq e : E \quad `G \seq E, A : s$}
-      {$E \sub A$}
+      {$\GD \seq e : E$}
+      {$\subalgo{\GD}{E}{A}$}
       {$\GD \seq (f~e) : B [ e / y ]$}
       {}
     \end{prooftree}
@@ -383,30 +383,32 @@
     \end{prooftree}
     
     On a $V[u/x][t[u/x]/y] = V[t/y][u/x]$ puisque $y `; \freevars{u}$.
-    Ici on a une coercion $\subimpl{\GD}{c}{V'}{V[t/y]}$. Par induction
-    on obtient $\subimpl{\Gr}{c'}{V'[u/x]}{V[t/y][u/x]}$ avec $c' `= c\ipux$.
+    Ici on a les coercions $\subimpl{\GD}{c}{T'}{T}$ et $\subimpl{\GD}{d}{V'}{V[t/y]}$. Par induction
+    on obtient $\subimpl{\Gr}{c'}{T'[u/x]}{T[u/x]}$ et
+    $\subimpl{\Gr}{c'}{V'[u/x]}{V[t/y][u/x]}$ avec
+    $c' `= c\ipux$ et $d' `= d\ipux$.
 
     \begin{equations}
       \firsteq{\ip{\pair{\Sigma x : T.V}{t}{v}}{\GD}\ipux}
       
       \step{Définition de l'interprétation}
       {\eqdef}{\pair{\ip{\Sigma x :
-            T.V}{\GD}}{\ip{t}{\GD}}{c[\ip{v}{\GD}]}\ipux}
+            T.V}{\GD}}{c[\ip{t}{\GD}]}{d[\ip{v}{\GD}]}\ipux}
       
       \step{Application de l'hypothèse de récurrence}
       {`=}{\pair{\ip{(\Sigma x :
-            T.V)[u/x]}{\Gr}}{\ip{t[u/x]}{\Gr}}{c'[\ip{v[u/x]}{\Gr}]}}
+            T.V)[u/x]}{\Gr}}{c'[\ip{t[u/x]}{\Gr}]}{d'[\ip{v[u/x]}{\Gr}]}}
 
       \step{Définition de l'interprétation}
       {\eqdef}{\ip{(\pair{\Sigma x : T.V}{t}{u})[u/x]}{\Gr}}
     \end{equations}
     
-    \case{PiLeft} On a
+    \casetwo{PiLeft}{PiRight} On a
     \begin{prooftree}
       \BAX{PiLeft}
       {$\tgen{\GD}{t}{S}$}
       {$\mualgo{S} = `S y : T.U$}
-      {$\tgen{\GD}{\pi_1~t}{T}$}
+      {$\tgen{\GD}{\pi_i~t}{\_}$}
       {}
     \end{prooftree}
     
@@ -414,7 +416,7 @@
       \BAX{PiLeft}
       {$\tgen{\Gr}{t[u/x]}{S[u/x]}$}
       {$\mualgo{S[u/x]} = (`S y : T.U)[u/x]$}
-      {$\tgen{\Gr}{\pi_1~t[u/x]}{T[u/x]}$}
+      {$\tgen{\Gr}{\pi_i~t[u/x]}{\_}$}
       {}
     \end{prooftree}
         
@@ -423,50 +425,16 @@
     $\subimpl{\GD}{c}{S}{\Sigma y : T.U}$. On a $c' `= c\ipux$.
 
     \begin{equations}
-      \firsteq{\ip{\pi_1~t}{\GD}\ipux}
+      \firsteq{\ip{\pi_i~t}{\GD}\ipux}
       
       \step{Définition de l'interprétation}
-      {\eqdef}{\pi_1~c[\ip{t}{\GD}]\ipux}
-      
-      \step{Application de l'hypothèse de récurrence}
-      {`=}{\pi_1~c'[\ip{t[u/x]}{\Gr}]}
-
-      \step{Définition de l'interprétation}
-      {\eqdef}{\ip{\pi_1~t[u/x]}{\Gr}}
-    \end{equations}
-
-    \case{PiRight} On a
-    \begin{prooftree}
-      \BAX{}
-      {$\tgen{\GD}{t}{S}$}
-      {$\mualgo{S} = `S y : T.U$}
-      {$\tgen{\GD}{\pi_2~t}{U[\pi_1~t/y]}$}
-      {}
-    \end{prooftree}
-    
-    \begin{prooftree}
-      \BAX{}
-      {$\tgen{\Gr}{t[u/x]}{S[u/x]}$}
-      {$\mualgo{S[u/x]} = (`S y : T.U)[u/x]$}
-      {$\tgen{\Gr}{\pi_1~t[u/x]}{U[u/x][\pi_1~t[u/x]/y] = U[\pi_1~t/y][u/x]}$}
-      {}
-    \end{prooftree}
-        
-    Encore une fois on obtient la coercion $\subimpl{\Gr}{c'}{S[u/x]}{(`S
-      y : T.U)[u/x]}$ par induction sur la dérivation de
-    $\subimpl{\GD}{c}{S}{\Sigma y : T.U}$. On a $c' `= c\ipux$.
-
-    \begin{equations}
-      \firsteq{\ip{\pi_2~t}{\GD}\ipux}
-      
-      \step{Définition de l'interprétation}
-      {\eqdef}{\pi_2~c[\ip{t}{\GD}]\ipux}
+      {\eqdef}{\pi_i~c[\ip{t}{\GD}]\ipux}
       
       \step{Application de l'hypothèse de récurrence}
-      {`=}{\pi_2~c'[\ip{t[u/x]}{\Gr}]}
+      {`=}{\pi_i~c'[\ip{t[u/x]}{\Gr}]}
 
       \step{Définition de l'interprétation}
-      {\eqdef}{\ip{\pi_2~t[u/x]}{\Gr}}
+      {\eqdef}{\ip{\pi_i~t[u/x]}{\Gr}}
     \end{equations}
 
   \end{induction}
@@ -512,14 +480,14 @@ coercion de contexte explicite et vice-versa.
 
 \begin{lemma}[Stabilité par affaiblissement des coercions]
   \label{coerce-narrowing-coercion}
-  Si $\subimpl{`G}{c}{T}{T'}$ et $\ip{T'}{`D} `=
-  \ip{T'}{`G}[`r]$, alors pour tout $`D$ tel que $`r : `D \sub `G$,
+  Si $\subimpl{`G}{c}{T}{T'}$, alors pour tout $`D$, $`r : `D
+  \sub `G$ tels que $\ip{T'}{`D} `= \ip{T'}{`G}[`r]$, on a
   $\subimpl{`D}{c'}{T}{T'}$ et $c' `= c[`r]$ avec une dérivation de même
   taille.
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la dérivation de coercion:
+  Par induction sur la dérivation de coercion $\subimpl{`G}{c}{T}{T}$.
 
   \begin{induction}
     \case{SubHnf} 

@@ -1,8 +1,8 @@
 \newcommand{\AppAFull}[9][\Gamma]{
 \TAX{App}
 {$\tgen{#1}{#2}{#3} \quad \mualgo{#3} = \Pi #4 : #5. #6 : #7$}
-{$\tgen{#1}{#8}{#9} \quad \tgen{#1}{#9, #5}{#7'}$}
-{$\subalgo{#1}{#9}{#5} $}
+{$\tgen{#1}{#8}{#9}$} % \quad \tgen{#1}{#9, #5}{#7'}$}
+{$\subalgo{#1}{#9}{#5}$}
 {$\tgen{#1}{(#2 #8)}{#6 [ #8 / #4 ]}$}
 {}
 }
@@ -30,7 +30,7 @@
 \newcommand{\PiRightA}[1][\Gamma]{\PiRightAFull[#1]{t}{S}{x}{T}{U}}
 
 \newcommand{\SumDepAFull}[9][\Gamma]{
-  \TAX{SumDep}
+  \TAXWide{SumDep}
   {$\tgen{#1}{\Sigma #2 : #5.#6}{#7}$}
   {$\tgensub{#1}{#3}{#8}{#5}$}
   {$\tgensub{#1}{#4}{#9}{#6[#3/#2]}$}
@@ -101,12 +101,14 @@
 
 \def\typemuaFig{
   \begin{figure}[ht]
-    \begin{eqnarray*}
-      \mualgoprim{\mysubset{x}{U}{P}} & "=>" & \mualgoprim{\downarrow{U}} \\
-      \mualgoprim{x}                & "=>" & x \\
+    \[\begin{array}{lcll}
+      \mualgoprim{\mysubset{x}{U}{P}} & "=>" &
+      \mualgoprim{\downarrow{U}} & \\
+      \mualgoprim{x}                & "=>" & x & \text{ si $x "/="
+        \mysubset{x}{U}{P}$} \\
       \\
       \mualgo{x} & "=>" & \mualgoprim{\downarrow{x}}
-    \end{eqnarray*}
+    \end{array}\]
     \caption{Définition de $\mualgo$}
     \label{fig:mualgo-definition}
 \end{figure}
