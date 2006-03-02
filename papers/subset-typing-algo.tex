@@ -27,6 +27,10 @@ ici pour opérer des
 \emph{décompréhensions}. Cette fonction efface les constructeurs de type
 sous-ensemble en tête d'un type, par exemple: $\mualgo{\mysubset{f}{\nat
 "->" \nat}{f~0 = 0}} = \nat "->" \nat$. On verra son utilité dans la suite.
+Notons aussi que les jugements de la forme $\talgo{`G}{t}{s}$ où $s `:
+\setproptype$ sont une abréviation pour $\talgo{`G}{t}{T} `^ T
+"->"\beta\rho s$, c'est une pratique courante lorsque l'on présente un
+système algorithmique basé sur système de types purs.
 
 \subsection{Notations}
 On note $\hnf{x}$ la mise en forme normale de tête de $x$ selon la
@@ -218,6 +222,45 @@ Il nous faut tout d'abord des lemmes d'inversion sur la conversion:
   \eqbr U'$.
 \end{lemma}
 
+\begin{lemma}[Coercion de sortes]
+  \label{coercion-sorts}
+  Si $\subalgo{`G}{T}{s}$ où $\subalgo{`G}{s}{T}$ où $s `: \setproptype$
+  alors $T \eqbr s$.
+\end{lemma}
+\begin{proof}
+  Les seuls règles permettant de dériver de tels jugements sont
+  \irule{SubConv}, \irule{SubHnf} et \irule{SubProof} ou \irule{SubSub}.
+
+  \begin{induction}
+    \case{SubConv} Trivial.
+
+    \case{SubHnf} Par induction.
+
+    \casetwo{SubProof}{SubSub} On ne peut pas avoir un jugement de la forme
+    $\subalgo{`G}{s}{\mysubset{x}{U}{P}}$ puisque cela impliquerait que
+    $\talgo{`G}{s, U}{s'}$ avec $\talgo{`G}{U}{\Set}$ donc
+    $\talgo{`G}{s}{\Set}$ ce qui est impossible. De façon symétrique
+    pour \irule{SubSub}.
+  \end{induction}
+\end{proof}
+
+\begin{lemma}[Convertibilité avec une sorte et réduction]
+  \label{conv-sorts-red}
+  Si $T \eqbr s$ alors $T "->"_{\beta\rho} s$.
+\end{lemma}
+\begin{proof}
+  Par la propriété de Church-Rosser pour la réduction
+  $"->"_{\beta\rho}$ il existe $v$ tel que $T "->>"_{\beta\rho} v
+  "<<-"_{\beta\rho} s$. Or $s$ ne peut se réduire pas vers un autre terme, on
+  a donc $T "->>"_{\beta\rho} s$.
+\end{proof}
+
+\begin{corrolary}[Coercion de sortes et réduction]
+  \label{coercion-sorts-red}
+  Si $\subalgo{`G}{T}{s}$ ou $\subalgo{`G}{s}{T}$ où $s `:
+  \setproptype$ alors $T \redbrt s$.
+\end{corrolary}
+
 L'affaiblissement montre que notre notion de coercion joue un rôle
 similaire à la seule conversion vis-à-vis du typage. On peut dériver les mêmes jugements dans des
 contextes où les variables ont des types équivalents par la coercion.
@@ -228,15 +271,16 @@ Ici la taille des dérivations ne change pas.
   \[ `G \seq S, S' : s, S' \sub S "=>" 
   \left\{ \begin{array}{lcl}
       \typewf `G, x : S, `D & "=>" & \typewf `G, x : S', `D \\
-      & `^{} & \\
-      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T \text{ si $T `: \setproptype$} \\
-      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T' \suba T \text{ sinon }
+      `G, x : S, `D \seq t : T & "=>" & `G, x : S', `D \seq t : T' \suba
+      T \\
+      `G, x : S, `D \seq T \suba T' & "=>" & `G, x : S', `D \seq T \suba
+      T'
     \end{array}
   \right. \]
 \end{lemma}
 
 \begin{proof}
-  Par induction sur la taille de la dérivation de typage ou de bonne formation.
+  Par induction sur mutuelle sur les dérivations de typage, coercion et bonne formation.
     
   \begin{induction}
     \case{WfEmpty} Trivial.
@@ -275,7 +319,7 @@ Ici la taille des dérivations ne change pas.
     contexte précédent est le type associé à $x$, donc si $t \not= x$, on
     peut simplement réappliquer \irule{Var}. Si $t `= x$ on a la
     dérivation:
-
+    
     \begin{prooftree}
       \BAX{Var}
       {$\wf `G, x : S', `D$}
@@ -287,9 +331,21 @@ Ici la taille des dérivations ne change pas.
     On a bien $S' \suba S$, la propriété est donc bien vérifiée.
     
     \case{Prod} 
-    Par induction, $`G, x : S', `D \type T : s1$ et $`G, x : S', `D
-    y : T \seq U : s2$. On applique \irule{Prod} pour obtenir 
-    $`G, x : S', `D \type \Pi x : T.U : s3$. De même, direct par induction pour le reste des règles.
+    Par induction, $`G, x : S', `D \type T : V \sub s_1$ et $`G, x : S', `D
+    y : T \seq U : W \sub s_2$. On a donc $V \redbrt s_1$ et
+    $W \redbrt s_2$. On en déduit $`G, x : S', `D \type T : s_1$ et $`G, x : S', `D
+    y : T \seq U : s_2$. On applique \irule{Prod} pour obtenir 
+    $`G, x : S', `D \type \Pi x : T.U : s_3$. De même, direct par induction pour le reste des règles.
+       
+    \casetwo{SubProd}{SubSigma} Par induction on a $\subalgo{`G, x : S', `D}{U}{T}$
+    et $\subalgo{`G, x : S', `D, x : U}{V}{W}$, il suffit d'appliquer
+    \irule{SubProd}. De même pour \irule{SubSigma}.
+
+    \caseother{\irule{SubConv},\irule{SubHnf},\irule{SubProof},\irule{SubSub}} De même, direct par induction. On utilise
+    l'hypothèse d'induction mutuelle pour les dérivations de typage en
+    prémisse.
+
+    
   \end{induction}
 \end{proof}
 
@@ -311,15 +367,15 @@ On peut maintenant montrer:
     d'après le lemme \ref{conversion-pi}.
     On a $\talgo{`G, x : X}{Y}{s}$ et $\talgo{`G, x : V}{W}{s}$. 
     Par induction $\subalgo{`G}{V}{X}$.
-    On peut donc appliquer le lemme de restriction pour obtenir
+    On peut donc appliquer le lemme \ref{narrowing-a} pour obtenir
     $\talgo{`G, x : V}{Y, W}{s}$.
     On applique l'hypothèse d'induction pour obtenir $\subalgo{`G, x : V}{Y}{W}$. 
     On applique alors \irule{SubProd} à ces deux prémisses.
     
     \caseother{$\hnf{T} = \Sigma x : X.Y$}
     Alors $\hnf{U} = \Sigma x : V.W$, avec $X \eqbr V$ et $Y \eqbr
-    W$. Par induction et application de \irule{SubSigma} en utilisant la
-    restriction pour la deuxième prémisse.
+    W$. Par induction et application de \irule{SubSigma} en utilisant le lemme
+    \ref{narrowing-a} pour la deuxième prémisse.
     
     \caseother{$\hnf{T} `= \mysubset{x}{X}{P}$}
     On a alors $\hnf{U} = \mysubset{x}{X'}{P'}$ avec $X \eqbr X'$, $P \eqbr
@@ -341,7 +397,9 @@ On peut maintenant montrer:
 
 Il n'y a pas de problème d'identification de sortes dans ce système,
 contrairement au système $\lambda~C_\leq$ de Gang Chen \cite{ChenPhD},
-puisqu'on n'a pas de cumulativité. 
+puisqu'on n'a pas de cumulativité. Par exemple on n'a pas besoin d'identifier 
+$\nat : \Set$ et $(\lambda x : \Type. x) \nat : \Type$ puisque le
+deuxième terme n'est pas typable dans notre système.
 
 On va maintenant montrer que la règle \irule{SubTrans} est admissible
 dans notre système algorithmique. On montre ceci en l'éliminant de toute
@@ -564,8 +622,9 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
   qui est admissible dans le système algorithmique. De plus
   l'application restreinte de la conversion ne change pas les jugements
   dérivables (lemme \ref{conversion-coercion}). Le fait de forcer les
-  types à être bien sortés assure juste que l'on a les mêmes relations.
-  \Problem{Que faire pour éviter ça?}
+  types à être bien sortés assure juste que l'on a les mêmes relations
+  puisque le sortage est inclus dans la coercion algorithmique mais pas
+  déclarative.
 \end{proof}
 
 En conséquence $\subd$ et $\suba$ sont équivalentes. Le système
@@ -902,7 +961,7 @@ système de typage vis-à-vis du système déclaratif.
     \type t : T' \suba T$ et $`E U', `G \typea u : U' \suba U[t/x]$.
     On peut montrer $`G \type \Sigma x : T'.U : s$.
     En effet, par inversion de $`G \seq \Sigma x : T.U : s$ on a
-    $`G, x : T \seq U : s$ et par restriction ($T' \sub T$), $`G, x : T' \seq
+    $`G, x : T \seq U : s$ et par le lemme \ref{narrowing-a} ($T' \sub T$), $`G, x : T' \seq
     U : s$.
     Comme $T' \suba T$ on obtient $\Sigma x : T'.U \suba \Sigma x : T.U$.
     On peut donc dériver:

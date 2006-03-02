@@ -611,8 +611,14 @@ coercion de contexte explicite et vice-versa.
        {d[`r]}
        {\ex{\ip{P}{`G, x : U}[d/x][`r]}}}
      
-     \step{Indifférence aux preuves}
-     {=_\sigma}{\elt{\ip{U}{`D}}
+     \step{Définition de la substitution}
+     {=}{\elt{\ip{U}{`D}}
+       {\ip{(\lambda x : U.P)}{`D}}
+       {d[`r]}
+       {\ex{\ip{P}{`G, x : U}[`r][d[`r]/x]}}}
+
+     \step{Condition $\ip{P}{`D, x : U} `= \ip{P}{`G, x : U}[`r]$}
+     {`=}{\elt{\ip{U}{`D}}
        {\ip{(\lambda x : U.P)}{`D}}
        {d[`r]}
        {\ex{\ip{P}{`D, x : U}[d[`r]/x]}}}
