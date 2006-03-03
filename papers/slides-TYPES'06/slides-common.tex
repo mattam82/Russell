@@ -18,9 +18,9 @@
 % - Style is ornate.
 
 \hypersetup{
-  pdftitle = Coercion par prédicats en Coq,
+  pdftitle = Predicate coercions in Coq,
   pdfauthor = Matthieu Sozeau,
-  pdfsubject= Présentation de présoutenance
+  pdfsubject = Theoretical Computer Science
  } 
 
 %\mode<handout> 
@@ -81,13 +81,13 @@
 \input{subtyping-impl}
 
 \title %[Short Paper Title] (optional, use only with long paper titles)
-{Coercion par prédicats en \Coq}
+{Predicate coercions in \Coq}
 
 %\subtitle
 %{Un environnement de programmation sûre dans Coq}
 
 \author[]% (optional, use only with lots of authors)
-{{\sc Matthieu Sozeau} \\ sous la direction de {\sc Christine Paulin-Mohring}}% \\ $\lambda x\lambda y~x.y\text{@lri.fr}$}
+{{\sc Matthieu Sozeau} \\ under direction of {\sc Christine Paulin-Mohring}}
 % - Give the names in the same order as the appear in the paper.
 % - Use the \inst{?} command only if the authors have different
 %   affiliation.
@@ -98,13 +98,13 @@
 %  \inst{1}%
   \'Equipe \Demons{} \\
   Laboratoire de Recherche en Informatique\\
-  Université Paris Sud {\uppercase\expandafter{\romannumeral 11}}}
+  Paris {\uppercase\expandafter{\romannumeral 11}} University}
 % - Use the \inst command only if there are several affiliations.
 % - Keep it simple, no one is interested in your street address.
 
-\date % (optional, should be abbreviation of conference name)
-{Soutenance de Master II Recherche \\
-7 Septembre 2005}
+\date[TYPES'06] % (optional, should be abbreviation of conference name)
+{TYPES'06 Workshop \\
+21 April 2006}
 % - Either use conference name or its abbreviation.
 % - Not really informative to the audience, more for people (including
 %   yourself) who are reading the slides online
@@ -127,7 +127,7 @@
 \AtBeginSection[]
 {
   \begin{frame}<beamer>
-    \frametitle{Plan}
+    \frametitle{Outline}
     \tableofcontents[currentsection]
   \end{frame}
 }
@@ -146,7 +146,25 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Plan}
+  \frametitle{Abstract}
+  We set out to establish a phase distinction between writing and
+  proving algorithms in the \Coq{} environment, giving the possibility
+  to write algorithms as easily as in a pratical functionnal programming language
+  while giving them as rich a specification as desired. This is achieved
+  by extending conversion to an equivalence which relates types
+  and subsets based on them, a technique  
+  originating from the ``\emph{Predicate subtyping}'' feature of \PVS{} and
+  following mathematical convention. The typing judgments can be
+  translated to \CCI{} by means of an interpretation which inserts
+  coercions at the appropriate places. These coercions can contain
+  existential variables representing the propositional parts of the final
+  term. We will present a prototype implementation of this process
+  which can be used in a variety of situations in the proof assistant.
+\end{frame}
+ 
+
+\begin{frame}
+  \frametitle{Outline}
   \tableofcontents[pausesections]
   % You might wish to add the option [pausesections]
 \end{frame}
