@@ -1,4 +1,4 @@
-\ifthenelse{\boolean{defineTheorem}}{
+\ifthenelse{\boolean{defineTheoremFr}}{
   \newtheorem{theorem}{Théorème}[section]
   \newtheorem{conjecture}{Conjecture}[section]
   \newtheorem{lemma}[theorem]{Lemme}
@@ -9,6 +9,19 @@
   \newtheorem{remark}[theorem]{Remarque}
   \newtheorem{corrolary}[theorem]{Corollaire}
   \newtheorem{notation}[theorem]{Notation}}{}
+
+\ifthenelse{\boolean{defineTheoremEn}}{
+  \newtheorem{theorem}{Theorem}[section]
+  \newtheorem{conjecture}{Conjecture}[section]
+  \newtheorem{lemma}[theorem]{Lemma}
+  \newtheorem{fact}[theorem]{Fact}
+  \newtheorem{proposition}[theorem]{Proposition}
+  \newtheorem{definition}[theorem]{Definition}
+  \newtheorem{example}[theorem]{Example}
+  \newtheorem{remark}[theorem]{Remark}
+  \newtheorem{corrolary}[theorem]{Corollary}
+  \newtheorem{notation}[theorem]{Notation}}{}
+
 
 \makeatletter
 

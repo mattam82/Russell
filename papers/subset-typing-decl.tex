@@ -51,6 +51,9 @@ sous-typage avec le nom de subsumption.
 Le jugement $\Gamma \typed t : T$ se lit: dans l'environnement $\Gamma$,
 $t$ est de type $T$.
 
+L'équivalence utilisée est $\eqbr$, soit la $\beta$-réduction
+classique ainsi que les projections $\pi_i$ pour les paires.
+
 % \begin{remark}
 %   En pratique, les types du Calcul des Constructions ne sont pas
 %   toujours en forme normale et il peut donc être nécessaire de les
@@ -114,7 +117,7 @@ puisqu'on a l'abstraction, l'application, etc...) sont équivalents.
 On peut directement intégrer cette relation de $`b$-convertibilité à notre
 système de coercion comme montré figure \ref{fig:subtyping-decl-rules}
 (\irule{SubConv}), à condition d'avoir l'inclusion
-$`=_\beta~\subseteq~\subd + \text{\irule{SubConv}}$.
+$\eqbr~\subseteq~\subd + \text{\irule{SubConv}}$.
 En fait notre notion de réduction est un peu plus large que $\beta$
 puisqu'on peut réduire les $\sref{let}$:
 $\letml~(x,y) = (u, v)~\inml~t$ se réduit en $t[u/x][v/y]$. En

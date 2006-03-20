@@ -4,6 +4,7 @@
 %\let\ifempty = \@ifmtarg
 
 \usepackage{qsymbols}
+\usepackage{xspace}
 
 % \newqsymbol{`<}{\langle}
 % \newqsymbol{`>}{\rangle}
@@ -122,30 +123,35 @@ $\smile$}}}}
   \if#1\empty\\ #2 & #3\else\quad\textbf{\{ #1 \}}\vspace{0.2em}\\ #2 & #3\fi}
 
 % ML syntax
-\newcommand{\letml}{\textbf{let}}
-\newcommand{\andml}{\textbf{and}}
-\newcommand{\letcci}{\textbf{let}_{CCI}}
-\newcommand{\inml}{\textbf{in}}
-\newcommand{\ifml}{\textbf{if}}
-\newcommand{\thenml}{\textbf{then}}
-\newcommand{\elseml}{\textbf{else}}
-\newcommand{\funml}{\textbf{fun}}
-\newcommand{\sdef}[1]{\ensuremath{\textbf{#1}}}
-\newcommand{\sref}[1]{\ensuremath{\textbf{#1}}}
-\newcommand{\bool}{\textbf{bool}}
-\newcommand{\listml}{\textbf{list}}
-\newcommand{\typeml}{\textbf{type}}
-\newcommand{\valml}{\textbf{val}}
-\newcommand{\matchml}{\textbf{match}}
-\newcommand{\withml}{\textbf{with}}
-\newcommand{\moduleml}{\textbf{module}}
-\newcommand{\sigml}{\textbf{sig}}
-\newcommand{\structml}{\textbf{struct}}
-\newcommand{\enml}{\textbf{end}}
+\newcommand{\mlkw}[1]{\textbf{#1}\xspace}
 
-\def\Definition{\textbf{Definition}}
-\def\Inductive{\textbf{Inductive}}
-\def\Variable{\textbf{Variable}}
+\newcommand{\letml}{\mlkw{let}}
+\newcommand{\andml}{\mlkw{and}}
+\newcommand{\letcci}{\mlkw{let}_{CCI}}
+\newcommand{\inml}{\mlkw{in}}
+\newcommand{\ifml}{\mlkw{if}}
+\newcommand{\thenml}{\mlkw{then}}
+\newcommand{\elseml}{\mlkw{else}}
+\newcommand{\funml}{\mlkw{fun}}
+\newcommand{\sdef}[1]{\ensuremath{\mlkw{#1}}}
+\newcommand{\sref}[1]{\ensuremath{\mlkw{#1}}}
+\newcommand{\bool}{\mlkw{bool}}
+\newcommand{\listml}{\mlkw{list}}
+\newcommand{\typeml}{\mlkw{type}}
+\newcommand{\valml}{\mlkw{val}}
+\newcommand{\matchml}{\mlkw{match}}
+\newcommand{\withml}{\mlkw{with}}
+\newcommand{\moduleml}{\mlkw{module}}
+\newcommand{\sigml}{\mlkw{sig}}
+\newcommand{\structml}{\mlkw{struct}}
+\newcommand{\enml}{\mlkw{end}}
+\newcommand{\returnml}{\mlkw{return}}
+\newcommand{\asml}{\mlkw{as}}
+
+\def\Definition{\mlkw{Definition}}
+\def\Fixpoint{\mlkw{Fixpoint}}
+\def\Inductive{\mlkw{Inductive}}
+\def\Variable{\mlkw{Variable}}
 
 \newcommand{\SP}{{\sc SP}}
 \newcommand{\eqbre}{`=_{\beta\rho\eta}}

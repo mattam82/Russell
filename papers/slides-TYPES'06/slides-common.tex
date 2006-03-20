@@ -63,8 +63,10 @@
 \usepackage{txfonts}
 \input{grammar-macros}
 
-\newboolean{defineTheorem}
-\setboolean{defineTheorem}{true}
+\newboolean{defineTheoremEn}
+\newboolean{defineTheoremFr}
+\setboolean{defineTheoremEn}{true}
+\setboolean{defineTheoremFr}{false}
 \input{mathenv}
 \setboolean{displayLabels}{true}
 
@@ -253,7 +255,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Recall subsets}
+  \frametitle{A simple idea}
   
   \begin{block}{Definition}
     $\mysubset{x}{T}{P}$ is the set of objects of set $T$ verifying property $P$. 
@@ -261,7 +263,7 @@
   
   \begin{itemize}
   \item Useful for specifying, widely used in mathematics ;    
-  \item Separates object and property ;
+  \item Separates object and property.
   \end{itemize}
 
   \begin{block}{The mathematician idea adapted} 
@@ -343,71 +345,55 @@
 \begin{frame}[t,label=typingdecl]
   \frametitle{Typing}
   
-  Calculus of Constructions +
+  Calculus of Constructions - Conv +
   \typenvd
   \begin{center}
     \vspace{0.5cm}
     \Coerce\DP
-  \end{center}
-  
-  \only<1>{\hyperlink{sysalgo<2>}{\beamerreturnbutton{}}}
-\end{frame}
 
-\begin{frame}[t,label=subtypingdecl]
-  \frametitle{Coercion}
-  \begin{center}
+    \pause
     \def\fCenter{\subd}
     
     \SubConv\DP
     \SubTrans\DP
 
     \vspace{0.5cm}
-    \only<2->{\SubSub\DP
+    \only<3->{\SubSub\DP
       \SubProof\DP} % $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
 
     \vspace{0.5cm}
-    \only<3->{\SubProd\DP
+    \only<4->{\SubProd\DP
       \SubSigma\DP}
   \end{center}
 
-  \only<3->
-  {\begin{fact}[Symmetry]
-      $T \sub U "<->" U \sub T$.
-    \end{fact}}
-  
-  \only<3->{\hyperlink{sysalgo<3>}{\beamerreturnbutton{}}}
-%   \begin{itemize}
-%   \item<2-> Environnements non nécessaires.
-%     %, essentiellement équivalence en
-%     %réduisant les types sous-ensembles au type de leur objet ;
-%   \item<3-> Produit contravariant en son domaine et covariant en son codomaine:
-%     $\Pi x : \nat, \mysubset{x}{\nat}{x > 0} \subd \Pi \mysubset{x}{\nat}{x
-%       > 0}, \nat$.    
-%   \item<4-> Cette relation est symétrique ! (différent du sous-typage). % et
-%     % la conversion ?
-%   \end{itemize}
+%  \only<1>{\hyperlink{sysalgo<2>}{\beamerreturnbutton{}}}
+\end{frame}
 
+\begin{frame}
+  \frametitle{Some facts}
+ 
+  \begin{itemize}
+  \item $\eqbr ``(= \subd$.
+  \item $\subd$ is an equivalence relation.
+  \item Conservativity over \CCI{}.
+  \end{itemize}
 
 \end{frame}
 
 \typenva
 
 \begin{frame}[t,label=sysalgo]
-  \frametitle{Système algorithmique}
-  \begin{block}{Objectif}
-    Extraire un algorithme du système formel. Nouveau jugement de
-    typage $\typea$ qu'on veut \emph{décidable}.
-  \end{block}
-  
+  \frametitle{Algorithmic system}
+
   \begin{itemize}
-  \item<2-> Intégration de la coercion à l'application 
+  \item<1-> Restrict coercion rule to application premise.
     \hyperlink{typingdecl<3>}{\beamergotobutton{}} ;
     
-  \item<3-> Algorithme de coercion déterministe (élimination de la transitivité)
+  \item<2-> Deterministic coercion algorithm (transitivity elimination).
     \hyperlink{subtypingdecl<3>}{\beamergotobutton{}} ;
   \end{itemize}
 
-  \only<2>{\TAX{App}
+  \only<1>{\TAX{App}
     {$`G \seq f : T \quad \mu(T) `= \Pi x : V. W$}
     {$`G \seq u : U$}
     {$U \subd V $}
@@ -421,10 +407,10 @@
     \end{eqnarray*}
   }
   
-  \only<4>{
-    \begin{theorem}[Équivalence des systèmes]
-      $`G \typed t : T$ \ssi{} il existe $U$ tel que $`G \typea t : U$
-      avec $U \suba T$ et $U \suba T$ \ssi{} $U \subd T$.
+  \only<3>{
+    \begin{theorem}[Soundness \& Completness]
+      $`G \typed t : T$ iff there exist $U$ so that $`G \typea t : U$
+      where $U \suba T$ and $U \suba T$ iff $U \subd T$.
     \end{theorem}
 %     \begin{fact}[Décidabilité de $\typea$]
 %       Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
@@ -433,7 +419,7 @@
   
 \end{frame}
 
-\subsection{Traduction dans \Coq}
+\subsection{Interpretation in \CCI}
 \typenvi
 \begin{frame}<beamer>
   \frametitle{Plan}
@@ -441,42 +427,46 @@
 \end{frame}
 
 
-\renewcommand{\subimpl}[4]{{\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
+\renewcommand{\subimpl}[4]{#1 \typec {\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
 
+\setboolean{displayLabels}{false}
 \begin{frame}[t]
-  \frametitle{Coercions explicites}
+  \frametitle{Explicit coercions}
   % Remettre de la logique, véritable sémantique 
   \pause
-    \begin{center}
+  \begin{center}
       \def\fCenter{\subti}          
       \SubConvI\DP
+
+      \vspace{0.25cm}     
+      \only<3->{
+        \SubProdI\DP
+        
+        \vspace{0.25cm}
+        \SubSigmaI\DP
+      }
       
       \vspace{0.25cm}
-      \only<3->{\SubSubI\DP}
+      \only<4->{\SubSubI\DP}
 
       \vspace{0.25cm}
-      \only<4->{\UAX{SubProof}
+      \only<5->{\UAX{SubProof}
       % {$`G, x : U \typec P : \Prop$}
       {$\subimpl{`G}{c}{T}{U}$}
       {$\subimpl{`G}
         {\elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{c}{\ex{P}[c/x]}}
         {T}{\mysubset{x}{U}{P}}$}
-      {}\DP}
-      % \SubRightI\DP
-      \only<5->{
-      \vspace{0.25cm}
-      \SubProdI\DP
-      
-      \vspace{0.25cm}
-      \SubSigmaI\DP}
+      {}\DP
+      }
     \end{center}
 
-    \only<4>{$0 : \nat$ et $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
-      mais $(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]}))~0 
-      \eqbr \sref{elt}~0~?_{\alert{0 \neq 0}}$}
+    \only<4>{$0 : \nat$ and $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
+      but \[(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]}))[0]
+      \eqbr \sref{elt}~0~?_{\alert{0 \neq 0}}\]}
 
 \end{frame}
 
+\setboolean{displayLabels}{true}
 \renewcommand{\subimpl}[4]{#2 : #3 \sub #4}
 
 \renewcommand{\timpl}[6]{#1 \typea #2 : #3\only<2->{"~>" #4 \typec #5 : #6}}
@@ -486,76 +476,120 @@
   \LeftRuleLabel{#1}\BIC{#6}}
 
 \begin{frame}[t]
-  \frametitle{Interprétation}
-  
-  \begin{center}
-    $\ip{t}{`G} = t', T'$. On note $\ipt{t}{`G} = t'$ et $\ipT{t}{`G} = T'$.
-  \end{center}
+  \frametitle{Interpretation of terms $\ip{}{`G}$}
+    
+  \begin{itemize}
+  \item Follows algorithmic typing.
+  \item Straightforward extension to contexts.
+  \end{itemize}
   
   \only<2->{
-    Exemple:
-    \setboolean{displayLabels}{false}
-    \begin{prooftree}
-      \typenva
-      \AppA
-    \end{prooftree}
-    
-    \typenvi
-    \[\begin{array}{lcll}
-      \ip{f~u}{`G} 
-      & = & \letml~(f', `t) = \ip{f}{`G}~\inml & \\
-      & & \letml~(\pi, \Pi x : V'.W') = \muimpl(`t)~\inml & \\
-      & & \letml~(u', U') = \ip{u}{`G}~\inml & \\
-      & & \letml~c = \sref{coerce}~U'~V'~\inml & \\
-      & & (\pi~f')~(c~u'), W'[c~u'/x] & 
-    \end{array}\]    
+    \begin{example}[Application]
+      \setboolean{displayLabels}{false}
+      \begin{prooftree}
+        \typenva
+        \AppA
+      \end{prooftree}
+      
+      \typenvi
+      \[\begin{array}{lcll}
+        \ip{f~u}{`G} 
+        & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
+        & & \letml~(\Pi x : V.W) = \mualgo{F}~\inml & \\
+        & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)} & \\
+        & & \letml~c = \coerce{`G}{U}{V}\inml & \\
+        & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
+      \end{array}\]    
+    \end{example}
   }
-   
+  
   % \item Correspondance code écrit/extrait.
 \end{frame}
 
-\begin{frame}
-  \frametitle{Propriétés}
+\begin{frame}[t]
+  \frametitle{Theoretical properties}
   
-  \begin{conjecture}[Correction de la réécriture]
-    Si $`G \typea t : T$ alors $\ipG{`G} \typec \ipt{t}{\iG} : \ipt{T}{\iG}$.
-  \end{conjecture}
+  \begin{theorem}[Soundness]
+    If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
+  \end{theorem}
   
-  \begin{lemma}[Substitutivité]
-    Si $\iG \typec \ipt{u}{\iG} : \ipt{U}{\iG}$,
-    $\ipG{`G, x : V} \typec \ipt{W}{\ipG{`G, x : V}} : \ipt{T}{\ipG{`G, x : V}}$,
-    $c : \ipt{U}{\iG} \subi \ipt{V}{\iG}$,
-    alors il existe $`a : \ipt{T}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x] \suba \ipt{T[u/x]}{\iG}$
-    tel que
-    \alert{$(`a~\ipt{W}{\ipG{`G, x : V}}[c~\ipt{u}{\iG}/x]) `= \ipt{W[u/x]}{\iG}$}
-  \end{lemma}
-  
-  \begin{center}
-    $"=>"$ Commutation des coercions
-  \end{center}
+  \begin{itemize}
+  \item<2-> Depart from the coercion inference algorithm.
+  \item<3-> Requires a larger equational theory.   
+  \only<3->{
+    \[\begin{array}{llcll}
+    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
+    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
+    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & = & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
+    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{if $e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \text{if $e : \mysubset{x}{E}{P}$} \\
+    (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{if $t
+      `= t'$}
+  \end{array}\]
+  }
+\end{itemize}
+
 \end{frame}
 
-\subsection{Implantation et exemple}
+\subsection{The prototype}
 
 \begin{frame}[t]
-  \frametitle{Implémentation}
-  $`~$ 2000 lignes de code O'Caml.
+  \frametitle{Implementation}
   
-  \pause
-  \begin{enumerate}
-  \item Analyse syntaxique ;
-  \item Typage ;
-  \item Interprétation.
-  \end{enumerate}
+  \begin{block}{Architecture}
+    Wrap around \Coq{}'s vernacular commands (\texttt{Definition},
+    \texttt{Fixpoint}, \ldots).
+    
+    \begin{enumerate}
+    \item \Coq{} parser ;
+    \item Typing with coercions ;
+    \item Interactive proving of obligations.
+    \end{enumerate}
+  \end{block}
 
   \pause
-  \begin{block}{Variables existentielles $?_{`t}$}
-    \only<3>{\Refine{}} \only<4>{$"=>"$ \eterm{}}
+  \begin{block}{Existential variables $?_{`t}$}
+    \Refine{} \only<3>{$"=>"$ \eterm{}}
   \end{block}
 \end{frame}
 
+\begin{frame}[t]
+  \frametitle{Pratical enhancements}
+
+  \begin{itemize}
+  \item Pattern-matching and equalities.
+  \item<2-> Well-founded recursion.
+  \end{itemize}
+
+  \only<1>{
+    \[\matchml~v~\returnml~T~\withml~p_1 "=>" t_1 \cdots{} p_n "=>" t_n \]
+    \[\begin{array}{lcl}
+      (\matchml~v~\asml~t' & \returnml & (t' = t "->" T)~\withml \\
+      p_1 "=>" \funml{}~H & "=>" & t_1 \\
+      & \vdots{} & \\
+      p_n "=>" \funml{}~H & "=>" & t_n) \\
+      (\sref{refl\_equal}~t) & &
+    \end{array}
+    \]
+  }
+
+  \only<2->{
+    \[ \Fixpoint~f~(a : nat)~\{ \mlkw{wf}~lt~a \} : \nat := t \]
+  }
+  \only<3->{
+    \[\begin{array}{lcl}
+      a & : & \nat \\
+      f & : & \{ x : \nat `| x < a \} "->" \nat \\
+      \hline
+      t & : & \nat
+    \end{array}\]
+  }
+
+\end{frame}
+
 \begin{frame}
-  \frametitle{Exemple: Définition}
+  \frametitle{Example: Definition}
   \small
   \input{subtac-euclid}
 \end{frame}
@@ -587,25 +621,20 @@
 
   % Keep the summary *very short*.
   \begin{itemize}
-  \item
-    Développement d'un langage de programmation plus \alert{souple}
-    conservant l'expressivité de \CCI ;
-  \item
-    Bonne intégration à l'environnement ;
-  \item 
-    Justification formelle du ``\ps{}''.
+  \item A more \alert{flexible} programming language, conservative over \CCI.
+  \item Intergration with existing environnment.
+  \item Formal justification of ``\ps{}''.
   \end{itemize}
   
   \pause
   % The following outlook is optional.
   \vskip0pt plus.5fill
   \begin{itemize}
-  \item[\bf{$"=>"$}] Travaux futurs
+  \item[\bf{$"=>"$}] Further work:
     \begin{itemize}
-    \item
-      Preuve de la correction de l'interprétation.
-    \item
-      Extension aux autres constructions de \Coq{} ((co-)inductifs, univers, \ldots) ;
+    \item Extension to other \Coq{} constructs ((co-)inductive types,
+      universes, \ldots).
+    \item Integration of proof-irrelevance in \Coq{}.
     \end{itemize}
   \end{itemize}
 \end{frame}

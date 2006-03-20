@@ -26,53 +26,7 @@ un terme $t'$ réecrit que l'on montrera bien typé dans l'environnement \CCI{} $\
   \end{itemize}
 \end{definition}
 
-\def\typeafn#1#2{\typeml_{#1}(#2)}
-\begin{figure}
-  \[\begin{array}{lcll}
-    \ip{x}{`G} & = & x & \\
-    \\
-    \ip{s}{`G} & = & s & s `: \setproptype\\
-    \\
-    \ip{\Pi x : T.U}{`G} 
-    & = & \Pi x : \ip{T}{`G}.\ip{U}{`G, x : T} & \\
-    & \\
-    \ip{\lambda x : `t.v}{`G} 
-    & = & \letml~`t' = \ip{`t}{`G}~\inml & \\
-    & & \letml~v' = \ip{v}{`G, x : `t}~\inml & \\
-    & & (\lambda x : `t'. v') & \\
-    & \\
-    \ip{f~u}{`G} 
-    & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
-    & & \letml~(\Pi x : V.W) = \mualgo{F}~\inml & \\
-    & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)} & \\
-    & & \letml~c = \coerce{`G}{U}{V}\inml & \\
-    & & (\pi~\ip{f}{`G})~(c~\ip{u}{`G}) & \\
-    & \\
-    \ip{\Sigma x : T.U}{`G} 
-    & = & \Sigma x : \ip{T}{`G}.\ip{U}{`G, x : T} & \\
-    & \\
-    \ip{\pair{\Sigma x : T.U}{t}{u}}{`G}
-    & = & \letml~t' = \ip{t}{`G}~\inml & \\
-    & & \letml~T' = \typeafn{`G}{t}~\inml& \\
-    & & \letml~ct = \coerce{`G}{T'}{T}~\inml& \\
-    & & \letml~U' = \typeafn{`G}{u}~\inml& \\
-    & & \letml~u' = \ip{u}{`G}~\inml & \\
-    & & \letml~cu = \coerce{`G}{U'}{U[t/x]}~\inml & \\
-    & & \pair{\ip{\Sigma x : T.U}{`G}}{ct[t']}{cu[u']} & \\
-    & \\
-    \ip{\pi_i~t}{`G} 
-    & = & \letml~t' = \ip{t}{`G}~\inml & i `: \{ 1, 2 \} \\
-    & & \letml~T = \typeafn{`G}{t}~\inml & \\
-    & & \letml~\Sigma x : V.W = \mualgo{T}~\inml & \\
-    & & \letml~c = \coerce{`G}{T}{(\Sigma x : V.W)}~\inml & \\
-    & & \pi_i~c[t'] & \\
-    & \\
-    \ip{\mysubset{x}{U}{P}}{`G}
-    & = & \mysubset{x}{\ip{U}{`G}}{\ip{P}{`G, x : U}}
-  \end{array}\]
-  \caption{Interprétation dans \CCI{}}
-  \label{fig:interp}
-\end{figure}
+\interpfig
 
 Chaque jugement de coercion du système algorithmique permet de dériver
 une coercion explicite qui sera directement appliquée à un objet.
@@ -121,20 +75,7 @@ Notre opération de mise en forme normale de tête est définie de la façon suivant
 On note donc $\hnf{T}$ la forme normale de tête $T$ et $\nf{T}$ la forme normale
 de $T$.
 
-\begin{figure}[ht]
-  \[\begin{array}{llcll}
-    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
-    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
-    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
-    (\eta) & (\lambda x : X.e~x) & = & e & \text{si $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
-    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{si $e : \Sigma x : X. Y$} \\
-    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \text{si $e : \mysubset{x}{E}{P}$} \\
-    (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{si $t
-      `= t'$}
-  \end{array}\]
-  \caption{Théorie équationnelle de \CCI{}}
-  \label{fig:eqcci}
-\end{figure}
+\ccieqfig
 
 On utilise l'équivalence $\eqbpers$ définie comme la clôture réflexive,
 symétrique et transitive de la relation définie figure
