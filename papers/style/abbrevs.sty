@@ -67,7 +67,7 @@ $\smile$}}}}
 \newcommand{\Type}{\ensuremath{\text{\texttt{Type}}}}
 
 
-\def\name#1{{\sc #1}}
+\def\name#1{{\sc #1}\xspace}
 
 \def\HOL{\name{HOL}}
 \def\Coq{\name{Coq}}
@@ -75,6 +75,8 @@ $\smile$}}}}
 \def\CCIfull{Calcul des Constructions Inductives}
 \def\CCI{\name{CCI}}
 \def\CC{\name{CC}}
+\def\ECC{\name{ECC}}
+\def\ECCfull{Extended Calculus of Constructions}
 \def\CCfull{Calcul des Constructions}
 \def\TCC{\name{TCC}}
 \def\PVS{\name{PVS}}
@@ -154,12 +156,12 @@ $\smile$}}}}
 \def\Variable{\mlkw{Variable}}
 
 \newcommand{\SP}{{\sc SP}}
-\newcommand{\eqbre}{`=_{\beta\rho\eta}}
-\newcommand{\eqbr}{`=_{\beta\rho}}
-\newcommand{\redbr}{"->"_{\beta\rho}}
-\newcommand{\redbrt}{"->>"_{\beta\rho}}
-\newcommand{\eqbres}{`=_{\beta\rho\eta\SP{}}}
-\newcommand{\eqbrs}{`=_{\beta\rho\SP{}}}
+\newcommand{\eqbre}{`=_{\beta\pi\eta}}
+\newcommand{\eqbr}{`=_{\beta\pi}}
+\newcommand{\redbr}{"->"_{\beta\pi}}
+\newcommand{\redbrt}{"->>"_{\beta\pi}}
+\newcommand{\eqbres}{`=_{\beta\pi\eta\SP{}}}
+\newcommand{\eqbrs}{`=_{\beta\pi\SP{}}}
 \newcommand{\eqbpers}{`=_{\beta\pi\eta\rho\sigma}}
 
 \newcommand{\elt}[4]{\text{elt}~#1~#2~#3~#4}
