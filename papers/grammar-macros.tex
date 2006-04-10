@@ -1,10 +1,12 @@
+\def\constant{constant}
+
 \newcommand{\termgrammar}
 {$\begin{array}{lcl}
     `a & \Coloneqq & x \\
     & | & \lambda x : `t "=>" `a \\
     & | & `a~`a \\ 
     & | & `a~`t \\
-    & | & \text{\emph{constante}} \\
+    & | & \text{\emph{\constant}} \\
 % & | & (`a,~`a) \\
     & | & \pair{\Sigma x : `t.`t}{`a}{`a} \\
 %    & | & \letml~x = `a ~\inml~`a \\
@@ -18,7 +20,7 @@
     `t & \Coloneqq & x \\
     & | & `t "->" `t \\
     & | & `t~`t \\
-    & | & \text{\emph{constante}} \\
+    & | & \text{\emph{\constant}} \\
     & | & `t * `t \\
     & | & \Sigma x : `t. `t \\
     & | & \lambda x : s "=>" `t \\
@@ -40,7 +42,7 @@
     & | & \Set \\
     & | & \Prop \\
     & | & \Type \\
-    & | & \text{\emph{constante}} 
+    & | & \text{\emph{\constant}} 
 %    & & \\
 %    \text{{\tt Inductive}} & \Coloneqq & ident
   \end{array}$}

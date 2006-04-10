@@ -153,7 +153,8 @@
   \begin{block}{Coercions for \PVS's \ps}
     \vspace{0.7em}
     \begin{itemize}
-    \item<1-> A type system based on \ECC ($\typea, \eqbr$) with a \alert{larger} conversion ($\suba$). 
+    \item<1-> A type system based on \CC + $\Sigma$ types
+      ($\typea, \eqbr$) with a \alert{larger} conversion ($\suba$). 
     \item<2-> An interpretation in \CCI ($\typec, `=$) with metavariables.
     \item<5-> Needs eta-rules and proof-irrelevance ; $`=$ is really $\eqbpers$.
     \item<6-> An improved apparatus for handling \alert{dependent} metavariables in \Coq{} (WIP).
@@ -161,6 +162,8 @@
   \end{block}
   \only<1>{
     \begin{center}
+      $\mysubset{x}{A}{P} \eqdef \Sigma x : A.P$ where $A : \Set$ and 
+      $x : A \typea P : \Prop{}$.
       $A \suba \mysubset{x}{A}{P}$ and $\mysubset{x}{A}{P} \suba A$
     \end{center}
   }
@@ -224,432 +227,432 @@
   
 \end{frame}
 
+%\end{document}
 
-\end{document}
-
-% \begin{frame}
-%   \frametitle{What's missing ?}
+\begin{frame}
+  \frametitle{What's missing ?}
   
-%   A phase distinction between programming and proving, using
-%   \emph{Type Checking Conditions}.
-%   \pause
-%   \begin{block}{Technical requirements}
-%     \begin{itemize}
-%     \item Metavariables ;
-%     \item Proof shell support.
-%     \end{itemize}
-%   \end{block}
+  A phase distinction between programming and proving, using
+  \emph{Type Checking Conditions}.
+  \pause
+  \begin{block}{Technical requirements}
+    \begin{itemize}
+    \item Metavariables ;
+    \item Proof shell support.
+    \end{itemize}
+  \end{block}
     
-% \end{frame}
+\end{frame}
 
-% \begin{frame}[t]
-%   \frametitle{Contribution}
+\begin{frame}[t]
+  \frametitle{Contribution}
   
-%   An integration of \PVS{} ``Predicate Subtyping'' in \Coq.
-% \end{frame} 
+  An integration of \PVS{} ``Predicate Subtyping'' in \Coq.
+\end{frame} 
 
-% \subsection{Related work}
+\subsection{Related work}
 
-% \begin{frame}
-%   \frametitle{Inverting extraction}
-%   \begin{block}{The \Program{} tactic (\name{Catherine Parent}), 94}
-%     \begin{itemize}
-%     \item[{\bf +}] General method for proof synthesis from 
-%       programs ;
+\begin{frame}
+  \frametitle{Inverting extraction}
+  \begin{block}{The \Program{} tactic (\name{Catherine Parent}), 94}
+    \begin{itemize}
+    \item[{\bf +}] General method for proof synthesis from 
+      programs ;
       
-%     \item[{\bf --}] Complex technic, generating relatively complicated
-%       terms and not well integrated with the assistant but completely
-%       coupled with the extraction mechanism.
+    \item[{\bf --}] Complex technic, generating relatively complicated
+      terms and not well integrated with the assistant but completely
+      coupled with the extraction mechanism.
       
-%     \item Unmaintained (incompatible with the current extraction mechanism). %, \Refine.
-%     \end{itemize}
-%   \end{block}
-% \end{frame}
+    \item Unmaintained (incompatible with the current extraction mechanism). , \Refine.
+    \end{itemize}
+  \end{block}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{A simple idea}
+\begin{frame}
+  \frametitle{A simple idea}
   
-%   \begin{block}{Definition}
-%     $\mysubset{x}{T}{P}$ is the set of objects of set $T$ verifying property $P$. 
-%   \end{block}
+  \begin{block}{Definition}
+    $\mysubset{x}{T}{P}$ is the set of objects of set $T$ verifying property $P$. 
+  \end{block}
   
-%   \begin{itemize}
-%   \item Useful for specifying, widely used in mathematics ;    
-%   \item Separates object and property.
-%   \end{itemize}
+  \begin{itemize}
+  \item Useful for specifying, widely used in mathematics ;    
+  \item Separates object and property.
+  \end{itemize}
 
-%   \begin{block}{The mathematician idea adapted} 
-%     An object of type $T$ and is an object of type $\mysubset{x}{T}{P}$,
-%     if there is a proof of $P[t]$. Conversely, an object of type
-%     $\mysubset{x}{T}{P}$ is an object of type $T$.
-%   \end{block}  
-% \end{frame}
+  \begin{block}{The mathematician idea adapted} 
+    An object of type $T$ and is an object of type $\mysubset{x}{T}{P}$,
+    if there is a proof of $P[t]$. Conversely, an object of type
+    $\mysubset{x}{T}{P}$ is an object of type $T$.
+  \end{block}  
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{\PVS{} : ``Predicate Subtyping''}
+\begin{frame}
+  \frametitle{\PVS{} : ``Predicate Subtyping''}
 
-%   \begin{itemize}
-%   \item Specialized typing algorithm for subset types, generating
-%     \emph{Type-checking conditions}.    
-%     \begin{tabular}{lcll}
-%       $t : \mysubset{x}{T}{P}$ & used as & $t : T$
-%       & ok \\
-%       $t : T$ & used as & $t : \mysubset{x}{T}{P}$ 
-%       & if $P[x/t]$
-%     \end{tabular}
-%     \pause
+  \begin{itemize}
+  \item Specialized typing algorithm for subset types, generating
+    \emph{Type-checking conditions}.    
+    \begin{tabular}{lcll}
+      $t : \mysubset{x}{T}{P}$ & used as & $t : T$
+      & ok \\
+      $t : T$ & used as & $t : \mysubset{x}{T}{P}$ 
+      & if $P[x/t]$
+    \end{tabular}
+    \pause
     
-%   \item[{\bf +}] Pratical success ; \pause
-%   \item[{\bf --}] \PVS{} architecture not very safe. % bugs, de Bruijn
-%   \end{itemize}  
-% \end{frame}
+  \item[{\bf +}] Pratical success ; \pause
+  \item[{\bf --}] \PVS{} architecture not very safe. bugs, de Bruijn
+  \end{itemize}  
+\end{frame}
 
-% \begin{frame}[t]
-%   \frametitle{Subtyping \& coercions}
+\begin{frame}[t]
+  \frametitle{Subtyping \& coercions}
 
-%   \begin{itemize}
-%   \item Zhaohui Luo: ``\emph{coercive subtyping}'', theoretical aspects
-%     (coherence, transitivity of coercions).
-%   \item Gang Chen: subtyping and coercions in dependent type systems
-%     ($\lambda P, \lambda C$)
-%   \item Amokrane Saïbi: coercion system for \Coq, with inheritance.
-%   \end{itemize}
+  \begin{itemize}
+  \item Zhaohui Luo: ``\emph{coercive subtyping}'', theoretical aspects
+    (coherence, transitivity of coercions).
+  \item Gang Chen: subtyping and coercions in dependent type systems
+    ($\lambda P, \lambda C$)
+  \item Amokrane Saïbi: coercion system for \Coq, with inheritance.
+  \end{itemize}
 
-% \end{frame}
+\end{frame}
 
-% \section{Contribution}
+\section{Contribution}
 
-% \subsection{A language for programming in \Coq} 
-% \begin{frame}[t]
-%   \frametitle{Architecture}
+\subsection{A language for programming in \Coq} 
+\begin{frame}[t]
+  \frametitle{Architecture}
   
-%   \begin{itemize}
-%   \item<1-> Writing programs in a language (\lng{}) with an enriched equivalence;
-%   \item<2-> Interpretation to \CCI, inserting coercions ; 
-%   \item<3-> Proof obligations solving.
-%   \end{itemize}
+  \begin{itemize}
+  \item<1-> Writing programs in a language (\lng{}) with an enriched equivalence;
+  \item<2-> Interpretation to \CCI, inserting coercions ; 
+  \item<3-> Proof obligations solving.
+  \end{itemize}
 
-%   \begin{tabular}{lclcl}
-%     $t : \mysubset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
-%     & \only<2->{$"~>"$} & \only<2->{$\pi_1~t$ \\
-%       $t : T$ & $"->"$ & $t : \mysubset{x}{T}{P}$ 
-%       & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
-%   \end{tabular}
+  \begin{tabular}{lclcl}
+    $t : \mysubset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
+    & \only<2->{$"~>"$} & \only<2->{$\pi_1~t$ \\
+      $t : T$ & $"->"$ & $t : \mysubset{x}{T}{P}$ 
+      & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
+  \end{tabular}
     
-% \end{frame}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{\lng{} syntax}
-%   \begin{columns}
-%     \begin{column}{0.5\textwidth}
-%       \begin{block}{Termes}
-%         \termgrammar
-%       \end{block}
-%     \end{column}
-%     \begin{column}{0.5\textwidth}
-%       \begin{block}{Types}
-%         \typegrammar
-%       \end{block}
-%     \end{column}
-%   \end{columns}  
-% \end{frame}
+\begin{frame}
+  \frametitle{\lng{} syntax}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Termes}
+        \termgrammar
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Types}
+        \typegrammar
+      \end{block}
+    \end{column}
+  \end{columns}  
+\end{frame}
 
-% \begin{frame}[t,label=typingdecl]
-%   \frametitle{Typing}
+\begin{frame}[t,label=typingdecl]
+  \frametitle{Typing}
   
-%   Calculus of Constructions - Conv +
-%   \typenvd
-%   \begin{center}
-%     \vspace{0.5cm}
-%     \Coerce\DP
+  Calculus of Constructions - Conv +
+  \typenvd
+  \begin{center}
+    \vspace{0.5cm}
+    \Coerce\DP
 
-%     \pause
-%     \def\fCenter{\subd}
+    \pause
+    \def\fCenter{\subd}
     
-%     \SubConv\DP
-%     \SubTrans\DP
+    \SubConv\DP
+    \SubTrans\DP
 
-%     \vspace{0.5cm}
-%     \only<3->{\SubSub\DP
-%       \SubProof\DP} % $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
+    \vspace{0.5cm}
+    \only<3->{\SubSub\DP
+      \SubProof\DP} % $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
 
-%     \vspace{0.5cm}
-%     \only<4->{\SubProd\DP
-%       \SubSigma\DP}
-%   \end{center}
+    \vspace{0.5cm}
+    \only<4->{\SubProd\DP
+      \SubSigma\DP}
+  \end{center}
 
-% %  \only<1>{\hyperlink{sysalgo<2>}{\beamerreturnbutton{}}}
-% \end{frame}
+ \only<1>{\hyperlink{sysalgo<2>}{\beamerreturnbutton{}}}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{Some facts}
+\begin{frame}
+  \frametitle{Some facts}
  
-%   \begin{itemize}
-%   \item $\eqbr ``(= \subd$.
-%   \item $\subd$ is an equivalence relation.
-%   \item Conservativity over \CCI{}.
-%   \end{itemize}
+  \begin{itemize}
+  \item $\eqbr ``(= \subd$.
+  \item $\subd$ is an equivalence relation.
+  \item Conservativity over \CCI{}.
+  \end{itemize}
 
-% \end{frame}
+\end{frame}
 
-% \typenva
+\typenva
 
-% \begin{frame}[t,label=sysalgo]
-%   \frametitle{Algorithmic system}
+\begin{frame}[t,label=sysalgo]
+  \frametitle{Algorithmic system}
 
-%   \begin{itemize}
-%   \item<1-> Restrict coercion rule to application premise.
-%     \hyperlink{typingdecl<3>}{\beamergotobutton{}} ;
+  \begin{itemize}
+  \item<1-> Restrict coercion rule to application premise.
+    \hyperlink{typingdecl<3>}{\beamergotobutton{}} ;
     
-%   \item<2-> Deterministic coercion algorithm (transitivity elimination).
-%     \hyperlink{subtypingdecl<3>}{\beamergotobutton{}} ;
-%   \end{itemize}
+  \item<2-> Deterministic coercion algorithm (transitivity elimination).
+    \hyperlink{subtypingdecl<3>}{\beamergotobutton{}} ;
+  \end{itemize}
 
-%   \only<1>{\TAX{App}
-%     {$`G \seq f : T \quad \mu(T) `= \Pi x : V. W$}
-%     {$`G \seq u : U$}
-%     {$U \subd V $}
-%     {$`G \seq (f u) : W [ u / x ]$}
-%     {}
-%     \DP
+  \only<1>{\TAX{App}
+    {$`G \seq f : T \quad \mu(T) `= \Pi x : V. W$}
+    {$`G \seq u : U$}
+    {$U \subd V $}
+    {$`G \seq (f u) : W [ u / x ]$}
+    {}
+    \DP
     
-%     \begin{eqnarray*}
-%       \mu~\mysubset{x}{U}{P} & "=>" & \mu~U \\
-%       \mu~x                & "=>" & x
-%     \end{eqnarray*}
-%   }
+    \begin{eqnarray*}
+      \mu~\mysubset{x}{U}{P} & "=>" & \mu~U \\
+      \mu~x                & "=>" & x
+    \end{eqnarray*}
+  }
   
-%   \only<3>{
-%     \begin{theorem}[Soundness \& Completness]
-%       $`G \typed t : T$ iff there exist $U$ so that $`G \typea t : U$
-%       where $U \suba T$ and $U \suba T$ iff $U \subd T$.
-%     \end{theorem}
-% %     \begin{fact}[Décidabilité de $\typea$]
-% %       Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
-% %     \end{fact}
-%   }
+  \only<3>{
+    \begin{theorem}[Soundness \& Completness]
+      $`G \typed t : T$ iff there exist $U$ so that $`G \typea t : U$
+      where $U \suba T$ and $U \suba T$ iff $U \subd T$.
+    \end{theorem}
+    \begin{fact}[Décidabilité de $\typea$]
+      Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
+    \end{fact}
+  }
   
-% \end{frame}
+\end{frame}
 
-% \subsection{Interpretation in \CCI}
-% \typenvi
-% \begin{frame}<beamer>
-%   \frametitle{Plan}
-%   \tableofcontents[currentsection,currentsubsection]
-% \end{frame}
+\subsection{Interpretation in \CCI}
+\typenvi
+\begin{frame}<beamer>
+  \frametitle{Plan}
+  \tableofcontents[currentsection,currentsubsection]
+\end{frame}
 
 
-% \renewcommand{\subimpl}[4]{#1 \typec {\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
+\renewcommand{\subimpl}[4]{#1 \typec {\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
 
-% \setboolean{displayLabels}{false}
-% \begin{frame}[t]
-%   \frametitle{Explicit coercions}
-%   % Remettre de la logique, véritable sémantique 
-%   \pause
-%   \begin{center}
-%       \def\fCenter{\subti}          
-%       \SubConvI\DP
+\setboolean{displayLabels}{false}
+\begin{frame}[t]
+  \frametitle{Explicit coercions}
+  % Remettre de la logique, véritable sémantique 
+  \pause
+  \begin{center}
+      \def\fCenter{\subti}          
+      \SubConvI\DP
 
-%       \vspace{0.25cm}     
-%       \only<3->{
-%         \SubProdI\DP
+      \vspace{0.25cm}     
+      \only<3->{
+        \SubProdI\DP
         
-%         \vspace{0.25cm}
-%         \SubSigmaI\DP
-%       }
+        \vspace{0.25cm}
+        \SubSigmaI\DP
+      }
       
-%       \vspace{0.25cm}
-%       \only<4->{\SubSubI\DP}
+      \vspace{0.25cm}
+      \only<4->{\SubSubI\DP}
 
-%       \vspace{0.25cm}
-%       \only<5->{\UAX{SubProof}
-%       % {$`G, x : U \typec P : \Prop$}
-%       {$\subimpl{`G}{c}{T}{U}$}
-%       {$\subimpl{`G}
-%         {\elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{c}{\ex{P}[c/x]}}
-%         {T}{\mysubset{x}{U}{P}}$}
-%       {}\DP
-%       }
-%     \end{center}
+      \vspace{0.25cm}
+      \only<5->{\UAX{SubProof}
+      % {$`G, x : U \typec P : \Prop$}
+      {$\subimpl{`G}{c}{T}{U}$}
+      {$\subimpl{`G}
+        {\elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{c}{\ex{P}[c/x]}}
+        {T}{\mysubset{x}{U}{P}}$}
+      {}\DP
+      }
+    \end{center}
 
-%     \only<4>{$0 : \nat$ and $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
-%       but \[(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]}))[0]
-%       \eqbr \sref{elt}~0~?_{\alert{0 \neq 0}}\]}
+    \only<4>{$0 : \nat$ and $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
+      but \[(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]}))[0]
+      \eqbr \sref{elt}~0~?_{\alert{0 \neq 0}}\]}
 
-% \end{frame}
+\end{frame}
 
-% \setboolean{displayLabels}{true}
-% \renewcommand{\subimpl}[4]{#2 : #3 \sub #4}
+\setboolean{displayLabels}{true}
+\renewcommand{\subimpl}[4]{#2 : #3 \sub #4}
 
-% \renewcommand{\timpl}[6]{#1 \typea #2 : #3\only<2->{"~>" #4 \typec #5 : #6}}
+\renewcommand{\timpl}[6]{#1 \typea #2 : #3\only<2->{"~>" #4 \typec #5 : #6}}
 
-% \newcommand{\QAXII}[7]{\AXC{\only<2->{#3}}\noLine\UIC{#2}
-%   \AXC{\only<2->{#5}}\noLine\UIC{#4}
-%   \LeftRuleLabel{#1}\BIC{#6}}
+\newcommand{\QAXII}[7]{\AXC{\only<2->{#3}}\noLine\UIC{#2}
+  \AXC{\only<2->{#5}}\noLine\UIC{#4}
+  \LeftRuleLabel{#1}\BIC{#6}}
 
-% \begin{frame}[t]
-%   \frametitle{Interpretation of terms $\ip{}{`G}$}
+\begin{frame}[t]
+  \frametitle{Interpretation of terms $\ip{}{`G}$}
     
-%   \begin{itemize}
-%   \item Follows algorithmic typing.
-%   \item Straightforward extension to contexts.
-%   \end{itemize}
+  \begin{itemize}
+  \item Follows algorithmic typing.
+  \item Straightforward extension to contexts.
+  \end{itemize}
   
-%   \only<2->{
-%     \begin{example}[Application]
-%       \setboolean{displayLabels}{false}
-%       \begin{prooftree}
-%         \typenva
-%         \AppA
-%       \end{prooftree}
+  \only<2->{
+    \begin{example}[Application]
+      \setboolean{displayLabels}{false}
+      \begin{prooftree}
+        \typenva
+        \AppA
+      \end{prooftree}
       
-%       \typenvi
-%       \[\begin{array}{lcll}
-%         \ip{f~u}{`G} 
-%         & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
-%         & & \letml~(\Pi x : V.W) = \mualgo{F}~\inml & \\
-%         & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)} & \\
-%         & & \letml~c = \coerce{`G}{U}{V}\inml & \\
-%         & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
-%       \end{array}\]    
-%     \end{example}
-%   }
+      \typenvi
+      \[\begin{array}{lcll}
+        \ip{f~u}{`G} 
+        & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
+        & & \letml~(\Pi x : V.W) = \mualgo{F}~\inml & \\
+        & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)} & \\
+        & & \letml~c = \coerce{`G}{U}{V}\inml & \\
+        & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
+      \end{array}\]    
+    \end{example}
+  }
   
-%   % \item Correspondance code écrit/extrait.
-% \end{frame}
+  % \item Correspondance code écrit/extrait.
+\end{frame}
 
-% \begin{frame}[t]
-%   \frametitle{Theoretical properties}
+\begin{frame}[t]
+  \frametitle{Theoretical properties}
   
-%   \begin{theorem}[Soundness]
-%     If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
-%   \end{theorem}
+  \begin{theorem}[Soundness]
+    If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
+  \end{theorem}
   
-%   \begin{itemize}
-%   \item<2-> Depart from the coercion inference algorithm.
-%   \item<3-> Requires a larger equational theory.   
-%   \only<3->{
-%     \[\begin{array}{llcll}
-%     (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
-%     (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
-%     (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
-%     (\eta) & (\lambda x : X.e~x) & = & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
-%     (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{if $e : \Sigma x : X. Y$} \\
-%     & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \text{if $e : \mysubset{x}{E}{P}$} \\
-%     (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{if $t
-%       `= t'$}
-%   \end{array}\]
-%   }
-% \end{itemize}
+  \begin{itemize}
+  \item<2-> Depart from the coercion inference algorithm.
+  \item<3-> Requires a larger equational theory.   
+  \only<3->{
+    \[\begin{array}{llcll}
+    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
+    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
+    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & = & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
+    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{if $e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \text{if $e : \mysubset{x}{E}{P}$} \\
+    (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{if $t
+      `= t'$}
+  \end{array}\]
+  }
+\end{itemize}
 
-% \end{frame}
+\end{frame}
 
-% \subsection{The prototype}
+\subsection{The prototype}
 
-% \begin{frame}[t]
-%   \frametitle{Implementation}
+\begin{frame}[t]
+  \frametitle{Implementation}
   
-%   \begin{block}{Architecture}
-%     Wrap around \Coq{}'s vernacular commands (\texttt{Definition},
-%     \texttt{Fixpoint}, \ldots).
+  \begin{block}{Architecture}
+    Wrap around \Coq{}'s vernacular commands (\texttt{Definition},
+    \texttt{Fixpoint}, \ldots).
     
-%     \begin{enumerate}
-%     \item \Coq{} parser ;
-%     \item Typing with coercions ;
-%     \item Interactive proving of obligations.
-%     \end{enumerate}
-%   \end{block}
+    \begin{enumerate}
+    \item \Coq{} parser ;
+    \item Typing with coercions ;
+    \item Interactive proving of obligations.
+    \end{enumerate}
+  \end{block}
 
-%   \pause
-%   \begin{block}{Existential variables $?_{`t}$}
-%     \Refine{} \only<3>{$"=>"$ \eterm{}}
-%   \end{block}
-% \end{frame}
+  \pause
+  \begin{block}{Existential variables $?_{`t}$}
+    \Refine{} \only<3>{$"=>"$ \eterm{}}
+  \end{block}
+\end{frame}
 
-% \begin{frame}[t]
-%   \frametitle{Pratical enhancements}
+\begin{frame}[t]
+  \frametitle{Pratical enhancements}
 
-%   \begin{itemize}
-%   \item Pattern-matching and equalities.
-%   \item<2-> Well-founded recursion.
-%   \end{itemize}
+  \begin{itemize}
+  \item Pattern-matching and equalities.
+  \item<2-> Well-founded recursion.
+  \end{itemize}
 
-%   \only<1>{
-%     \[\matchml~v~\returnml~T~\withml~p_1 "=>" t_1 \cdots{} p_n "=>" t_n \]
-%     \[\begin{array}{lcl}
-%       (\matchml~v~\asml~t' & \returnml & (t' = t "->" T)~\withml \\
-%       p_1 "=>" \funml{}~H & "=>" & t_1 \\
-%       & \vdots{} & \\
-%       p_n "=>" \funml{}~H & "=>" & t_n) \\
-%       (\sref{refl\_equal}~t) & &
-%     \end{array}
-%     \]
-%   }
+  \only<1>{
+    \[\matchml~v~\returnml~T~\withml~p_1 "=>" t_1 \cdots{} p_n "=>" t_n \]
+    \[\begin{array}{lcl}
+      (\matchml~v~\asml~t' & \returnml & (t' = t "->" T)~\withml \\
+      p_1 "=>" \funml{}~H & "=>" & t_1 \\
+      & \vdots{} & \\
+      p_n "=>" \funml{}~H & "=>" & t_n) \\
+      (\sref{refl\_equal}~t) & &
+    \end{array}
+    \]
+  }
 
-%   \only<2->{
-%     \[ \Fixpoint~f~(a : nat)~\{ \mlkw{wf}~lt~a \} : \nat := t \]
-%   }
-%   \only<3->{
-%     \[\begin{array}{lcl}
-%       a & : & \nat \\
-%       f & : & \{ x : \nat `| x < a \} "->" \nat \\
-%       \hline
-%       t & : & \nat
-%     \end{array}\]
-%   }
+  \only<2->{
+    \[ \Fixpoint~f~(a : nat)~\{ \mlkw{wf}~lt~a \} : \nat := t \]
+  }
+  \only<3->{
+    \[\begin{array}{lcl}
+      a & : & \nat \\
+      f & : & \{ x : \nat `| x < a \} "->" \nat \\
+      \hline
+      t & : & \nat
+    \end{array}\]
+  }
 
-% \end{frame}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{Example: Definition}
-%   \small
-%   \input{subtac-euclid}
-% \end{frame}
+\begin{frame}
+  \frametitle{Example: Definition}
+  \small
+  \input{subtac-euclid}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{Exemple: obligations de preuve}
-%   \small
-%   \input{subtac-euclid-tcc}
-% \end{frame}
+\begin{frame}
+  \frametitle{Exemple: obligations de preuve}
+  \small
+  \input{subtac-euclid-tcc}
+\end{frame}
 
-% \subsection{Résultats théoriques}
+\subsection{Résultats théoriques}
 
-% \begin{frame}
-%   \frametitle{Work in progress ;)}
-%   \begin{itemize}
-%   \item Correction \& complétude entre les différents systèmes.
-%   \item Lemmes classiques sur le sous-typage.
-%   \item Problème de la conversion (revoir Gang Chen).
-%   \end{itemize}
-% \end{frame}
+\begin{frame}
+  \frametitle{Work in progress ;)}
+  \begin{itemize}
+  \item Correction \& complétude entre les différents systèmes.
+  \item Lemmes classiques sur le sous-typage.
+  \item Problème de la conversion (revoir Gang Chen).
+  \end{itemize}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{Une preuve intéressante et courte ?}
-% \end{frame}
+\begin{frame}
+  \frametitle{Une preuve intéressante et courte ?}
+\end{frame}
 
-% \section*{Conclusion}
-% \begin{frame}
-%   \frametitle<presentation>{Conclusion}
+\section*{Conclusion}
+\begin{frame}
+  \frametitle<presentation>{Conclusion}
 
-%   % Keep the summary *very short*.
-%   \begin{itemize}
-%   \item A more \alert{flexible} programming language, conservative over \CCI.
-%   \item Intergration with existing environnment.
-%   \item Formal justification of ``\ps{}''.
-%   \end{itemize}
+  % Keep the summary *very short*.
+  \begin{itemize}
+  \item A more \alert{flexible} programming language, conservative over \CCI.
+  \item Intergration with existing environnment.
+  \item Formal justification of ``\ps{}''.
+  \end{itemize}
   
-%   \pause
-%   % The following outlook is optional.
-%   \vskip0pt plus.5fill
-%   \begin{itemize}
-%   \item[\bf{$"=>"$}] Further work:
-%     \begin{itemize}
-%     \item Extension to other \Coq{} constructs ((co-)inductive types,
-%       universes, \ldots).
-%     \item Integration of proof-irrelevance in \Coq{}.
-%     \end{itemize}
-%   \end{itemize}
-% \end{frame}
+  \pause
+  % The following outlook is optional.
+  \vskip0pt plus.5fill
+  \begin{itemize}
+  \item[\bf{$"=>"$}] Further work:
+    \begin{itemize}
+    \item Extension to other \Coq{} constructs ((co-)inductive types,
+      universes, \ldots).
+    \item Integration of proof-irrelevance in \Coq{}.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+\end{document}
 
 %%% Local Variables: 
 %%% mode: latex
