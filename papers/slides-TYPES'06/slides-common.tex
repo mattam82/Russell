@@ -182,7 +182,7 @@
   \end{itemize}
 
   \begin{block}{Adapting the idea} 
-    An object of type $T$ and is an object of type $\mysubset{x}{T}{P}$,
+    An object of type $T$ is an object of type $\mysubset{x}{T}{P}$,
     if a proof of $P[t]$ exists. Conversely, an object of type
     $\mysubset{x}{T}{P}$ is an object of type $T$.
   \end{block}  
@@ -204,8 +204,8 @@
       \end{tabular}
       \pause
       
-    \item[{\bf +}] Pratical success ; \pause
-    \item[{\bf --}] \PVS{} architecture not very safe.
+    \item[{\bf +}] Practical success ; \pause
+    \item[{\bf --}] No strong safety guarantee in \PVS{}.
     \end{itemize}  
   \end{block}
 %   \pause 
@@ -225,7 +225,7 @@
   
   \begin{itemize}
   \item<1-> Writing programs in a language (\lng{}) with an enriched equivalence;
-  \item<2-> Interpretation to \CCI with metavariables, inserting coercions ; 
+  \item<2-> Interpreting to \CCI with metavariables, inserting coercions ; 
   \item<3-> Proof obligations solving.
   \end{itemize}
 
@@ -277,7 +277,7 @@
   \end{theorem}
   
   \pause
-  \begin{theorem}[Soundness \& Completness]
+  \begin{theorem}[Soundness \& Completeness]
     $`G \typed t : T "<=>" `E U, `G \typea t : U `^ U \suba T$.    
   \end{theorem}
   \begin{fact}[Decidability of type inference and type checking]
@@ -358,8 +358,8 @@
       \ip{f~u}{`G} 
       & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
       & & \letml~(\Pi x : V.W) = \mualgo{F}~\inml & \\
-      & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)} & \\
-      & & \letml~c = \coerce{`G}{U}{V}\inml & \\
+      & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)}~\inml & \\
+      & & \letml~c = \coerce{`G}{U}{V}~\inml & \\
       & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
     \end{array}\]    
   \end{example}
@@ -431,7 +431,7 @@
   \begin{block}{Further work}
     \vspace{0.2em}
     \begin{itemize}
-    \item Application to other constructs ((co-)inductives) and commands.
+    \item Application to more constructs ((co-)inductive types) and commands.
     \item Improvements of \Coq{} (existential variables, unification,
       proof irrelevance).
     \item Complete and useful interpretation of \ML{} languages.
@@ -441,7 +441,7 @@
 \end{frame}
 
 \begin{frame}[t]
-  \frametitle{Addendum: some pratical enhancements}
+  \frametitle{Addendum: some practical enhancements}
   
   \begin{itemize}
   \item Handling of dependent existential variables (WIP).
