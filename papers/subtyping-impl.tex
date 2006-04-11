@@ -63,6 +63,16 @@
 {$T = \hnf{T}$}
 }
 
+\newcommand{\SubProofIs}[1][\Gamma]{%
+  \UAX{SubProof}
+  {$\subimpl{#1}{c}{T}{U}$}
+  {$\subimpl{#1}
+    {\elt{}{}{c}
+      {\ex{\ip{P}{#1, x : U}[c/x]}}}
+  {T}{\mysubset{x}{U}{P}}$}
+{}
+}
+
 \def\subtiFig{
 \begin{figure}[ht]
   \begin{center}
