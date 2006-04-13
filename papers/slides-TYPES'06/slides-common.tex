@@ -89,7 +89,7 @@
 \institute[LRI] % (optional, but mostly needed)
 {
 %  \inst{1}%
-  Paris {\uppercase\expandafter{\romannumeral 11}} University \\
+  Paris-Sud 11 University \\
   \LRI{} - \Demons{} Team \& \INRIAFuturs{} - \Proval{} Project
 }
 
@@ -139,6 +139,9 @@
 \pgfdeclareimage[interpolate=true,height=9cm]{append-extract}{captureappend-extract}
 \pgfdeclareimage[interpolate=true,height=9cm]{append-app}{captureappend-app}
 
+\def\typea{\vdash}
+\def\suba{\rightslice}
+
 % Delete this, if you do not want the table of contents to pop up at
 % the beginning of each subsection:
 \AtBeginSection[]
@@ -169,6 +172,8 @@
   \hspace{-1em}\only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
 \end{frame}
 
+\section{The idea}
+
 \begin{frame}
   \frametitle{A simple idea}
   
@@ -180,11 +185,18 @@
   \item Useful for specifying, widely used in mathematics ;    
   \item Separates object and property.
   \end{itemize}
-
+  \pause
   \begin{block}{Adapting the idea} 
-    An object of type $T$ is an object of type $\mysubset{x}{T}{P}$,
-    if a proof of $P[t]$ exists. Conversely, an object of type
-    $\mysubset{x}{T}{P}$ is an object of type $T$.
+    \begin{center}
+      \BAX{}{$t : T$}
+      {$P[t]$}
+      {$t : \mysubset{x}{T}{P}$}
+      {}\DP\quad      
+      \UAX{}{$t : \mysubset{x}{T}{P}$}
+      {$t : T$}
+      {}
+      \DP
+    \end{center}
   \end{block}  
 \end{frame}
 
@@ -223,25 +235,43 @@
 \begin{frame}[t]
   \frametitle{\ldots to Subset coercions}
   
-  \begin{itemize}
-  \item<1-> Writing programs in a language (\lng{}) with an enriched equivalence;
-  \item<2-> Interpreting to \CCI with metavariables, inserting coercions ; 
-  \item<3-> Proof obligations solving.
-  \end{itemize}
-
+  \begin{enumerate}
+  \item<1-> A property-irrelevant language (\lng{}) with \alert{decidable} typing ;
+  \item<2-> A total traduction to \Coq{} terms with holes ;
+  \item<3-> A method to turn the holes into proof obligations.
+  \end{enumerate}
+  
+  \only<1-2>{
   \begin{center}
-  \begin{tabular}{lclcl}
-    $t : \mysubset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
-    & \only<2->{$"~>"$} & \only<2->{$\pi_1~t$ \\
-      $t : T$ & $"->"$ & $t : \mysubset{x}{T}{P}$ 
-      & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
-  \end{tabular}
-\end{center}
+    \BAX{}{$`G \typea t : T$}
+    {$`G, x : T \type P : \Prop$}
+    {$\uncover<2>{(}t\uncover<2>{, ?)} : \mysubset{x}{T}{P}$}
+    {\uncover<2>{$`G \type ? : P[t]$}}\DP
+
+    \vspace{0.5cm}
+    \UAX{}{$`G \typea t : \mysubset{x}{T}{P}$}
+    {$`G \typea \uncover<2>{\eltpit~}t : T$}
+    {}\DP
+  \end{center}
+  }
+
+%   \begin{center}
+%   \begin{tabular}{lclcl}
+%     $t : \mysubset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
+%     & \only<2->{$"~>"$} & \only<2->{$\pi_1~t$ \\
+%       $t : T$ & $"->"$ & $t : \mysubset{x}{T}{P}$ 
+%       & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
+%   \end{tabular}
+% \end{center}
 
 \end{frame}
 
+\section{Theoretical development}
+
+\subsection{\lng{}}
+
 \begin{frame}[t,label=typingdecl]
-  \frametitle{Typing $\typed$ and coercion $\subd$}
+  \frametitle{\lng{}'s typing $\typed$ and coercion $\subd$}
   
   Calculus of Constructions - \irule{Conv} +
   \typenvd
@@ -256,80 +286,118 @@
     \SubTrans\DP
 
     \vspace{0.5cm}
-    \only<3->{\SubSub\DP}
-    \only<4->{\SubProof\DP}
+    \only<3->{\SubSub\DP
+    \SubProof\DP}
 
     \vspace{0.5cm}
-    \only<5->{\SubProd\DP
+    \only<6->{\SubProd\DP
       \SubSigma\DP}
   \end{center}
 
-  \only<4>{$0 : \nat$ and $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$, so
-    $0 : \mysubset{x}{\nat}{x \neq 0}$.}
-    
+  \only<4-5>{
+    \begin{center}
+      \AXC{$0 : \nat$}
+      \AXC{$\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
+      \BIC{$0 : \mysubset{x}{\nat}{x \neq 0}$}
+      \only<5>{\UIC{\alert{$? : 0 \neq 0$}}}
+      \DP
+    \end{center}
+  }
 \end{frame}
 
 \begin{frame}
-  \frametitle{Algorithmic typing $\typea$ and coercion $\suba$}
+  \frametitle{Results}
+
+  \begin{theorem}[Decidability of type checking]
+    $`G \type t : T$ is decidable.
+  \end{theorem}  
   
-  \begin{theorem}[Elimination of transitivity]
-    If $T \suba U `^ U \suba V$ then $T \suba V$.
-  \end{theorem}
+  \uncover<2>{
+  \begin{lemma}[Elimination of transitivity]
+    If $T \sub U `^ U \sub V$ then $T \sub V$.
+  \end{lemma}}
   
-  \pause
-  \begin{theorem}[Soundness \& Completeness]
-    $`G \typed t : T "<=>" `E U, `G \typea t : U `^ U \suba T$.    
-  \end{theorem}
-  \begin{fact}[Decidability of type inference and type checking]
-    $`E T, \talgo{`G}{t}{T}$ and $`G \typea t : T$ are decidable problems.
-  \end{fact}
+  \only<1->{
+    \begin{prooftree}
+      \TAX{App}
+      {$\tgen{`G}{f}{T} \quad T \suba \Pi x : A.B$}
+      {$\tgen{`G}{e}{E}$}
+      {$E \suba A$}
+      {$\tgen{`G}{(f~e)}{B [ e / x ]}$}
+      {}
+    \end{prooftree}
+  }
+  
 \end{frame}
 
 \def\typec{\vdash_{?}}
-\newcommand{\subimplnodisp}[4]{#1 \typec~\quad~: #3 \sub #4}
-\newcommand{\subimpldisp}[4]{#1 \typec {\color{blue}#2} : #3 \sub #4}
-\newcommand{\switchdisp}[3]{\only<#1>{\def\subimpl{\subimplnodisp}#1}
-  \only<#2>{\def\subimpl{\subimpldisp}#1}}
-\def\subimpl{\subimpldisp}
+\renewcommand{\subimpl}[4]{#1 \typec #2 : #3 \sub #4}
 
+\newcommand{\blue}[1]{{\color{blue}#1}}
+
+\subsection{Traduction in \Coq{}}
 \setboolean{displayLabels}{false}
 \begin{frame}[t]
-  \frametitle{Interpretation: deriving explicit coercions}
+  \frametitle{Traduction: the target}
 
+  \[`G \type t : T "->" \ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}\]
+  
   \begin{center}
-    \def\fCenter{\subti}
-
-    \BAX{}
-    {$`G \typec t : T$}
-    {$\subimpl{`G}{c}{T}{U}$}
-    {$`G \typec c[t] : U$}
+    \UAX{}
+    {$`G \typec P : \Prop$}
+    {$`G \typec ?_{P} : P$}
+    {}\DP
+    
+    \vspace{0.25cm}
+    \BAX{}{$`G \typec t : T$}
+    {$`G \typec p : P[t/x]$}
+    {$\elt{T}{P}{t}{p} : \mysubset{x}{T}{P}$}
+    {}\DP\quad
+    \UAX{}{$`G \typec t : \mysubset{x}{T}{P}$}
+    {$`G \typec \eltpit~t : T$}
     {}
     \DP
-    \vspace{0.25cm}
+  \end{center}
+  
+\end{frame}
 
-    \only<2>{\def\subimpl{\subimplnodisp}\SubConvIs\DP}
-    \only<3->{\def\subimpl{\subimpldisp}\SubConvIs\DP}
+\begin{frame}
+  \frametitle{Traduction: deriving explicit coercions}
+  \begin{center}
+    \def\fCenter{\sub}
+    \only<1->{
+      \BAX{}
+      {$\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$}
+      {$\subimpl{`G}{\blue{c}[\ctxdot]}{T}{U}$}
+      {$\ipG{`G} \typec \blue{c}[\ip{t}{`G}] : \ip{U}{`G}$}
+      {}
+      \DP
+      \vspace{0.25cm}
+    }
+
+    \uncover<2->{
+      \UAX{SubConv}
+      {$T \eqbr U$}
+      {$\subimpl{`G}{\uncover<3->{\blue{\ctxdot}}}{T}{U}$}
+      {}\DP}
     
     \vspace{0.25cm}
-    \only<4>{\def\subimpl{\subimplnodisp}
-      {$\subimpl{`G}{?}{\mysubset{x}{U}{P}}{U}$}
-    }
-    \only<5->{\def\subimpl{\subimpldisp}
-      {$\subimpl{`G}{\eltpit~\ctxdot}{\mysubset{x}{U}{P}}{U}$}}
+    \uncover<4->{$\subimpl{`G}{\blue{\eltpit~\ctxdot}}{\mysubset{x}{T}{P}}{T}$}
         
     \vspace{0.25cm}
-    \only<6>{\def\subimpl{\subimplnodisp}
+    \uncover<5->{
       {$\subimpl{`G}
-        {\elt{}{}{c}
-          {\ex{\ip{P}{`G, x : U}[c/x]}}}
-        {T}{\mysubset{x}{T}{P}}$}}
-    
-    \only<7->{\def\subimpl{\subimpldisp}
-      {$\subimpl{`G}
-        {\elt{}{}{\ctxdot}
-          {\ex{\ip{P}{`G, x : U}[\ctxdot/x]}}}
+        {\blue{\elt{}{}{\ctxdot}
+          {\ex{\ip{P}{`G, x : T}[\ctxdot/x]}}}}
         {T}{\mysubset{x}{T}{P}}$}}
 
+    \vspace{0.25cm}
+    \uncover<6->{
+      \AXC{$`G \typec 0 : \nat$}
+      \AXC{$`G \typec c : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
+      \BIC{$`G \typec (\elt{}{}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
+        = \elt{}{}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
+      \DP}
 %     \vspace{0.25cm}
 %     \only<7->{
 %       \SubProdI\DP
@@ -338,14 +406,10 @@
 %       \SubSigmaI\DP
 %     }
   \end{center}
-  
-  \only<7>{$0 : \nat$ and $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
-    but \[(\sref{elt}~\ctxdot~?_{(x \neq 0)[\ctxdot/x]})[0]
-    = \sref{elt}~0~?_{\alert{0 \neq 0}}\]}
 \end{frame}
 
 \begin{frame}[t]
-  \frametitle{Interpretation of terms $\ip{}{`G}$}
+  \frametitle{Traduction: interpretation of terms $\ip{}{`G}$}
     
   \begin{example}[Application]
     \setboolean{displayLabels}{false}
@@ -356,9 +420,7 @@
     \typenvi
     \[\begin{array}{lcll}
       \ip{f~u}{`G} 
-      & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
-      & & \letml~(\Pi x : V.W) = \mualgo{F}~\inml & \\
-      & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)}~\inml & \\
+      & = & \letml~\pi = \coerce{`G}{T}{(\Pi x : V.W)}~\inml & \\
       & & \letml~c = \coerce{`G}{U}{V}~\inml & \\
       & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
     \end{array}\]    
@@ -376,13 +438,13 @@
   
   $\typec$'s equational theory:
   \[\begin{array}{llcll}
-    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
-    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
-    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
-    (\eta) & (\lambda x : X.e~x) & = & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
-    (\text{\SP}) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \\ % \text{if $e : \Sigma x : X. Y$} \\
-    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \\%\text{if $e : \mysubset{x}{E}{P}$} \\
-    \only<2->{\alert{(\sigma)} & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{if $t
+    (\beta) & (\lambda x : X.e)~v & `= & e[v/x] & \\
+%    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & `= & e_i & \\
+    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & `= & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & `= & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
+    (\text{\SP}) % & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & `= & e & \\ % \text{if $e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & `= & e & \\%\text{if $e : \mysubset{x}{E}{P}$} \\
+    \uncover<2->{\alert{(\sigma)} & \elt{E}{P}{t}{p} & `= & \elt{E}{P}{t'}{p'} & \text{if $t
         `= t'$}}
   \end{array}\]
 
@@ -390,20 +452,30 @@
 
 \end{frame}
 
+\section{The implementation}
+
 \begin{frame}[t]
-  \frametitle{The \Program tactic}
+  \frametitle{The \Program vernacular}
   
   \begin{block}{Architecture}
     Wrap around \Coq{}'s vernacular commands (\texttt{Definition},
     \texttt{Fixpoint}, \ldots).
     
     \begin{enumerate}
-    \item \Coq{} parser ;
-    \item Typing with coercions ;
-    \item Interactive proving of obligations.
+    \item Use the \Coq{} parser ;
+    \item<2-> Typecheck $`G \type t : T$ and generate $\ip{t}{`G} :
+      \ip{T}{`G}$ ;
+    \item<3-> Interactive proving of obligations.
     \end{enumerate}
   \end{block}
 
+  \[ \texttt{Program}~\Definition~f~: T := t. \]    
+  
+  \uncover<4->{
+  \begin{remark}[Restriction]
+    We assume $`G \typecci T : s$.
+  \end{remark}}
+  
 \end{frame}
 
 \begin{frame}[t]
@@ -412,11 +484,11 @@
   \only<1>{\pgfuseimage{myhd-proof}}%
   \only<2>{\pgfuseimage{myhd-extract}}%
   \only<3>{\pgfuseimage{mytest-good}}%
-  \only<4>{\pgfuseimage{mytest-good-extract}}%
-  \only<5>{\pgfuseimage{mytest-bad}}%
-  \only<6>{\pgfuseimage{append-proof}}%
-  \only<7>{\pgfuseimage{append-extract}}%
-  \only<8>{\pgfuseimage{append-app}}
+%  \only<4>{\pgfuseimage{mytest-good-extract}}%
+  \only<4>{\pgfuseimage{mytest-bad}}%
+  \only<5>{\pgfuseimage{append-proof}}%
+  \only<6>{\pgfuseimage{append-extract}}%
+  \only<7>{\pgfuseimage{append-app}}
 \end{frame}
 
 \begin{frame}
@@ -428,11 +500,11 @@
     of ``\ps{}''.
   \end{block}
   \pause
-  \begin{block}{Further work}
+  \begin{block}{Future work}
     \vspace{0.2em}
     \begin{itemize}
     \item Application to more constructs ((co-)inductive types) and commands.
-    \item Improvements of \Coq{} (existential variables, unification,
+    \item Improvements of \Coq{} (existential variables, type inference,
       proof irrelevance).
     \item Complete and useful interpretation of \ML{} languages.
     \end{itemize}
@@ -866,7 +938,7 @@
 %   \frametitle{Une preuve intéressante et courte ?}
 % \end{frame}
 
-% \section*{Conclusion}
+% \section{Conclusion}
 % \begin{frame}
 %   \frametitle<presentation>{Conclusion}
 
