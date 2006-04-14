@@ -243,15 +243,15 @@
   
   \only<1-2>{
   \begin{center}
+    \UAX{}{$`G \typea t : \mysubset{x}{T}{P}$}
+    {$`G \typea \uncover<2>{\eltpit~}t : T$}
+    {}\DP
+
+    \vspace{0.5cm}
     \BAX{}{$`G \typea t : T$}
     {$`G, x : T \type P : \Prop$}
     {$\uncover<2>{(}t\uncover<2>{, ?)} : \mysubset{x}{T}{P}$}
     {\uncover<2>{$`G \type ? : P[t]$}}\DP
-
-    \vspace{0.5cm}
-    \UAX{}{$`G \typea t : \mysubset{x}{T}{P}$}
-    {$`G \typea \uncover<2>{\eltpit~}t : T$}
-    {}\DP
   \end{center}
   }
 
@@ -290,8 +290,8 @@
     \SubProof\DP}
 
     \vspace{0.5cm}
-    \only<6->{\SubProd\DP
-      \SubSigma\DP}
+    \only<6->{\SubProd\DP}
+%      \SubSigma\DP}
   \end{center}
 
   \only<4-5>{
@@ -305,19 +305,19 @@
   }
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Results}
 
   \begin{theorem}[Decidability of type checking]
     $`G \type t : T$ is decidable.
   \end{theorem}  
   
-  \uncover<2>{
+  \uncover<2->{
   \begin{lemma}[Elimination of transitivity]
     If $T \sub U `^ U \sub V$ then $T \sub V$.
   \end{lemma}}
   
-  \only<1->{
+  \only<1-2>{
     \begin{prooftree}
       \TAX{App}
       {$\tgen{`G}{f}{T} \quad T \suba \Pi x : A.B$}
@@ -328,6 +328,19 @@
     \end{prooftree}
   }
   
+  \uncover<3->{
+    \begin{definition}[Forgetful inclusion]
+      If $`G \typecci t : T$ then $f(`G) \typea f(t) : f(T)$ if $f$ is
+      defined on $`G, t$ and $T$. 
+    \end{definition}
+
+    \[\begin{array}{lcl}
+      f~(\eltpit~t) & = & f~t \\
+      f~(\eltpip~t) & = & `_ \\
+      f~(\elt{T}{P}{t}{p}) & = & f~t
+    \end{array}\]
+  }
+    
 \end{frame}
 
 \def\typec{\vdash_{?}}
@@ -361,60 +374,62 @@
   
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Traduction: deriving explicit coercions}
-  \begin{center}
-    \def\fCenter{\sub}
-    \only<1->{
-      \BAX{}
-      {$\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$}
-      {$\subimpl{`G}{\blue{c}[\ctxdot]}{T}{U}$}
-      {$\ipG{`G} \typec \blue{c}[\ip{t}{`G}] : \ip{U}{`G}$}
-      {}
-      \DP
-      \vspace{0.25cm}
-    }
-
-    \uncover<2->{
-      \UAX{SubConv}
-      {$T \eqbr U$}
-      {$\subimpl{`G}{\uncover<3->{\blue{\ctxdot}}}{T}{U}$}
-      {}\DP}
-    
-    \vspace{0.25cm}
-    \uncover<4->{$\subimpl{`G}{\blue{\eltpit~\ctxdot}}{\mysubset{x}{T}{P}}{T}$}
+  
+  \begin{block}{Goal}
+    \[T \sub U "->" `G \typec \blue{c}[\ctxdot] : \ip{T}{`G} \sub
+    \ip{U}{`G}\]
+  \end{block}
+  
+  \uncover<2->{
+    \begin{definition}
+      \begin{center}
+        \def\fCenter{\sub}    
+        \UAX{SubConv}
+        {$T \eqbr U$}
+        {$\subimpl{`G}{\uncover<3->{\blue{\ctxdot}}}{T}{U}$}
+        {}\DP
         
-    \vspace{0.25cm}
-    \uncover<5->{
-      {$\subimpl{`G}
-        {\blue{\elt{}{}{\ctxdot}
-          {\ex{\ip{P}{`G, x : T}[\ctxdot/x]}}}}
-        {T}{\mysubset{x}{T}{P}}$}}
-
-    \vspace{0.25cm}
+        \vspace{0.25cm}
+        \uncover<4->{$\subimpl{`G}{\blue{\eltpit~\ctxdot}}{\mysubset{x}{T}{P}}{T}$}
+        
+        \vspace{0.25cm}
+        \uncover<5->{
+          {$\subimpl{`G}
+            {\blue{\elt{}{}{\ctxdot}
+                {\ex{\ip{P}{`G, x : T}[\ctxdot/x]}}}}
+            {T}{\mysubset{x}{T}{P}}$}}
+      \end{center}
+    \end{definition}
+  
     \uncover<6->{
-      \AXC{$`G \typec 0 : \nat$}
-      \AXC{$`G \typec c : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
-      \BIC{$`G \typec (\elt{}{}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
-        = \elt{}{}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
-      \DP}
-%     \vspace{0.25cm}
-%     \only<7->{
-%       \SubProdI\DP
-      
-%       \vspace{0.25cm}
-%       \SubSigmaI\DP
-%     }
-  \end{center}
+      \begin{example}      
+        \AXC{$`G \typec 0 : \nat$}
+        \AXC{$`G \typec c : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
+        \BIC{$`G \typec (\elt{}{}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
+          = \elt{}{}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
+        \DP
+      \end{example}}
+  }
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Traduction: interpretation of terms $\ip{}{`G}$}
     
+  \begin{theorem}[Soundness]
+    If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
+  \end{theorem}
+
   \begin{example}[Application]
     \setboolean{displayLabels}{false}
     \typenva
-    \AppA
+    \TAX{App}
+    {$\tgen{`G}{f}{T} \quad T \suba \Pi x : V. W : s$}
+    {$\tgen{`G}{u}{U}$} % \quad \tgen{#1}{#9, #5}{#7'}$}
+    {$U \suba V$}
+    {$\tgen{`G}{(f~u)}{W[u/x]}$}
+    {}
     \DP
 
     \typenvi
@@ -425,10 +440,6 @@
       & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
     \end{array}\]    
   \end{example}
-  
-  \begin{theorem}[Soundness]
-    If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
-  \end{theorem}
 
 \end{frame}
 
@@ -465,15 +476,18 @@
     \item Use the \Coq{} parser ;
     \item<2-> Typecheck $`G \type t : T$ and generate $\ip{t}{`G} :
       \ip{T}{`G}$ ;
-    \item<3-> Interactive proving of obligations.
+    \item<3-> Interactive proving of obligations ;
+    \item<4-> Final definition.
     \end{enumerate}
   \end{block}
 
-  \[ \texttt{Program}~\Definition~f~: T := t. \]    
+  \[ \uncover<1-3>{\texttt{Program}~}\Definition~f~:
+  \uncover<2->{\llbracket} T \uncover<2->{\rrbracket_{`G}} := 
+  \uncover<2->{\llbracket} t \uncover<2->{\rrbracket_{`G}}\uncover<3->{ + \text{ obligations}}. \]
   
-  \uncover<4->{
+  \uncover<5->{
   \begin{remark}[Restriction]
-    We assume $`G \typecci T : s$.
+    We assume $`G \typecci \ip{T}{`G} : s$.
   \end{remark}}
   
 \end{frame}
