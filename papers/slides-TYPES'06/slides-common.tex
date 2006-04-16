@@ -122,22 +122,24 @@
 \def\imgheight{6.6cm}
 
 \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic1}{bigpic1}
-\pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic2}{bigpic2}
-\pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic3}{bigpic3}
-\pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic4}{bigpic4}
-\pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic5}{bigpic5}
+% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic2}{bigpic2}
+% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic3}{bigpic3}
+% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic4}{bigpic4}
+% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic5}{bigpic5}
 
 \pgfdeclareimage[height=3cm]{lambda-cube}{../figures/lambda-cube}
 
-\pgfdeclareimage[interpolate=true,height=9cm]{myhd-proof}{capturemyhd-proof}
-\pgfdeclareimage[interpolate=true,height=9cm]{myhd-extract}{capturemyhd-extract}
-\pgfdeclareimage[interpolate=true,height=9cm]{mytest-good}{capturemytest-ok}
-\pgfdeclareimage[interpolate=true,height=9cm]{mytest-good-extract}{capturemytest-ok-extract}
-\pgfdeclareimage[interpolate=true,height=9cm]{mytest-bad}{capturemytest-bad}
+\pgfdeclareimage[interpolate=true,height=8cm]{subtac-syntax}{capturesyntax}
+\pgfdeclareimage[interpolate=true,height=8cm]{myhd-proof}{capturemyhd-proof}
+\pgfdeclareimage[interpolate=true,height=8cm]{myhd-extract}{capturemyhd-extract}
+\pgfdeclareimage[interpolate=true,height=8cm]{mytail-extract}{capturemytail-extract}
+\pgfdeclareimage[interpolate=true,height=8cm]{mytest-good}{capturemytest-ok}
+\pgfdeclareimage[interpolate=true,height=8cm]{mytest-good-extract}{capturemytest-ok-extract}
+\pgfdeclareimage[interpolate=true,height=8cm]{mytest-bad}{capturemytest-bad}
 
-\pgfdeclareimage[interpolate=true,height=9cm]{append-proof}{captureappend-proof}
-\pgfdeclareimage[interpolate=true,height=9cm]{append-extract}{captureappend-extract}
-\pgfdeclareimage[interpolate=true,height=9cm]{append-app}{captureappend-app}
+\pgfdeclareimage[interpolate=true,height=8cm]{append-proof}{captureappend-proof}
+\pgfdeclareimage[interpolate=true,height=8cm]{append-extract}{captureappend-extract}
+\pgfdeclareimage[interpolate=true,height=8cm]{append-app}{captureappend-app}
 
 \def\typea{\vdash}
 \def\suba{\rightslice}
@@ -169,7 +171,7 @@
 
 \begin{frame}
   \frametitle{The Big Picture}
-  \hspace{-1em}\only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
+  \hspace{-1em}\only<1>{\pgfuseimage{bigpic1}}%\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
 \end{frame}
 
 \section{The idea}
@@ -495,14 +497,15 @@
 \begin{frame}[t]
   \frametitle{\Program: The list example}
 
-  \only<1>{\pgfuseimage{myhd-proof}}%
-  \only<2>{\pgfuseimage{myhd-extract}}%
-  \only<3>{\pgfuseimage{mytest-good}}%
-%  \only<4>{\pgfuseimage{mytest-good-extract}}%
-  \only<4>{\pgfuseimage{mytest-bad}}%
-  \only<5>{\pgfuseimage{append-proof}}%
-  \only<6>{\pgfuseimage{append-extract}}%
-  \only<7>{\pgfuseimage{append-app}}
+  \only<1>{\pgfuseimage{subtac-syntax}}%
+  \only<2>{\pgfuseimage{myhd-proof}}%
+  \only<3>{\pgfuseimage{myhd-extract}}%
+  \only<4>{\pgfuseimage{mytail-extract}}%
+  \only<5>{\pgfuseimage{mytest-good}}%
+  \only<6>{\pgfuseimage{mytest-bad}}%
+  \only<7>{\pgfuseimage{append-proof}}%
+  \only<8>{\pgfuseimage{append-extract}}%
+  \only<9>{\pgfuseimage{append-app}}
 \end{frame}
 
 \begin{frame}
@@ -542,7 +545,7 @@
       p_1 "=>" \funml{}~H & "=>" & t_1 \\
       & \vdots{} & \\
       p_n "=>" \funml{}~H & "=>" & t_n) \\
-      (\sref{refl\_equal}~t) & &
+      (\sref{refl\_equal}~\mu{(t)}) & &
     \end{array}
     \]
   }

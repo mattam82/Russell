@@ -13,7 +13,7 @@
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.43"
-   sodipodi:docbase="/home/mat/research/coq-subtac/papers/slides-TYPES'06"
+   sodipodi:docbase="/home/mat/research/coq-subtac/papers/figures"
    sodipodi:docname="bigpic.svg"
    inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
    inkscape:export-xdpi="338.55795"
@@ -41,11 +41,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="188.86024"
-     inkscape:cy="850.10629"
+     inkscape:zoom="4.2730456"
+     inkscape:cx="207.50001"
+     inkscape:cy="863.76256"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer4"
      inkscape:window-width="1280"
      inkscape:window-height="1001"
      inkscape:window-x="0"
@@ -69,105 +69,99 @@
      id="layer1"
      style="display:inline">
     <g
-       id="g14151"
-       transform="matrix(0.209935,0,0,0.209935,124.7889,73.60912)"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741">
+       id="g3169"
+       transform="translate(2.016127e-5,9.376878)">
       <rect
          transform="matrix(0,1,-1,0,0,0)"
-         y="-287.64389"
-         x="88.039833"
-         height="541.93524"
-         width="197.68559"
+         y="-183.91992"
+         x="82.510956"
+         height="113.77117"
+         width="41.501125"
          id="rect1307"
-         style="fill:#ff2020;fill-opacity:0.74608154;fill-rule:evenodd;stroke:#000000;stroke-width:1.41730022;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="opacity:1;fill:#f87df9;fill-opacity:0.7784744;fill-rule:evenodd;stroke:#000000;stroke-width:0.29754093;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <text
          sodipodi:linespacing="100%"
          id="text2190"
-         y="138.68263"
-         x="-224.77505"
-         style="font-size:48px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="93.142647"
+         x="76.345245"
+         style="font-size:10.07688046px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
-           y="138.68263"
-           x="-224.77505"
+           y="93.142647"
+           x="76.345245"
            id="tspan2192"
            sodipodi:role="line">ML term <tspan
-   style="font-size:48px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
+   style="font-size:10.07688046px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
    id="tspan11267">t</tspan></tspan></text>
       <text
-         transform="scale(1.021753,0.97871)"
+         transform="scale(1.021755,0.978708)"
          sodipodi:linespacing="100%"
          id="text2198"
-         y="180.59702"
-         x="-237.10564"
-         style="font-size:23.21628571px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
+         y="103.33485"
+         x="71.126419"
+         style="font-size:4.87390804px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
          xml:space="preserve"><tspan
            id="tspan2202"
-           y="180.59702"
-           x="-237.10564"
+           y="103.33485"
+           x="71.126419"
            sodipodi:role="line">let rec euclid x y =</tspan><tspan
            id="tspan2206"
-           y="203.8133"
-           x="-237.10564"
+           y="108.20875"
+           x="71.126419"
            sodipodi:role="line">  if x &lt; y then (0, x)</tspan><tspan
            id="tspan2208"
-           y="227.02959"
-           x="-237.10564"
+           y="113.08266"
+           x="71.126419"
            sodipodi:role="line">  else </tspan><tspan
            id="tspan2212"
-           y="250.24587"
-           x="-237.10564"
+           y="117.95657"
+           x="71.126419"
            sodipodi:role="line">    let (q, r) = euclid (x - y) y in</tspan><tspan
            id="tspan2214"
-           y="273.46216"
-           x="-237.10564"
+           y="122.83048"
+           x="71.126419"
            sodipodi:role="line">      (S q, r)</tspan><tspan
            id="tspan2210"
-           y="296.67844"
-           x="-237.10564"
+           y="127.70439"
+           x="71.126419"
            sodipodi:role="line">  </tspan></text>
     </g>
     <g
-       id="g14142"
-       transform="matrix(0.209935,0,0,0.209935,108.1933,73.52821)"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741">
+       id="g3160"
+       transform="translate(-3.954132,0.611717)">
       <rect
-         y="116.01324"
-         x="466.34009"
-         height="139.76732"
-         width="661.00885"
+         y="90.883446"
+         x="217.08711"
+         height="29.342052"
+         width="131.35887"
          id="rect2182"
-         style="fill:#ff2020;fill-opacity:0.74608154;fill-rule:evenodd;stroke:#000000;stroke-width:1.30211377;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="opacity:1;fill:#f87df9;fill-opacity:0.7784744;fill-rule:evenodd;stroke:#000000;stroke-width:0.26596069;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <text
          sodipodi:linespacing="100%"
          id="text2194"
-         y="164.86565"
-         x="484.38675"
-         style="font-size:48px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="101.13928"
+         x="220.88303"
+         style="font-size:10.07688046px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
-           y="164.86565"
-           x="484.38675"
+           y="101.13928"
+           x="220.88303"
            id="tspan2196"
            sodipodi:role="line">Dependent type <tspan
-   style="font-size:48px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
+   style="font-size:10.07688046px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
    id="tspan11412">T</tspan></tspan></text>
       <text
-         sodipodi:linespacing="125%"
+         sodipodi:linespacing="100%"
          id="text2216"
-         y="201.45549"
-         x="482.13284"
-         style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
+         y="108.82077"
+         x="220.40985"
+         style="font-size:5.03844023px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
          xml:space="preserve"><tspan
-           y="201.45549"
-           x="482.13284"
+           y="108.82077"
+           x="220.40985"
            id="tspan2218"
-           sodipodi:role="line">(x : nat) { y : nat | y &gt; 0 } { wf lt x } :</tspan><tspan
+           sodipodi:role="line">forall (x : nat) { y : nat | y &gt; 0 },</tspan><tspan
            id="tspan2220"
-           y="231.45549"
-           x="482.13284"
+           y="113.85921"
+           x="220.40985"
            sodipodi:role="line">{ q : nat &amp; { r : nat | x = y * q + r } }</tspan></text>
     </g>
   </g>
@@ -176,22 +170,6 @@
      id="layer3"
      inkscape:label="two"
      style="display:inline">
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.53969491;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 184.75478,133.28131 C 190.77434,142.3638 204.65837,149.69025 204.65837,149.69025"
-       id="path2272"
-       sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741" />
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.5838756;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 233.04281,127.31049 C 225.02848,143.82948 214.35454,149.40891 214.35454,149.40891"
-       id="path5967"
-       sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741" />
     <g
        id="g14212"
        transform="translate(0.353553,4.990122)"
@@ -217,6 +195,22 @@
            id="tspan3153"
            sodipodi:role="line">Typecheck</tspan></text>
     </g>
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.71182638;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 167.36586,133.13189 C 170.66988,141.51635 178.29057,148.27973 178.29057,148.27973"
+       id="path2272"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
+       inkscape:export-xdpi="400.53741"
+       inkscape:export-ydpi="400.53741" />
+    <path
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.99456912;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 261.47586,120.83399 C 254.70612,140.17807 245.68978,146.71169 245.68978,146.71169"
+       id="path5967"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
+       inkscape:export-xdpi="400.53741"
+       inkscape:export-ydpi="400.53741" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -248,138 +242,74 @@
            x="189.08095"
            sodipodi:role="line">Interpret</tspan></text>
     </g>
+    <rect
+       style="fill:#f87df9;fill-opacity:0.77847439;fill-rule:evenodd;stroke:#000000;stroke-width:0.30816424;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;opacity:1"
+       id="rect11322"
+       width="44.517513"
+       height="113.77117"
+       x="202.51627"
+       y="-344.84595"
+       transform="matrix(0,1,-1,0,0,0)" />
+    <text
+       xml:space="preserve"
+       style="font-size:10.08321857px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="237.42021"
+       y="213.01746"
+       id="text11324"
+       sodipodi:linespacing="100%"
+       transform="scale(0.999374,1.000627)"><tspan
+         sodipodi:role="line"
+         id="tspan11326"
+         x="237.42021"
+         y="213.01746">Proof obligations</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.87695485;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
+       x="229.27258"
+       y="224.86203"
+       id="text11330"
+       sodipodi:linespacing="100%"
+       transform="scale(1.021113,0.979324)"><tspan
+         id="tspan11346"
+         sodipodi:role="line"
+         x="229.27258"
+         y="224.86203">x : nat</tspan><tspan
+         id="tspan11350"
+         sodipodi:role="line"
+         x="229.27258"
+         y="229.73899">y : nat</tspan><tspan
+         id="tspan14164"
+         sodipodi:role="line"
+         x="229.27258"
+         y="234.61594">Hy : y &gt; 0</tspan><tspan
+         id="tspan11344"
+         sodipodi:role="line"
+         x="229.27258"
+         y="239.4929">Hlt : x &lt; y</tspan><tspan
+         id="tspan11352"
+         sodipodi:role="line"
+         x="229.27258"
+         y="244.36985">------------------------</tspan><tspan
+         sodipodi:role="line"
+         x="229.27258"
+         y="249.24681"
+         id="tspan11342">x = y * 0 + x  </tspan></text>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.61763644;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 209.65443,183.04312 C 216.02668,191.21694 227.6445,198.60644 227.6445,198.60644"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 209.65443,183.04312 C 220.97643,185.56009 229.76582,197.19223 229.76582,197.19223"
        id="path11229"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400.53741"
        inkscape:export-ydpi="400.53741" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.60492378;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 208.62741,182.67666 C 210.00061,189.23741 193.62685,201.9035 193.62685,201.9035"
+       style="opacity:1;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.04772317;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:1.04772323, 3.14316969;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 208.50599,182.9177 C 162.60961,219.00116 196.45161,263.45388 196.45161,263.45388"
        id="path11231"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400.53741"
        inkscape:export-ydpi="400.53741" />
-    <g
-       id="g14120"
-       transform="matrix(0.209935,0,0,0.209935,124.7889,77.17787)"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741">
-      <rect
-         transform="matrix(0,1,-1,0,0,0)"
-         y="-450.20508"
-         x="616.66766"
-         height="769.96704"
-         width="175.07814"
-         id="rect11237"
-         style="fill:#7574ff;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.58983731;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <text
-         transform="scale(1.02048,0.979931)"
-         sodipodi:linespacing="100%"
-         id="text11239"
-         y="681.07239"
-         x="-283.48221"
-         style="font-size:48.98302841px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="681.07239"
-           x="-283.48221"
-           id="tspan11241"
-           sodipodi:role="line">Coq term [| <tspan
-   id="tspan11269"
-   style="font-size:48.98302841px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans">t</tspan> |]</tspan></text>
-      <text
-         transform="scale(1.042678,0.959069)"
-         sodipodi:linespacing="100%"
-         id="text11243"
-         y="735.58228"
-         x="-294.91351"
-         style="font-size:23.69175339px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
-         xml:space="preserve"><tspan
-           id="tspan11245"
-           y="735.58228"
-           x="-294.91351"
-           sodipodi:role="line">Fixpoint euclid (x : nat) {y : nat | y &gt; 0 } =</tspan><tspan
-           id="tspan11249"
-           y="759.27403"
-           x="-294.91351"
-           sodipodi:role="line">  if lt_ge_dec x y then (0 &amp; (existS x ?1)) </tspan><tspan
-           id="tspan11251"
-           y="782.96578"
-           x="-294.91351"
-           sodipodi:role="line">  else let (q', r) := euclid (existS (x - y) ?2) y</tspan><tspan
-           id="tspan11253"
-           y="806.65754"
-           x="-294.91351"
-           sodipodi:role="line">  in (S q' &amp; (existS r ?3)</tspan><tspan
-           id="tspan11255"
-           y="830.34929"
-           x="-294.91351"
-           sodipodi:role="line">  </tspan></text>
-    </g>
-    <g
-       id="g14176"
-       transform="matrix(0.209935,0,0,0.209935,127.0822,72.66124)"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741">
-      <rect
-         transform="matrix(0,1,-1,0,0,0)"
-         y="-1037.2913"
-         x="618.54871"
-         height="541.93524"
-         width="212.0538"
-         id="rect11322"
-         style="fill:#f754ff;fill-opacity:0.84326016;fill-rule:evenodd;stroke:#000000;stroke-width:1.46790314;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <text
-         transform="scale(0.999374,1.000627)"
-         sodipodi:linespacing="100%"
-         id="text11324"
-         y="668.78516"
-         x="525.20135"
-         style="font-size:48.03008652px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="668.78516"
-           x="525.20135"
-           id="tspan11326"
-           sodipodi:role="line">Proof obligations</tspan></text>
-      <text
-         transform="scale(1.021113,0.979323)"
-         sodipodi:linespacing="100%"
-         id="text11330"
-         y="717.68372"
-         x="499.28854"
-         style="font-size:23.23082161px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
-         xml:space="preserve"><tspan
-           y="717.68372"
-           x="499.28854"
-           sodipodi:role="line"
-           id="tspan11346">x : nat</tspan><tspan
-           y="740.91454"
-           x="499.28854"
-           sodipodi:role="line"
-           id="tspan11350">y : nat</tspan><tspan
-           y="764.14536"
-           x="499.28854"
-           sodipodi:role="line"
-           id="tspan14164">Hy : y &gt; 0</tspan><tspan
-           y="787.37618"
-           x="499.28854"
-           sodipodi:role="line"
-           id="tspan11344">Hlt : x &lt; y</tspan><tspan
-           y="810.607"
-           x="499.28854"
-           sodipodi:role="line"
-           id="tspan11352">------------------------</tspan><tspan
-           id="tspan11342"
-           y="833.83782"
-           x="499.28854"
-           sodipodi:role="line">x = y * 0 + x  </tspan></text>
-    </g>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -387,46 +317,35 @@
      inkscape:label="four"
      style="display:inline">
     <g
-       id="g14103"
-       transform="matrix(0.209935,0,0,0.209935,124.7889,73.60912)"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741">
+       id="g1380"
+       transform="translate(12.51893,2.483091)">
       <rect
          transform="matrix(0,1,-1,0,0,0)"
-         y="-734.51544"
-         x="927.84674"
-         height="683.06427"
-         width="73.334068"
+         y="-251.91747"
+         x="268.39316"
+         height="116.34634"
+         width="14.870751"
          id="rect11382"
-         style="fill:#7775ff;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.96913517;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:#7775ff;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.18011235;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <text
-         transform="scale(1.02048,0.979931)"
+         transform="scale(1.020478,0.979933)"
          sodipodi:linespacing="100%"
          id="text11384"
-         y="997.92059"
-         x="65.886169"
-         style="font-size:48.98302841px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         y="284.61484"
+         x="136.1165"
+         style="font-size:10.28324509px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
-           y="997.92059"
-           x="65.886169"
+           y="284.61484"
+           x="136.1165"
            id="tspan11386"
-           sodipodi:role="line">Coq term of type [| <tspan
+           sodipodi:role="line">Coq term of type <tspan
    id="tspan11414"
-   style="font-size:48.98302841px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans">T</tspan> |]</tspan></text>
+   style="font-size:10.28324509px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans">T</tspan></tspan></text>
     </g>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.45050833;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
-       d="M 235.7876,247.60107 C 230.07803,256.59522 215.04037,265.69676 215.04037,265.69676"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.92969155;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 239.63047,246.93774 C 234.85714,256.23641 222.28532,265.64608 222.28532,265.64608"
        id="path11376"
-       sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741" />
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.48573345;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
-       d="M 184.25396,243.59444 C 192.05602,257.24834 205.23035,265.56439 205.23035,265.56439"
-       id="path11378"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400.53741"
@@ -438,8 +357,8 @@
      inkscape:label="five"
      style="display:inline">
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.52170241;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
-       d="M 135.53067,275.40007 C -43.884925,251.12233 75.192053,137.37037 75.192053,137.37037"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.98172814;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 147.79337,275.22651 C 65.122294,251.69479 119.99056,141.43832 119.99056,141.43832"
        id="path11430"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
@@ -448,7 +367,7 @@
     <g
        style="display:inline"
        id="g14188"
-       transform="translate(1.451588,-16.41374)"
+       transform="translate(55.45159,16.6484)"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400"
        inkscape:export-ydpi="400">
