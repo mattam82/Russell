@@ -287,20 +287,7 @@
       {}
     \end{prooftree}
   }
-  
-  \uncover<3->{
-    \begin{definition}[Forgetful inclusion]
-      If $`G \typecci t : T$ then $f(`G) \typea f(t) : f(T)$ if $f$ is
-      defined on $`G, t$ and $T$. 
-    \end{definition}
-
-    \[\begin{array}{lcl}
-      f~(\eltpit~t) & = & f~t \\
-      f~(\eltpip~t) & = & `_ \\
-      f~(\elt{T}{P}{t}{p}) & = & f~t
-    \end{array}\]
-  }
-    
+      
 \end{frame}
 
 \def\typec{\vdash_{?}}
@@ -311,51 +298,80 @@
 \subsection{Traduction in \Coq{}}
 \setboolean{displayLabels}{false}
 \begin{frame}[t]
-  \frametitle{Traduction: the target}
-
-  \[`G \type t : T "->" \ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}\]
+  \frametitle{The target system}
   
+  \begin{block}{\CCI{} with metavariables}
+    \begin{center}
+      \BAX{}{$`G \typec t : T$}
+      {$`G \typec p : P[t/x]$}
+      {$`G \typec \elt{T}{P}{t}{p} : \mysubset{x}{T}{P}$}
+      {}\DP
+      
+      \vspace{0.25cm}
+      \UAX{}{$`G \typec t : \mysubset{x}{T}{P}$}
+      {$`G \typec \eltpit~t : T$}
+      {}
+      \DP
+      \quad
+      \UAX{}{$`G \typec t : \mysubset{x}{T}{P}$}
+      {$`G \typec \eltpip~t : P[\eltpit~t/x]$}
+      {}
+      \DP
+
+      \vspace{0.25cm}
+      \UAX{}
+      {$`G \typec P : \Prop$}
+      {$`G \typec ?_{P} : P$}
+      {}\DP
+    \end{center}
+  \end{block}
+  
+  \pause
+  \begin{theorem}[Forgetful inclusion]
+    If $`G \typec t : T$ then $f(`G) \typea f(t) : f(T)$ if $f$ is
+    defined on $`G, t$ and $T$.
+  \end{theorem}
+
   \begin{center}
-    \UAX{}
-    {$`G \typec P : \Prop$}
-    {$`G \typec ?_{P} : P$}
-    {}\DP
-    
-    \vspace{0.25cm}
-    \BAX{}{$`G \typec t : T$}
-    {$`G \typec p : P[t/x]$}
-    {$\elt{T}{P}{t}{p} : \mysubset{x}{T}{P}$}
-    {}\DP\quad
-    \UAX{}{$`G \typec t : \mysubset{x}{T}{P}$}
-    {$`G \typec \eltpit~t : T$}
-    {}
-    \DP
+    $\begin{array}{lcl}
+      f~(\eltpit~t) & = & f~(t) \\
+      f~(\eltpip~t) & = & `_ \\
+      f~(?_P) & = & `_ \\
+      f~(\elt{T}{P}{t}{p}) & = & f~(t)
+    \end{array}$
   \end{center}
   
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Traduction: deriving explicit coercions}
-  
-  \begin{block}{Goal}
+  \vspace{-0.2cm}
+  \begin{block}{Traduction}
+    \begin{center}
+      $`G \type t : T "->" \ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$
+    \end{center}
+  \end{block}
+      
+  \pause
+  \begin{block}{Traduction for coercions}
     \[T \sub U "->" `G \typec \blue{c}[\ctxdot] : \ip{T}{`G} \sub
     \ip{U}{`G}\]
   \end{block}
   
-  \uncover<2->{
+  \uncover<3->{
     \begin{definition}
       \begin{center}
         \def\fCenter{\sub}    
         \UAX{SubConv}
         {$T \eqbr U$}
-        {$\subimpl{`G}{\uncover<3->{\blue{\ctxdot}}}{T}{U}$}
+        {$\subimpl{`G}{\uncover<4->{\blue{\ctxdot}}}{T}{U}$}
         {}\DP
         
         \vspace{0.25cm}
-        \uncover<4->{$\subimpl{`G}{\blue{\eltpit~\ctxdot}}{\mysubset{x}{T}{P}}{T}$}
+        \uncover<5->{$\subimpl{`G}{\blue{\eltpit~\ctxdot}}{\mysubset{x}{T}{P}}{T}$}
         
         \vspace{0.25cm}
-        \uncover<5->{
+        \uncover<6->{
           {$\subimpl{`G}
             {\blue{\elt{}{}{\ctxdot}
                 {\ex{\ip{P}{`G, x : T}[\ctxdot/x]}}}}
@@ -363,7 +379,7 @@
       \end{center}
     \end{definition}
   
-    \uncover<6->{
+    \uncover<7->{
       \begin{example}      
         \begin{prooftree}
           \AXC{$`G \typec 0 : \nat$}
@@ -436,22 +452,24 @@
     \texttt{Fixpoint}, \ldots).
     
     \begin{enumerate}
-    \item Use the \Coq{} parser ;
+    \item Use the \Coq{} parser: $\texttt{Program}~\Definition~f~: T := t.$;
     \item<2-> Typecheck $`G \type t : T$ and generate $\ip{t}{`G} :
       \ip{T}{`G}$ ;
     \item<3-> Interactive proving of obligations ;
     \item<4-> Final definition.
     \end{enumerate}
   \end{block}
-
-  \[ \uncover<1-3>{\texttt{Program}~}\Definition~f~:
-  \uncover<2->{\llbracket} T \uncover<2->{\rrbracket_{`G}} := 
-  \uncover<2->{\llbracket} t \uncover<2->{\rrbracket_{`G}}\uncover<3->{ + \text{ obligations}}. \]
   
-  \uncover<5->{
-  \begin{remark}[Restriction]
-    We assume $`G \typecci \ip{T}{`G} : s$.
-  \end{remark}}
+  \only<2->{
+    \[\uncover<2-3>{\texttt{Program}~}\Definition~f~:
+    \uncover<2->{\llbracket} T \uncover<2->{\rrbracket_{`G}} := 
+    \uncover<2->{\llbracket} t
+    \uncover<2->{\rrbracket_{`G}}\uncover<3->{ + \text{ obligations}}.\]
+    
+    \uncover<5->{
+      \begin{remark}[Restriction]
+        We assume $`G \typecci \ip{T}{`G} : s$.
+      \end{remark}}}
   
 \end{frame}
 
