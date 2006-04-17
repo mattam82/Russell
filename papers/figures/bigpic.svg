@@ -8,30 +8,31 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
+   width="128mm"
+   height="96mm"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.43"
    sodipodi:docbase="/home/mat/research/coq-subtac/papers/figures"
    sodipodi:docname="bigpic.svg"
-   inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-   inkscape:export-xdpi="338.55795"
-   inkscape:export-ydpi="338.55795">
+   inkscape:export-filename="/home/mat/research/coq-subtac/papers/figures/bigpic5.png"
+   inkscape:export-xdpi="338.30667"
+   inkscape:export-ydpi="338.30667"
+   version="1.0">
   <defs
      id="defs4">
     <marker
        inkscape:stockid="Arrow1Lend"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow1Lend"
-       style="overflow:visible;">
+       style="overflow:visible">
       <path
          id="path5957"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
-         transform="scale(0.8) rotate(180)" />
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="scale(-0.8,-0.8)" />
     </marker>
   </defs>
   <sodipodi:namedview
@@ -41,11 +42,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.2730456"
-     inkscape:cx="207.50001"
-     inkscape:cy="863.76256"
+     inkscape:zoom="2.4429862"
+     inkscape:cx="226.77165"
+     inkscape:cy="170.07874"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer6"
      inkscape:window-width="1280"
      inkscape:window-height="1001"
      inkscape:window-x="0"
@@ -70,7 +71,7 @@
      style="display:inline">
     <g
        id="g3169"
-       transform="translate(2.016127e-5,9.376878)">
+       transform="matrix(1.414317,0,0,1.414317,-81.19233,-68.18256)">
       <rect
          transform="matrix(0,1,-1,0,0,0)"
          y="-183.91992"
@@ -127,7 +128,7 @@
     </g>
     <g
        id="g3160"
-       transform="translate(-3.954132,0.611717)">
+       transform="matrix(1.414317,0,0,1.414317,-86.78476,-80.57924)">
       <rect
          y="90.883446"
          x="217.08711"
@@ -172,7 +173,7 @@
      style="display:inline">
     <g
        id="g14212"
-       transform="translate(0.353553,4.990122)"
+       transform="matrix(1.414317,0,0,1.414317,-80.69235,-74.38675)"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400"
        inkscape:export-ydpi="400">
@@ -196,16 +197,16 @@
            sodipodi:role="line">Typecheck</tspan></text>
     </g>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.71182638;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 167.36586,133.13189 C 170.66988,141.51635 178.29057,148.27973 178.29057,148.27973"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.00674784;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 155.51592,106.84623 C 160.18885,118.70451 170.96692,128.27007 170.96692,128.27007"
        id="path2272"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400.53741"
        inkscape:export-ydpi="400.53741" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.99456912;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 261.47586,120.83399 C 254.70612,140.17807 245.68978,146.71169 245.68978,146.71169"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.40663552;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 288.61725,89.453109 C 279.0427,116.81176 266.29074,126.05236 266.29074,126.05236"
        id="path5967"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
@@ -219,7 +220,7 @@
      style="display:inline">
     <g
        id="g14207"
-       transform="translate(0.353553,0.418138)"
+       transform="matrix(1.414317,0,0,1.414317,-80.69235,-80.85303)"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400"
        inkscape:export-ydpi="400">
@@ -243,69 +244,61 @@
            sodipodi:role="line">Interpret</tspan></text>
     </g>
     <rect
-       style="fill:#f87df9;fill-opacity:0.77847439;fill-rule:evenodd;stroke:#000000;stroke-width:0.30816424;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;opacity:1"
+       style="opacity:1;fill:#f87df9;fill-opacity:0.7784744;fill-rule:evenodd;stroke:#000000;stroke-width:0.43584177;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect11322"
-       width="44.517513"
-       height="113.77117"
-       x="202.51627"
-       y="-344.84595"
+       width="62.961861"
+       height="160.90845"
+       x="204.97769"
+       y="-406.52896"
        transform="matrix(0,1,-1,0,0,0)" />
     <text
        xml:space="preserve"
-       style="font-size:10.08321857px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="237.42021"
-       y="213.01746"
+       style="font-size:14.26088619px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="254.54451"
+       y="219.88107"
        id="text11324"
        sodipodi:linespacing="100%"
        transform="scale(0.999374,1.000627)"><tspan
          sodipodi:role="line"
          id="tspan11326"
-         x="237.42021"
-         y="213.01746">Proof obligations</tspan></text>
+         x="254.54451"
+         y="219.88107">Proof obligations</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.87695485;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
-       x="229.27258"
-       y="224.86203"
+       style="font-size:6.8975668px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Courier New"
+       x="244.75069"
+       y="234.86247"
        id="text11330"
        sodipodi:linespacing="100%"
        transform="scale(1.021113,0.979324)"><tspan
          id="tspan11346"
          sodipodi:role="line"
-         x="229.27258"
-         y="224.86203">x : nat</tspan><tspan
+         x="244.75069"
+         y="234.86247">x : nat</tspan><tspan
          id="tspan11350"
          sodipodi:role="line"
-         x="229.27258"
-         y="229.73899">y : nat</tspan><tspan
+         x="244.75069"
+         y="241.76004">y : nat</tspan><tspan
          id="tspan14164"
          sodipodi:role="line"
-         x="229.27258"
-         y="234.61594">Hy : y &gt; 0</tspan><tspan
+         x="244.75069"
+         y="248.65761">Hy : y &gt; 0</tspan><tspan
          id="tspan11344"
          sodipodi:role="line"
-         x="229.27258"
-         y="239.4929">Hlt : x &lt; y</tspan><tspan
+         x="244.75069"
+         y="255.55517">Hlt : x &lt; y</tspan><tspan
          id="tspan11352"
          sodipodi:role="line"
-         x="229.27258"
-         y="244.36985">------------------------</tspan><tspan
+         x="244.75069"
+         y="262.45274">------------------------</tspan><tspan
          sodipodi:role="line"
-         x="229.27258"
-         y="249.24681"
+         x="244.75069"
+         y="269.35031"
          id="tspan11342">x = y * 0 + x  </tspan></text>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 209.65443,183.04312 C 220.97643,185.56009 229.76582,197.19223 229.76582,197.19223"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.41431653;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 215.32535,177.43651 C 231.33823,180.9963 243.76922,197.44783 243.76922,197.44783"
        id="path11229"
-       sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
-       inkscape:export-xdpi="400.53741"
-       inkscape:export-ydpi="400.53741" />
-    <path
-       style="opacity:1;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.04772317;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:1.04772323, 3.14316969;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 208.50599,182.9177 C 162.60961,219.00116 196.45161,263.45388 196.45161,263.45388"
-       id="path11231"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400.53741"
@@ -318,7 +311,7 @@
      style="display:inline">
     <g
        id="g1380"
-       transform="translate(12.51893,2.483091)">
+       transform="matrix(1.414317,0,0,1.414317,-63.48663,-77.93251)">
       <rect
          transform="matrix(0,1,-1,0,0,0)"
          y="-251.91747"
@@ -343,9 +336,17 @@
    style="font-size:10.28324509px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans">T</tspan></tspan></text>
     </g>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.92969155;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
-       d="M 239.63047,246.93774 C 234.85714,256.23641 222.28532,265.64608 222.28532,265.64608"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.31487811;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 257.72095,267.80372 C 250.96995,280.95499 233.18942,294.26324 233.18942,294.26324"
        id="path11376"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
+       inkscape:export-xdpi="400.53741"
+       inkscape:export-ydpi="400.53741" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.48181212;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:1.4818123, 4.4454369;stroke-dashoffset:0;stroke-opacity:1;display:inline"
+       d="M 213.70109,177.25912 C 148.78908,228.29255 196.65238,291.16277 196.65238,291.16277"
+       id="path11231"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400.53741"
@@ -357,8 +358,8 @@
      inkscape:label="five"
      style="display:inline">
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.98172814;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
-       d="M 147.79337,275.22651 C 65.122294,251.69479 119.99056,141.43832 119.99056,141.43832"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1.38847435;stroke-linecap:round;stroke-linejoin:miter;marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 127.83422,307.813 C 10.911155,274.5317 88.51225,118.59415 88.51225,118.59415"
        id="path11430"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
@@ -367,7 +368,7 @@
     <g
        style="display:inline"
        id="g14188"
-       transform="translate(55.45159,16.6484)"
+       transform="matrix(1.414317,0,0,1.414317,-2.766285,-57.89833)"
        inkscape:export-filename="/home/mat/research/coq-subtac/papers/slides-TYPES'06/bigpic.png"
        inkscape:export-xdpi="400"
        inkscape:export-ydpi="400">

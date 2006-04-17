@@ -11,11 +11,6 @@
 \EnableBpAbbreviations
 \def\fCenter{\vdash}
 \def\seq{\fCenter}
-% This file is a solution template for:
-
-% - Talk at a conference/colloquium.
-% - Talk length is about 20min.
-% - Style is ornate.
 
 \hypersetup{
   pdftitle = Subset coercions in Coq,
@@ -23,7 +18,6 @@
   pdfsubject = Theoretical Computer Science
  } 
 
-%\mode<handout> 
 \mode<all>
 {
 \setbeamerfont{block title}{size={}}
@@ -33,19 +27,11 @@
 \useinnertheme{rounded}
 \usecolortheme{rose}
 \usecolortheme{seahorse}
+\setbeamertemplate{navigation symbols}{}
 }
-
-
-
-% or whatever
-
-
-% or whatever
 
 \usepackage{concmath}
 \usepackage[T1]{fontenc}
-% Or whatever. Note that the encoding and the font should match. If T1
-% does not look nice, try deleting the line with the fontenc.
 
 \usepackage{txfonts}
 \input{grammar-macros}
@@ -72,44 +58,25 @@
 \title %[Short Paper Title] (optional, use only with long paper titles)
 {Subset coercions in \Coq}
 
-%\subtitle
-%{Un environnement de programmation sûre dans Coq}
-
-\author[]% (optional, use only with lots of authors)
+\author[Matthieu Sozeau]
 {{\sc Matthieu Sozeau} \\ under direction of {\sc Christine Paulin-Mohring}}
-% - Give the names in the same order as the appear in the paper.
-% - Use the \inst{?} command only if the authors have different
-%   affiliation.
 
 
 \def\LRI{\name{LRI}}
 \def\INRIAFuturs{\name{INRIA Futurs}}
 \def\Proval{\name{Proval}}
 
-\institute[LRI] % (optional, but mostly needed)
+\institute[]
 {
-%  \inst{1}%
   Paris-Sud 11 University \\
   \LRI{} - \Demons{} Team \& \INRIAFuturs{} - \Proval{} Project
 }
 
-% - Use the \inst command only if there are several affiliations.
-% - Keep it simple, no one is interested in your street address.
-
 \date[TYPES'06] % (optional, should be abbreviation of conference name)
 {TYPES'06 Workshop \\
 18-21 April 2006}
-% - Either use conference name or its abbreviation.
-% - Not really informative to the audience, more for people (including
-%   yourself) who are reading the slides online
 
 \subject{Theoretical Computer Science}
-% This is only inserted into the PDF information catalog. Can be left
-% out. 
-
-% If you have a file called "university-logo-filename.xxx", where xxx
-% is a graphic format that can be processed by latex or pdflatex,
-% resp., then you can add a logo as follows:
 
 \pgfdeclareimage[height=0.5cm]{ups-logo}{../figures/ups-logo}
 \pgfdeclareimage[height=0.5cm]{lri-logo}{../figures/lri-logo}
@@ -119,13 +86,13 @@
   \pgfuseimage{lri-logo}
   \pgfuseimage{inria-logo}}
 
-\def\imgheight{6.6cm}
+\def\imgheight{7.5cm}
 
-\pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic1}{bigpic1}
-% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic2}{bigpic2}
-% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic3}{bigpic3}
-% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic4}{bigpic4}
-% \pgfdeclareimage[interpolate=true,height=\imgheight]{bigpic5}{bigpic5}
+\pgfdeclareimage[height=\imgheight]{bigpic1}{bigpic1}
+\pgfdeclareimage[height=\imgheight]{bigpic2}{bigpic2}
+\pgfdeclareimage[height=\imgheight]{bigpic3}{bigpic3}
+\pgfdeclareimage[height=\imgheight]{bigpic4}{bigpic4}
+\pgfdeclareimage[height=\imgheight]{bigpic5}{bigpic5}
 
 \pgfdeclareimage[height=3cm]{lambda-cube}{../figures/lambda-cube}
 
@@ -144,8 +111,6 @@
 \def\typea{\vdash}
 \def\suba{\rightslice}
 
-% Delete this, if you do not want the table of contents to pop up at
-% the beginning of each subsection:
 \AtBeginSection[]
 {
   \begin{frame}<beamer>
@@ -153,13 +118,6 @@
     \tableofcontents[currentsection]
   \end{frame}
 }
-
-
-% If you wish to uncover everything in a step-wise fashion, uncomment
-% the following command: 
-
-%\beamerdefaultoverlayspecification{<+->}
-
 
 \begin{document}
 
@@ -171,7 +129,7 @@
 
 \begin{frame}
   \frametitle{The Big Picture}
-  \hspace{-1em}\only<1>{\pgfuseimage{bigpic1}}%\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
+  \only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
 \end{frame}
 
 \section{The idea}
@@ -407,11 +365,12 @@
   
     \uncover<6->{
       \begin{example}      
-        \AXC{$`G \typec 0 : \nat$}
-        \AXC{$`G \typec c : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
-        \BIC{$`G \typec (\elt{}{}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
-          = \elt{}{}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
-        \DP
+        \begin{prooftree}
+          \AXC{$`G \typec 0 : \nat$}
+          \AXC{$`G \typec c : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
+          \BIC{$`G \typec (\elt{}{}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
+            = \elt{}{}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
+        \end{prooftree}
       \end{example}}
   }
 \end{frame}
@@ -426,14 +385,16 @@
   \begin{example}[Application]
     \setboolean{displayLabels}{false}
     \typenva
-    \TAX{App}
-    {$\tgen{`G}{f}{T} \quad T \suba \Pi x : V. W : s$}
-    {$\tgen{`G}{u}{U}$} % \quad \tgen{#1}{#9, #5}{#7'}$}
-    {$U \suba V$}
-    {$\tgen{`G}{(f~u)}{W[u/x]}$}
-    {}
-    \DP
-
+    \begin{center}
+      \TAX{App}
+      {$\tgen{`G}{f}{T} \quad T \suba \Pi x : V. W : s$}
+      {$\tgen{`G}{u}{U}$} % \quad \tgen{#1}{#9, #5}{#7'}$}
+      {$U \suba V$}
+      {$\tgen{`G}{(f~u)}{W[u/x]}$}
+      {}
+      \DP
+    \end{center}
+    
     \typenvi
     \[\begin{array}{lcll}
       \ip{f~u}{`G} 
@@ -496,16 +457,18 @@
 
 \begin{frame}[t]
   \frametitle{\Program: The list example}
-
-  \only<1>{\pgfuseimage{subtac-syntax}}%
-  \only<2>{\pgfuseimage{myhd-proof}}%
-  \only<3>{\pgfuseimage{myhd-extract}}%
-  \only<4>{\pgfuseimage{mytail-extract}}%
-  \only<5>{\pgfuseimage{mytest-good}}%
-  \only<6>{\pgfuseimage{mytest-bad}}%
-  \only<7>{\pgfuseimage{append-proof}}%
-  \only<8>{\pgfuseimage{append-extract}}%
-  \only<9>{\pgfuseimage{append-app}}
+  \vspace{-0.75em}
+  \begin{center}%
+    \only<1>{\pgfuseimage{subtac-syntax}}%
+    \only<2>{\pgfuseimage{myhd-proof}}%
+    \only<3>{\pgfuseimage{myhd-extract}}%
+    \only<4>{\pgfuseimage{mytail-extract}}%
+    \only<5>{\pgfuseimage{mytest-good}}%
+    \only<6>{\pgfuseimage{mytest-bad}}%
+    \only<7>{\pgfuseimage{append-proof}}%
+    \only<8>{\pgfuseimage{append-extract}}%
+    \only<9>{\pgfuseimage{append-app}}%
+  \end{center}
 \end{frame}
 
 \begin{frame}
