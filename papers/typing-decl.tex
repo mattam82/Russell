@@ -138,10 +138,9 @@
 }
 \newcommand{\Conv}[1][\Gamma]{\ConvFull{#1}{T}{s}{t}{U}}
 
-\def\typedFig
-{
-\begin{figure}[tb]
+\newcommand{\typedRules}{
   \begin{center}
+    \def\seq{\typed}
     \def\fCenter{\wf}
     \WfEmpty \DP\quad
     \WfVar \DP
@@ -149,9 +148,6 @@
     \def\fCenter{\typed}
     \vspace{\infvspace}
     \PropSet\DP
-
-%    \vspace{\infvspace}
-%    \TypeType\DP
 
     \vspace{\infvspace}
     \Var\DP
@@ -183,6 +179,12 @@
     \Subsum\DP
       
   \end{center}
+}
+
+\def\typedFig
+{
+\begin{figure}[tb]
+  \typedRules
   \caption{Calcul de coercion par prédicats - version déclarative}
   \label{fig:typing-decl-rules}
 \end{figure}

@@ -111,14 +111,6 @@
 \def\typea{\vdash}
 \def\suba{\rightslice}
 
-\AtBeginSection[]
-{
-  \begin{frame}<beamer>
-    \frametitle{Outline}
-    \tableofcontents[currentsection]
-  \end{frame}
-}
-
 \begin{document}
 
 \begin{frame}
@@ -133,6 +125,10 @@
 \end{frame}
 
 \section{The idea}
+\begin{frame}<beamer>
+  \frametitle{Outline}
+  \tableofcontents
+\end{frame}
 
 \begin{frame}
   \frametitle{A simple idea}
@@ -149,7 +145,7 @@
   \begin{block}{Adapting the idea} 
     \begin{center}
       \BAX{}{$t : T$}
-      {$P[t]$}
+      {$P[t/x]$}
       {$t : \mysubset{x}{T}{P}$}
       {}\DP\quad      
       \UAX{}{$t : \mysubset{x}{T}{P}$}
@@ -160,7 +156,7 @@
   \end{block}  
 \end{frame}
 
-\begin{frame}[t]
+\begin{frame}
   \frametitle{From ``\ps''\ldots}
   
   \begin{block}{\PVS{}}
@@ -211,7 +207,7 @@
     \BAX{}{$`G \typea t : T$}
     {$`G, x : T \type P : \Prop$}
     {$\uncover<2>{(}t\uncover<2>{, ?)} : \mysubset{x}{T}{P}$}
-    {\uncover<2>{$`G \type ? : P[t]$}}\DP
+    {\uncover<2>{$`G \type ? : P[t/x]$}}\DP
   \end{center}
   }
 
@@ -227,6 +223,10 @@
 \end{frame}
 
 \section{Theoretical development}
+\begin{frame}<beamer>
+  \frametitle{Outline}
+  \tableofcontents[currentsection]
+\end{frame}
 
 \subsection{\lng{}}
 
@@ -265,7 +265,7 @@
   }
 \end{frame}
 
-\begin{frame}[t]
+\begin{frame}
   \frametitle{Results}
 
   \begin{theorem}[Decidability of type checking]
@@ -273,21 +273,19 @@
   \end{theorem}  
   
   \uncover<2->{
-  \begin{lemma}[Elimination of transitivity]
-    If $T \sub U `^ U \sub V$ then $T \sub V$.
-  \end{lemma}}
+    \begin{lemma}[Elimination of transitivity]
+      If $T \sub U `^ U \sub V$ then $T \sub V$.
+    \end{lemma}}
   
-  \only<1-2>{
-    \begin{prooftree}
-      \TAX{App}
-      {$\tgen{`G}{f}{T} \quad T \suba \Pi x : A.B$}
-      {$\tgen{`G}{e}{E}$}
-      {$E \suba A$}
-      {$\tgen{`G}{(f~e)}{B [ e / x ]}$}
-      {}
-    \end{prooftree}
-  }
-      
+  \begin{prooftree}
+    \TAX{App}
+    {$\tgen{`G}{f}{T} \quad T \suba \Pi x : A.B$}
+    {$\tgen{`G}{e}{E}$}
+    {$E \suba A$}
+    {$\tgen{`G}{(f~e)}{B [ e / x ]}$}
+    {}
+  \end{prooftree}
+  
 \end{frame}
 
 \def\typec{\vdash_{?}}
@@ -296,11 +294,15 @@
 \newcommand{\blue}[1]{{\color{blue}#1}}
 
 \subsection{Traduction in \Coq{}}
+\begin{frame}<beamer>
+  \frametitle{Outline}
+  \tableofcontents[currentsubsection]
+\end{frame}
 \setboolean{displayLabels}{false}
-\begin{frame}[t]
+\begin{frame}
   \frametitle{The target system}
   
-  \begin{block}{\CCI{} with metavariables}
+  \begin{block}{\CIC{} with metavariables}
     \begin{center}
       \BAX{}{$`G \typec t : T$}
       {$`G \typec p : P[t/x]$}
@@ -325,61 +327,64 @@
       {}\DP
     \end{center}
   \end{block}
-  
-  \pause
-  \begin{theorem}[Forgetful inclusion]
-    If $`G \typec t : T$ then $f(`G) \typea f(t) : f(T)$ if $f$ is
-    defined on $`G, t$ and $T$.
-  \end{theorem}
+    
+\end{frame}
+\begin{frame}
+  \frametitle{From \Coq to \lng{}\only<2->{ and back}}
+  \begin{block}{The easy way}
+    \begin{center}
+      $\begin{array}{lcl}
+        (\eltpit~t)^{\circ} & = & t^{\circ} \\
+        (\elt{T}{P}{t}{p})^{\circ} & = & t^{\circ} \\
+        (\eltpip~t)^{\circ} & = & `_ \\
+        (?_P)^{\circ} & = & `_
+      \end{array}$
+    \end{center}
 
-  \begin{center}
-    $\begin{array}{lcl}
-      f~(\eltpit~t) & = & f~(t) \\
-      f~(\eltpip~t) & = & `_ \\
-      f~(?_P) & = & `_ \\
-      f~(\elt{T}{P}{t}{p}) & = & f~(t)
-    \end{array}$
-  \end{center}
-  
+    If $`G \typec t : T$ then $`G^{\circ} \typea t^{\circ} : T^{\circ}$ if $()^{\circ}$ is
+    defined on $`G, t$ and $T$.
+  \end{block}
+  \pause
+  \begin{block}{The hard way}
+    \begin{center}
+      If $`G \type t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
+    \end{center}
+  \end{block}
 \end{frame}
 
 \begin{frame}[t]
   \frametitle{Traduction: deriving explicit coercions}
-  \vspace{-0.2cm}
-  \begin{block}{Traduction}
+      
+  \begin{block}{Traduction for coercions}
     \begin{center}
-      $`G \type t : T "->" \ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$
+      If $T \sub U$ then $`G \typec c[\ctxdot] : T \sub U$ which implies
+      $\ipG{`G} \typec \lambda x : \ip{T}{`G}. \blue{c}[x] : \ip{T}{`G} "->"
+      \ip{U}{`G}$.
     \end{center}
   \end{block}
-      
-  \pause
-  \begin{block}{Traduction for coercions}
-    \[T \sub U "->" `G \typec \blue{c}[\ctxdot] : \ip{T}{`G} \sub
-    \ip{U}{`G}\]
-  \end{block}
   
-  \uncover<3->{
+  \uncover<2->{
     \begin{definition}
       \begin{center}
         \def\fCenter{\sub}    
         \UAX{SubConv}
         {$T \eqbr U$}
-        {$\subimpl{`G}{\uncover<4->{\blue{\ctxdot}}}{T}{U}$}
+        {$\subimpl{`G}{\uncover<3->{\blue{\ctxdot}}}{T}{U}$}
         {}\DP
         
         \vspace{0.25cm}
-        \uncover<5->{$\subimpl{`G}{\blue{\eltpit~\ctxdot}}{\mysubset{x}{T}{P}}{T}$}
+        \uncover<4->{$\subimpl{`G}{\uncover<5->{\blue{\eltpit~\ctxdot}}}{\mysubset{x}{T}{P}}{T}$}
         
         \vspace{0.25cm}
         \uncover<6->{
           {$\subimpl{`G}
-            {\blue{\elt{}{}{\ctxdot}
-                {\ex{\ip{P}{`G, x : T}[\ctxdot/x]}}}}
+            {\uncover<7->{\blue{\elt{}{}{\ctxdot}
+                {\ex{\ip{P}{`G, x : T}[\ctxdot/x]}}}}}
             {T}{\mysubset{x}{T}{P}}$}}
       \end{center}
     \end{definition}
   
-    \uncover<7->{
+    \uncover<8->{
       \begin{example}      
         \begin{prooftree}
           \AXC{$`G \typec 0 : \nat$}
@@ -391,13 +396,9 @@
   }
 \end{frame}
 
-\begin{frame}[t]
+\begin{frame}
   \frametitle{Traduction: interpretation of terms $\ip{}{`G}$}
     
-  \begin{theorem}[Soundness]
-    If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
-  \end{theorem}
-
   \begin{example}[Application]
     \setboolean{displayLabels}{false}
     \typenva
@@ -419,11 +420,15 @@
       & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
     \end{array}\]    
   \end{example}
+  \begin{theorem}[Soundness]
+    If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
+  \end{theorem}
+
 
 \end{frame}
 
 
-\begin{frame}[t]
+\begin{frame}
   \frametitle{Theoretical matters}
   
   $\typec$'s equational theory:
@@ -438,11 +443,15 @@
         `= t'$}}
   \end{array}\]
 
-  \only<2->{$"=>"$ Proof Irrelevance}
+  \uncover<2->{$"=>"$ \alert{Proof Irrelevance}}
 
 \end{frame}
 
 \section{The implementation}
+\begin{frame}<beamer>
+  \frametitle{Outline}
+  \tableofcontents[currentsection]
+\end{frame}
 
 \begin{frame}[t]
   \frametitle{The \Program vernacular}
@@ -453,8 +462,8 @@
     
     \begin{enumerate}
     \item Use the \Coq{} parser: $\texttt{Program}~\Definition~f~: T := t.$;
-    \item<2-> Typecheck $`G \type t : T$ and generate $\ip{t}{`G} :
-      \ip{T}{`G}$ ;
+    \item<2-> Typecheck $`G^{\circ} \type t : T$ and generate
+      $\ipG{`G^{\circ}} \typec \ip{t}{`G^{\circ}} : \ip{T}{`G^{\circ}}$ ;
     \item<3-> Interactive proving of obligations ;
     \item<4-> Final definition.
     \end{enumerate}
@@ -462,13 +471,13 @@
   
   \only<2->{
     \[\uncover<2-3>{\texttt{Program}~}\Definition~f~:
-    \uncover<2->{\llbracket} T \uncover<2->{\rrbracket_{`G}} := 
+    \uncover<2->{\llbracket} T \uncover<2->{\rrbracket_{`G^{\circ}}} := 
     \uncover<2->{\llbracket} t
-    \uncover<2->{\rrbracket_{`G}}\uncover<3->{ + \text{ obligations}}.\]
+    \uncover<2->{\rrbracket_{`G^{\circ}}}\uncover<3->{ + \text{ obligations}}.\]
     
     \uncover<5->{
       \begin{remark}[Restriction]
-        We assume $`G \typecci \ip{T}{`G} : s$.
+        We assume $`G^{\circ} = `G$ and $`G \typecci \ip{T}{`G} : s$.
       \end{remark}}}
   
 \end{frame}
@@ -493,9 +502,8 @@
   \frametitle{Conclusion}
   
   \begin{block}{Our contribution}
-    A more \alert{flexible} programming language, \alert{conservative} over
-    \CCI, \alert{integrated} with the existing environment and a formal justification
-    of ``\ps{}''.
+    A more \alert{flexible} programming language, (almost) \alert{conservative} over
+    \CIC, \alert{integrated} with the existing environment and a formal \alert{justification} of ``\ps{}''.
   \end{block}
   \pause
   \begin{block}{Future work}
@@ -522,11 +530,11 @@
   \only<2>{
     \[\matchml~v~\returnml~T~\withml~p_1 "=>" t_1 \cdots{} p_n "=>" t_n \]
     \[\begin{array}{lcl}
-      (\matchml~v~\asml~t' & \returnml & (t' = t "->" T)~\withml \\
-      p_1 "=>" \funml{}~H & "=>" & t_1 \\
+      (\matchml~\mu{v}~\asml~t' & \returnml & t' = \mu{(v)} "->" T)~\withml \\
+      p_1 "=>" \funml{}~h & "=>" & t_1 \\
       & \vdots{} & \\
-      p_n "=>" \funml{}~H & "=>" & t_n) \\
-      (\sref{refl\_equal}~\mu{(t)}) & &
+      p_n "=>" \funml{}~h & "=>" & t_n) \\
+      (\sref{refl\_equal}~\mu{(v)}) & &
     \end{array}
     \]
   }
