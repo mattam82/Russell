@@ -1,60 +1,115 @@
+% \def\SubConv{
+%   \UAX{SubConv}
+%   {$T \eqbr U$}
+%   {$T \sub U$}
+%   {} 
+% }
+
+% \def\SubRefl{
+%   \UAX{SubRefl}
+%   {}
+%   {$S \seq S$}
+%   {}
+% }
+
+% \def\SubTrans{
+% \BAX{SubTrans}
+% {$S \seq T$}
+% {$T \seq U$}
+% {$S \seq U$}
+% {}
+% } 
+
+% \def\SubProd{
+% \BAX{SubProd}
+% {$U \seq T$} %"<|-|>"
+% {$V \seq W$}
+% {$\Pi x : T.V \seq \Pi x : U.W$}
+% {}
+% }
+
+% \def\SubSigma{
+%   \BAX{SubSigma}
+%   {$T \seq U$}
+%   {$V \seq W$}
+%   {$\Sigma x : T. V \seq \Sigma y : U. W$}
+%   {}
+% }
+
+% \def\SubProof{
+%   \UAX{SubProof}
+%   {$U \seq V$}
+%   {$U \seq \mysubset{x}{V}{P}$}
+%   {}
+% }
+
+% \def\SubSub{
+%   \UAX{SubSub}
+%   {$U \seq V$}
+%   {$\mysubset{x}{U}{P} \seq V$}
+%   {}
+% }
+
 \def\SubConv{
   \UAX{SubConv}
+%  {$`G \type T, U : s$}
   {$T \eqbr U$}
-  {$T \sub U$}
+  {$`G \type T \sub U$}
   {} 
 }
 
 \def\SubRefl{
   \UAX{SubRefl}
   {}
-  {$S \seq S$}
+  {$S \sub S$}
   {}
 }
 
 \def\SubTrans{
-\BAX{SubTrans}
-{$S \seq T$}
-{$T \seq U$}
-{$S \seq U$}
+\TAX{SubTrans}
+{$`G \type T : s$}
+{$`G \type S \sub T$}
+{$`G \type T \sub U$}
+{$`G \type S \sub U$}
 {}
 } 
 
 \def\SubProd{
 \BAX{SubProd}
-{$U \seq T$} %"<|-|>"
-{$V \seq W$}
-{$\Pi x : T.V \seq \Pi x : U.W$}
+{$`G \type U \sub T$} %"<|-|>"
+{$`G, x : U \type V \sub W$}
+{$`G \type \Pi x : T.V \sub \Pi x : U.W$}
 {}
 }
 
 \def\SubSigma{
   \BAX{SubSigma}
-  {$T \seq U$}
-  {$V \seq W$}
-  {$\Sigma x : T. V \seq \Sigma y : U. W$}
+  {$`G \type T \sub U$}
+  {$`G, x : T \type V \sub W$}
+  {$`G \type \Sigma x : T. V \sub \Sigma y : U. W$}
   {}
 }
 
 \def\SubProof{
   \UAX{SubProof}
-  {$U \seq V$}
-  {$U \seq \mysubset{x}{V}{P}$}
+  {$`G \type U \sub V$}
+  {$`G \type U \sub \mysubset{x}{V}{P}$}
   {}
 }
 
 \def\SubSub{
   \UAX{SubSub}
-  {$U \seq V$}
-  {$\mysubset{x}{U}{P} \seq V$}
+  {$`G \type U \sub V$}
+  {$`G \type \mysubset{x}{U}{P} \sub V$}
   {}
 }
 
-\def\subtdFig{
-\begin{figure}[ht]
+\def\subtdRules{
   \begin{center}
     \def\fCenter{\subd}
-    
+    \def\sub{\subd}
+    \def\type{\typed}
+
     \vspace{\infvspace}
     \SubConv\DP
 
@@ -68,12 +123,16 @@
     \SubSigma\DP
     
     \vspace{\infvspace}
-    \SubProof\DP
-    
-    \vspace{\infvspace}
     \SubSub\DP
     
+    \vspace{\infvspace}
+    \SubProof\DP
   \end{center}
+}
+
+\def\subtdFig{
+\begin{figure}[ht]
+  \subtdRules
   \caption{Coercion par prédicats - version déclarative}
   \label{fig:subtyping-decl-rules}
 \end{figure}

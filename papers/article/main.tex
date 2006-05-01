@@ -8,6 +8,7 @@
 %\usepackage{cmbright}
 \usepackage{concmath}
 \usepackage{ifthen}
+\usepackage{varioref}
 
 \newboolean{defineTheoremFr}
 \newboolean{defineTheoremEn}
@@ -21,12 +22,15 @@
 
 \input{typing-macros}
 \input{typing-decl}
+\input{subtyping-decl}
+
 \input{typing-algo}
 
 \usepackage{framed}
 %\usepackage{multicol}
 
 \author{Matthieu Sozeau \\
+  LRI, Paris Sud XI University \\
   sozeau@lri.fr}
 \title{Subset coercions in \Coq}
 \date{\today}
@@ -169,22 +173,47 @@ Our adaptation of \ps{} differs from the presentation of
 proof terms, but we have also extended it in some ways. 
 
 \subsubsection{The typing judgment}
-\Russell{}'s typing system (figure \ref{fig:typing-algo-rules}) is based
-on the \ECCfull \cite{Luo:ECC}, with sigma types but without universes.
+\Russell{}'s typing system (figure \vref{fig:typing-decl-rules}) is based
+on the \CCfull \cite{Barras}, with sigma types but without universes.
 This restriction may be removed in future work, but cause no problem for
 our main purpose which is programming. The judgement $`G \typed t : T$
 means $t$ is a well-typed term of type $T$ in environment $`G$, and $`G
 \typed T \subd U$ means $T$ is convertible to $U$ in environment $`G$.
+Following the presentation as a pure type system \cite{PTS}, 
+the set of sorts $\PTSsorts$ is defined as $\setproptype$, the
+axioms are $\PTSaxioms = \{ (\Set, \Type), (\Prop, \Type) \}$ and the
+rules $\PTSrules$ are defined by the following (functional) relation:
+\axiomsd
 
-We need to restrict the system so that it becomes property irrelevant for
+We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma}, \irule{Sum-Dep},
+\irule{Pi-1}, \irule{Pi-2} rules) only when $U, V : \Set$
+or $U, V : \Prop$. The first sum represents dependent pairs, useful
+when defining functions returning a tuple, the latter represent
+dependent pairs of propositions, which is rarely used. The dependent
+pair with $U : \Set$ and $V : \Prop$ is the subset type which we
+distinguish (rule \irule{Subset}). The last possible pair $U : \Prop, V : \Set$ is forbidden
+because it corresponds to a pair where the last component, which is
+informative, may depend on a particular proof of the proposition
+$U$. This is quite contrary to the mantra ``Computations do not depend
+on proofs'' which governs our programming language.
+
+Likewise, we need to restrict the system so that it becomes property irrelevant for
 the propositions appearing in subset types. Indeed, in \PVS{} you can't
 manipulate proof terms, so you have
 no way to create a term of type $0 \neq 0$ from the judgment $0 :
 \mysubset{x}{`N}{P}$, but in a classical Calculus of Constructions with
 sigma types or inductive types, the subset type is a first class object
 defined with proper introduction and
-elimination terms (figure \ref{fig:subset}). What we need to do is forbid the use of these terms
+elimination terms (figure \vref{fig:subset}). What we need to do is forbid the use of these terms
 in \Russell{} terms, leaving only the type former.
+
+Some basic properties of this system are well-formedness of
+environments: if $`G \typed t : T$ then $\typedwf `G$ and
+well-sortedness: if $`G \typed t : T$ then $T = \Type$ or $`G \typed T :
+s$ for $s `: \PTSsorts$.
+
+We now need to change the conversion rule to a stronger one which will
+include our subset equivalence.
 
 \begin{figure}
   \begin{center}
@@ -215,22 +244,72 @@ in \Russell{} terms, leaving only the type former.
   \label{fig:subset}
 \end{figure}
 
-\begin{figure*}[t]
+\begin{figure*}[h]
   \typedRules
-\caption{\Russell{} typing}
+  \caption{\Russell{} typing}
+  \label{fig:typing-decl-rules}
 \end{figure*}
 
 
 \subsubsection{Equivalence}
 We have renamed the technique from \ps{} to 
 subset \emph{equivalence} because we have a symmetric relation, contrary
-to usual subtyping relations. 
-because we can state reflexivity
+to usual subtyping relations. It also permits to include $\beta$-conversion
+directly in the relation. The judgment $`G \typed T \subd{} U$ (figure
+\vref{fig:conversion-decl-rules}) reads $T$ is convertible to $U$ in
+environment $`G$. In the following, it is always assumed that the two
+input types of the conversion are well-sorted, but maybe not by the same sort.
 
-- Not subtyping but conversion. Contravariant product.
+\begin{figure}[h]
+  \subtdRules
+  \caption{\Russell{} conversion}
+  \label{fig:conversion-decl-rules}
+\end{figure}
+
+The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
+judgment. It is well-known \cite{Luo, Pottinger?} that $\beta\pi$ is
+confluent only on well typed terms, so we have to ensure that our rules,
+when read from bottom to top, keep well-typedness. That's the purpose of
+the $`G \typed U : s$ premise of the \irule{SubTrans} rule. This rules
+ensures that our judgement constructs an \emph{equivalence} and has
+proper modularity. The next two rules do context closure for dependent
+products and sums. It is remarkable that we use contravariance for
+domains in the \irule{SubProd} rule, not restricting to invariance as in
+\PVS. It is accessory here, as we could have used \emph{co}variance and
+still get the same judgements because we have symetry. However, it will
+become important when we create coercions (see
+\vref{fig:subtyping-impl-rules}).
+
+The really interesting rules are \irule{SubSub} and
+\irule{SubProof}. The first one allows to use an object of a subset type
+as an object of its support type. The latter allows (maybe abusively) to
+consider an object of any type as an object of any subset based on
+it. By the assumption on the input types of the judgment, we now that $P$
+is well-typed, but we do not care about the proof.
 
 \subsubsection{Properties}
-- Assumptions, results, algo system.
+\begin{paragraph}{Assumptions}
+  We have proved basic metatheoretical results for this system in \Coq{}
+  \cite{CCP}. We have assumed that it is strongly normalizing (SN) and has the
+  following subject reduction (SR) property: if $`G \typed t : T$ and $t
+  "->"_{\beta\pi} t'$ then $`G \typed t' : T' \subd T$. Strong normalization
+  could be proved using the generic proof method developed in
+  \cite{Geuvers} but we leave it for future work. Gang Chen
+  \cite{GangChen} has studied various type systems from the
+  $\lambda$-cube extended by subtyping or coercive subtyping \cite{Luo},
+  including the Calculus of Constructions, and proved such results as
+  SN and SR for them. It requires a very careful analysis of the system 
+  to avoid cycles in the proof due to the presence of dependent types and
+  conversion ; hence we also leave it for future work.
+\end{paragraph}
+
+\begin{paragraph}{Results}
+  
+
+\end{paragraph}
+
+\begin{paragraph}{Algorithmic typing}
+\end{paragraph}
 
 \subsection{From \CCq to \lng{}}
 - Present \CCq

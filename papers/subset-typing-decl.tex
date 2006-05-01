@@ -64,20 +64,7 @@ classique ainsi que les projections $\pi_i$ pour les paires.
 La relation $\mathcal{R}$ définissant les produits formables
 dans le système est définie par les règles suivantes:
 \begin{figure}
-  \[\begin{array}{cccll}
-    s_1 & s_2 & s_3 & \text{Habitants} & \text{Exemple} \\
-    \hline
-    \Prop & \Prop & \Prop & \text{Implication logique} & x ``<= 0 "->" x = 0  \\
-    \Set & \Set & \Set & \text{Fonctions} & \Pi x : \nat. \nat \\
-    \Type & \Set & \Type & \text{Fonctions polymorphes} & \Pi A : \Set, A
-    "->" A \\
-    \Set & \Type & \Type & \text{Types dépendants} & \sref{vector} : \nat "->" \Set : \Set "->" \Type \\
-    \Set & \Prop & \Prop & \text{Termes dans les propositions} & 
-    \Pi n : \nat. \Pi l : \text{list}~n. \text{length}~l = n \\
-    \Type & \Prop & \Prop & \text{Imprédicativité de } \Prop & \Pi x : Prop. x `V `! x \\
-    % \Type(i) & \Type(j) & \Type(max~i~j)  & \text{Connecteurs logiques,
-    %   \ldots} & \Pi A : \Prop. \Pi B : \Prop. A `^ B "->" B `^ A
-  \end{array}\]
+  \axiomsd
   \caption{Définition de $\mathcal{R}$}
   \label{R-definition}
 \end{figure}
