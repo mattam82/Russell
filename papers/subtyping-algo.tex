@@ -82,9 +82,7 @@
 {$T = \hnf{T}$}
 }
 
-\def\subtaFig{
-\begin{figure}[ht]
-  \begin{center}
+\def\subtaRules{
     \def\fCenter{\suba}
     \def\type{\typea}
     \def\sub{\suba}
@@ -105,6 +103,12 @@
 
     \vspace{\infvspace}    
     \SubSubA\DP
+}
+
+\def\subtaFig{
+\begin{figure}[ht]
+  \begin{center}
+    \subtaRules
   \end{center}
   \caption{Coercion par prédicats - version algorithmique}
   \label{fig:subtyping-algo-rules}

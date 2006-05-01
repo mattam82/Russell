@@ -20,12 +20,31 @@
 \usepackage{bussproofs}
 % Optional to turn on the short abbreviations
 \EnableBpAbbreviations
+\def\ScoreOverhang{3pt}			% How much underlines extend out
+\def\defaultHypSeparation{\hskip.05in}   % Used if \insertBetweenHyps isn't given
+
+
 
 \input{typing-macros}
 \input{typing-decl}
 \input{subtyping-decl}
 
 \input{typing-algo}
+\renewcommand{\AppAFull}[9][\Gamma]{
+\TAX{App}
+{$\tgen{#1}{#2}{#3} \suba \Pi #4 : #5. #6$}
+{$\tgen{#1}{#8}{#9}$} % \quad \tgen{#1}{#9, #5}{#7'}$}
+{$\subalgo{#1}{#9}{#5}$}
+{$\tgen{#1}{(#2 #8)}{#6 [ #8 / #4 ]}$}
+{}
+}
+\input{subtyping-algo}
+\renewcommand{\SubSubAs}[1][\Gamma]{%
+\UAX{SubSub}
+{$\subalgoimpl{#1}{c}{U}{T}$}
+{$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
+{}
+}
 
 \usepackage{framed}
 %\usepackage{multicol}
@@ -174,17 +193,58 @@ Our adaptation of \ps{} differs from the presentation of
 proof terms, but we have also extended it in some ways. 
 
 \subsubsection{The typing judgment}
+
+\begin{figure*}[t]
+    \def\seq{\typed}
+    \def\fCenter{\wf}
+    \begin{center}
+      \WfEmpty\DP\WfVar\DP
+      \Var\DP
+    \end{center}
+    
+    \def\fCenter{\typed}
+    \begin{center}
+      \PropSet\DP
+      \Subsum\DP
+    \end{center}
+    
+    \Prod\DP
+    \SigmaR\DP
+
+    \vspace{\infvspace}
+    \Abs\DP
+    \SumDep\DP
+
+    \vspace{\infvspace}
+    \quad\App\DP
+    \quad\quad
+    \PiLeft\DP
+    \quad
+    \PiRight\DP
+
+    \begin{center}\SubsetR\DP\end{center}
+    \caption{\Russell{} typing}
+  \label{fig:typing-decl-rules}
+\end{figure*}
+
 \Russell{}'s typing system (figure \vref{fig:typing-decl-rules}) is based
-on the \CCfull \cite{Barras99,Luo90}, with sigma types but without universes.
+on the Calculus of Constructions \cite{CoquandHuet,Barras99}, with sigma types but without universes.
 This restriction may be removed in future work, but cause no problem for
 our main purpose which is programming. The judgement $`G \typed t : T$
 means $t$ is a well-typed term of type $T$ in environment $`G$, and $`G
-\typed T \subd U$ means $T$ is convertible to $U$ in environment $`G$.
+\typed T \subd U$ means $T$ is convertible to $U$ in environment $`G$. 
 Following the presentation as a pure type system \cite{PTS}, 
-the set of sorts $\PTSsorts$ is defined as $\setproptype$, the
+the set of sorts $\PTSsorts$ is defined as $\setproptype$. As usual, we
+let $s, s_i$ for $i `: `N$ range over sorts. The
 axioms are $\PTSaxioms = \{ (\Set, \Type), (\Prop, \Type) \}$ and the
 rules $\PTSrules$ are defined by the following (functional) relation:
-\axiomsd
+\begin{table}[h]
+  \vspace{-1.5em}
+  \axiomsd
+  \vspace{-2em}
+  \caption{Definition of $\PTSrules$}
+  \label{fig:PTSrules}
+\end{table}
 
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma}, \irule{Sum-Dep},
 \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V : \Set$
@@ -211,7 +271,7 @@ in \Russell{} terms, leaving only the type former.
 Some basic properties of this system are well-formedness of
 environments: if $`G \typed t : T$ then $\typedwf `G$ and
 well-sortedness: if $`G \typed t : T$ then $T = \Type$ or $`G \typed T :
-s$ for $s `: \PTSsorts$.
+s$.
 
 We now need to change the conversion rule to a stronger one which will
 include our subset equivalence.
@@ -225,7 +285,7 @@ include our subset equivalence.
     \DP
     
     \vspace{\infvspace}
-
+    
     \AXC{$`G \type a : A$}
     \AXC{$`G \type p : P[a/x]$}
     \BIC{$`G \type \elt{A}{(\lambda x : A.P)}{a}{p} : \mysubset{x}{A}{P}$}
@@ -244,12 +304,6 @@ include our subset equivalence.
   \caption{Subset type in \CCI}
   \label{fig:subset}
 \end{figure}
-
-\begin{figure*}[h]
-  \typedRules
-  \caption{\Russell{} typing}
-  \label{fig:typing-decl-rules}
-\end{figure*}
 
 
 \subsubsection{Equivalence}
@@ -285,8 +339,8 @@ The really interesting rules are \irule{SubSub} and
 \irule{SubProof}. The first one allows to use an object of a subset type
 as an object of its support type. The latter allows (maybe abusively) to
 consider an object of any type as an object of any subset based on
-it. By the assumption on the input types of the judgment, we know that $P$
-is well-typed, but we do not care about the proof.
+this type. By the assumption on the input types of the judgment, we know
+that the property $P$ is well-formed, but we do not care about the proof.
 
 \subsubsection{Properties}
 \begin{paragraph}{Assumptions}
@@ -304,8 +358,10 @@ is well-typed, but we do not care about the proof.
   conversion ; hence we also leave it for future work.
 \end{paragraph}
 
-We write $`G \typed T, U : s$ for $`G \typed T : s$ and $`G \typed U :
-s$.
+\begin{paragraph}{Notations}
+  We write $`G \typed T, U : s$ for $`G \typed T : s$ and $`G \typed U :
+  s$.
+\end{paragraph}
 
 As all functionnal PTS, \Russell{} has the unicity of sorting property,
 hence we can prove:
@@ -318,18 +374,20 @@ hence we can prove:
   U : s$ and $`G \typed T \sub U$ in the following.
 
   By induction on the subtyping derivation:
-  \case{SubConv} We have $T \eqbp U$, we apply unicity of sorting.
-
-  \case{SubTrans} We have by induction $`G \typed T \sub S : s$ and 
-  $`G \typed S \sub U : s$. Hence we have $`G \typed T, U : s$.
-
-  \caseother{} Other cases are straightforward.
+  \begin{list}{}
+  \item[] \rulename{SubConv}: We have $T \eqbp U$, we apply unicity of sorting.
+    
+  \item[] \rulename{SubTrans}: We have by induction $`G \typed T \sub S : s$ and 
+    $`G \typed S \sub U : s$. Hence we have $`G \typed T, U : s$.
+    
+  \item[] Other cases are straightforward.
+  \end{list}
 \end{proof}
 
-We will omit $`G$ where unnecessary.
-The essential properties of the $\_ \typed \_ \subd \_$ judgment are 
-its reflexivity ($\forall A, A \subd A$), symmetry ($\forall A B, A \subd
-B "<=>" B \subd A$) and transitivity by \irule{SubTrans}.
+The essential properties of the $\subd$ judgement are 
+its reflexivity: if $`G \typed A : s$, then $`G \typed A \subd A$,
+symetry: if $`G \typed A, B : s$ then $`G \typed A \subd B "<=>" `G \typed
+B \subd A$ and transitivity by \irule{SubTrans}.
 
 As typing and equivalence are mutually recursive, we will generaly prove
 properties by mutual induction on the two derivations.
@@ -363,10 +421,84 @@ it gives no new insights for our purpose and we will focus more on the
 algorithmic system's properties.
 
 \subsubsection{Algorithmic typing}
+\begin{figure*}[t]
+  \def\infvspace{0.5em}
+    \def\type{\typea}
+    \def\subt{\subta}
+    \def\sub{\suba}
+    
+    \begin{center}
+    \WfEmpty\DP
+    
+    \vspace{\infvspace}
+    \WfVar\DP
+    
+    \vspace{\infvspace}
+    \Var\DP
+    
+    \vspace{\infvspace}
+    \PropSet\DP
+    
+    \vspace{\infvspace}
+    \Prod\DP
+
+    \vspace{\infvspace}
+    \Abs\DP
+
+    \vspace{\infvspace}
+    \AppA\DP
+
+    \vspace{\infvspace}
+    \SigmaR\DP
+    
+    \vspace{\infvspace}
+    \SumDepA\DP
+
+    \vspace{\infvspace}
+    \PiLeftA\DP
+    
+    \vspace{\infvspace}
+    \PiRightA\DP
+
+    \SubsetR\DP
+    \end{center}
+  \caption{\Russell{} algorithmic typing and equivalence}
+  \label{fig:typing-algo-rules}
+\end{figure*}
+
+\begin{figure*}
+    \def\fCenter{\suba}
+    \def\type{\typea}
+    \def\sub{\suba}
+    \begin{center}
+    \SubConvA\DP 
+
+    \vspace{\infvspace}
+    \SubHnfA\DP
+
+    \vspace{\infvspace}
+    \SubProdA\DP
+    \quad
+    \SubSigmaA\DP
+
+    \vspace{\infvspace}
+    \SubProofA\DP
+    \quad
+    \SubSubAs\DP
+  \end{center}
+  \caption{\Russell{} algorithmic typing and equivalence}
+  \label{fig:subtyping-algo-rules}
+\end{figure*}
+
+
+
 We use a standard transformation to get an algorithm from our typing
-rules, basically restricting the conversion (or subsumption) rule
-(\irule{Coerce}) to the premises of introduction and elimination rules.
+rules, integrating the conversion (or subsumption) rule
+(here \irule{Coerce}) to the premises of the other rules.
+We recall that $`G \type t : s$ is shorthand for $`G \type t : T$ and
+$T `= s$ with $s `: \PTSsorts$ in a algorithmic presentation.
 \TODO{App?, SumDep?, Pi?}. Our algorithmic judgement $`G \typea t : T$
+(figure \vref{fig:typing-algo-rules})
 reads: $t$ is a well-typed term of type $T$ in environment $`G$.
 We need to introduce the notion of support for subset types in order to
 define our algorithmic system. Indeed, when typing an application, 

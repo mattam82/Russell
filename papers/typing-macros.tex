@@ -1,17 +1,17 @@
 %\def\ifstreq#1#2{\ifEqString{#1}{#2}}
 
 \def\impsub{\rightslice}
-
-\def\judgewf{\vdash_{wf}}
+\def\wellformed{\textbf{wf}}
+\def\judgewf{\vdash}
 \def\judgetyped{\vdash}
 \def\judgetypea{\vdash_{\bullet}}
 \def\judgetypei{\vdash_{\Box}}
 \def\typed{\judgetyped}
 \def\typedwf{\judgewf}
 \def\typea{\judgetypea}
-\def\typeawf{\judgetypea_{wf}}
+\def\typeawf{\judgetypea}
 \def\typei{\judgetypei}
-\def\typeiwf{\judgetypei_{wf}}
+\def\typeiwf{\judgetypei}
 \def\typecci{\vdash_{CCI}}
 \def\typec{\vdash_{CCI}}
 \def\type{\typed}
@@ -29,7 +29,7 @@
 \def\sub{\subd}
 
 \def\judgerw{~{\mbox{$"~>"$}}~}
-\def\wf{\judgewf}
+\newcommand{\wf}[1]{\type #1~\wellformed}
 
 \newcommand{\mualgoprim}[1]{\mu_{\bullet}'(#1)}
 \newcommand{\mualgo}[1]{\mu_{\bullet}(#1)}
@@ -96,13 +96,13 @@
 \def\AbsRule{Abs}
 \def\AppRule{App}
 \def\LetInRule{Let-In}
-\def\SigmaRule{Sigma}
+\def\SigmaRule{Sum}
 \def\SumRule{Sum}
 \def\LetSumRule{Let-Sum}
 \def\PiLeftRule{Pi-1}
 \def\PiRightRule{Pi-2}
 \def\SumInfRule{Sum-Inf}
-\def\SumDepRule{Sum-Dep}
+\def\SumDepRule{Pair}
 \def\SubsetRule{Subset}
 \def\LetSubRule{Let-Sub}
 \def\SubsumRule{Coerce}
@@ -117,7 +117,7 @@
 \def\SubBetaRule{$\rightslice$-$\beta$}
 \def\SubEqRule{$\rightslice$-Eq}
 \def\SubProdRule{$\rightslice$-Prod}
-\def\SubSigmaRule{$\rightslice$-Sigma}
+\def\SubSigmaRule{$\rightslice$-Sum}
 \def\SubLeftRule{$\rightslice$-Left}
 \def\SubRightRule{$\rightslice$-Right}
 \def\SubProofRule{$\rightslice$-Proof}

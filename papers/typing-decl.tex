@@ -1,7 +1,7 @@
 \newcommand{\WfEmptyFull}[1]{
   \UAX{WfEmpty}
-  {}
-  {$\seq []$}
+  {\quad}
+  {$\wf{[]}$}
   {}
 }  
 \newcommand{\WfEmpty}[1][\Gamma]{\WfEmptyFull{#1}}
@@ -9,14 +9,14 @@
 \newcommand{\WfVarFull}[4]{
   \UAX{WfVar}
   {$\tgen{#1}{#2}{#3}$}
-  {$\wf #1, #4 : #2$}
+  {$\wf{#1, #4 : #2}$}
   {$#3 `: \mathcal{S} `^{} #4 `; #1$}
 }
 \newcommand{\WfVar}[1][\Gamma]{\WfVarFull{#1}{A}{s}{x}}
 
 \newcommand{\PropSetFull}[3]{
   \UAX{Axiom}
-  {$\wf #1$}
+  {$\wf{#1}$}
   {$\tgen{#1}{#2}{#3}$}
   {$(#2, #3) `: \mathcal{A}$} 
 }
@@ -25,7 +25,7 @@
 
 \newcommand{\TypeTypeFull}[1]{
   \UAX{Type}
-  {$\wf #1$}
+  {$\wf{#1}$}
   {$\tgen{#1}{\Type(i)}{\Type(i + 1)}$}
   {$i `: `N$}
 }
@@ -33,7 +33,7 @@
 
 \newcommand{\VarFull}[3]{
   \BAX{Var}
-  {$\wf #1$}
+  {$\wf{#1}$}
   {$#2 : #3 `: #1$}
   {$\tgen{#1}{#2}{#3}$}
   {}
