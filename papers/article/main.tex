@@ -3,6 +3,7 @@
 \usepackage{array}
 %\usepackage{
 \usepackage{amsmath}
+\usepackage{amsthm}
 
 %\usepackage{qzapfcha}
 %\usepackage{cmbright}
@@ -174,7 +175,7 @@ proof terms, but we have also extended it in some ways.
 
 \subsubsection{The typing judgment}
 \Russell{}'s typing system (figure \vref{fig:typing-decl-rules}) is based
-on the \CCfull \cite{Barras}, with sigma types but without universes.
+on the \CCfull \cite{Barras99,Luo90}, with sigma types but without universes.
 This restriction may be removed in future work, but cause no problem for
 our main purpose which is programming. The judgement $`G \typed t : T$
 means $t$ is a well-typed term of type $T$ in environment $`G$, and $`G
@@ -275,7 +276,7 @@ ensures that our judgement constructs an \emph{equivalence} and has
 proper modularity. The next two rules do context closure for dependent
 products and sums. It is remarkable that we use contravariance for
 domains in the \irule{SubProd} rule, not restricting to invariance as in
-\PVS. It is accessory here, as we could have used \emph{co}variance and
+\PVS \cite{journals/toplas/Castagna95}. It is accessory here, as we could have used \emph{co}variance and
 still get the same judgements because we have symetry. However, it will
 become important when we create coercions (see
 \vref{fig:subtyping-impl-rules}).
@@ -292,7 +293,7 @@ is well-typed, but we do not care about the proof.
   We have proved basic metatheoretical results for this system in \Coq{}
   \cite{CCP}. We have assumed that it is strongly normalizing (SN) and has the
   following subject reduction (SR) property: if $`G \typed t : T$ and $t
-  "->"_{\beta\pi} t'$ then $`G \typed t' : T' \subd T$. Strong normalization
+  "->"_{\beta\pi} t'$ then $`G \typed t' : T$. Strong normalization
   could be proved using the generic proof method developed in
   \cite{Geuvers} but we leave it for future work. Gang Chen
   \cite{GangChen} has studied various type systems from the
@@ -303,16 +304,110 @@ is well-typed, but we do not care about the proof.
   conversion ; hence we also leave it for future work.
 \end{paragraph}
 
-\begin{paragraph}{Results}
-  - Weakening
-  - Substitution
-\end{paragraph}
+We write $`G \typed T, U : s$ for $`G \typed T : s$ and $`G \typed U :
+s$.
+
+As all functionnal PTS, \Russell{} has the unicity of sorting property,
+hence we can prove:
+\begin{lemma}[Well-sortedness of equivalence derivations]
+  If $`G \typed T : s_1$, $`G \typed U : s_2$ and $`G \typed T \sub U$
+  then $`G \typed T, U : s$ and $s = s_1 = s_2$.
+\end{lemma}
+\begin{proof}
+  We will use the abbreviation $`G \typed T \sub U : s$ for $`G \typed T,
+  U : s$ and $`G \typed T \sub U$ in the following.
+
+  By induction on the subtyping derivation:
+  \case{SubConv} We have $T \eqbp U$, we apply unicity of sorting.
+
+  \case{SubTrans} We have by induction $`G \typed T \sub S : s$ and 
+  $`G \typed S \sub U : s$. Hence we have $`G \typed T, U : s$.
+
+  \caseother{} Other cases are straightforward.
+\end{proof}
+
+We will omit $`G$ where unnecessary.
+The essential properties of the $\_ \typed \_ \subd \_$ judgment are 
+its reflexivity ($\forall A, A \subd A$), symmetry ($\forall A B, A \subd
+B "<=>" B \subd A$) and transitivity by \irule{SubTrans}.
+
+As typing and equivalence are mutually recursive, we will generaly prove
+properties by mutual induction on the two derivations.
+Our system has good structural properties like weakening, thinning and
+substitution. 
+
+\begin{lemma}[Weakening]
+  Suppose $\typedwf `G, x : S, `D$.
+  If $`G, `D \typed t : T$ then $`G, x : S, `D \typed t : T$. 
+  If $`G, `D \typed T \sub U : s$ then $`G, x : S, `D \typed T \sub U : s$.
+\end{lemma}
+\begin{proof}
+  Straightforward mutual induction.
+\end{proof}
+
+Similarly for thining and substitution. An important property for
+dependent type systems is to have invariance of judgments which are
+definitionaly equal (here equivalent). Hence the following lemma:
+\begin{lemma}
+  Suppose $`G \typed U \sub V : s$.
+  If $`G, x : V, `D \typed t : T$ then $`G, x : U, `D \typed t : T$.
+  If $`G, x : V, `D \typed S \sub T : s'$ then
+  $`G, x : U, `D \typed S \sub T : s'$.
+\end{lemma}
+\begin{proof}
+  By mutual induction on the typing and equivalence derivations.
+\end{proof}
+
+We stop here about the theoretical properties of this first system, as
+it gives no new insights for our purpose and we will focus more on the
+algorithmic system's properties.
 
 \subsubsection{Algorithmic typing}
-  - Standard transformation for subtyping
-  - mu
-  - Elimination of transitivity
-  - Soundness and completeness
+We use a standard transformation to get an algorithm from our typing
+rules, basically restricting the conversion (or subsumption) rule
+(\irule{Coerce}) to the premises of introduction and elimination rules.
+\TODO{App?, SumDep?, Pi?}. Our algorithmic judgement $`G \typea t : T$
+reads: $t$ is a well-typed term of type $T$ in environment $`G$.
+We need to introduce the notion of support for subset types in order to
+define our algorithmic system. Indeed, when typing an application, 
+we need to ensure that the object we apply can be seen as an object of a
+product type modulo the equivalence. This notion is presented in \PVS{} by
+means of a $\mu_0$ operator which was readily adaptable in our setting
+\ref{fig:mualgo}. In Gang Chen's work, the notion is formalized by a
+new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
+
+The next thing to do is to construct a decidable judgement for
+equivalence given two well-sorted types. We denote it by $`G \typea T
+\suba U$ (figure \ref{fig:subta-rules}).
+In our case, we have to check that conversion is decidable, which is the
+case. We also need to eliminate the transitivity rule which is not
+syntax-directed. That is the purpose of the following theorem:
+\begin{theorem}[Elimination of transitivity]
+  If $`G \typea T \suba U$ and $`G \typea U \suba V$, then $`G \typea T
+  \suba V$.
+\end{theorem}
+\begin{proof}
+  By lexicographic induction on the pair of derivations.
+  \TODO{example}
+\end{proof}
+
+Classicaly, we have the following correspondence between the two
+systems:
+\begin{theorem}[Soundness]
+  If $`G \typea t : T$ then $`G \typed t : T$.
+  If $`G \typea T \suba U$ then $`G \typed T \subd U$.
+\end{theorem}
+
+\begin{theorem}[Completeness]
+  If $`G \typed t : T$ then $`G \typea t : T' \suba T$.
+  If $`G \typed T \subd U$ then $`G \typea T \suba U$.
+\end{theorem}
+
+Here is the desired property of the algorithmic system:
+\begin{theorem}[Decidability of typing and equivalence]
+  $`E T, `G \typea t : T$ and $`G \typea T \suba U$ are decidable
+  problems.
+\end{theorem}
 
 \subsection{From \CCq to \lng{}}
 - Present \CCq
