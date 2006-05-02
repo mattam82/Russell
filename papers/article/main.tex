@@ -189,7 +189,7 @@ it will have other benefits.
 
 \subsection{Typing and conversion}
 Our adaptation of \ps{} differs from the presentation of
-\ps{} in \cite{Rushby98:TSE, Shankar&Owre:WADT99} essentially because of the
+given in \cite{Rushby98:TSE, Shankar&Owre:WADT99} essentially because of the
 proof terms, but we have also extended it in some ways. 
 
 \subsubsection{The typing judgment}
@@ -232,12 +232,12 @@ on the Calculus of Constructions \cite{CoquandHuet,Barras99}, with sigma types b
 This restriction may be removed in future work, but cause no problem for
 our main purpose which is programming. The judgement $`G \typed t : T$
 means $t$ is a well-typed term of type $T$ in environment $`G$, and $`G
-\typed T \subd U$ means $T$ is convertible to $U$ in environment $`G$. 
+\typed T \subd U$ means $T$ is equivalent to $U$ in environment $`G$. 
 Following the presentation as a pure type system \cite{PTS}, 
 the set of sorts $\PTSsorts$ is defined as $\setproptype$. As usual, we
 let $s, s_i$ for $i `: `N$ range over sorts. The
 axioms are $\PTSaxioms = \{ (\Set, \Type), (\Prop, \Type) \}$ and the
-rules $\PTSrules$ are defined by the following (functional) relation:
+set of rules $\PTSrules$ is defined by the following (functional) relation:
 \begin{table}[h]
   \vspace{-1.5em}
   \axiomsd
@@ -308,12 +308,12 @@ include our subset equivalence.
 
 \subsubsection{Equivalence}
 We have renamed the technique from \ps{} to 
-subset \emph{equivalence} because we have a symmetric relation, contrary
+\emph{subset equivalence} because we have a symmetric relation, contrary
 to usual subtyping relations. It also permits to include $\beta$-conversion
 directly in the relation. The judgment $`G \typed T \subd{} U$ (figure
 \vref{fig:conversion-decl-rules}) reads $T$ is convertible to $U$ in
 environment $`G$. In the following, it is always assumed that the two
-input types of the conversion are well-sorted, but maybe not by the same sort.
+input types of the equivalence judgment are well-sorted, but maybe not by the same sort.
 
 \begin{figure}[h]
   \subtdRules
@@ -323,21 +323,23 @@ input types of the conversion are well-sorted, but maybe not by the same sort.
 
 The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
 judgment. It is well-known \cite{Luo, Pottinger?} that $\beta\pi$ is
-confluent only on well typed terms, so we have to ensure that our rules,
-when read from bottom to top, keep well-typedness. That's the purpose of
-the $`G \typed U : s$ premise of the \irule{SubTrans} rule. This rules
+confluent and terminating only on well typed terms, so we have to
+ensure that our rules, when read from bottom to top, keep
+well-typedness. That's the purpose of
+the $`G \typed U : s$ premise of the \irule{SubTrans} rule. This rule
 ensures that our judgement constructs an \emph{equivalence} and has
 proper modularity. The next two rules do context closure for dependent
-products and sums. It is remarkable that we use contravariance for
+products and sums. It is remarkable that we use contravariance
+\cite{journals/toplas/Castagna95} for
 domains in the \irule{SubProd} rule, not restricting to invariance as in
-\PVS \cite{journals/toplas/Castagna95}. It is accessory here, as we could have used \emph{co}variance and
+\PVS. It is accessory here, as we could have used \emph{co}variance and
 still get the same judgements because we have symetry. However, it will
 become important when we create coercions (see
 \vref{fig:subtyping-impl-rules}).
 
 The really interesting rules are \irule{SubSub} and
 \irule{SubProof}. The first one allows to use an object of a subset type
-as an object of its support type. The latter allows (maybe abusively) to
+as an object of its support type. The later allows (maybe abusively) to
 consider an object of any type as an object of any subset based on
 this type. By the assumption on the input types of the judgment, we know
 that the property $P$ is well-formed, but we do not care about the proof.
