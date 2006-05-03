@@ -86,7 +86,7 @@ essence. It is however difficult to mix the two methods
 (writing code and prove interactively) using a rich specification. We
 propose a solution to overcome this difficulty, based on the \ps{}
 \cite{Shankar&Owre:WADT99} technique of \PVS{}
-\cite{PVS:Language,PVS:Semantics-TR}. This solution also provides
+\cite{PVS:Language,PVS-Semantics:TR}. This solution also provides
 facilities to express properties with a syntaxicaly more mathematical flavor,
 bridging the gap between mathematical convention and type theory.
 
@@ -228,12 +228,12 @@ proof terms, but we have also extended it in some ways.
 \end{figure*}
 
 \Russell{}'s typing system (figure \vref{fig:typing-decl-rules}) is based
-on the Calculus of Constructions \cite{CoquandHuet,Barras99}, with sigma types but without universes.
+on the Calculus of Constructions \cite{coquandhuet88,Barras99}, with sigma types but without universes.
 This restriction may be removed in future work, but cause no problem for
 our main purpose which is programming. The judgement $`G \typed t : T$
 means $t$ is a well-typed term of type $T$ in environment $`G$, and $`G
 \typed T \subd U$ means $T$ is equivalent to $U$ in environment $`G$. 
-Following the presentation as a pure type system \cite{PTS}, 
+Following the presentation as a pure type system \cite{barendregt91}, 
 the set of sorts $\PTSsorts$ is defined as $\setproptype$. As usual, we
 let $s, s_i$ for $i `: `N$ range over sorts. The
 axioms are $\PTSaxioms = \{ (\Set, \Type), (\Prop, \Type) \}$ and the
@@ -322,8 +322,8 @@ input types of the equivalence judgment are well-sorted, but maybe not by the sa
 \end{figure}
 
 The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
-judgment. It is well-known \cite{Luo, Pottinger?} that $\beta\pi$ is
-confluent and terminating only on well typed terms, so we have to
+judgment. It is well-known that $\beta\pi$ is
+terminating only on well typed terms, so we have to
 ensure that our rules, when read from bottom to top, keep
 well-typedness. That's the purpose of
 the $`G \typed U : s$ premise of the \irule{SubTrans} rule. This rule
@@ -351,9 +351,9 @@ that the property $P$ is well-formed, but we do not care about the proof.
   following subject reduction (SR) property: if $`G \typed t : T$ and $t
   "->"_{\beta\pi} t'$ then $`G \typed t' : T$. Strong normalization
   could be proved using the generic proof method developed in
-  \cite{Geuvers} but we leave it for future work. Gang Chen
-  \cite{GangChen} has studied various type systems from the
-  $\lambda$-cube extended by subtyping or coercive subtyping \cite{Luo},
+  \cite{geuvers95} but we leave it for future work. Gang Chen
+  \cite{ChenPhD} has studied various type systems from the
+  $\lambda$-cube extended by subtyping or coercive subtyping \cite{DBLP:conf/csl/Luo96},
   including the Calculus of Constructions, and proved such results as
   SN and SR for them. It requires a very careful analysis of the system 
   to avoid cycles in the proof due to the presence of dependent types and
@@ -512,7 +512,7 @@ new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
 
 The next thing to do is to construct a decidable judgement for
 equivalence given two well-sorted types. We denote it by $`G \typea T
-\suba U$ (figure \ref{fig:subta-rules}).
+\suba U$ (figure \ref{fig:subtyping-algo-rules}).
 In our case, we have to check that conversion is decidable, which is the
 case. We also need to eliminate the transitivity rule which is not
 syntax-directed. That is the purpose of the following theorem:
@@ -565,11 +565,18 @@ impl.
 
 \subsection{Further work}
 
+\bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
+cparent,demons,demons2,demons3}
+\bibliographystyle{plain-url}
+
+\renewcommand{\thefootnote}{}
+\footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
+  \texttt{Concrete Math}}
 \end{document}
 
 
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: t
-%%% LaTeX-command: "TEXINPUTS=\"..:../style:$TEXINPUTS\" latex"
+%%% LaTeX-command: "BIBINPUTS=\"${HOME}/research/demons-biblio:../bib:$BIBINPUTS\" TEXINPUTS=\"..:../style:$TEXINPUTS\" latex"
 %%% End: 
