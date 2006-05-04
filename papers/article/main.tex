@@ -1,9 +1,11 @@
-\documentclass[twocolumn]{article}
+\documentclass{llncs}
 \usepackage{abbrevs}
 \usepackage{array}
-%\usepackage{
-\usepackage{amsmath}
-\usepackage{amsthm}
+
+\def\text{\mbox}
+
+%\usepackage{amsmath}
+%\usepackage{amsthm}
 
 %\usepackage{qzapfcha}
 %\usepackage{cmbright}
@@ -14,7 +16,7 @@
 \newboolean{defineTheoremFr}
 \newboolean{defineTheoremEn}
 \setboolean{defineTheoremFr}{false}
-\setboolean{defineTheoremEn}{true}
+\setboolean{defineTheoremEn}{false}
 \input{mathenv}
 
 \usepackage{bussproofs}
@@ -49,9 +51,9 @@
 \usepackage{framed}
 %\usepackage{multicol}
 
-\author{Matthieu Sozeau \\
-  LRI, Paris Sud XI University \\
-  sozeau@lri.fr}
+\author{Matthieu Sozeau\inst{1}}
+
+\institute{LRI, Paris Sud XI University\\\email{sozeau@lri.fr}}
 \title{Subset coercions in \Coq}
 \date{\today}
 
@@ -119,7 +121,7 @@ implementation with some case studies, and finally we give our
 conclusions on this work and discuss future directions.
 
 \section{\Russell{}}
-The name of our language is an homage to the mathematician ? Russell who
+The name of our language is an homage to the mathematician Bertrand Russell who
 discovered the famous paradox of set theory with the unrestricted
 comprehension axiom. In this theory, it is possible to construct the set
 $X = \{x `| x `; x\}$ whose definition is circular. Clearly, if $X `: X$
@@ -127,7 +129,7 @@ then $X `; X$ and if $X `; X$ then $X `: X$, hence we have an
 inconsistency. \Russell{} was one of the pioneers of type theory when he
 devised a set theory with a restricted comprehension axiom that
 permitted to create subsets only from already defined subsets,
-forbidding the definition of $X$. 
+forbidding the definition of $X$ \cite{whitehead.russell:principia}. 
 
 The subset equivalence idea is to identify elements of subsets if
 they are built from the same underlying set. That is, we can identify
@@ -151,23 +153,18 @@ because they separate the objects we want to manipulate and the
 properties which we use to reason about them.
 
 \subsection{From \ps{} to subset equivalence}
-The \ps{} mechanism \cite{Rushby98:TSE, Shankar&Owre:WADT99}
+The \ps{} mechanism \cite{Rushby98:TSE,Shankar&Owre:WADT99}
 is an extension of the \PVS type system which internalizes this idea.
 Concretely, this means that the following rules are derivable in \PVS:
-\begin{figure}[h]
-  \begin{center}
-    \AXC{$`G \vdash t : \{ x : T `| P[x] \}$}
-    \UIC{$`G \vdash t : T$}
-    \DP
-    \AXC{$`G \vdash t : T$}
-    \AXC{$`G \vdash P[t]$}
-    \BIC{$`G \vdash t : \{ x : T `| P[x] \}$}
-    \DP
-  \end{center}
-  \vspace{-1em}
-  \label{PVS:rules}
-  \caption{\PVS}
-\end{figure}
+\begin{center}
+  \AXC{$`G \vdash t : \{ x : T `| P[x] \}$}
+  \UIC{$`G \vdash t : T$}
+  \DP
+  \AXC{$`G \vdash t : T$}
+  \AXC{$`G \vdash P[t]$}
+  \BIC{$`G \vdash t : \{ x : T `| P[x] \}$}
+  \DP
+\end{center}
 
 The first one formalizes the fact that an object of a subset based on
 $T$ is an object of type $T$. The second one permits using an object of
@@ -188,45 +185,55 @@ success to make \Coq more usable for this kind of tasks, and as we will see,
 it will have other benefits.
 
 \subsection{Typing and conversion}
-Our adaptation of \ps{} differs from the presentation of
-given in \cite{Rushby98:TSE, Shankar&Owre:WADT99} essentially because of the
-proof terms, but we have also extended it in some ways. 
+Our presentation of \ps{} differs slightly from the original one
+essentially because of the proof terms, but we have also extended it in some ways. 
 
 \subsubsection{The typing judgment}
-
-\begin{figure*}[t]
+\begin{figure}[t]
+  \begin{center}
+    \def\infvspace{0.1in}
     \def\seq{\typed}
     \def\fCenter{\wf}
-    \begin{center}
-      \WfEmpty\DP\WfVar\DP
-      \Var\DP
-    \end{center}
     
-    \def\fCenter{\typed}
-    \begin{center}
-      \PropSet\DP
-      \Subsum\DP
-    \end{center}
-    
-    \Prod\DP
-    \SigmaR\DP
+    \WfEmpty\DP\WfVar\DP
 
+    \def\fCenter{\typed}
+    \vspace{\infvspace}
+
+    \Var\DP\PropSet\DP
+    
+    \vspace{\infvspace}
+    \Subsum\DP
+       
+    \vspace{\infvspace}
+    \Prod\DP
+    
     \vspace{\infvspace}
     \Abs\DP
+
+    \vspace{\infvspace}
+    \App\DP
+
+    \vspace{\infvspace}
+    \SigmaR\DP
+    
+    \vspace{\infvspace}
     \SumDep\DP
 
     \vspace{\infvspace}
-    \quad\App\DP
-    \quad\quad
     \PiLeft\DP
     \quad
     \PiRight\DP
 
-    \begin{center}\SubsetR\DP\end{center}
-    \caption{\Russell{} typing}
+    \vspace{\infvspace}
+    \SubsetR\DP
+  \end{center}
+  \vspace{-2em}
+  \caption{\Russell{} typing}
   \label{fig:typing-decl-rules}
-\end{figure*}
-
+  \vspace{-1em}
+\end{figure}
+%
 \Russell{}'s typing system (figure \vref{fig:typing-decl-rules}) is based
 on the Calculus of Constructions \cite{coquandhuet88,Barras99}, with sigma types but without universes.
 This restriction may be removed in future work, but cause no problem for
@@ -238,13 +245,13 @@ the set of sorts $\PTSsorts$ is defined as $\setproptype$. As usual, we
 let $s, s_i$ for $i `: `N$ range over sorts. The
 axioms are $\PTSaxioms = \{ (\Set, \Type), (\Prop, \Type) \}$ and the
 set of rules $\PTSrules$ is defined by the following (functional) relation:
-\begin{table}[h]
-  \vspace{-1.5em}
+% \begin{table}[h]
+%   \vspace{-1.5em}
   \axiomsd
-  \vspace{-2em}
-  \caption{Definition of $\PTSrules$}
-  \label{fig:PTSrules}
-\end{table}
+%   \vspace{-1em}
+%   \caption{Definition of $\PTSrules$}
+%   \label{fig:PTSrules}
+% \end{table}
 
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma}, \irule{Sum-Dep},
 \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V : \Set$
@@ -265,16 +272,8 @@ no way to create a term of type $0 \neq 0$ from the judgment $0 :
 \mysubset{x}{`N}{P}$, but in a classical Calculus of Constructions with
 sigma types or inductive types, the subset type is a first class object
 defined with proper introduction and
-elimination terms (figure \vref{fig:subset}). What we need to do is forbid the use of these terms
+elimination terms (figure \vref{fig:cci-subset}). What we need to do is forbid the use of these terms
 in \Russell{} terms, leaving only the type former.
-
-Some basic properties of this system are well-formedness of
-environments: if $`G \typed t : T$ then $\typedwf `G$ and
-well-sortedness: if $`G \typed t : T$ then $T = \Type$ or $`G \typed T :
-s$.
-
-We now need to change the conversion rule to a stronger one which will
-include our subset equivalence.
 
 \begin{figure}
   \begin{center}
@@ -301,17 +300,28 @@ include our subset equivalence.
     \UIC{$`G \type \text{proj2\_sig}~t : P[\text{proj1\_sig}~t/x]$}
     \DP
   \end{center}
+  \vspace{-1em}
   \caption{Subset type in \CCI}
-  \label{fig:subset}
+  \label{fig:cci-subset}
+  \vspace{-2.5em}
 \end{figure}
 
+Some basic properties of this system are well-formedness of
+environments: if $`G \typed t : T$ then $\typedwf `G$ and
+well-sortedness: if $`G \typed t : T$ then $T = \Type$ or $`G \typed T :
+s$.
+
+We now need to change the conversion rule to a stronger one which will
+include our subset equivalence.
 
 \subsubsection{Equivalence}
 We have renamed the technique from \ps{} to 
 \emph{subset equivalence} because we have a symmetric relation, contrary
-to usual subtyping relations. It also permits to include $\beta$-conversion
-directly in the relation. The judgment $`G \typed T \subd{} U$ (figure
-\vref{fig:conversion-decl-rules}) reads $T$ is convertible to $U$ in
+to usual subtyping relations. It also conveys the idea that it can
+include the usual $\beta\pi$-conversion directly in the judgement, 
+although it may not be possible if we have cummulative universes.
+The judgment $`G \typed T \subd{} U$ (figure
+\vref{fig:conversion-decl-rules}  ) reads $T$ is convertible to $U$ in
 environment $`G$. In the following, it is always assumed that the two
 input types of the equivalence judgment are well-sorted, but maybe not by the same sort.
 
@@ -347,42 +357,39 @@ that the property $P$ is well-formed, but we do not care about the proof.
 \subsubsection{Properties}
 \begin{paragraph}{Assumptions}
   We have proved basic metatheoretical results for this system in \Coq{}
-  \cite{CCP}. We have assumed that it is strongly normalizing (SN) and has the
+  \cite{coq/Russell/meta}. We have assumed that it is strongly normalizing (SN) and has the
   following subject reduction (SR) property: if $`G \typed t : T$ and $t
-  "->"_{\beta\pi} t'$ then $`G \typed t' : T$. Strong normalization
-  could be proved using the generic proof method developed in
-  \cite{geuvers95} but we leave it for future work. Gang Chen
+  "->"_{\beta\pi} t'$ then $`G \typed t' : T$. Gang Chen
   \cite{ChenPhD} has studied various type systems from the
   $\lambda$-cube extended by subtyping or coercive subtyping \cite{DBLP:conf/csl/Luo96},
   including the Calculus of Constructions, and proved such results as
   SN and SR for them. It requires a very careful analysis of the system 
   to avoid cycles in the proof due to the presence of dependent types and
-  conversion ; hence we also leave it for future work.
-\end{paragraph}
-
-\begin{paragraph}{Notations}
-  We write $`G \typed T, U : s$ for $`G \typed T : s$ and $`G \typed U :
-  s$.
+  conversion ; hence we leave it for future work. Strong normalization
+  could also be proved, perhaps more easily, using the generic proof method developed in
+  \cite{geuvers95}, by finding a proper interpretation of \Russell terms
+  into the Calculus of Constructions.
 \end{paragraph}
 
 As all functionnal PTS, \Russell{} has the unicity of sorting property,
 hence we can prove:
 \begin{lemma}[Well-sortedness of equivalence derivations]
   If $`G \typed T : s_1$, $`G \typed U : s_2$ and $`G \typed T \sub U$
-  then $`G \typed T, U : s$ and $s = s_1 = s_2$.
+  then $`G \typed T, U : s$\footnote{We write $`G \typed T, U : s$ for $`G \typed T : s$ and $`G \typed U :
+  s$.} and $s = s_1 = s_2$.
 \end{lemma}
 \begin{proof}
   We will use the abbreviation $`G \typed T \sub U : s$ for $`G \typed T,
   U : s$ and $`G \typed T \sub U$ in the following.
 
   By induction on the subtyping derivation:
-  \begin{list}{}
-  \item[] \rulename{SubConv}: We have $T \eqbp U$, we apply unicity of sorting.
+  \begin{list}{-}
+  \item \rulename{SubConv}: We have $T \eqbp U$, we apply unicity of sorting.
     
-  \item[] \rulename{SubTrans}: We have by induction $`G \typed T \sub S : s$ and 
+  \item[-] \rulename{SubTrans}: We have by induction $`G \typed T \sub S : s$ and 
     $`G \typed S \sub U : s$. Hence we have $`G \typed T, U : s$.
     
-  \item[] Other cases are straightforward.
+  \item Other cases are straightforward.
   \end{list}
 \end{proof}
 
@@ -428,30 +435,30 @@ algorithmic system's properties.
     \def\type{\typea}
     \def\subt{\subta}
     \def\sub{\suba}
-    
+    \def\fCenter{\typea}
     \begin{center}
-    \WfEmpty\DP
+%     \WfEmpty\DP
     
-    \vspace{\infvspace}
-    \WfVar\DP
+%     \vspace{\infvspace}
+%     \WfVar\DP
     
-    \vspace{\infvspace}
-    \Var\DP
+%     \vspace{\infvspace}
+%     \Var\DP
     
-    \vspace{\infvspace}
-    \PropSet\DP
+%     \vspace{\infvspace}
+%     \PropSet\DP
     
-    \vspace{\infvspace}
-    \Prod\DP
+%     \vspace{\infvspace}
+%     \Prod\DP
 
-    \vspace{\infvspace}
-    \Abs\DP
+%     \vspace{\infvspace}
+%     \Abs\DP
 
     \vspace{\infvspace}
     \AppA\DP
 
-    \vspace{\infvspace}
-    \SigmaR\DP
+%     \vspace{\infvspace}
+%     \SigmaR\DP
     
     \vspace{\infvspace}
     \SumDepA\DP
@@ -462,10 +469,13 @@ algorithmic system's properties.
     \vspace{\infvspace}
     \PiRightA\DP
 
+    \vspace{\infvspace}
     \SubsetR\DP
-    \end{center}
-  \caption{\Russell{} algorithmic typing and equivalence}
+  \end{center}
+  \vspace{-2em}
+  \caption{\Russell{} algorithmic typing, new rules}
   \label{fig:typing-algo-rules}
+  \vspace{-1em}
 \end{figure*}
 
 \begin{figure*}
@@ -480,20 +490,23 @@ algorithmic system's properties.
 
     \vspace{\infvspace}
     \SubProdA\DP
-    \quad
+
+    \vspace{\infvspace}
     \SubSigmaA\DP
 
     \vspace{\infvspace}
     \SubProofA\DP
-    \quad
+
+    \vspace{\infvspace}
     \SubSubAs\DP
   \end{center}
-  \caption{\Russell{} algorithmic typing and equivalence}
+  \vspace{-2em}
+  \caption{\Russell{} algorithmic equivalence}
   \label{fig:subtyping-algo-rules}
+  \vspace{-1em}
 \end{figure*}
 
-
-
+\begin{paragraph}{}
 We use a standard transformation to get an algorithm from our typing
 rules, integrating the conversion (or subsumption) rule
 (here \irule{Coerce}) to the premises of the other rules.
@@ -509,13 +522,14 @@ product type modulo the equivalence. This notion is presented in \PVS{} by
 means of a $\mu_0$ operator which was readily adaptable in our setting
 \ref{fig:mualgo}. In Gang Chen's work, the notion is formalized by a
 new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
-
-The next thing to do is to construct a decidable judgement for
-equivalence given two well-sorted types. We denote it by $`G \typea T
-\suba U$ (figure \ref{fig:subtyping-algo-rules}).
-In our case, we have to check that conversion is decidable, which is the
-case. We also need to eliminate the transitivity rule which is not
-syntax-directed. That is the purpose of the following theorem:
+\end{paragraph}
+\begin{paragraph}{}
+  The next thing to do is to construct a decidable judgement for
+  equivalence given two well-sorted types. We denote it by $`G \typea T
+  \suba U$ (figure \ref{fig:subtyping-algo-rules}).
+  In our case, we have to check that conversion is decidable, which is the
+  case. We also need to eliminate the transitivity rule which is not
+  syntax-directed. That is the purpose of the following theorem:
 \begin{theorem}[Elimination of transitivity]
   If $`G \typea T \suba U$ and $`G \typea U \suba V$, then $`G \typea T
   \suba V$.
@@ -524,6 +538,7 @@ syntax-directed. That is the purpose of the following theorem:
   By lexicographic induction on the pair of derivations.
   \TODO{example}
 \end{proof}
+\end{paragraph}
 
 Classicaly, we have the following correspondence between the two
 systems:
@@ -537,21 +552,81 @@ systems:
   If $`G \typed T \subd U$ then $`G \typea T \suba U$.
 \end{theorem}
 
-Here is the desired property of the algorithmic system:
+Finaly, we can state the desired property of the algorithmic system:
 \begin{theorem}[Decidability of typing and equivalence]
-  $`E T, `G \typea t : T$ and $`G \typea T \suba U$ are decidable
+  $`A `G~t, `E T, `G \typea t : T$ and $`A `G~T~U, `G \typea T \suba U$ are decidable
   problems.
 \end{theorem}
 
-\subsection{From \CCq to \lng{}}
-- Present \CCq
-- Forgetful map
+\subsection{From \CC to \lng{}}
+We have presented a calculus based on \CC with a stronger equivalence
+but with restricted typing rules. We will now see how they relate
+formally.
+We can build a forgetful map from terms of \CCI to \Russell
+(interpreting inductives as constants). It bears
+relation to the $`e$ extraction function defined in
+\cite{Werner:ProofIrrelevance}. Essentially, \Russell{} terms do not
+contain or manipulate logical information attached to objects of subset
+types, hence we must forget about it when translating.
+
+We define the forgetful map $()^{\circ}$ as an homomorphism on terms
+except for the following cases:
+\begin{center}
+  \CCtoRussellforgetFig
+\end{center}
+
+We can now prove the following:
+\begin{theorem}[Forgetful map correctness]
+  If $`G \typec t : T$ then $`G^{\circ} \typea t^{\circ} : T^{\circ}$ if $()^{\circ}$ is
+  defined on $`G, t$ and $T$.
+\end{theorem}
+
+Practically, this means we can use almost any existing definition in the
+\Coq environment, potentially turning them (locally) to an opaque form
+if their body is not traductible. Obviously, this map is involutive and
+the identity on \Russell terms. 
+
 
 \section{From \lng{} to \CCq{}}
-mutually recursive...
+We will now build an interpretation
+$\ip{t}{`G}$ of \Russell terms $t$ in environment $`G$ into \CCI
+terms. We will check at the end that it respects the $()^{\circ}$ operator
+in the sense that if $t$ is well-typed in $`G$ then $\ip{t}{`G}^{\circ} = t$.
+
+Our interpretation will build a full-fledged \CCI term from its
+algorithmic skeleton and a rich type written in \Russell. Obviously, we
+cannot infer proof terms where they are needed in \CCI, but we can build
+a \emph{partial} term, leaving typed holes where proofs are
+needed. Hence we add a rule to build existential variables (or
+metavariables) to the target calculus ($\typeq$ denotes the new system's typing judgement):
+\begin{prooftree}
+  \UAX{}
+  {$`G \typeq P : \Prop$}
+  {$`G \typeq ?_{P} : P$}
+  {}
+\end{prooftree}
+
+We restrict it to objects of type $\Prop$ because we consider that the
+informative part of the algorithm has been entirely given in the
+original term. 
+
+Now we can build a total interpretation:
+\begin{proposition}[Interpretation correctness]
+  If $`G \typea t : T$ then $\ipG{`G} \typeq \ip{t}{`G} : \ip{T}{`G}$.
+\end{proposition}
+
+The proof of this proposition is the main technical contribution of this
+paper. It also represented the main difficulty in our work. 
+The remainder of this section is organized as follows: first we will
+define the explicit coercion derivation algorithm which will permit to
+put proof obligations in the terms, then we will define the
+interpretation of terms which is mutually recursive with the first
+one. Finaly we will present a proof sketch of the aforementionned
+proposition.
 
 \subsection{Explicit coercions}
-... derivation algo.
+The algorithm which derives explicit coercions is based on the
+algorithmic equivalence derivations. 
 
 \subsection{Terms}
 - Follows algo typing derivation. Done at the same time as typing in the
@@ -567,11 +642,11 @@ impl.
 
 \bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
-\bibliographystyle{plain-url}
+\bibliographystyle{splncs}
 
 \renewcommand{\thefootnote}{}
-\footnotetext{Ce rapport a été préparé sous \LaTeX~avec la fonte 
-  \texttt{Concrete Math}}
+\footnotetext{This article was typeset in \LaTeX~using the
+  \texttt{Concrete Math} font}
 \end{document}
 
 

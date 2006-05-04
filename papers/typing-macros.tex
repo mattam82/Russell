@@ -14,6 +14,7 @@
 \def\typeiwf{\judgetypei}
 \def\typecci{\vdash_{CCI}}
 \def\typec{\vdash_{CCI}}
+\def\typeq{\vdash_{?}}
 \def\type{\typed}
 \def\typewf{\typedwf}
 \def\judgesubd{\vdash}
@@ -161,7 +162,7 @@
   {--}{\ifthenelse{\equal{\value{inductiondepth}}{2}}%
     {\textbullet}{--}}}
 
-\newcommand{\case}[1]{\item[\inductioncasepoint{}] \rulename{#1} :}
+\renewcommand{\case}[1]{\item[\inductioncasepoint{}] \rulename{#1} :}
 \newcommand{\casetwo}[2]{\item[\inductioncasepoint{}] \rulename{#1}, \rulename{#2} :}
 \newcommand{\casenil}{\item[\inductioncasepoint{}]\xspace}
 \newcommand{\caseother}[1]{\item[\inductioncasepoint{}] #1 :}
