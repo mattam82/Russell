@@ -1,2 +1,3 @@
-export TEXINPUTS=${TEXINPUTS}style:
-export BSTINPUTS=${BSTINPUTS}style:
+export TEXINPUTS=style:figures:${TEXINPUTS}
+export BIBINPUTS=${HOME}/research/demons-biblio:bib:${BIBINPUTS}
+export BSTINPUTS=style:${BSTINPUTS}
