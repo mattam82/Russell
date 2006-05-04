@@ -1,33 +1,33 @@
 %\def\ifstreq#1#2{\ifEqString{#1}{#2}}
 
-\def\impsub{\rightslice}
-\def\wellformed{\textbf{wf}}
-\def\judgewf{\vdash}
-\def\judgetyped{\vdash}
-\def\judgetypea{\vdash_{\bullet}}
-\def\judgetypei{\vdash_{\Box}}
-\def\typed{\judgetyped}
-\def\typedwf{\judgewf}
-\def\typea{\judgetypea}
-\def\typeawf{\judgetypea}
-\def\typei{\judgetypei}
-\def\typeiwf{\judgetypei}
-\def\typecci{\vdash_{CCI}}
-\def\typec{\vdash_{CCI}}
-\def\typeq{\vdash_{?}}
-\def\type{\typed}
-\def\typewf{\typedwf}
-\def\judgesubd{\vdash}
-\def\judgesuba{\vdash_{\bullet}}
-\def\judgesubi{\vdash_{\Box}}
-\def\subtd{\judgesubd}
-\def\subta{\judgesuba}
-\def\subti{\judgesubi}
-\def\subt{\subtd}
-\def\subd{\rightslice}
-\def\suba{\rightslice_{\bullet}}
-\def\subi{\rightslice_{\Box}}
-\def\sub{\subd}
+\newcommand{\impsub}{\rightslice}
+\newcommand{\wellformed}{\textbf{wf}}
+\newcommand{\judgewf}{\vdash}
+\newcommand{\judgetyped}{\vdash}
+\newcommand{\judgetypea}{\vdash_{\bullet}}
+\newcommand{\judgetypei}{\vdash_{\Box}}
+\newcommand{\typed}{\judgetyped}
+\newcommand{\typedwf}{\judgewf}
+\newcommand{\typea}{\judgetypea}
+\newcommand{\typeawf}{\judgetypea}
+\newcommand{\typei}{\judgetypei}
+\newcommand{\typeiwf}{\judgetypei}
+\newcommand{\typecci}{\vdash_{CCI}}
+\newcommand{\typec}{\vdash_{CCI}}
+\newcommand{\typeq}{\vdash_{?}}
+\newcommand{\type}{\typed}
+\newcommand{\typewf}{\typedwf}
+\newcommand{\judgesubd}{\vdash}
+\newcommand{\judgesuba}{\vdash_{\bullet}}
+\newcommand{\judgesubi}{\vdash_{\Box}}
+\newcommand{\subtd}{\judgesubd}
+\newcommand{\subta}{\judgesuba}
+\newcommand{\subti}{\judgesubi}
+\newcommand{\subt}{\subtd}
+\newcommand{\subd}{\rightslice}
+\newcommand{\suba}{\rightslice_{\bullet}}
+\newcommand{\subi}{\rightslice_{\Box}}
+\newcommand{\sub}{\subd}
 
 \def\judgerw{~{\mbox{$"~>"$}}~}
 \newcommand{\wf}[1]{\type #1~\wellformed}
@@ -40,6 +40,7 @@
 \newcommand{\tcoq}[3]{#1 \typec #2 : #3}
 \newcommand{\tgen}[3]{#1 \type #2 : #3}
 \newcommand{\tgensub}[4]{#1 \type #2 : #3 \quad #1 \type #3 \sub #4}
+\newcommand{\wfgen}[1]{\typewf #1 \wellformed}
 \newcommand{\talgo}[3]{#1 \typea #2 : #3}
 \newcommand{\talgosub}[4]{#1 \typea #2 : #3 \suba #4}
 \newcommand{\tdecl}[3]{#1 \typed #2 : #3}

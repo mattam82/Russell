@@ -307,7 +307,7 @@ in \Russell{} terms, leaving only the type former.
 \end{figure}
 
 Some basic properties of this system are well-formedness of
-environments: if $`G \typed t : T$ then $\typedwf `G$ and
+environments: if $`G \typed t : T$ then $\wf{`G}$ and
 well-sortedness: if $`G \typed t : T$ then $T = \Type$ or $`G \typed T :
 s$.
 
@@ -404,7 +404,7 @@ Our system has good structural properties like weakening, thinning and
 substitution. 
 
 \begin{lemma}[Weakening]
-  Suppose $\typedwf `G, x : S, `D$.
+  Suppose $\wf{`G, x : S, `D}$.
   If $`G, `D \typed t : T$ then $`G, x : S, `D \typed t : T$. 
   If $`G, `D \typed T \sub U : s$ then $`G, x : S, `D \typed T \sub U : s$.
 \end{lemma}
@@ -598,7 +598,7 @@ algorithmic skeleton and a rich type written in \Russell. Obviously, we
 cannot infer proof terms where they are needed in \CCI, but we can build
 a \emph{partial} term, leaving typed holes where proofs are
 needed. Hence we add a rule to build existential variables (or
-metavariables) to the target calculus ($\typeq$ denotes the new system's typing judgement):
+metavariables) in the target calculus ($\typeq$ denotes the new system's typing judgement):
 \begin{prooftree}
   \UAX{}
   {$`G \typeq P : \Prop$}
@@ -620,8 +620,8 @@ paper. It also represented the main difficulty in our work.
 The remainder of this section is organized as follows: first we will
 define the explicit coercion derivation algorithm which will permit to
 put proof obligations in the terms, then we will define the
-interpretation of terms which is mutually recursive with the first
-one. Finaly we will present a proof sketch of the aforementionned
+interpretation of terms which is mutually recursive with the precedent
+algorithm. Finaly we will present a proof sketch of the aforementionned
 proposition.
 
 \subsection{Explicit coercions}
