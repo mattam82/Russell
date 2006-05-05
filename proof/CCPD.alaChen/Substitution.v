@@ -11,32 +11,32 @@ Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
 
-  Lemma typ_sub_weak :
-   forall g (d : term) t,
-   typ g d t ->
-   forall e u (U : term),
-   typ e u U ->
-   forall f n,
-   sub_in_env d t n e f ->
-   wf f -> trunc _ n f g -> typ f (subst_rec d u n) (subst_rec d U n).
-intros g d t H.
-intros e u U H0.
-induction H0 using typ_mut with
+Lemma typ_sub_weak : forall g (d : term) t, g |- d : t ->
+   forall e u (U : term), e |- u : U ->
+   forall f n, sub_in_env d t n e f -> wf f -> trunc _ n f g -> 
+   f |- (subst_rec d u n) : (subst_rec d U n).
+Proof.
+intros g d t H e u U IH.
+induction IH using typ_mut with
  (P := fun e u (U : term) => fun H0 : e |- u : U =>
  forall f n,
  sub_in_env d t n e f ->
  wf f -> trunc term n f g -> f |- subst_rec d u n : subst_rec d U n)
  (P0 :=
- fun e T (U : term) => fun H0 : e |- T >> U =>
+ fun e T (U : term) s => fun H0 : e |- T >> U : s =>
  forall f n,
  sub_in_env d t n e f ->
- wf f -> trunc term n f g -> f |- subst_rec d T n >> subst_rec d U n) ;
+ wf f -> trunc term n f g -> f |- subst_rec d T n >> subst_rec d U n : s) ;
  simpl in |- *;
- try simpl in IHtyp ; 
- try simpl in IHtyp1 ;
- try simpl in IHtyp2 ;
- try simpl in IHtyp3 ; 
- try simpl in IHtyp4 ; intros; auto with coc core arith datatypes.
+ try simpl in IHIH ; 
+ try simpl in IHIH0 ; 
+ try simpl in IHIH1 ;
+ try simpl in IHIH2 ;
+ try simpl in IHIH3 ; 
+ try simpl in IHIH4 ;
+ try simpl in IHIH5 ;
+ try simpl in IHIH6 ;
+ intros; auto with coc core arith datatypes.
 
 elim (lt_eq_lt_dec n0 n); [ intro Hlt_eq | intro Hlt ].
 elim i.
@@ -74,7 +74,7 @@ rewrite distr_subst.
 apply type_app with (subst_rec d V n); auto with coc core arith datatypes.
 
 apply type_pair with s1 s2 ; auto with coc core arith datatypes.
-apply IHtyp3 ; auto with coc.
+apply IHIH3 ; auto with coc.
 apply wf_var with s1 ; auto with coc.
 rewrite <- distr_subst ; auto with coc core arith datatypes.
 
@@ -106,46 +106,57 @@ apply wf_var with s1 ; auto with coc core arith datatypes.
 
 apply type_conv with (subst_rec d U n) s; auto with coc core arith datatypes.
 
-apply coerce_prod with s ; auto with coc core.
+apply coerce_prod with s; auto with coc core arith datatypes.
 
-apply IHtyp4 ; auto with coc core.
+apply IHIH4 ; auto with coc core.
+apply wf_var with s ; auto with coc core.
+apply IHIH5 ; auto with coc core.
+apply wf_var with s ; auto with coc core.
+apply IHIH6 ; auto with coc core.
 apply wf_var with s ; auto with coc core.
 
 apply coerce_sum with s ; auto with coc core.
+apply IHIH4 ; auto with coc core ; apply wf_var with s ; auto with coc core.
+apply IHIH5 ; auto with coc core ; apply wf_var with s ; auto with coc core.
+apply IHIH6 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 
-apply IHtyp4 ; auto with coc core.
-apply wf_var with s ; auto with coc core.
+apply coerce_sub_l ; auto with coc core.
+apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.
+eapply coerce_sort_l ; auto with coc core.
 
-apply coerce_trans with (subst_rec d B n) s ; auto with coc core.
+apply coerce_sub_r ; auto with coc core.
+apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.
+eapply coerce_sort_r ; auto with coc core.
+
+apply coerce_trans with (subst_rec d B n) ; auto with coc core.
 Qed.
 
-Lemma coerce_sub_weak :
-   forall g (d : term) t,
-   typ g d t ->
-   forall e T (U : term),
-   e |- T >> U ->
-   forall f n,
-   sub_in_env d t n e f ->
-   wf f -> trunc _ n f g -> f |- (subst_rec d T n) >> (subst_rec d U n).
-intros g d t H.
-intros e u U H0.
-induction H0 using coerce_mut with
+Lemma coerce_sub_weak : forall g (d : term) t, g |- d : t ->
+   forall e T U s, e |- T >> U : s->
+   forall f n, sub_in_env d t n e f -> wf f -> trunc _ n f g -> 
+   f |- (subst_rec d T n) >> (subst_rec d U n) : s.
+Proof.
+intros g d t H e T U s IH.
+induction IH using coerce_mut with
  (P := fun e u (U : term) => fun H0 : e |- u : U =>
  forall f n,
  sub_in_env d t n e f ->
  wf f -> trunc term n f g -> f |- subst_rec d u n : subst_rec d U n)
  (P0 :=
- fun e T (U : term) => fun H0 : e |- T >> U =>
+ fun e T (U : term) s => fun H0 : e |- T >> U : s =>
  forall f n,
  sub_in_env d t n e f ->
- wf f -> trunc term n f g -> f |- subst_rec d T n >> subst_rec d U n) ;
+ wf f -> trunc term n f g -> f |- subst_rec d T n >> subst_rec d U n : s) ;
  simpl in |- *;
- try simpl in IHcoerce ; 
- try simpl in IHcoerce0 ; 
- try simpl in IHcoerce1 ;
- try simpl in IHcoerce2 ;
- try simpl in IHcoerce3 ; 
- try simpl in IHcoerce4 ; intros; auto with coc core arith datatypes.
+ try simpl in IHIH ; 
+ try simpl in IHIH0 ; 
+ try simpl in IHIH1 ;
+ try simpl in IHIH2 ;
+ try simpl in IHIH3 ; 
+ try simpl in IHIH4 ;
+ try simpl in IHIH5 ;
+ try simpl in IHIH6 ;
+ intros; auto with coc core arith datatypes.
 
 elim (lt_eq_lt_dec n0 n); [ intro Hlt_eq | intro Hlt ].
 elim i.
@@ -183,7 +194,7 @@ rewrite distr_subst.
 apply type_app with (subst_rec d V n); auto with coc core arith datatypes.
 
 apply type_pair with s1 s2 ; auto with coc core arith datatypes.
-apply IHcoerce1 ; auto with coc.
+apply IHIH1 ; auto with coc.
 apply wf_var with s1 ; auto with coc.
 rewrite <- distr_subst ; auto with coc core arith datatypes.
 
@@ -215,33 +226,44 @@ apply wf_var with s1 ; auto with coc core arith datatypes.
 
 apply type_conv with (subst_rec d U n) s; auto with coc core arith datatypes.
 
-apply coerce_prod with s ; auto with coc core.
+apply coerce_prod with s; auto with coc core arith datatypes.
 
-apply IHcoerce4 ; auto with coc core.
+apply IHIH4 ; auto with coc core.
+apply wf_var with s ; auto with coc core.
+apply IHIH5 ; auto with coc core.
+apply wf_var with s ; auto with coc core.
+apply IHIH6 ; auto with coc core.
 apply wf_var with s ; auto with coc core.
 
 apply coerce_sum with s ; auto with coc core.
+apply IHIH4 ; auto with coc core ; apply wf_var with s ; auto with coc core.
+apply IHIH5 ; auto with coc core ; apply wf_var with s ; auto with coc core.
+apply IHIH6 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 
-apply IHcoerce4 ; auto with coc core.
-apply wf_var with s ; auto with coc core.
+apply coerce_sub_l ; auto with coc core.
+apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.
+eapply coerce_sort_l ; auto with coc core.
 
-apply coerce_trans with (subst_rec d B n) s ; auto with coc core.
+apply coerce_sub_r ; auto with coc core.
+apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.
+eapply coerce_sort_r ; auto with coc core.
+
+apply coerce_trans with (subst_rec d B n) ; auto with coc core.
 Qed.
 
-  Theorem substitution :
-   forall e t u (U : term),
-   typ (t :: e) u U ->
-   forall d : term, typ e d t -> typ e (subst d u) (subst d U).
+Theorem substitution : forall e t u U, (t :: e) |- u : U ->
+  forall d, e |- d : t -> e |- (subst d u) : (subst d U).
+Proof.
 intros.
 unfold subst in |- *.
 apply typ_sub_weak with e t (t :: e); auto with coc core arith datatypes.
 apply typ_wf with d t; auto with coc core arith datatypes.
 Qed.
 
-  Theorem substitution_coerce :
-   forall e t T (U : term),
-   (t :: e) |- T >> U ->
-   forall d : term, e |- d : t -> e |- (subst d T) >> (subst d U).
+Theorem substitution_coerce : forall e t T (U : term) s,
+  (t :: e) |- T >> U : s ->
+  forall d, e |- d : t -> e |- (subst d T) >> (subst d U) : s.
+Proof.
 intros.
 unfold subst in |- *.
 apply coerce_sub_weak with e t (t :: e); auto with coc core arith datatypes.

@@ -7,24 +7,21 @@ Require Import CCPD.Types.
 Require Import CCPD.Thinning.
 Require Import CCPD.Substitution.
 
-
 Inductive coerce_in_env : env -> env -> Prop :=
-| coerce_env_hd : forall e t u,
-  forall s, e |- t : (Srt s) -> e |- u : (Srt s) ->
-  e |- t >> u -> coerce_in_env (u :: e) (t :: e)
-| coerce_env_tl :
+  | coerce_env_hd : forall e t u s, e |- t >> u : s -> 
+	coerce_in_env (u :: e) (t :: e)
+  | coerce_env_tl :
         forall e f t, wf (t :: f) -> coerce_in_env e f -> coerce_in_env (t :: e) (t :: f).
 
-  Hint Resolve coerce_env_hd coerce_env_tl: coc.
+Hint Resolve coerce_env_hd coerce_env_tl: coc.
 
-  Lemma conv_item :
+Lemma conv_item :
    forall n t e,
    item_lift t e n ->
    forall f, coerce_in_env e f ->
    item_lift t f n \/
    ((forall g, trunc _ (S n) e g -> trunc _ (S n) f g) /\
-   exists u, item_lift u f n /\ (ex2 (fun s => f |- u : (Srt s)) (fun s => f |- t : Srt s) /\
-   (wf f -> f |- u >> t))).
+   exists u, item_lift u f n /\ (exists s, f |- u >> t : s)).
 simple induction n.
 do 3 intro.
 elim H.
@@ -38,22 +35,16 @@ split; intros.
 inversion_clear H1; auto with coc core arith datatypes.
 
 exists (lift 1 t0).
-intros.
 split.
 inversion_clear H.
 
+unfold item_lift.
 exists t0; auto with coc core arith datatypes.
 
-split.
 exists s ; auto with coc core.
-change (Srt s) with (lift 1 (Srt s)). 
-apply thinning_n with l ; auto with coc core.
-apply wf_var with s ; auto with coc.
-
-change (Srt s) with (lift 1 (Srt s)). 
-apply thinning_n with l ; auto with coc core.
-apply wf_var with s ; auto with coc.
-apply thinning_n_coerce with l; auto with coc.
+apply thinning_n_coerce with l ; auto with coc core.
+apply wf_var with s.
+apply coerce_sort_l with x ; auto with coc.
 
 left.
 exists x; auto with coc core arith datatypes.
@@ -87,45 +78,36 @@ inversion_clear H6; auto with coc core arith datatypes.
 
 destruct H7.
 destruct H7.
-destruct H7.
+unfold item_lift.
 exists (lift 1 x0).
 split ; auto with coc core.
 inversion_clear H6 ; auto with coc core arith.
 exists x2.
-rewrite H10.
+rewrite H8.
 rewrite <- simpl_lift.
 auto with coc core.
 auto with coc.
 
-split.
-exists x1 ; change (Srt x1) with (lift 1 (Srt x1)). 
-apply thinning_n with f0 ; auto with coc core.
-rewrite simpl_lift.
-apply thinning_n with f0 ; auto with coc core.
-
-intros.
-pattern (lift (S (S n0)) x).
-rewrite simpl_lift.
-apply thinning_n_coerce with f0 ; auto with coc arith datatypes.
-inversion_clear H6; auto.
-pose (typ_wf _ _ _ H7).
-apply (H8 w).
+exists x1.
+pattern (lift (S (S n0)) x) ; rewrite simpl_lift.
+eapply thinning_n_coerce ; auto with coc core.
 
 exists x; auto with coc core arith datatypes.
 Qed.
 
 Lemma typ_conv_env :
-  forall e t T, typ e t T -> 
+  forall e t T, e |- t : T -> 
   forall f, coerce_in_env e f -> 
-  wf f -> typ f t T.
-intros e t T IHt.
-induction IHt using typ_mut with 
+  wf f -> f |- t : T.
+Proof.
+intros e t T IH.
+induction IH using typ_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
-(P0 := fun e T U => fun H : e |- T >> U =>
+(P0 := fun e T U s => fun H : e |- T >> U : s =>
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U) ; intros ;
+  wf f -> f |- T >> U : s) ; intros ;
 auto with coc core arith datatypes.
 
 elim conv_item with n T e f; auto with coc core arith datatypes; intros.
@@ -133,7 +115,7 @@ repeat destruct H1.
 destruct H2.
 destruct H2.
 destruct H3.
-destruct H3.
+destruct (coerce_sort _ _ _ _ H3).
 apply type_conv with x x0 ; auto with coc core.
 
 cut (wf (T :: f)); intros.
@@ -172,28 +154,43 @@ apply wf_var with s1 ; auto with coc core.
 apply type_conv with U s; auto with coc core arith datatypes.
 
 cut (wf (A' :: f)) ; intros.
+cut (wf (A :: f)) ; intros.
 apply coerce_prod with s ;auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
+apply wf_var with s ; auto with coc core arith datatypes.
 
+cut (wf (A' :: f)) ; intros.
 cut (wf (A :: f)) ; intros.
 apply coerce_sum with s ;auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
+apply wf_var with s ; auto with coc core arith datatypes.
 
-apply coerce_trans with B s ; auto with coc core arith datatypes.
+cut (wf (U :: f)) ; intros.
+apply coerce_sub_l ; auto with coc core arith datatypes.
+eapply wf_var ; auto with coc core arith datatypes.
+apply coerce_sort_l with U' ; auto with coc core arith datatypes.
+
+cut (wf (U' :: f)) ; intros.
+apply coerce_sub_r ; auto with coc core arith datatypes.
+eapply wf_var ; auto with coc core arith datatypes.
+apply coerce_sort_r with U ; auto with coc core arith datatypes.
+
+apply coerce_trans with B ; auto with coc core arith datatypes.
 Qed.
 
 Lemma coerce_conv_env :
-  forall e T U, e |- T >> U -> 
+  forall e T U s, e |- T >> U : s -> 
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U.
-intros e t T IHc.
-induction IHc using coerce_mut with 
+  wf f -> f |- T >> U : s.
+Proof.
+intros e T U s IH.
+induction IH using coerce_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
-(P0 := fun e T U => fun H : e |- T >> U =>
+(P0 := fun e T U s => fun H : e |- T >> U : s =>
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U) ; intros ;
+  wf f -> f |- T >> U : s) ; intros ;
 auto with coc core arith datatypes.
 
 elim conv_item with n T e f; auto with coc core arith datatypes; intros.
@@ -201,7 +198,7 @@ repeat destruct H1.
 destruct H2.
 destruct H2.
 destruct H3.
-destruct H3.
+destruct (coerce_sort _ _ _ _ H3).
 apply type_conv with x x0 ; auto with coc core.
 
 cut (wf (T :: f)); intros.
@@ -240,16 +237,95 @@ apply wf_var with s1 ; auto with coc core.
 apply type_conv with U s; auto with coc core arith datatypes.
 
 cut (wf (A' :: f)) ; intros.
+cut (wf (A :: f)) ; intros.
 apply coerce_prod with s ;auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
+apply wf_var with s ; auto with coc core arith datatypes.
 
+cut (wf (A' :: f)) ; intros.
 cut (wf (A :: f)) ; intros.
 apply coerce_sum with s ;auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
+apply wf_var with s ; auto with coc core arith datatypes.
 
-apply coerce_trans with B s ; auto with coc core arith datatypes.
+cut (wf (U :: f)) ; intros.
+apply coerce_sub_l ; auto with coc core arith datatypes.
+eapply wf_var ; auto with coc core arith datatypes.
+apply coerce_sort_l with U' ; auto with coc core arith datatypes.
+
+cut (wf (U' :: f)) ; intros.
+apply coerce_sub_r ; auto with coc core arith datatypes.
+eapply wf_var ; auto with coc core arith datatypes.
+apply coerce_sort_r with U ; auto with coc core arith datatypes.
+
+apply coerce_trans with B ; auto with coc core arith datatypes.
 Qed.
 
+
+(*Lemma coerce_unique_sorts : forall e T s1 U s2, 
+  e |- T : Srt s1 -> e |- U : Srt s2 -> 
+  forall s, e |- T >> U : s -> s1 = s2.
+Proof.
+  intros
+induction 3 ; intros ; try discriminate.
+*)  
+(*
+Lemma subset_sort : 
+  forall e t T,  e |- t : T -> 
+  forall U P, t = Subset U P -> 
+  e |- U : Srt set /\ conv T (Srt set).
+Proof.
+  induction 1 using typ_mut with 
+ (P := fun e t T => fun IH : typ e t T =>
+  forall U P, t = Subset U P -> 
+   (e |- U : Srt set) /\ conv T (Srt set))
+ (P0 := fun e T U => fun IH : coerce e T U =>
+   forall s, e |- T : Srt s -> e |- U : Srt s ->
+   (forall s1, conv T (Srt s1) -> conv U (Srt s1)) /\
+   (forall s1, conv U (Srt s1) -> conv T (Srt s1))) ; intros ; try discriminate.
+
+  inversion H1.
+  rewrite <- H3.
+  split ; auto.
+  constructor. 
+  
+  destruct (IHyp1 U0 P H2).
+  split ; auto.
+
+  destruct (IHyp4 s H1 H0).
+  apply (H5 set H4).
+
+  split.
+  intros.
+  apply trans_conv_conv with A ; auto with coc.
+  intros.
+  apply trans_conv_conv with B ; auto with coc.
+
+  split ; intros s1 Hconv.
+  elim (conv_sort_prod s1 A B (sym_conv _ _ Hconv)).
+  elim (conv_sort_prod s1 A' B' (sym_conv _ _ Hconv)).
+
+  split ; intros s1 Hconv.
+  elim (conv_sort_sum s1 A B (sym_conv _ _ Hconv)).
+  elim (conv_sort_sum s1 A' B' (sym_conv _ _ Hconv)).
+
+  split ; intros s1 Hconv.
+  elim (conv_sort_subset s1 U P (sym_conv _ _ Hconv)).
+
+  destruct (IHyp3 _ H H0).
+  pose (H4 _ Hconv).
+  
+
+  elim (conv_sort_subset s1 U P (sym_conv _ _ Hconv)).
+  
+apply sym_conv ;
+  elim (conv_sort_prod s1 A B) ; auto with coc.
+  
+*)
+
+
+
+(*
 Lemma subset_support_not_sort : forall e t T, e |- t : T -> 
   forall U P, t = Subset U P -> 
   forall s, ~ (conv U (Srt s)).
@@ -284,7 +360,7 @@ auto with coc core arith datatypes ; try discriminate.
 
   intros.
   apply trans_conv_conv with B ; auto with coc core.
-
+*)
 (*  injection H.
   intros.
   inversion H0.
@@ -324,7 +400,7 @@ auto with coc core arith datatypes ; try discriminate.
   apply (H3 H1).
   assumption.
 *)
-  intuition.
+(*  intuition.
   
   elim (conv_sort_prod s0 A B) ; auto with coc core.
   elim (conv_sort_prod s0 A' B') ; auto with coc core.
@@ -405,3 +481,30 @@ Proof.
   apply coerce_env_
 
   
+*)
+
+Lemma coerce_refl : forall e T s, e |- T : Srt s -> e |- T >> T : s.
+Proof.
+  intros.
+  apply coerce_conv ; auto with coc.
+Qed.
+
+Hint Resolve coerce_refl : coc.
+
+
+Lemma coerce_sym : forall e T U s, e |- T >> U : s -> e |- U >> T : s.
+Proof.
+  intros e T U s H ; induction H ; intros ; auto with coc core.
+  
+  apply coerce_prod with s ; auto with coc.
+  apply coerce_conv_env with (A' :: e) ; auto with coc core arith datatypes.
+  apply coerce_env_hd with s ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  apply coerce_sum with s ; auto with coc.
+  apply coerce_conv_env with (A :: e) ; auto with coc core arith datatypes.
+  apply coerce_env_hd with s ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  apply coerce_trans with B ; auto with coc core.
+Qed.

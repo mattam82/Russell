@@ -3,11 +3,11 @@ Require Import Reduction.
 Require Import Conv.
 Require Import LiftSubst.
 Require Import Env.
-Require Import CCP.Types.
-Require Import CCP.Coercion.
-Require Import CCP.Inversion.
-Require Import CCP.Thinning.
-Require Import CCP.Substitution.
+Require Import CCPD.Types.
+Require Import CCPD.Coercion.
+(*Require Import CCP.Inversion.*)
+Require Import CCPD.Thinning.
+Require Import CCPD.Substitution.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -265,24 +265,32 @@ Proof.
   elim (conv_sort _ _ H0) ; auto.
 *)  
 
-
-Lemma coerce_sorts : forall G s1 s2 s, 
-  G |- Srt s1 : Srt s -> G |- Srt s2 : Srt s -> 
-  Srt s1 >> Srt s2 -> s1 = s2.
+(*
+Lemma coerce_sorts : forall G s1 Ts1 s2 Ts2, 
+  Ts1 = Srt s1 -> Ts2 = Srt s2 -> G |- Ts1 >> Ts2 -> 
+  forall s, G |- Ts1 : Srt s -> G |- Ts2 : Srt s -> s1 = s2.
 Proof.
-  intros.
-  inversion H1.
-  apply conv_sort ; auto.
-  
-Admitted.  
+  induction 3 ; intros ; try discriminate ; auto with coc.
+  apply conv_sort.
+  rewrite H in H3 ; rewrite H0 in H3 ; assumption.
 
+  pose (IHcoerce1 H H
+
+  rewrite H1 in H3.
+  rewrite H2 in H5.
+  inversion H5.
+  rewrite <- H8 in H4.
+  inversion H4.
+
+Admitted.  
+*)
 
   Theorem type_case :
    forall e t T,
    typ e t T -> (exists s : sort, typ e T (Srt s)) \/ T = Srt kind.
 induction 1; intros; auto with coc core arith datatypes.
 left.
-elim wf_sort_lift with v e t; auto with coc core arith datatypes; intros.
+elim wf_sort_lift with n e T; auto with coc core arith datatypes; intros.
 exists x; auto with coc core arith datatypes.
 
 left.
