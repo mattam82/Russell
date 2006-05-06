@@ -7,6 +7,7 @@ Thinning.v
 Substitution.v
 Generation.v
 TypeCase.v
+Inversion.v
 #SubjectReduction.v
 #Unicity.v
 #Class.v

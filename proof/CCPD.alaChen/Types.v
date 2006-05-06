@@ -171,7 +171,7 @@ exists x0; auto with coc core arith datatypes.
 apply typ_wf with x (Srt s); auto with coc core arith datatypes.
 Qed.
 
-Lemma typ_sort : forall G t T, G |- t : T -> 
+Lemma typ_sort_aux : forall G t T, G |- t : T -> 
   forall s, t = (Srt s) -> is_prop s /\ T = (Srt kind).
 Proof.
 induction 1 ; intros ; try discriminate.
@@ -186,6 +186,12 @@ split ; auto.
 destruct (IHtyp3 _ H5).
 unfold is_prop in H6.
 induction H6 ; discriminate.
+Qed.
+
+Lemma typ_sort : forall G s T, G |- (Srt s) : T -> is_prop s /\ T = (Srt kind).
+Proof.
+intros.
+apply (typ_sort_aux G (Srt s) T H s (refl_equal (Srt s))).
 Qed.
 
 Lemma typ_not_kind : forall G t T, G |- t : T -> t <> Srt kind.

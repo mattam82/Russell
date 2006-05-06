@@ -5,6 +5,8 @@ Require Import Conv_Dec.
 Require Import LiftSubst.
 Require Import Env.
 Require Import CCPD.Types.
+Require Import CCPD.Thinning.
+Require Import CCPD.Substitution.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -25,28 +27,11 @@ Proof.
 unfold lift ; intros ; apply lift_rec_eq_sort with n 0 ; auto.
 Qed.
 
-Lemma typ_sort : forall G t T, G |- t : T -> 
-  forall s, t = (Srt s) -> is_prop s /\ T = (Srt kind).
-Proof.
-induction 1 ; intros ; try discriminate.
-
-injection H0 ; intro ; rewrite <- H1 ; unfold is_prop ; intuition.
-
-injection H0 ; intro ; rewrite <- H1 ; unfold is_prop ; intuition.
-
-induction (IHtyp1 s0 H3).
-split ; auto.
-
-destruct (IHtyp3 _ H5).
-unfold is_prop in H6.
-induction H6 ; discriminate.
-Qed.
-
 Lemma typ_not_kind : forall G t T, G |- t : T -> t <> Srt kind.
 Proof.
 red ; intros.
 rewrite H0 in H.
-pose (typ_sort H (refl_equal (Srt kind))).
+pose (typ_sort _ _ _ H).
 induction a.
 unfold is_prop in H1.
 induction H1 ; discriminate.
@@ -183,6 +168,226 @@ apply (b V1 V2) ; auto.
 
 apply IHtyp1 ; auto.
 Qed.
+(* 
+Lemma typ_sort : forall G t T, G |- t : T -> T <> Srt kind -> 
+  exists s, G |- T : Srt s.
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+
+  elim H0 ; auto.
+
+  elim H0 ; auto.
+  
+  exact (wf_sort_lift n e T H H0).
+  
+  destruct (IHtyp3 (typ_not_kind H0)).
+  exists x.
+  apply type_prod with s1 ; auto with coc core.
+
+  assert(Prod V Ur <> Srt kind) ; unfold not ; intros ; try discriminate.
+  destruct (IHtyp2 H2).
+  exists x.
+*)
+
+Lemma prod_arity_not_kind : forall G t T, G |- t : T -> 
+  prod_sort t <> Srt kind.
+Proof.
+  induction 1; simpl ; intros ; auto with coc ; try discriminate.
+Qed.
+
+Lemma prod_lift_to_sort : forall n t k s, prod_sort (lift_rec n t k) = Srt s -> prod_sort t = Srt s.
+Proof.
+  induction t ; simpl ; intros ; try discriminate.
+  assumption.
+  generalize H ; elim (le_gt_dec k n0) ; intros ; simpl in H0 ; discriminate.
+  apply IHt2 with (S k) ; auto.
+Qed.
+
+Lemma prod_subst_to_sort : forall u v n, prod_sort u <> Srt kind ->
+  prod_sort v <> Srt kind -> prod_sort (subst_rec u v n) <> Srt kind.
+Proof.
+  induction v ; simpl ; intros ; try discriminate.
+  assumption.
+  elim (lt_eq_lt_dec n0 n) ; intros.
+  induction a ; simpl ; intros ; unfold not ; intros ; try discriminate.
+  unfold lift in H1.
+  pose (prod_lift_to_sort n0 u 0 H1).
+  contradiction.
+  simpl ; unfold not ; intros ; discriminate.
+  
+  apply IHv2 ; auto with coc.
+Qed.
+ 
+Lemma prod_arity_not_kind_type : forall G t T, G |- t : T -> 
+  forall U V, T = Prod U V -> prod_sort V <> Srt kind.
+Proof.
+  induction 1 using typ_mutwf with
+  (P := fun G t T => fun H : G |- t : T =>
+    forall U V, T = Prod U V -> prod_sort V <> Srt kind)
+  (P0 := fun G U V s => fun H : G |- U >> V : s => True (*
+    (forall X Y, U = Prod X Y -> prod_sort Y <> Srt kind) /\
+    (forall X Y, U = Prod X Y -> prod_sort Y <> Srt kind)*))
+  (P1 := fun e => fun H : wf e => 
+    forall U V n, item_lift (Prod U V) e n -> prod_sort V <> Srt kind) 
+ ; simpl ; intros ; auto with coc ; try discriminate.
+
+  apply IHtyp with U n. 
+  rewrite H in i ; assumption.
+
+  assert (e |- Prod T U : Srt s2).
+  apply type_prod with s1 ; auto with coc.
+  rewrite H2 in H3.
+  pose (prod_arity_not_kind H3) ; auto with coc.
+
+  induction Ur ;  try (unfold subst, subst_rec ; simpl ; intros ; discriminate).
+  unfold subst in H1.
+  generalize H1 ; clear H1.
+  unfold subst_rec ; elim (lt_eq_lt_dec 0 n).
+  intro a ; case a ; clear a ; intros ; try discriminate.
+  rewrite lift0 in H1.
+  rewrite H1 in H.
+  pose (prod_arity_not_kind H) ; auto with coc.
+
+  intros ; discriminate.
+  pose (IHtyp2 V (Prod Ur1 Ur2) (refl_equal (Prod V (Prod Ur1 Ur2)))).
+  simpl in n.
+  unfold subst in H1 ; simpl in H1.
+  clear IHUr1 IHUr2.
+
+  inversion H1.
+
+  pose (prod_arity_not_kind H).
+  apply prod_subst_to_sort ; auto.
+
+  
+  
+  Focus 3.
+  induction M ; simpl in H3 ; try discriminate.
+  generalize H3 ; unfold subst, subst_rec.
+  elim (lt_eq_lt_dec 0 n) ; intros a ; try discriminate.
+  case a ; clear a ; intros ; try discriminate.
+  rewrite lift0 in H4.
+  rewrite H4 in H.
+  pose (prod_arity_not_kind H) ; auto with coc.
+  
+  intros ; discriminate.
+  pose (prod_arity_not_kind H2).
+  simpl in n.
+  
+  unfold subst in H3 ; simpl in H3.
+  inversion H3.
+  pose (prod_arity_not_kind H).
+  apply prod_subst_to_sort ; auto.
+
+  Focus 3.
+  rewrite H2 in H0.
+  apply (prod_arity_not_kind H0).
+
+  Focus 3.
+  destruct H.
+  elim (inv_nth_nl _ _ _ H0).
+  
+  Focus 3.
+  assert (wf (T :: e)). 
+  apply wf_var with s ; auto with coc.
+  destruct (wf_sort_lift _ (T :: e) _ H1 H0).
+  apply (prod_arity_not_kind H2).
+
+
+Lemma prod_target_not_kindtype : forall t G T, G |- t : T -> 
+  forall U V, T = Prod U V -> ~ (exists n, prod_target T n (Srt kind)).
+Proof.
+induction T ; try solve [unfold prod_sort ; red ; intros ; try discriminate].
+intros.
+induction (prod_dec V).
+induction a.
+induction H1.
+red ; intros.
+rewrite H0 in H2.
+simpl in H2.
+injection H0.
+intros.
+rewrite H3 in IHT2.
+
+induction H ; try discriminate.
+
+injection H0 ; intros.
+rewrite H6 in H5.
+apply (IHT2 _ _ H5 _ _ H1).
+induction H2.
+inversion H2.
+pose (inv_lift_sort T0 1 H12).
+rewrite e0 in H11.
+exists n ; rewrite H12 ; apply H11.
+
+apply (IHtyp1 H0).
+
+injection H0 ; intros.
+rewrite H1 in IHt2.
+induction H ; try discriminate.
+injection H0 ; intros.
+rewrite H4 in H3.
+
+red ; intros.
+
+simpl in H6.
+rewrite H4 in H6.
+induction H6.
+inversion H6.
+pose (inv_lift_sort T0 1 H11).
+induction V ; try solve [
+  inversion H10 ; rewrite H15 in H3 ; rewrite e0 in H3 ; apply (typ_not_kind H3) ; auto ].
+clear IHV1 ; clear IHV2.
+
+apply (b V1 V2) ; auto.
+
+apply IHtyp1 ; auto.
+
+
+
+Definition is_low_sort (s : term) := s = Srt set \/ s = Srt prop.
+
+Lemma subst_to_sort : forall t t' s, subst t t' = Srt s -> t <> Srt s ->
+  t' = Srt s.
+Proof.
+  induction t' ; intros ; try discriminate.
+  unfold subst, subst_rec in H.
+  assumption.
+
+  unfold subst, subst_rec in H.
+  generalize H.
+  elim (lt_eq_lt_dec 0 n).
+  intros a.
+  induction a.
+  intros ; discriminate.
+  intros.
+  rewrite lift0 in H1.
+  contradiction.
+
+  intros ; discriminate.
+Qed.
+
+Lemma kind_is_prod : forall G t T, G |- t : T -> T = Srt kind ->
+  is_low_sort (prod_sort t).
+Proof.
+  induction 1 ; intros ; try discriminate ; simpl ; auto.
+  unfold is_low_sort ; intuition.
+  unfold is_low_sort ; intuition.
+  induction (wf_sort_lift _ _ _ H H0).
+  rewrite H1 in H2.
+  elim (typ_not_kind H2) ; auto.
+  
+  pose (subst_to_sort _ H1 (typ_not_kind H)).
+
+  pose (prod_target_not_kind). H0) . (refl_equal (Prod V Ur))).
+  
+
+
+  pose (typ_sort H).
+
+typ_lift_sort).
+
+
 (*
 Lemma prod_target_dec : forall T U, {exists n, prod_target T n U} + {forall n, ~ prod_target T n U}.
 Proof.
@@ -193,6 +398,8 @@ Proof.
   (left ; exists 0 ; rewrite <- a ;
   unfold Tfull ; eapply prod_target_0 ; auto ; red ; intros ; try discriminate) |
   (right ; intros ; red ; intros ; inversion H ; try contradiction) ]).
+  
+
   induction IHT2.
 Admitted.
 

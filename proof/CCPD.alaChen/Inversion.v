@@ -28,11 +28,11 @@ Proof.
   pose (wf_var _ _ _ H).
   induction (wf_sort n _ _ H2 w x H0).
   rewrite H1 in H3.
-  pose (typ_sort H3 (refl_equal (Srt s0))).
+  pose (typ_sort _ _ _ H3).
   intuition.
 Qed.
 
-Lemma gen_sorting_var : forall e t T, e |- t : T ->
+Lemma gen_sorting_var_aux : forall e t T, e |- t : T ->
   forall n, t = Ref n -> 
   forall s, T = (Srt s) ->
   is_prop s.
@@ -55,7 +55,7 @@ Proof.
   auto.
  
   rewrite H3 in H0.
-  pose (typ_sort H0 (refl_equal (Srt s0))).
+  pose (typ_sort _ _ _ H0).
   intuition.
  
   elim (inv_nth_nl _ _ _ H).
@@ -65,20 +65,80 @@ Proof.
   eapply wf_var with s ; auto with coc.
 Qed.
 
-Lemma unique_sort : forall e t T, e |- t : T ->
-  forall s, T = (Srt s) ->
-  forall T', e |- t : T' -> T' = (Srt s).
+Lemma gen_sorting_var : 
+  forall e n s, e |- Ref n : Srt s -> is_prop s.
 Proof.
-  induction 1 using typ_mut with
-  (P := fun e t T => fun H : typ e t T =>
+  intros.
+  apply gen_sorting_var_aux with e (Ref n) (Srt s) n ; auto.
+Qed.
+
+
+
+Lemma coerce_sorts : forall e T U s, e |- T >> U : s ->
+  forall s' s'', T = Srt s' -> U = Srt s'' -> s' = s''.
+Proof.
+  induction 1 ; intros ; try discriminate.
+  rewrite H2 in H1 ; rewrite H3 in H1.
+  apply (conv_sort _ _ H1).
+
+  
+  
+
+Lemma unique_var_sort : forall e t T, e |- t : T ->
+  forall n, t = Ref n -> 
   forall s, T = (Srt s) ->
-  forall T', e |- t : T' -> T' = (Srt s))
-  (P0 := fun e T U s => fun H : e |- T >> U : s =>
-  (forall s, T = Srt s -> U = Srt s) /\
-  (forall s, U = Srt s -> T = Srt s)) ; simpl ; intros ;
+  forall s', e |- t : Srt s' -> s = s'.
+Proof.
+  induction 1 using typ_mutwf with
+   (P := fun e t T => fun H : e |- t : T =>
+  forall n, t = Ref n -> 
+  forall s, T = (Srt s) ->
+  forall s', e |- t : Srt s' -> s = s')
+   (P0 := fun e T U s => fun H : e |- T >> U : s =>
+   True)
+   (P1 := fun e => fun H : wf e =>
+   forall s, forall n, item _ (Srt s) e n -> is_prop s)
+ ; try (simpl ; intros ; try discriminate ; auto with coc).
+
+  inversion H1.
+  rewrite H0 in i.
+  destruct H5 ; destruct i.
+  rewrite (fun_item _ _ _ _ _ H7 H9) in H5.
+  rewrite <- H5 in H8.
+  inversion H8 ; auto.
+  
+  
+
+  rewrite H3 in H0.
+  pose (typ_sort _ _ _ H0).
+  intuition.
+ 
+  elim (inv_nth_nl _ _ _ H).
+
+  pose (wf_is_sorted).
+  apply wf_is_sorted with (T :: e) (Srt s0) n ; auto with coc.
+  eapply wf_var with s ; auto with coc.
+Qed.
+
+
+Lemma unique_sort : forall e t s1 s2, 
+  e |- t : Srt s1 -> e |- t : Srt s2 -> s1 = s2.
+Proof.
+  induction t ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  destruct (typ_sort H0 (refl_equal (Srt prop))).
+  destruct (typ_sort _ _ _ H).
+  destruct (typ_sort _ _ _ H0).
+  inversion H2 ; inversion H4.
+  auto.
+  
+  induction (gen_sorting_var H).
+  induction (gen_sorting_var H0).
+  rewrite H1 ; rewrite H2 ; auto.
+  
+  
+
+  rewrite H3 in H.
   inversion H ; auto.
 
   destruct (typ_sort H0 (refl_equal (Srt set))).
@@ -202,53 +262,6 @@ Proof.
 Lemma typ_not_kind : forall G t T, G |- t : T -> t <> Srt kind.
 Proof.
   induction 1 ; intros ; unfold not ; intros ; try discriminate ; auto with coc.
-Qed.
-
-Lemma typ_sort_kind_aux : forall G Ts Ts', G |- Ts : Ts' -> 
-  forall s, Ts = Srt s -> Ts' = Srt kind.
-Proof.
-  intros G Ts Ts' IH.
-  induction IH using typ_mut with
-  (P := fun G Ts Ts' => fun H : G |- Ts : Ts' =>
-  forall s, Ts = Srt s -> Ts' = Srt kind)
-  (P0 :=
-  fun e T (U : term) s => fun H0 : e |- T >> U : s =>
-  (forall s1, T = Srt s1 -> s = kind) /\ (forall s2, U = Srt s2 -> s = kind)) 
-  ; intros ; unfold not ; intros ; try discriminate ; auto with coc ; 
-  try (split ; intros ; discriminate).
-
-  rewrite (IHIH1 s0 H) in IH3.
-  elim (typ_not_kind _ _ _ IH3).
-  auto.
-  
-  split ; intros.
-  pose (IHIH1 _ H).
-  inversion e0 ; auto.
-
-  pose (IHIH2 _ H).
-  inversion e0 ; auto.
-  
-  split ; intros ; try discriminate.
-  destruct IHIH.
-  pose (H1 _ H).
-  discriminate.
-
-  split ; intros ; try discriminate.
-  destruct IHIH.
-  pose (H0 _ H).
-  discriminate.
-
-  destruct IHIH ; destruct IHIH0.
-  split ; intros ; auto with coc.
-  apply H with s1 ; auto.
-  apply H2 with s2 ; auto.
-Qed.
-
-Lemma typ_sort_kind : forall G s s', G |- Srt s : Srt s' -> s' = kind.
-Proof.
-  intros G s s' H.
-  pose (typ_sort_kind_aux _ _ _ H s (refl_equal (Srt s))).
-  inversion e ; auto.
 Qed.
   
 Lemma inv_type_coerce : forall (P : Prop) e t (U V : term) s,
