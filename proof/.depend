@@ -16,6 +16,8 @@ Conv.vo: Conv.v Termes.vo LiftSubst.vo Reduction.vo
 Conv.vi: Conv.v Termes.vo LiftSubst.vo Reduction.vo
 Conv_Dec.vo: Conv_Dec.v Termes.vo Reduction.vo Conv.vo
 Conv_Dec.vi: Conv_Dec.v Termes.vo Reduction.vo Conv.vo
+Env.vo: Env.v Termes.vo Reduction.vo LiftSubst.vo MyList.vo
+Env.vi: Env.v Termes.vo Reduction.vo LiftSubst.vo MyList.vo
 MyList.html: MyList.v
 ListType.html: ListType.v MyList.html
 Names.html: Names.v MyList.html MlTypes.html
@@ -25,3 +27,4 @@ LiftSubst.html: LiftSubst.v Termes.html
 Reduction.html: Reduction.v Termes.html LiftSubst.html
 Conv.html: Conv.v Termes.html LiftSubst.html Reduction.html
 Conv_Dec.html: Conv_Dec.v Termes.html Reduction.html Conv.html
+Env.html: Env.v Termes.html Reduction.html LiftSubst.html MyList.html

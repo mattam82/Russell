@@ -338,6 +338,19 @@ discriminate.
 apply conv_sort; auto with coc core arith sets.
 Qed.
 
+Lemma conv_sort_ref : forall s n, ~ conv (Srt s) (Ref n).
+red in |- *; intros.
+elim church_rosser with (Srt s) (Ref n); auto with coc core arith sets.
+do 2 intro.
+elim red_normal with (Srt s) x; auto with coc core arith sets.
+intro.
+apply red_ref_ref with n (Srt s); auto with coc core arith sets; intros.
+unfold not ; intros ; discriminate H2.
+
+red in |- *; red in |- *; intros.
+inversion_clear H1.
+Qed.
+
 
   Lemma conv_sort_prod : forall s t u, ~ conv (Srt s) (Prod t u).
 red in |- *; intros.

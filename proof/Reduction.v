@@ -366,6 +366,13 @@ case P; intros; try discriminate.
 inversion_clear H4.
 Qed.
 
+  Lemma red_ref_ref : forall n t, red (Ref n) t -> t <> Ref n -> False.
+simple induction 1; intros; auto with coc core arith sets.
+apply H1.
+generalize H2.
+case P; intros; try discriminate.
+inversion_clear H4.
+Qed.
 
 
   Lemma one_step_conv_exp : forall M N, red1 M N -> conv N M.
