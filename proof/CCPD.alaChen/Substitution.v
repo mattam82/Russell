@@ -10,7 +10,6 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-
 Lemma typ_sub_weak : forall g (d : term) t, g |- d : t ->
    forall e u (U : term), e |- u : U ->
    forall f n, sub_in_env d t n e f -> wf f -> trunc _ n f g -> 
@@ -77,6 +76,7 @@ apply type_pair with s1 s2 ; auto with coc core arith datatypes.
 apply IHIH3 ; auto with coc.
 apply wf_var with s1 ; auto with coc.
 rewrite <- distr_subst ; auto with coc core arith datatypes.
+apply sum_sort_subst ; auto with coc.
 
 cut (wf (subst_rec d T n :: f)); intros.
 apply type_prod with s1; auto with coc core arith datatypes.
@@ -85,7 +85,7 @@ apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
 apply type_sum with s1; auto with coc core arith datatypes.
-
+apply sum_sort_subst ; auto with coc.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
@@ -98,12 +98,12 @@ apply type_pi1 with (subst_rec d V (S n)) ; auto with coc.
 rewrite distr_subst.
 simpl.
 apply type_pi2 with (subst_rec d U n) ; auto with coc.
-
+(*
 cut (wf (subst_rec d U n :: f)).
 intro ; rewrite distr_subst.
 apply type_let_in with (subst_rec d U n) s1 s2 ; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core arith datatypes.
-
+*)
 apply type_conv with (subst_rec d U n) s; auto with coc core arith datatypes.
 
 apply coerce_prod with s; auto with coc core arith datatypes.
@@ -119,6 +119,8 @@ apply coerce_sum with s ; auto with coc core.
 apply IHIH4 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH5 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH6 ; auto with coc core ; apply wf_var with s ; auto with coc core.
+apply sum_sort_subst ; auto with coc.
+apply sum_sort_subst ; auto with coc.
 
 apply coerce_sub_l ; auto with coc core.
 apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.
@@ -197,6 +199,7 @@ apply type_pair with s1 s2 ; auto with coc core arith datatypes.
 apply IHIH1 ; auto with coc.
 apply wf_var with s1 ; auto with coc.
 rewrite <- distr_subst ; auto with coc core arith datatypes.
+apply sum_sort_subst ; auto with coc.
 
 cut (wf (subst_rec d T n :: f)); intros.
 apply type_prod with s1; auto with coc core arith datatypes.
@@ -205,7 +208,7 @@ apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
 apply type_sum with s1; auto with coc core arith datatypes.
-
+apply sum_sort_subst ; auto with coc.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
@@ -218,12 +221,12 @@ apply type_pi1 with (subst_rec d V (S n)) ; auto with coc.
 rewrite distr_subst.
 simpl.
 apply type_pi2 with (subst_rec d U n) ; auto with coc.
-
+(*
 cut (wf (subst_rec d U n :: f)).
 intro ; rewrite distr_subst.
 apply type_let_in with (subst_rec d U n) s1 s2 ; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core arith datatypes.
-
+*)
 apply type_conv with (subst_rec d U n) s; auto with coc core arith datatypes.
 
 apply coerce_prod with s; auto with coc core arith datatypes.
@@ -239,6 +242,9 @@ apply coerce_sum with s ; auto with coc core.
 apply IHIH4 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH5 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH6 ; auto with coc core ; apply wf_var with s ; auto with coc core.
+
+apply sum_sort_subst ; auto with coc.
+apply sum_sort_subst ; auto with coc.
 
 apply coerce_sub_l ; auto with coc core.
 apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.

@@ -5,7 +5,10 @@ Coercion.v
 #Inversion.v
 Thinning.v
 Substitution.v
+GenerationNotKind.v
+GenerationCoerce.v
 Generation.v
+UnicityOfSorting.v
 TypeCase.v
 Inversion.v
 #SubjectReduction.v

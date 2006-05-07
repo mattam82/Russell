@@ -3,16 +3,16 @@ Require Import Reduction.
 Require Import Conv.
 Require Import LiftSubst.
 Require Import Env.
-Require Import CCP.Types.
-Require Import CCP.Thinning.
-Require Import CCP.Substitution.
+Require Import CCPD.Types.
+Require Import CCPD.Thinning.
+Require Import CCPD.Substitution.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-
+Set Implicit Arguments.
 
   Inductive red1_in_env : env -> env -> Prop :=
     | red1_env_hd : forall e t u, red1 t u -> red1_in_env (t :: e) (u :: e)
@@ -20,7 +20,6 @@ Implicit Types e f g : env.
         forall e f t, red1_in_env e f -> red1_in_env (t :: e) (t :: f).
 
   Hint Resolve red1_env_hd red1_env_tl: coc.
-
   Lemma red_item :
    forall n t e,
    item_lift t e n ->
@@ -87,15 +86,15 @@ exists x; auto with coc core arith datatypes.
 Qed.
 
 
-
-  Lemma typ_red_env :
-   forall e t T, typ e t T -> forall f, red1_in_env e f -> wf f -> typ f t T.
+Lemma typ_red_env :
+ forall e t T, typ e t T -> forall f, red1_in_env e f -> wf f -> typ f t T.
 simple induction 1; intros.
-auto with coc core arith datatypes.
 
 auto with coc core arith datatypes.
 
-elim red_item with n t e0 f; auto with coc core arith datatypes; intros.
+auto with coc core arith datatypes.
+
+elim red_item with n T0 e0 f; auto with coc core arith datatypes; intros.
 inversion_clear H4.
 inversion_clear H6.
 elim H1; intros.
@@ -104,9 +103,37 @@ elim wf_sort with n e0 x1 x0; auto with coc core arith datatypes.
 intros.
 apply type_conv with x x2; auto with coc core arith datatypes.
 rewrite H6.
-replace (Srt x2) with (lift (S v) (Srt x2));
+replace (Srt x2) with (lift (S n) (Srt x2));
  auto with coc core arith datatypes.
 apply thinning_n with x1; auto with coc core arith datatypes.
+
+apply coerce_conv.
+
+
+elim item_trunc with term n e x0; intros; auto with coc core arith datatypes.
+pose (wf_sort).
+elim wf_sort with n e f x0; auto with coc core arith datatypes.
+intros.
+
+inversion_clear H4.
+inversion_clear H2.
+destruct H1; intros.
+elim item_trunc with term n e0 x0; intros; auto with coc core arith datatypes.
+elim wf_sort with n e0 x1 x0; auto with coc core arith datatypes.
+intros.
+apply type_conv with (lift 1 x) x2; auto with coc core arith datatypes.
+
+apply type_var ; auto.
+rewrite 
+exists x ; auto.
+apply item_hd.
+
+rewrite H1.
+replace (Srt x2) with (lift (S n) (Srt x2));
+ auto with coc core arith datatypes.
+apply thinning_n with x1; auto with coc core arith datatypes.
+rewrite H7 ; auto with coc core arith datatypes.
+
 
 cut (wf (T0 :: f)); intros.
 apply type_abs with s1 s2; auto with coc core arith datatypes.

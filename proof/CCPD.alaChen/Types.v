@@ -11,6 +11,31 @@ Implicit Types A B M N T t u v : term.
 Reserved Notation "G |- T >> U : s" (at level 70, T, U, s at next level).
 Reserved Notation "G |- T : U" (at level 70, T, U at next level).
 
+Definition sum_sort U V s1 s2 :=
+  (U = Srt set /\ V = Srt set) \/
+  (s1 = set /\ s2 = set).
+
+
+Lemma sum_sort_lift : forall T U s1 s2, sum_sort T U s1 s2 ->
+  forall n n' k k', sum_sort (lift_rec n T k) (lift_rec n' U k') s1 s2.
+Proof.
+  unfold sum_sort ; intros.
+  destruct H.
+  induction H ; rewrite H ; auto with coc.
+  rewrite H0 ; auto with coc.
+
+  induction H ; rewrite H ; rewrite H0 ; auto with coc.
+Qed.
+
+Lemma sum_sort_subst : forall T U s1 s2, sum_sort T U s1 s2 ->
+  forall t k k', sum_sort (subst_rec t T k) (subst_rec t U k') s1 s2.
+Proof.
+  unfold sum_sort ; intros.
+  destruct H.
+  induction H ; rewrite H ; rewrite H0 ; auto with coc.
+  induction H ; rewrite H ; rewrite H0 ; auto with coc.
+Qed.
+
 Inductive coerce : env -> term -> term -> sort -> Prop :=
   | coerce_conv : forall e A B s, e |- A : Srt s -> e |- B : Srt s -> 
 	conv A B -> e |- A >> B : s
@@ -27,6 +52,7 @@ Inductive coerce : env -> term -> term -> sort -> Prop :=
   (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
   forall s', (A :: e) |- B >> B' : s' ->
   (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
+  sum_sort A B s s' -> sum_sort A' B' s s' ->
   e |- (Sum A B) >> (Sum A' B') : s'
 
   | coerce_sub_l : forall e U P U', 
@@ -65,11 +91,13 @@ with typ : env -> term -> term -> Prop :=
       forall e v (V : term), e |- v : V ->
       forall u (Ur : term), e |- u : (Prod V Ur) -> 
       e |- (App u v) : (subst v Ur)	
+
   | type_pair :
     forall e (U : term) s1, e |- U : (Srt s1) ->
     forall u, e |- u : U ->
     forall V s2, (U :: e) |- V : (Srt s2) ->
     forall v, e |- v : (subst u V) -> 
+    sum_sort U V s1 s2 ->
     e |- (Pair (Sum U V) u v) : (Sum U V)
 
   | type_prod :
@@ -84,6 +112,7 @@ with typ : env -> term -> term -> Prop :=
       e |- T : (Srt s1) ->
       forall (U : term) s2,
       (T :: e) |- U : (Srt s2) -> 
+      sum_sort T U s1 s2 ->
       e |- (Sum T U) : (Srt s2)
 
   | type_subset : 
@@ -98,13 +127,13 @@ with typ : env -> term -> term -> Prop :=
       forall e t U V, e |- t : (Sum U V) -> 
       e |- (Pi2 t) : (subst (Pi1 t) V)
 
-  | type_let_in :
+(*  | type_let_in :
       forall e t U, e |- t : U ->
       forall s1, e |- U : (Srt s1) -> (* Just for easier induction, derivable from the next 
 	 judgment *)
       forall v M, (U :: e) |- v : M -> 
       forall s2, (U :: e) |- M : (Srt s2) ->
-      e |- (Let_in t v) : (subst t M)
+      e |- (Let_in t v) : (subst t M) *)
 
   | type_conv :
       forall e t (U V : term),
@@ -124,6 +153,11 @@ with coerce_mut := Induction for coerce Sort Prop.
 Scheme typ_mutwf := Induction for typ Sort Prop
 with coerce_mutwf := Induction for coerce Sort Prop
 with wf_mut := Induction for wf Sort Prop.
+
+Lemma not_t_let_in : forall G t T, G |- t : T -> forall u v, t <> Let_in u v.
+Proof.
+  simple induction 1 ; intros ; auto with coc core arith datatypes ; try discriminate.
+Qed.
 
   Lemma type_prop_set :
    forall s, is_prop s -> forall e, wf e -> typ e (Srt s) (Srt kind).
@@ -202,7 +236,7 @@ Qed.
 Lemma coerce_sort : forall G T U s, 
   G |- T >> U : s -> (G |- T : Srt s /\ G |- U : Srt s).
 Proof.
-  induction 1 ; intros ; split ; intuition ; intros ; auto with coc core.
+  induction 1 ; intros ; split ; try (intuition ; intros ; auto with coc core).
   apply type_prod with s ; auto with coc core.
   apply type_prod with s ; auto with coc core.
   apply type_sum with s ; auto with coc core.

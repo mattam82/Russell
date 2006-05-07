@@ -147,9 +147,9 @@ apply type_pi1 with V ; auto with coc core arith datatypes.
 
 apply type_pi2 with U ; auto with coc core arith datatypes.
 
-cut (wf (U :: f)); intros.
+(*cut (wf (U :: f)); intros.
 apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.
+apply wf_var with s1 ; auto with coc core.*)
 
 apply type_conv with U s; auto with coc core arith datatypes.
 
@@ -229,10 +229,10 @@ apply wf_var with set; auto with coc core arith datatypes.
 apply type_pi1 with V ; auto with coc core arith datatypes.
 
 apply type_pi2 with U ; auto with coc core arith datatypes.
-
+(*
 cut (wf (U :: f)); intros.
 apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.
+apply wf_var with s1 ; auto with coc core.*)
 
 apply type_conv with U s; auto with coc core arith datatypes.
 

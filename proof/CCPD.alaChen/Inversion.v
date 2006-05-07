@@ -8,6 +8,7 @@ Require Import CCPD.Thinning.
 Require Import CCPD.Substitution.
 Require Import CCPD.Coercion.
 Require Import CCPD.Generation.
+Require Import CCPD.UnicityOfSorting.
 
 Set Implicit Arguments.
 
@@ -60,62 +61,7 @@ Implicit Types e f g : env.
         forall M, typ (U :: e) v M -> 
         coerce e T (subst t M) s -> P
     end.
-    (*
-Lemma coerce_not_kind : forall e T U, e |- T >> U ->
-   forall s, e |- T : (Srt s) -> e |- U : Srt s
-    -> (T <> (Srt kind) /\ U <> Srt kind).
-Proof.
-  induction 1 ; intros ; try solve [ split ; red ; intros ; discriminate ].
-   
-  split.
-  apply typ_not_kind with e (Srt s) ; auto.
-  apply typ_not_kind with e (Srt s) ; auto.
 
-  split.
-  red ; intros ; discriminate.
-  apply typ_not_kind with G (Srt s) ; auto.
-
-  split.
-  apply typ_not_kind with G (Srt s) ; auto.
-
-  red ; intros ; discriminate.
-
-  destruct (IHcoerce1 s H H0).
-  destruct (IHcoerce2 s H0 H1).
-  auto.
-Qed.
-
-Lemma unicity_sorting : forall e t s1, e |- t : Srt s1 -> forall s2,
-  e |- t : Srt s2 -> s1 = s2.
-Admitted.
-
-Lemma conv_sorting : forall e T U, conv T U -> 
-  forall s1, e |- T : Srt s1 -> 
-  forall s2, e |- U : Srt s2 -> s1 = s2.
-Admitted.
-
-
-Lemma coerce_sorts : forall e T U, e |- T >> U ->
- forall s1, e |- T : Srt s1 -> forall s2, e |- U : Srt s2 ->
- s1 = s2.
-Proof.
-  induction 1 ; intros.
-  apply conv_sorting with G A B ; auto.
-
-  apply IHcoerce2.
-  inversion H3.
-  pose (conv_in_env).
-
-  pose (IHcoerce1 s H s
-  *)
-  
-  
-
-Lemma typ_not_kind : forall G t T, G |- t : T -> t <> Srt kind.
-Proof.
-  induction 1 ; intros ; unfold not ; intros ; try discriminate ; auto with coc.
-Qed.
-  
 Lemma inv_type_coerce : forall (P : Prop) e t (U V : term) s,
   inv_type P e t U s -> coerce e U V s -> inv_type P e t V s.
 intros P e.
@@ -158,20 +104,27 @@ apply H with U0 s1 M; auto with coc core arith datatypes.
 eapply coerce_trans with V ; auto with coc core.
 Qed.
 
+(*
 Lemma inv_type_sort : forall P e t V s, 
   e |- V : Srt s -> inv_type P e t V s -> 
   forall s', e |- V : Srt s' -> inv_type P e t V s'.
 Proof.
   induction t; simpl ; intros ; auto with coc.
   apply H0 with x ; auto with coc core arith.
-  
+  *)
 
 
+Lemma typ_sort_kind : forall G s s', G |- Srt s : Srt s' -> s' = kind.
+Proof.
+  intros.
+  destruct (typ_sort _ _ _ H).
+  inversion H1.
+  auto.
+Qed.
 
-
-
-  Theorem typ_inversion :
-   forall (P : Prop) e t T, typ e t T -> forall s, typ e T (Srt s) -> inv_type P e t T s -> P.
+Theorem typ_inversion_typ :
+  forall (P : Prop) e t T, typ e t T -> forall s, typ e T (Srt s) -> inv_type P e t T s -> P.
+Proof.
 induction 1; simpl in |- *; intros.
 auto with coc core arith datatypes.
 
@@ -187,35 +140,85 @@ apply H3 with s1 U; auto with coc core arith datatypes.
 
 apply H2 with Ur V; auto with coc core arith datatypes.
 
-apply H4 with U s1 V; auto with coc core arith datatypes.
+apply H5 with U s1 V; auto with coc core arith datatypes.
 
 apply H2 with s1 s2; auto with coc core arith datatypes.
-apply (typ_sort_kind _ _ _ H1).
+apply (typ_sort_kind H1).
 
-apply H2 with s1 s2; auto with coc core arith datatypes.
-apply (typ_sort_kind _ _ _ H1).
+apply H3 with s1 s2; auto with coc core arith datatypes.
+apply (typ_sort_kind H2).
 
 apply H2; auto with coc core arith datatypes.
-apply (typ_sort_kind _ _ _ H1).
+apply (typ_sort_kind H1).
 
 apply H1 with U V; auto with coc core arith datatypes.
 
 apply H1 with U V; auto with coc core arith datatypes.
-
-apply H4 with U s1 M; auto with coc core arith datatypes.
 
 pose (coerce_sym _ _ _ _ H2).
 apply IHtyp1 with s ; auto with coc core arith.
 pose (inv_type_coerce).
 cut (inv_type P e t V s).
 intro invt.
-apply (inv_type_coerce P e t V U s invt c).
-
-
-
+apply (i _ _ _ _ _ _ invt c).
+pose (unique_sort H0 H3).
+rewrite e0.
+apply H4.
 Qed.
 
+Definition inv_type (P : Prop) e t T s : Prop :=
+  match t with
+    | Srt prop => T = (Srt kind) -> P
+    | Srt set => T = (Srt kind) -> P
+    | Srt kind => True
+    | Ref n => forall x : term, item _ x e n -> 
+       e |- T : Srt s -> e |- T >> (lift (S n) x) : s -> P
+    | Abs A M =>
+        forall s1 (U : term),
+        typ e A (Srt s1) ->
+        typ (A :: e) M U -> coerce e T (Prod A U) s -> P
+    | App u v =>
+        forall Ur V : term,
+        typ e v V -> typ e u (Prod V Ur) -> 
+        typ e T (Srt s) ->
+        coerce e T (subst v Ur) s -> P
+    | Pair T' u v => 
+        forall U s1, typ e U (Srt s1) ->
+	  typ e u U -> 
+	  forall V, typ e v (subst u V) -> T' = (Sum U V) -> coerce e T (Sum U V) s -> P
+    | Prod A B =>
+        forall s1 s2,
+        typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> s = kind -> coerce e T (Srt s2) s -> P
+    | Sum A B =>
+        forall s1 s2,
+        typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> s = kind -> coerce e T (Srt s2) s -> P
+    | Subset A B =>
+        typ e A (Srt set) -> typ (A :: e) B (Srt prop) -> s = kind -> coerce e T (Srt set) s -> P
+    | Pi1 t =>
+        forall U V,
+        typ e t (Sum U V) -> 
+        coerce e T U s -> P
+    | Pi2 t =>
+        forall U V,
+        typ e t (Sum U V) -> 
+        coerce e T (subst (Pi1 t) V) s -> P
+    | Let_in t v =>
+        forall U, typ e t U -> 
+	forall s1, typ e U (Srt s1) ->
+        forall M, typ (U :: e) v M -> 
+        coerce e T (subst t M) s -> P
+    end.
 
+
+Theorem typ_inversion :
+  forall (P : Prop) e t T, typ e t T -> forall s, inv_type P e t T s -> P.
+Proof.
+  intros.
+  destruct (type_sorted H).
+  
+
+  rewrite H0.
+  simpl.
 
   Lemma inv_typ_kind : forall e t, ~ typ e (Srt kind) t.
 red in |- *; intros.
