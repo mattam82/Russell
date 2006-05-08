@@ -308,6 +308,28 @@ destruct (generation_prod2 t).
 assumption.
 Qed.
 
+Lemma inv_typ_abs2 :
+   forall (P : Prop) e A M (U : term),
+   typ e (Abs A M) U ->
+   (forall s, e |- U : Srt s ->
+    forall s1 T,
+    typ e A (Srt s1) ->
+    typ (A :: e) M T -> 
+    typ (A :: e) T (Srt s) ->
+    e |- (Prod A T) >> U : s -> P) ->
+   P.
+intros.
+apply typ_inversion with e (Abs A M) U; simpl in |- *;
+ auto with coc core arith datatypes; intros.
+
+pose (coerce_sym _ _ _ _ H3).
+apply H0 with s s1 U0; auto with coc core arith datatypes.
+apply (coerce_sort_l _ _ _ _ H3).
+pose (coerce_sort_r _ _ _ _ H3).
+destruct (generation_prod2 t).
+assumption.
+Qed.
+
 Lemma inv_typ_app :
  forall (P : Prop) e u v T,
  typ e (App u v) T ->
@@ -374,15 +396,13 @@ apply typ_inversion with e (Prod T U) s; simpl in |- *;
 
 apply H0 with s1; auto with coc core arith datatypes.
 induction H3.
-destruct H3.
-left.
 rewrite H3 in H.
 destruct (generation_prod2 H).
+rewrite H3 ; auto.
 
-exact (unique_sort H2 H5).
-
-right.
-exact (coerce_sym _ _ _ _ H3).
+pose (coerce_propset_r H3).
+rewrite e0.
+assumption.
 Qed.
 
 Lemma inv_typ_sum :
@@ -453,7 +473,7 @@ exact (coerce_sort_l _ _ _ _ H2).
 
 apply coerce_sym ; auto.
 Qed.
-(
+(*
 Lemma inv_typ_let_in : 
   forall (P : Prop) e v t T,
    typ e (Let_in v t) T ->
