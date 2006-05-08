@@ -1,4 +1,3 @@
-# List of vernac files to compile
 MyList.v
 ListType.v
 Names.v

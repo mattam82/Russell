@@ -635,6 +635,19 @@ Proof.
   rewrite (IHtyp1 _ H3) in H1.
   elim typ_not_kind2 with e (Srt s) ; auto.
 Qed.
+
+Lemma term_type_range_not_kind : forall e t T, e |- t : T ->
+  forall s, type_range t = Srt s -> s <> kind. 
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+  
+  inversion H0.
+  unfold not ; intros ; discriminate.
+  inversion H0.
+  unfold not ; intros ; discriminate.
+Qed.
+
+
 (*
 Lemma term_type_dom_kinded : forall e t T, e |- t : T ->
   forall s, type_dom t = Srt s -> T = Srt kind. 
@@ -1203,15 +1216,37 @@ Qed.
 Lemma sort_of_pi2_range_aux : forall e t Ts, e |- t : Ts ->
   forall u, t = Pi2 u ->
   forall s, type_range Ts = Srt s ->
-  exists U, exists V, e |- u : Sum U V /\ type_range (subst (Pi1 u) V) = (Srt s).
+  exists U, exists V, exists s1, 
+	e |- u : Sum U V /\ type_range (subst (Pi1 u) V) = (Srt s)
+	/\ sum_sort U V s1 s.
 Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
+  induction (type_sorted H) ; try discriminate.
+  induction H2.
+  induction (generation_sum2 H2).
+
   exists U ; exists V.
   inversion H0.
-  rewrite <- H3.
+  rewrite <- H5.
+  exists x0.
   intuition.
+
+  unfold sum_sort in H7 |- *.
+  destruct H7.
+  left ; intuition.
+  right.
+  split ; intuition.
+  
+  induction (type_range_subst _ _ _ H1).
+  simpl in H6.
+  discriminate.
+
+  pose (term_type_range_kinded H3 H6).
+  inversion e0.
+  rewrite H10 in H8.
+  discriminate.
   
   apply IHtyp1 ; auto.
   apply (type_range_sub H2 H4).
@@ -1219,7 +1254,8 @@ Qed.
 
 Lemma sort_of_pi2_range :  forall e t Ts, e |- Pi2 t : Ts ->
   forall s, type_range Ts = Srt s ->
-  exists U, exists V, e |- t : Sum U V /\ type_range (subst (Pi1 t) V) = (Srt s).
+  exists U, exists V, exists s1, e |- t : Sum U V /\ type_range (subst (Pi1 t) V) = (Srt s)
+  /\ sum_sort U V s1 s.
 Proof.
   intros. 
   apply sort_of_pi2_range_aux with (Pi2 t) Ts  ; auto ; auto.

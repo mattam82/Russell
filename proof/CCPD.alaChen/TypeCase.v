@@ -5,7 +5,7 @@ Require Import LiftSubst.
 Require Import Env.
 Require Import CCPD.Types.
 Require Import CCPD.Coercion.
-(*Require Import CCP.Inversion.*)
+Require Import CCPD.Inversion.
 Require Import CCPD.Thinning.
 Require Import CCPD.Substitution.
 
@@ -288,6 +288,8 @@ Admitted.
   Theorem type_case :
    forall e t T,
    typ e t T -> (exists s : sort, typ e T (Srt s)) \/ T = Srt kind.
+pose (type_sorted).
+
 induction 1; intros; auto with coc core arith datatypes.
 left.
 elim wf_sort_lift with n e T; auto with coc core arith datatypes; intros.

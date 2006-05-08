@@ -233,6 +233,8 @@ Proof.
   induction 1 ; intros ; unfold not ; intros ; try discriminate ; auto with coc.
 Qed.
 
+Hint Resolve typ_not_kind typ_wf : coc.
+
 Lemma coerce_sort : forall G T U s, 
   G |- T >> U : s -> (G |- T : Srt s /\ G |- U : Srt s).
 Proof.
@@ -259,4 +261,23 @@ Proof.
   apply (proj2 (coerce_sort G T U s H)).
 Save.
 
-Hint Resolve coerce_sort_l coerce_sort_r : coc.
+Lemma coerce_prop_prop : forall e, wf e -> e |- Srt prop >> Srt prop : kind.
+Proof.
+  intros.
+  auto with coc.
+Qed.
+
+Lemma coerce_set_set : forall e, wf e -> e |- Srt set >> Srt set : kind.
+Proof.
+  intros.
+  auto with coc.
+Qed.
+
+Lemma coerce_is_prop : forall e, wf e -> forall s, is_prop s -> e |- Srt s >> Srt s : kind.
+Proof.
+  intros.
+  induction H0 ;
+  rewrite H0 ; auto with coc.
+Qed.
+
+Hint Resolve coerce_sort_l coerce_sort_r coerce_prop_prop coerce_set_set coerce_is_prop : coc.
