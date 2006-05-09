@@ -147,6 +147,8 @@ where "G |- T : U" :=  (typ G T U).
 Hint Resolve coerce_conv coerce_prod coerce_sum coerce_sub_l coerce_sub_r : coc.
 Hint Resolve type_pi1 type_pi2 type_pair type_prop type_set type_var: coc.
 
+Scheme typ_dep := Induction for typ Sort Prop.
+
 Scheme typ_mut := Induction for typ Sort Prop
 with coerce_mut := Induction for coerce Sort Prop.
 

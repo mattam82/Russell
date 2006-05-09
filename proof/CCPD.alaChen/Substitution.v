@@ -278,3 +278,17 @@ Qed.
 
 Hint Resolve substitution substitution_coerce : coc.
 
+Theorem substitution_coerce2 : forall e t T s,
+  (t :: e) |- T : Srt s ->
+  forall d u, e |- d : t -> e |- u : t -> conv d u -> e |- (subst d T) >> (subst u T) : s.
+Proof.
+intros.
+assert(conv T T) ; auto with coc.
+apply coerce_conv.
+change (Srt s) with (subst d (Srt s)) ;
+apply substitution with t ; auto with coc core.
+change (Srt s) with (subst u (Srt s)) ;
+apply substitution with t ; auto with coc core.
+unfold subst in |- *.
+apply (conv_conv_subst) ; auto.
+Qed.

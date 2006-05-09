@@ -364,6 +364,7 @@ destruct (generation_sum2 t).
 intuition.
 Qed.
 
+
   Lemma inv_typ_prod :
    forall (P : Prop) e T (U s : term),
    typ e (Prod T U) s ->
@@ -405,26 +406,24 @@ rewrite e0.
 assumption.
 Qed.
 
-Lemma inv_typ_sum :
+Lemma inv_typ_sum2 :
    forall (P : Prop) e T (U s : term),
    typ e (Sum T U) s ->
-   (forall s1 s2,
-    typ e T (Srt s1) -> typ (T :: e) U (Srt s2) -> 
-    (s2 = kind \/ coerce e (Srt s2) s kind) -> P) -> P.
+   (forall s1,
+    typ e T (Srt s1) -> typ (T :: e) U s -> P) -> P.
 intros.
 apply typ_inversion with e (Sum T U) s; simpl in |- *;
  auto with coc core arith datatypes; intros.
 
-apply H0 with s1 s2; auto with coc core arith datatypes.
+apply H0 with s1; auto with coc core arith datatypes.
 destruct H4.
-left.
 rewrite H4 in H.
 destruct (generation_sum2 H).
 intuition.
-exact (unique_sort H2 H5).
+rewrite H4 ; assumption.
 
-right.
-exact (coerce_sym _ _ _ _ H4).
+pose (coerce_propset_r H4).
+rewrite e0 ; auto.
 Qed.
 
   Lemma inv_typ_subset :
@@ -551,35 +550,3 @@ rewrite (red_normal (Srt kind) x); auto with coc core arith datatypes.
 red in |- *; red in |- *; intros.
 inversion_clear H2.
 Qed.
-
-(*Lemma type_pair_unique : forall e t T, e |- t : T -> 
-   forall U V u v, t = (Pair (Sum U V) u v) ->
-   exists s, e |- T >> (Sum U V) : s.
-Proof.
-induction 1 ; intros ;  try discriminate.
-injection H4 ; intros.
-exists s2.
-rewrite H7 ; rewrite H8.
-apply coerce_refl ; auto with coc.
-apply type_sum with s1.
-pose (IHtyp1 H0).
-apply coerce_trans with U0; auto with coc core arith datatypes.
-Qed.
-
-Lemma type_pair_unique2 : forall e t T, typ e t T -> 
-   forall T' u v, t = (Pair T' u v) -> exists U,  exists  V, T' = Sum U V /\ 
-   coerce e T (Sum U V).
-Proof.
-intros ; induction H ; try discriminate.
-injection H0 ; intros.
-exists U ; exists V.
-split ; auto with coc.
-
-induction (IHtyp1 H0).
-induction H3.
-induction H3.
-exists x ; exists x0.
-split ; auto with coc.
-apply coerce_trans with U; auto with coc core arith datatypes.
-Qed.
-*)
