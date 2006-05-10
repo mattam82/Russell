@@ -295,5 +295,40 @@ change (Srt s) with (subst u (Srt s)) ;
 apply substitution with t ; auto with coc core).
 Qed.
 
+Theorem substitution_coerce_conv_l_n : forall e t T s,
+  (t :: e) |- T : Srt s ->
+  forall d u, e |- d : t -> e |- u : t -> conv d u -> 
+  forall n, e |- (subst d T) >> (subst u T) : s.
+Proof.
+intros.
+assert(conv T T) ; auto with coc.
+pose (conv_conv_subst _ _ _ _ 0 H2 H3) ; auto.
+apply conv_coerce ; auto with coc ; try (
+change (Srt s) with (subst d (Srt s)) ;
+apply substitution with t ; auto with coc core) ; try (
+change (Srt s) with (subst u (Srt s)) ;
+apply substitution with t ; auto with coc core).
+Qed.
+
+(*Theorem substitution_coerce_conv_l2 : forall e f t T T' s,
+  f |- T >> T' : s ->
+  f = (t :: e) ->
+  forall d u, e |- d : t -> 
+   e |- u : t -> conv d u -> 
+   forall n, e |- (subst_rec d T n) >> (subst_rec u T' n) : s.
+Proof.
+induction 1 ; simpl ; intros ; auto with coc.
+
+rewrite H0 in H.
+apply substitution_coerce_conv_l with t ; auto with coc.
+
+pose (conv_conv_subst _ _ _ _ 0 H2 H3) ; auto.
+apply conv_coerce ; auto with coc ; try (
+change (Srt s) with (subst d (Srt s)) ;
+apply substitution with t ; auto with coc core) ; try (
+change (Srt s) with (subst u (Srt s)) ;
+apply substitution with t ; auto with coc core).
+Qed.
 
 
+*)
