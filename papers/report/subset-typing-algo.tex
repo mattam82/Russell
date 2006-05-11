@@ -473,8 +473,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
 \begin{proof} 
   On procède par élimination de la règle \irule{SubTrans} dans toute
   dérivation de $S \sub U$.
-  Par induction sur l'ordre lexicographique $< depth(S \sub T) +
-  depth(T \sub U), depth(S \sub U) >$.
+  Par induction sur l'ordre lexicographique $< \mbox{depth}(S \sub T), \mbox{depth}(T \sub U) >$.
   On peut supposer qu'il n'y a pas
   d'applications successive de la règle \irule{SubHnf} dans nos
   dérivations, par idempotence de la mise en forme normale de tête et
@@ -512,7 +511,7 @@ Tout d'abord quelques lemmes nécessaires pour la preuve:
   \end{prooftree}
     
   Par application de l'hypothèse d'induction on a une dérivation de 
-  $S \sub U$.
+  $\hnf{S} \sub \hnf{U}$ donc de $S \sub U$ par \irule{SubHnf}.
   
   On peut faire le même raisonnement si la dérivation de $T \sub U$ se
   termine par une application de \irule{SubHnf}.
@@ -1044,6 +1043,6 @@ pour s'assurer qu'ils sont corrects.
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "subset-typing"
-%%% LaTeX-command: "TEXINPUTS=\"..:style:$TEXINPUTS\" latex"
+%%% LaTeX-command: "TEXINPUTS=\"..:../style:$TEXINPUTS\" latex"
 %%% End: 
  

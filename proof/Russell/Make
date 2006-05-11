@@ -9,6 +9,7 @@ GenerationNotKind.v
 GenerationCoerce.v
 Generation.v
 UnicityOfSorting.v
+Narrowing.v
 Transitivity.v
 #TypeCase.v
 Inversion.v

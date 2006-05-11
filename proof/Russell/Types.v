@@ -164,7 +164,7 @@ Qed.
 
   Lemma type_prop_set :
    forall s, is_prop s -> forall e, wf e -> typ e (Srt s) (Srt kind).
-simple destruct 1; intros; rewrite H0.
+simple destruct 1; intros ; rewrite H0.
 apply type_prop; trivial.
 apply type_set; trivial.
 Qed.
