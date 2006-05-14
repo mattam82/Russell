@@ -32,48 +32,6 @@ Lemma inv_conv_sum_sort_r : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- S
   conv (Sum U V) (Sum U' V') -> { s2 : sort | U' :: e |- V : Srt s2 /\ U' :: e |- V : Srt s2 }. 
 Admitted.
 
-
-Require Import Coq.Wellfounded.Lexicographic_Product.
-Require Import Coq.Arith.Wf_nat.
-(*
-Definition lex_nat := lexprod nat (fun _ => nat) lt (fun _ => lt).
-
-Lemma wf_lex : well_founded lex_nat.
-Proof.
-  unfold lex_nat.
-  apply wf_lexprod ; auto with coc.
-  apply lt_wf.
-  intros ; apply lt_wf.
-Qed.
-
-Check existS.
-Check nat.
-
-Definition build_pair (x y : nat) := existS (fun _ => nat) x y.
-
-Check (well_founded_induction).
-Check build_pair.
-Definition pair_t := sigS (fun _ : nat => nat).
-
-
-
-Lemma wf_lex_induction_type : forall (P : pair_t -> Type),
-  (forall x : pair_t, (forall y : pair_t, lex_nat y x -> P y) -> P x) ->
-       forall a : pair_t, P a.
-Proof.
-apply (well_founded_induction_type).
-apply wf_lex.
-Qed.
-*)
-
-Lemma wf_lt_induction_type : forall (P : nat -> Type),
-  (forall x : nat, (forall y : nat, y < x -> P y) -> P x) ->
-       forall a : nat, P a.
-Proof.
-apply (well_founded_induction_type).
-apply lt_wf.
-Qed.
-
 Require Import Omega.
 Require Import Coq.Arith.Max.
 
@@ -193,22 +151,17 @@ Proof.
   apply type_subset ; auto with coc.
 Qed.
 
-Lemma coerces_sym : forall e T U s, forall d1 : e |- T >>> U : s,
-  { d2 : e |- U >>> T : s | depth d2 = depth d1 }.
+Require Import Coq.Arith.Wf_nat.
+
+Lemma wf_lt_induction_type : forall (P : nat -> Type),
+  (forall x : nat, (forall y : nat, y < x -> P y) -> P x) ->
+       forall a : nat, P a.
 Proof.
-  induction d1 ;  simpl ; intros ; auto with coc.
+apply (well_founded_induction_type).
+apply lt_wf.
+Qed.
 
-  exists (coerces_refl t) ; simpl ; auto.
-
-  destruct IHd1_1.
-  destruct IHd1_2.
-(*  exists (coerces_prod x t0 t x0 t1 t2).*)
-Admitted.
-
-
-
-
-Theorem coerce_trans : forall n : nat,
+Theorem coerce_trans_aux : forall n : nat,
 (forall e A B s, forall d1 : e |- A >>> B : s, 
 forall C, forall d2 : e |- B >>> C : s,
   n = (depth d1) + (depth d2) ->
@@ -949,11 +902,105 @@ Proof.
   apply (IH (depth c2 + depth H1)) with (Sum A0 B0) c2 H1.
   rewrite H0 ; simpl ; auto.
   auto.
-
-  (* conv_r, sub_l *)
   
+  (* conv_r, sub_l *)
+  pose (coerces_sub_l d2 t2).
+  
+  generalize H0 ; clear H0.  
+  apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |- T0 >>> C0 : s0) =>
+     e1 = e -> T0 = A -> C0 = B -> s0 = set ->     
+     x = S (depth d + S (depth d2)) -> e |- A >>> U' : set))  ; intros ; auto with coc ; try discriminate.
 
-  Focus 2.
+  (* conv_r < refl, sub_l *)
+  rewrite <- H0.
+  rewrite H1.
+  apply (coerces_conv_l t0 t1 (coerces_sort_r d2) c0 c1).
+
+  (* conv_r < prod, sub_l *)
+  rewrite <- H3 in c0.
+  elim conv_prod_subset with A' B' U P ; auto.
+
+  (* conv_r < sum, sub_l *)
+  rewrite <- H3 in c0.
+  elim conv_subset_sum with U P A' B' ; auto with coc.
+
+  (* conv_r < sub_l, sub_l *)
+  clear H.
+  generalize dependent e.
+  generalize dependent e0.
+  generalize dependent c0.
+  rewrite H2.
+  rewrite <- H1.
+  intros.
+  
+  generalize dependent U0.
+  rewrite H0.
+  intros.
+  apply coerces_sub_l ; auto.
+  
+  pose (coerces_conv_l t0 t1 (coerces_sort_r c1) c0 c1).
+  apply (IH (depth c2 + depth c3)) with B c2 c3 ; auto.
+  rewrite H4 ; simpl.
+  omega.
+  
+  (* conv_r < sub_r, sub_l *)
+  clear H.
+  generalize dependent e.
+  generalize dependent e0.
+  generalize dependent c0.
+  rewrite <- H2.
+  rewrite <- H1.
+  intros.
+  generalize dependent U0.
+  generalize dependent U'0.
+  rewrite H0.
+  intros.
+  pose (inv_conv_subset_l _ _ _ _ c0).
+  pose (coerces_conv_r t (coerces_sort_r c2) (coerces_sort_l d2) c2 c3). 
+  apply (IH (depth c4 + depth d2)) with U c4 d2 ; auto.
+  rewrite H4 ; simpl.
+  omega.
+  
+  (* conv_r < conv_l, sub_l *)
+  clear H.
+  generalize dependent s.
+  rewrite H0.
+  rewrite <- H1.
+  intros.
+  apply coerces_conv_l with B0 ; auto with coc.
+  rewrite <- H3 ; auto.
+  rewrite <- H3 ; auto.
+  apply (coerces_sort_r d2).
+  generalize dependent e.
+  rewrite H2.
+  rewrite H3.
+  intros.
+  pose (coerces_conv_r t4 t5 t1 c3 c0).
+  apply (IH (depth c4 + depth c1)) with (Subset U P) c4 c1 ; auto.
+  rewrite H4 ; simpl.
+  omega.
+  
+  (* conv_r < conv_l, sub_l *)
+  clear H.
+  generalize dependent e0.
+  rewrite H1.
+  rewrite H3.
+  intros.
+  
+  assert(conv B0 (Subset U P)).
+  apply trans_conv_conv with C ; auto.
+  rewrite H2 ; assumption.
+  
+  generalize dependent A.
+  generalize dependent B0.
+  generalize dependent t5.
+  rewrite H0.
+  intros.
+  pose (coerces_conv_r t3 t4 t1 c2 H).
+  apply (IH (depth c4 + depth c1)) with (Subset U P) c4 c1 ; auto.
+  rewrite H4 ; simpl.
+  omega.
+
   (* conv_r, sub_r *)
   apply coerces_sub_r ; auto with coc.
   pose (coerces_conv_r t t0 t1 c c0).
@@ -961,7 +1008,6 @@ Proof.
   rewrite H0 ; simpl ; try omega ; auto.
   auto.
 
-  Focus 2.
   (* conv_r, conv_l *)
   assert (conv B B0).
   apply trans_conv_conv with A0 ; auto with coc.
@@ -970,554 +1016,22 @@ Proof.
   rewrite H0 ; simpl ; try omega ; auto.
   auto.
 
-  Focus 2.
    (* conv_r, conv_r *)
    apply coerces_conv_r with B0 ; auto with coc.
-   apply coerces_conv_r with  ; auto with coc.
-
-  assert (conv B B0).
-  apply trans_conv_conv with A0 ; auto with coc.
-  pose (coerces_conv_r t t0 t3 c H).
-  apply (IH (depth c2 + depth d2)) with B0 c2 d2.
+   pose (coerces_conv_r t t0 t1 c c0).
+  apply (IH (depth c2 + depth d2)) with A0 c2 d2.
   rewrite H0 ; simpl ; try omega ; auto.
   auto.
-
-  
-
-  generalize dependent e.
-  rewrite H2.
-
-  rewrite 
-  
-  apply coerces_conv_l with U0.
-  elim conv_subset_sum with U' P A0 B ; auto with coc.
-  
-  apply coerces_sub_r  ; auto with coc.
-  apply coerces_conv_l with B ; auto with coc.
-
-  generalize dependent s.
-  generalize dependent c0.
-  rewrite H1 ; rewrite H3 ; rewrite H2 ; intros.
-  rewrite <- H4.
-  (* sub_r, conv_r *)
-  clear H0.
-  simpl in H5.
-  rewrite <- H2.
-  rewrite <- H3.
-  generalize dependent s.
-  rewrite H1 ; intros.
-  rewrite <- H4.
-  apply coerces_conv_r with B ; auto with coc.
-
-  apply coerces_refl ; auto .
-  apply (coerces_sort_l c).
-  
-  (* sub_r, prod *)
-  clear H0 H1.
-  simpl in H6.
-  rewrite <- H2.
-  rewrite <- H3.
-  rewrite <- H4.
-  generalize dependent s' ; generalize dependent s.
-  rewrite H2.
-  intros.
-  rewrite <- H5.
-  apply coerces_prod with s ; auto with coc.
-
-  (* sub_r, sum *)
-  clear H0 H1.
-  simpl in H6.
-  rewrite <- H2.
-  rewrite <- H3.
-  rewrite <- H4.
-  generalize dependent s' ; generalize dependent s.
-  rewrite H2.
-  intros.
-  rewrite <- H5.
-  apply coerces_sum with s ; auto with coc.
-
-  (* sub_r, sub_l *)
-  clear H0.
-  simpl in H5.
-  rewrite <- H2.
-  rewrite <- H3.
-  generalize dependent U0.
-  rewrite H1 ; intros.
-  apply coerces_sub_l ; auto with coc.
-
-  (* sub_r, sub_r *)
-  clear H0.
-  simpl in H5.
-  rewrite <- H2.
-  rewrite <- H3.
-  generalize dependent U'0.
-  rewrite H1 ; intros.
-  apply coerces_sub_r ; auto with coc.
-
-  (* sub_r, conv_l *)
-  clear H0.
-  simpl in H5.
-  rewrite <- H2.
-  rewrite <- H3.
-  generalize dependent s.
-  rewrite H1 ; intros.
-  rewrite <- H4.
-  apply coerces_conv_l with B ; auto with coc.
-
-  (* sub_r, conv_r *)
-  clear H0.
-  simpl in H5.
-  rewrite <- H2.
-  rewrite <- H3.
-  generalize dependent s.
-  rewrite H1 ; intros.
-  rewrite <- H4.
-  apply coerces_conv_r with B ; auto with coc.
-  
-
-
-apply coerces_sub_r ; auto with coc.
-    apply (IH (depth c + depth d2)) with U' c d2.
-    
-
-
-pose (coerces_conv_l t3 t6 t7 c1 c2).
-   
-
-
-  generalize (depth c2_1) ;   generalize (depth c) ;   generalize (depth c0) ;   generalize (depth c2_2).
-  
-forall n0 n1 n2 n3, n3 + S n2 < S (max n2 n1 + S (S (max n3 n0)))
-  generalize (depth c0) ;   generalize (depth c1) ;   generalize (depth c2) ;   generalize (depth c).
-
-
-simple induction d2.
-   generalize e0 A0 B0 A' B' s0 c t t0 s' c0 t1 t2 C d2 H1.
-   clear e0 A0 B0 A' B' s0 c t t0 s' c0 t1 t2 C d2 H1.
-   destruct d2.
-   intros.
-  
-  set (T := Prod A' B').
-  assert (T = Prod A' B').
-  unfold T ; auto.
-  
-  intros C d2.
-  cleainduction d2.
-  rewrite H in d2 ; inversion d2 ; intros.
-
-  (* Pi, Id *)
-  rewrite <- H3 in d2.
-  rewrite <- H3.
-  apply coerces_prod with s ; auto with coc.
-  
-  (* Pi, Pi *)
-  rewrite <- H8.
-  apply coerces_prod with s ; auto with coc.
-  
-
-  
-  
-
-  generalize t2 ; clear t2.
-  generalize t1 ; clear t1.
-  generalize d1_2 ; clear d1_2.
-  generalize s' ; clear s'.
-  generalize t0 ; clear t0.
-  generalize t ; clear t.
-  generalize d1_1 ; clear d1_1.
-  generalize s ; clear s.
-  simpl.
-  generalize A' B'.
-  set (T := Prod A' B').
-  assert (T = Prod A' B').
-  unfold T ; auto.
-  rewrite <- H1 in d2.
-  
-  induction d0 using coerces_db_dep.
-  with (P :=
-  fun e T C s => fun d : (e |- T >>>> C : s) =>
-  forall d2 : e |- Prod A' B' >>>> C : s,
-  build_pair (depth (coerces_prod d1_1 t t0 d1_2 t1 t2)) (depth d) = x ->
-  e |- Prod A B >>>> C : s) ; simpl ; intros.
-
-  elim d2 ; intros ; auto with coc.
-  
-  apply coerces_prod with s; auto with coc.
-  
-  
-   rewrite H4  in d2.
-  generalize H0 ; clear H0.
-
-  generalize d2 ; clear d2.
-  generalize e.
- ; generalize e ; generalize A' ; generalize B' ; generalize s'.
-  Check coerces_db_rect.
-
-  apply coerces_db_rect with
-
-  (P:= 
-  pattern d2.
-  induction d2.
- ; intros ; auto with coc.
-  
-
-  induction d1 ; intros ; auto with coc.
-
-  induction 1 ; simpl ; intros ; auto with coc.
-Admitted.
-
-
-
-
-
-
-
-
-
-
-
-Reserved Notation "G |- T >>> U : s" (at level 70, T, U, s at next level).
-
-Parameter hnf : term -> term.
-Parameter hnf_conv : forall T U, hnf T = U -> conv T U.
-Definition is_hnf t := t = hnf t.
-
-Parameter hnf_dec : forall t t', hnf t = t' ->
-  (exists U, exists V, t' = Prod U V) \/
-  (exists U, exists V, t' = Sum U V) \/
-  (exists U, exists V, t' = Subset U V) \/
-  (exists n, t' = Ref n) \/
-  (exists M, exists N, t' = App M N /\ forall M' N', hnf M <> Abs M' N') \/
-  (exists M, exists N, t' = Abs M N) \/
-  (exists T, exists u, exists v, t' = Pair T u v) \/
-  (exists M, t' = Pi1 M /\ forall T U V, hnf M <> Pair T U V) \/
-  (exists M, t' = Pi2 M /\ forall T U V, hnf M <> Pair T U V).
-
-Parameter hnf_def : forall t, exists t', hnf t = t'.
-Parameter hnf_fun : forall t t' t'', hnf t = t' -> hnf t = t'' -> t' = t''.
-  
-Definition is_prod t := match t with Prod U V => True |  _ => False end.
-Definition is_sum t := match t with Sum U V => True |  _ => False end.
-Definition is_subset t := match t with Subset U V => True |  _ => False end.
-
-Definition is_composite t := is_prod t \/ is_sum t \/ is_subset t.
-
-Parameter is_composite_conv : forall e A B s,
-  e |- A : Srt s -> e |- B : Srt s -> 
-  is_composite A -> conv A B -> 
-  is_composite (hnf B).
-
-Parameter hnf_prod : forall U V, hnf (Prod U V ) = Prod U V.
-Parameter hnf_sum : forall U V, hnf (Sum U V ) = Sum U V.
-Parameter hnf_subset : forall U V, hnf (Subset U V ) = Subset U V.
-
-Parameter conv_hnf_prod : forall e T T' s, 
-  e |- T : Srt s -> e |- T' : Srt s -> 
-  conv T T' -> forall U V, hnf T' = Prod U V ->
-  exists U', exists V', hnf T = Prod U' V' /\ conv U U' /\ conv V V'.
-
-Parameter conv_hnf_sum : forall e T T' s,
-  e |- T : Srt s -> e |- T' : Srt s -> 
-   conv T T' -> forall U V, hnf T' = Sum U V ->
-  exists U', exists V', hnf T = Sum U' V' /\ conv U U' /\ conv V V'.
-
-Parameter conv_hnf_subset : forall e T T' s,
-  e |- T : Srt s -> e |- T' : Srt s -> 
-   conv T T' -> forall U V, hnf T' = Subset U V ->
-  exists U', exists V', hnf T = Subset U' V' /\ conv U U' /\ conv V V'.
-
-Axiom generation_prod_conv : forall e A B A' B' s, 
-  conv (Prod A B) (Prod A' B') ->
-  e |- Prod A B : Srt s -> e |- Prod A' B' : Srt s ->
-  (exists s', e |- A : Srt s' /\ e |- A' : Srt s') /\
-  (A' :: e |- B : Srt s /\ A' :: e |- B' : Srt s).
-
-Axiom generation_sum_conv : forall e A B A' B' s, 
-  conv (Sum A B) (Sum A' B') ->
-  e |- Sum A B : Srt s -> e |- Sum A' B' : Srt s ->
-  (exists s', e |- A : Srt s' /\ e |- A' : Srt s') /\
-  (A' :: e |- B : Srt s /\ A' :: e |- B' : Srt s).
-
-Axiom generation_subset_conv : forall e A B A' B' s, 
-  conv (Subset A B) (Subset A' B') ->
-  e |- Subset A B : Srt s -> e |- Subset A' B' : Srt s ->
-  (exists s', e |- A : Srt s' /\ e |- A' : Srt s') /\
-  (A' :: e |- B : Srt s /\ A' :: e |- B' : Srt s).
-
-Inductive coercea : env -> term -> term -> sort -> Set :=
-  | coerce_conv : forall e A B s, e |- A : Srt s -> e |- B : Srt s ->
-      is_hnf A -> is_hnf B -> ~ is_composite A ->  
-      conv A B -> e |- A >>> B : s
-
-  | coerce_prod : forall e A B A' B',
-  forall s, e |- A' >>> A : s ->
-  (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
-  forall s', (A' :: e) |- B >>> B' : s' -> 
-  (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
-  e |- (Prod A B) >>> (Prod A' B') : s'
-  
-  | coerce_sum : forall e A B A' B',
-  forall s, e |- A >>> A' : s -> 
-  (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
-  forall s', (A :: e) |- B >>> B' : s' ->
-  (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
-  sum_sort A B s s' -> sum_sort A' B' s s' ->
-  e |- (Sum A B) >>> (Sum A' B') : s'
-
-  | coerce_sub_l : forall e U P U', 
-  e |- U >>> U' : set ->
-  (* derivable *) U :: e |- P : Srt prop ->
-  is_hnf U' ->
-  e |- Subset U P >>> U' : set
-
-  | coerce_sub_r : forall e U U' P,
-  e |- U >>> U' : set -> 
-  (* derivable *) U' :: e |- P : Srt prop ->
-  is_hnf U ->
-  e |- U >>> (Subset U' P) : set
-
-  | coerce_hnf : forall e A B C D s,
-  e |- A : Srt s -> e |- B : Srt s -> e |- C : Srt s -> e |- D : Srt s -> ~ (is_hnf A /\ is_hnf B) ->
-  hnf A = B -> e |- B >>> C : s -> hnf D = C -> e |- A >>> D : s
-
-where "G |- T >>> U : s" := (coercea G T U s).
-
-Lemma eq_sort_dec : forall s s' : sort, { s = s' } + {s <> s'}.
-Proof.
-  double induction s s' ; intros ; try (solve [left ; auto with coc] ); try (right ; unfold not ; intros ; discriminate).
 Qed.
 
-Lemma eq_term_dec : forall t t' : term, { t = t' } + { t <> t' }.
-Proof.
-  double induction t t' ; intros ; try (solve [left ; auto with coc] ); try (right ; unfold not ; intros ; discriminate).
-  destruct (eq_sort_dec s s0).
-  left ; rewrite e ; auto.
-  right. 
-  unfold not ; intros.
-  apply n.
-  inversion H ; auto.
-  
-  destruct (eq_nat_dec n n0).
-  left ; auto.
-  right ; red in |- * ; intros ; apply n1.
-  inversion H ; auto.
-
-  destruct (H1 t1) ; destruct (H2 t0).
-  left ; auto.
-  rewrite e ; rewrite e0 ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-  destruct (H1 t1).
-  destruct (H2 t0).
-  left ; auto.
-  rewrite e ; rewrite e0 ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-  destruct (H2 t2).
-  destruct (H3 t1).
-  destruct (H4 t0).
-  left ; auto.
-  rewrite e ; rewrite e0 ; rewrite e1 ;auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-  destruct (H1 t1).
-  destruct (H2 t0).
-  left ; auto.
-  rewrite e ; rewrite e0 ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-  destruct (H1 t1).
-  destruct (H2 t0).
-  left ; auto.
-  rewrite e ; rewrite e0 ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-  destruct (H1 t1).
-  destruct (H2 t0).
-  left ; auto.
-  rewrite e ; rewrite e0 ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-  destruct (H0 t0).
-  left ; auto.
-  rewrite e; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-
-  destruct (H0 t0).
-  left ; auto.
-  rewrite e; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-
-  destruct (H1 t1).
-  destruct (H2 t0).
-  left ; auto.
-  rewrite e ; rewrite e0 ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-  right ; red in |- * ; intros Heq ; apply n ; inversion Heq ; auto.
-Qed.
-
-Check (coercea_ind).
-Require Import Wellfounded.
-Check lexprod_ind.
-
-Require Import Coq.Arith.Max.
-
-Fixpoint depth e T U s (d : coercea e T U s) { struct d } :  nat :=
-  match d return nat with 
-  coerce_conv _ _ _ _ _ _ _ _ _ _ => 1
-  | coerce_prod e A B A' B' s HsubA HsA' HsA s' HsubB HsB HsB' =>
-    S (max (depth HsubA) (depth HsubB))
-  | coerce_sum e A B A' B' s HsubA HsA' HsA s' HsubB HsB HsB' sums sums' =>
-    S (max (depth HsubA) (depth HsubB))
-  | coerce_sub_l e U P U' HsubU Hsp hnfU' => S (depth HsubU)
-  | coerce_sub_r e U U' P HsubU Hsp hnfU => S (depth HsubU)
-  | coerce_hnf e A B C D s HsrtA HsrtB HsrtC HsrtD Hhnf hnfA HsubBC hnfD =>
-    S (depth HsubBC)
- end.
-
-Require Import Coq.Arith.Wf_nat.
-Check well_founded_ltof.
-
-Lemma wf_ltof_depth : forall e T U s, well_founded (ltof (e |- T >>> U : s) (depth (e:=e) (T:=T) (U:=U) (s:=s))).
-Proof.
-intros e T U s.
-apply (well_founded_ltof (coercea e T U s) (@depth e T U s)).
-Qed.
-
-
-Lemma induction_depth : forall (P : forall e T U s, coercea e T U s -> Set),
-       (forall e T U s, forall x : coercea e T U s, 
-        (forall e' T' U' s', forall y : coercea e' T' U' s', ltof (e' |- T' >>> U' : s')
-        (@depth e' T' U' s') y x -> P e' T' U' s' y) -> P e T U s x) ->
-        forall e T U s, forall a : coercea e T U s, P e T U s a.
-
-Check induction_ltof1.
-
-
-Parameter coerce_lex_ind : 
-  forall P : env -> term -> term -> sort -> 
-  env -> term -> term -> sort -> Prop,
-   (forall (e : env) A B s,
-        e |- A : Srt s ->
-        e |- B : Srt s ->
-        is_hnf A -> is_hnf B -> ~ is_composite A -> conv A B -> P e A B s) ->
-       (forall (e : env) A B A' B' s,
-        e |- A' >>> A : s ->
-        P e A' A s ->
-        e |- A' : Srt s ->
-        e |- A : Srt s ->
-        forall s',
-        A' :: e |- B >>> B' : s' ->
-        P (A' :: e) B B' s' ->
-        A :: e |- B : Srt s' ->
-        A' :: e |- B' : Srt s' -> P e (Prod A B) (Prod A' B') s') ->
-       (forall (e : env) A B A' B' s,
-        e |- A >>> A' : s ->
-        P e A A' s ->
-        e |- A' : Srt s ->
-        e |- A : Srt s ->
-        forall s',
-        A :: e |- B >>> B' : s' ->
-        P (A :: e) B B' s' ->
-        A :: e |- B : Srt s' ->
-        A' :: e |- B' : Srt s' ->
-        sum_sort A B s s' ->
-        sum_sort A' B' s s' -> P e (Sum A B) (Sum A' B') s') ->
-       (forall (e : env) (U P0 U' : term),
-        e |- U >> U' : set ->
-        U :: e |- P0 : Srt prop -> is_hnf U' -> P e (Subset U P0) U' set) ->
-       (forall (e : env) (U U' P0 : term),
-        e |- U >>> U' : set ->
-        P e U U' set ->
-        U' :: e |- P0 : Srt prop -> is_hnf U -> P e U (Subset U' P0) set) ->
-       (forall (e : env) A B (C D : term) s,
-        e |- A : Srt s ->
-        e |- B : Srt s ->
-        e |- C : Srt s ->
-        e |- D : Srt s ->
-        ~ (is_hnf A /\ is_hnf B) ->
-        hnf A = B -> e |- B >>> C : s -> P e B C s -> hnf D = C -> P e A D s) ->
-       forall (e : env) t t0 s, e |- t >>> t0 : s -> P e t t0 s
-
-
-Theorem coerce_beta : forall e B C s, e |- B >>> C : s ->
-  forall A D, e |- A : Srt s -> e |- B : Srt s -> e |- C : Srt s -> e |- D : Srt s ->
-  is_hnf B -> is_hnf C -> conv A B -> conv C D ->
-  e |- A >>> D : s.
-Proof.
-  induction 1 ; simpl ; intros ; auto with coc.
-
-  destruct (eq_term_dec (hnf A0) A0).
-  destruct (eq_term_dec (hnf D) D).
-  
-  apply coerce_conv ; try unfold is_hnf ; auto with coc.
-  unfold not ; intros.
-  apply H3 ; intros.
-  rewrite H9.
-  exact (is_composite_conv H5 H6 H13 H11).
-  
-  apply trans_conv_conv with A ; auto with coc.
-  apply trans_conv_conv with B ; auto with coc.
-
-  destruct (conv_hnf_prod H5 H6 H13 (hnf_prod A B)).
-  destruct H15 ; intuition.
-  rewrite <- H9 in H16.
-  rewrite H16.
-  destruct (conv_hnf_prod H8 H7 (sym_conv _ _ H14) (hnf_prod A' B')).
-  destruct H17 ; intuition.
-  rewrite <- H12 in H19.
-  rewrite H19.
-
-  rewrite H16 in H5.
-  rewrite H19 in H8.
-  rewrite H16 in H13.
-  rewrite H19 in H14.
-
-  destruct (generation_prod_conv H13 H5 H6).
-  destruct (generation_prod_conv H14 H7 H8).
-  destruct H20 ; destruct H23 ; intuition.
-
-  rewrite <- (unique_sort H0 H22) in H28.
-  rewrite <- (unique_sort H1 H26) in H25.
-  clear H26 ; clear H22.
-
-  apply coerce_prod with s ; auto with coc core.
-  eapply IHcoercea1 ; auto with coc core.
-  
 Theorem coerce_trans : forall e A B C s, e |- A >>> B : s -> e |- B >>> C : s ->
   e |- A >>> C : s.
 Proof.
-  
-
-Theorem coerce_trans : forall e A B C s, e |- A >> B : s -> e |- B >> C : s ->
-  e |- A >> C : s.
-Proof.
-  induction 1 ; simpl ; intros ; auto with coc.
-Admitted.
-(*
-  induction H2 ; simpl ; intros ; auto with coc.
-  apply coerce_conv with A0 A0; auto.
-  apply coerce_id ; auto.
-
-  apply coerce_conv with (Prod A0 B) (Prod A' B'); auto with coc.
-  apply type_prod with s ; auto with coc.
-  apply type_prod with s ; auto with coc.
-
-  apply coerce_prod with s ; auto with coc core.
-  apply coerce_conv with e 
-
-  apply coerce_id ; auto.
-
-  
-
-  apply coerce_prod with s ; auto with coc core.
-*)
+  intros.
+  set (x := depth H).
+  set (y := depth H0).
+  set (sum := x + y).
+  apply (@coerce_trans_aux sum e A B s H C H0).
+  unfold sum, x, y.
+  reflexivity.
+Qed.
