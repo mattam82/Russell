@@ -1024,7 +1024,7 @@ Proof.
   auto.
 Qed.
 
-Theorem coerce_trans : forall e A B C s, e |- A >>> B : s -> e |- B >>> C : s ->
+Theorem coerce_trans_db_set : forall e A B C s, e |- A >>> B : s -> e |- B >>> C : s ->
   e |- A >>> C : s.
 Proof.
   intros.
@@ -1035,3 +1035,93 @@ Proof.
   unfold sum, x, y.
   reflexivity.
 Qed.
+
+Require Import CCPD.Depth.
+
+Theorem coerces_db_depth : forall e T U s n1, Depth.coerces_db e T U s n1 -> 
+  exists d : (Narrowing.coerces_db e T U s), depth d = n1.
+Proof.
+  intros.
+  induction H.
+  
+  exists (Narrowing.coerces_refl H).
+  simpl ; auto.
+
+  destruct IHcoerces_db1.
+  destruct IHcoerces_db2.
+  exists (Narrowing.coerces_prod x H0 H1 x0 H3 H4).
+  simpl ; auto.
+
+  destruct IHcoerces_db1.
+  destruct IHcoerces_db2.
+  exists (Narrowing.coerces_sum x H0 H1 x0 H3 H4 H5 H6).
+  simpl ; auto.
+
+  destruct IHcoerces_db.
+  exists (Narrowing.coerces_sub_l x H0).
+  simpl ; auto.
+
+  destruct IHcoerces_db.
+  exists (Narrowing.coerces_sub_r x H0).
+  simpl ; auto.
+
+  destruct IHcoerces_db.
+  exists (Narrowing.coerces_conv_l H H0 H1 H2 x).
+  simpl ; auto.
+
+  destruct IHcoerces_db.
+  exists (Narrowing.coerces_conv_r H H0 H1 x H3).
+  simpl ; auto.
+Qed.
+
+Theorem depth_coerces_db : forall e T U s, Narrowing.coerces_db e T U s -> exists n, 
+ Depth.coerces_db e T U s n.
+Proof.
+  induction 1 ; intros ; auto with coc core.
+  exists 0 ; auto with coc.
+
+  destruct IHcoerces_db1.
+  destruct IHcoerces_db2.
+  exists (S (max x x0)) ; simpl ; auto with coc.
+  apply Depth.coerces_prod with s ; auto.
+
+  destruct IHcoerces_db1.
+  destruct IHcoerces_db2.
+  exists (S (max x x0)) ; simpl ; auto with coc.
+  apply Depth.coerces_sum with s ; auto.
+
+  destruct IHcoerces_db.
+  exists (S x) ; simpl ; auto with coc.
+
+  destruct IHcoerces_db.
+  exists (S x) ; simpl ; auto with coc.
+
+  destruct IHcoerces_db.
+  exists (S x) ; simpl ; auto with coc.
+  apply coerces_conv_l with B ; auto with coc.
+
+  destruct IHcoerces_db.
+  exists (S x) ; simpl ; auto with coc.
+  apply coerces_conv_r with B ; auto with coc.
+Qed.
+
+Theorem coerce_trans_d : forall e A B C s n1 n2, e |- A >>> B : s [n1] -> e |- B >>> C : s [n2]->
+  exists m, e |- A >>> C : s [m].
+Proof.
+  intros.
+  destruct (coerces_db_depth H).
+  destruct (coerces_db_depth H0).
+  pose (coerce_trans_db_set x x0).
+  exact (depth_coerces_db c).
+Qed.
+
+Theorem coerce_trans : forall e A B C s, e |- A >> B : s -> e |- B >> C : s -> e |- A >> C : s.
+Proof.
+  intros.
+  destruct (coerce_coerces_db H).
+  destruct (coerce_coerces_db H0).
+  destruct (coerce_trans_d H1 H2).
+  exact (coerces_db_coerce H3).
+Qed.
+
+

@@ -6,6 +6,7 @@ Require Import Env.
 Require Import CCPD.Types.
 Require Import CCPD.Thinning.
 Require Import CCPD.Substitution.
+Require Import CCPD.Depth.
 
 Set Implicit Arguments.
 
