@@ -217,7 +217,7 @@ Lemma generation_sum_aux : forall e T Ts, e |- T : Ts ->
   forall U V, T = Sum U V -> exists s, Ts = Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
-  exists s2 ; auto.
+  exists s3 ; auto.
 
   destruct (IHtyp1 U0 V0 H3).
   rewrite H4 in H1.
@@ -238,23 +238,18 @@ Qed.
 
 Lemma generation_sum2_aux : forall e T Ts, e |- T : Ts ->
   forall U V, T = Sum U V -> forall s, Ts = Srt s -> 
-  exists s', e |- U : Srt s' /\ (U :: e) |- V : Srt s /\ sum_sort U V s' s.
+  exists s', e |- U : Srt s' /\ exists s'', (U :: e) |- V : Srt s'' /\ sum_sort s' s'' s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
   inversion H2.
-  rewrite H3 in H0.
-  rewrite H6 in H0.
-  rewrite H5 in H0.
-
-  exists s1.
+  rewrite <- H6.
   rewrite <- H5.
-  split ; auto.
-  inversion H3.
-  rewrite <- H5 in H0.
-  rewrite H7 in H1.
-  rewrite H6 in H1.
-  split ; auto.
+
+  exists s1 ; intuition.
+  exists s2 ; intuition.
+  inversion H3 ; auto.
+  rewrite <- H7 ; auto.
 
   rewrite H4 in H2.
   pose (coerce_propset_r H2).
@@ -263,7 +258,7 @@ Proof.
 Qed.
 
 Lemma generation_sum2 : forall e U V s, e |- Sum U V : Srt s ->
-  exists s', e |- U : Srt s' /\ (U :: e) |- V : Srt s /\ sum_sort U V s' s.
+  exists s', e |- U : Srt s' /\ exists s'', (U :: e) |- V : Srt s'' /\ sum_sort s' s'' s.
 Proof.
   intros.
   eapply generation_sum2_aux  ; auto ; auto.
@@ -332,7 +327,53 @@ Proof.
   assumption.
 Qed. 
 
-Lemma conv_is_low_range : forall A s, conv (Srt s) A -> is_low_sort (type_range A) -> A = Srt s.
+Lemma no_sort_type_range : forall A, no_sort A -> forall s, type_range A <> Srt s.
+Proof.
+  induction A ; simpl ; intros ; intuition ; try discriminate ; auto.
+  apply H1 with s ; auto.
+  apply H3 with s ; auto.
+Qed.
+
+Lemma is_low_type_range : forall A, forall e T, e |- A : T -> is_low_full A -> 
+  (forall s, type_range A <> Srt s) \/ 
+  (exists s, type_range A = Srt s /\ is_prop s).
+Proof.
+  induction A ;  simpl ; intros ; intuition ; try discriminate.
+
+  right.
+  exists s ; intuition.
+  
+  destruct (generation_prod H).
+  rewrite H1 in H.
+  destruct (generation_prod2 H).
+  apply IHA2 with (A1 :: e) (Srt x) ; auto.
+  
+  destruct (generation_sum H).
+  rewrite H1 in H.
+  destruct (generation_sum2 H).
+  destruct H3.
+  destruct H4.
+  destruct H4.
+  apply IHA2 with (A1 :: e) (Srt x1) ; auto.
+
+  left.
+  intros.
+  pose (no_sort_type_range _ H2 H0).
+  contradiction.
+
+  destruct (generation_sum H).
+  rewrite H0 in H.
+  destruct (generation_sum2 H).
+  destruct H3.
+  destruct H4.
+  destruct H4.
+  apply IHA2 with (A1 :: e) (Srt x1) ; auto.
+Qed.
+
+Definition is_low_sort t : Prop := t = Srt prop \/ t = Srt set.
+
+Lemma conv_is_low_range : forall A s, conv (Srt s) A -> 
+  is_low_sort (type_range A) -> A = Srt s.
 Proof.
   induction A ; simpl ; intros ; 
   try unfold is_low_sort in H0 ; intuition ; try discriminate ; auto with coc core datatypes.
@@ -367,9 +408,6 @@ Proof.
 
   elim conv_sort_sum with s A1 A2 ; auto with coc core.
   elim conv_sort_sum with s A1 A2 ; auto with coc core.
-
-  elim conv_sort_subset with s A1 A2 ; auto with coc core.
-  elim conv_sort_subset with s A1 A2 ; auto with coc core.
 Qed.
  
 Lemma conv_is_low_range_full : forall A B, conv A B ->
@@ -466,10 +504,6 @@ Proof.
   unfold is_low_sort ; rewrite H2 ; auto.
   unfold is_low_sort ; rewrite H0 ; auto.
 Qed.
-(*
-Lemma conv_sum_subset : forall A B C D, ~ conv (Sum A B) (Subset C D).
-Admitted.
-
 
 Lemma conv_is_low_dom_full : forall A B, conv A B ->
   is_low_sort (type_dom A) -> 
@@ -489,86 +523,8 @@ Proof.
   try unfold is_low_sort in H1 ;   
   intuition ; try discriminate ; auto with coc core datatypes.
 
-  elim conv_sort_prod with s A1 A2 ; auto with coc core.
-  elim conv_sort_prod with s A1 A2 ; auto with coc core.
-
-  simpl in H0.
-  rewrite H0 ; rewrite H2 ; auto.
-  
-  simpl in H0.
-  pose (IHA1 B1 (inv_conv_prod_l _ _ _ _ H)).
-  unfold is_low_sort ; rewrite H2 ; auto.
-  unfold is_low_sort ; rewrite H0 ; auto.
-
-  simpl in H0.
-  rewrite <- H2 ; rewrite <- H0.
-  apply (conv_is_low_range_full (inv_conv_prod_l _ _ _ _ H)).
-  rewrite H2 ; unfold is_low_sort ; auto.
-  rewrite H0 ; unfold is_low_sort ; auto.
-
-  elim conv_prod_sum with A1 A2 B1 B2 ; auto with coc.
-  elim conv_prod_sum with A1 A2 B1 B2 ; auto with coc.
-
-  elim conv_prod_subset with A1 A2 B1 B2 ; auto with coc.
-  elim conv_prod_subset with A1 A2 B1 B2 ; auto with coc.
-
-  induction B ; simpl ; intros ; 
-  try unfold is_low_sort in H1 ;   
-  intuition ; try discriminate ; auto with coc core datatypes.
-
-  elim conv_sort_prod with s A1 A2 ; auto with coc core.
-  elim conv_sort_prod with s A1 A2 ; auto with coc core.
-
-  simpl in H0.
-  rewrite H0 ; rewrite H2 ; auto.
-  
-  simpl in H0.
-  rewrite <- H2 ; rewrite <- H0.
-  apply (conv_is_low_range_full (inv_conv_prod_l _ _ _ _ H)).
-  rewrite H2 ; unfold is_low_sort ; auto.
-  rewrite H0 ; unfold is_low_sort ; auto.
-
-  simpl in H0.
-  rewrite H2 ; rewrite H0 ; auto.
-
-  elim conv_prod_sum with A1 A2 B1 B2 ; auto with coc.
-  elim conv_prod_sum with A1 A2 B1 B2 ; auto with coc.
-
-  elim conv_prod_subset with A1 A2 B1 B2 ; auto with coc.
-  elim conv_prod_subset with A1 A2 B1 B2 ; auto with coc.
-
-  induction B ; simpl ; intros ; 
-  try unfold is_low_sort in H1 ;   
-  intuition ; try discriminate ; auto with coc core datatypes.
-
   elim conv_sort_sum with s A1 A2 ; auto with coc core.
   elim conv_sort_sum with s A1 A2 ; auto with coc core.
-
-  simpl in H0.
-  rewrite H0 ; rewrite H2 ; auto.
-  
-  elim conv_prod_sum with B1 B2 A1 A2 ; auto with coc core.
-  
-  simpl in H0.
-  rewrite H2 ; rewrite H0 ; auto.
-
-  simpl in H0.
-  apply (conv_is_low_range_full (inv_conv_sum_l _ _ _ _ H)).
-  rewrite H2 ; unfold is_low_sort ; auto.
-  rewrite H0 ; unfold is_low_sort ; auto.
-
-  elim conv_sum_subset with A1 A2 B1 B2 ; auto with coc.
-  elim conv_sum_subset with A1 A2 B1 B2 ; auto with coc.
-
-  induction B ; simpl ; intros ; 
-  try unfold is_low_sort in H1 ;   
-  intuition ; try discriminate ; auto with coc core datatypes.
-
-  elim conv_sort_sum with s A1 A2 ; auto with coc core.
-  elim conv_sort_sum with s A1 A2 ; auto with coc core.
-
-  elim conv_prod_sum with B1 B2 A1 A2 ; auto with coc core.
-  elim conv_prod_sum with B1 B2 A1 A2 ; auto with coc core.
 
   simpl in H0.
   apply (conv_is_low_range_full (inv_conv_sum_l _ _ _ _ H)).
@@ -576,61 +532,40 @@ Proof.
   rewrite H0 ; unfold is_low_sort ; auto.
 
   simpl in H0.
-  rewrite H2 ; rewrite H0 ; auto.
-
-
-  elim conv_sum_subset with A1 A2 B1 B2 ; auto with coc.
-  elim conv_sum_subset with A1 A2 B1 B2 ; auto with coc.
-  induction B ; simpl ; intros ; 
-  try unfold is_low_sort in H1 ;   
-  intuition ; try discriminate ; auto with coc core datatypes.
-
-  elim conv_sort_subset with s A1 A2 ; auto with coc core.
-  elim conv_sort_subset with s A1 A2 ; auto with coc core.
-
-  elim conv_prod_subset with B1 B2 A1 A2 ; auto with coc core.
-  elim conv_prod_subset with B1 B2 A1 A2 ; auto with coc core.
-
-  elim conv_sum_subset with B1 B2 A1 A2 ; auto with coc core.
-  elim conv_sum_subset with B1 B2 A1 A2 ; auto with coc core.
-
-  simpl in H0.
-  rewrite H2 ; unfold is_low_sort ; auto. 
- 
-  simpl in H0.
-  apply (conv_is_low_range_full (inv_conv_subset_l _ _ _ _ H)).
-  rewrite H2 ; unfold is_low_sort ; auto.
-  rewrite H0 ; unfold is_low_sort ; auto.
+  apply (conv_is_low_range_full (inv_conv_sum_l _ _ _ _ H)).
+  unfold is_low_sort ; rewrite H2 ; try rewrite H0 ; auto.
+  unfold is_low_sort ; try rewrite H0 ; auto.
 
   induction B ; simpl ; intros ; 
   try unfold is_low_sort in H1 ;   
   intuition ; try discriminate ; auto with coc core datatypes.
 
-  elim conv_sort_subset with s A1 A2 ; auto with coc core.
-  elim conv_sort_subset with s A1 A2 ; auto with coc core.
-
-  elim conv_prod_subset with B1 B2 A1 A2 ; auto with coc core.
-  elim conv_prod_subset with B1 B2 A1 A2 ; auto with coc core.
-
-  elim conv_sum_subset with B1 B2 A1 A2 ; auto with coc core.
-  elim conv_sum_subset with B1 B2 A1 A2 ; auto with coc core.
+  elim conv_sort_sum with s A1 A2 ; auto with coc core.
+  elim conv_sort_sum with s A1 A2 ; auto with coc core.
 
   simpl in H0.
-  apply (conv_is_low_range_full (inv_conv_subset_l _ _ _ _ H)).
+  apply (conv_is_low_range_full (inv_conv_sum_l _ _ _ _ H)).
   rewrite H2 ; unfold is_low_sort ; auto.
   rewrite H0 ; unfold is_low_sort ; auto.
 
   simpl in H0.
-  rewrite H2 ; rewrite H0 ; auto.
+  apply (conv_is_low_range_full (inv_conv_sum_l _ _ _ _ H)).
+  unfold is_low_sort ; rewrite H2 ; try rewrite H0 ; auto.
+  unfold is_low_sort ; try rewrite H0 ; auto.
 Qed.
-*)
+
+
 Lemma term_type_range_kinded : forall e t T, e |- t : T ->
   forall s, type_range t = Srt s -> T = Srt kind. 
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
   
   apply IHtyp2 with s ; auto.
-  apply IHtyp2 with s ; auto.
+  pose (IHtyp2 s H2) ; auto.
+  inversion e0.
+  rewrite H4 in H1.
+  destruct H1 ; intuition ; try discriminate.
+  rewrite H6 ; auto.
   
   rewrite (IHtyp1 _ H3) in H1.
   elim typ_not_kind2 with e (Srt s) ; auto.
@@ -648,58 +583,227 @@ Proof.
 Qed.
 
 
-(*
 Lemma term_type_dom_kinded : forall e t T, e |- t : T ->
   forall s, type_dom t = Srt s -> T = Srt kind. 
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-  
-  apply IHtyp2 with s ; auto.
-  apply IHtyp2 with s ; auto.
+ 
+  pose (term_type_range_kinded H H2).
+  inversion e0.
+  rewrite H4 in H1.
+  destruct H1 ; intuition ; try discriminate.
+  rewrite H6 ; auto.
   
   rewrite (IHtyp1 _ H3) in H1.
   elim typ_not_kind2 with e (Srt s) ; auto.
 Qed.
-*)
+
+Lemma is_prop_is_low_sort : forall s, is_prop s -> is_low_sort (Srt s).
+Proof.
+  intros.
+  destruct H ; unfold is_low_sort ; intuition.
+  rewrite H ; auto.
+  rewrite H ; auto.
+Qed.
+
+
+Lemma conv_sum_ref : forall U V n, ~ conv (Sum U V) (Ref n).
+Admitted.
+Lemma conv_prod_ref : forall U V n, ~ conv (Prod U V) (Ref n).
+Admitted.
+Lemma conv_sum_pair : forall U V T u v, ~ conv (Sum U V) (Pair T u v).
+Admitted.
+Lemma conv_prod_pair : forall U V T u v, ~ conv (Prod U V) (Pair T u v).
+Admitted.
+Lemma conv_prod_abs : forall U V M N, ~ conv (Prod U V) (Abs M N).
+Admitted.
+
+
+
+Lemma conv_dom : forall e A Ts, e |- A : Ts -> 
+  forall B s s', Ts = Srt s -> 
+  e |- B : Srt s ->
+  conv A B -> (type_dom A = Srt s' -> type_dom B = Srt s')
+  /\ (type_range A = Srt s' -> type_range B = Srt s')
+  .
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+
+  inversion H0.
+  rewrite <- H4 in H1.
+  pose (sort_conv_eq H1 (sym_conv _ _ H2)).
+  rewrite e0.
+  simpl.
+  auto.
+
+  inversion H0.
+  rewrite <- H4 in H1.
+  pose (sort_conv_eq H1 (sym_conv _ _ H2)).
+  rewrite e0.
+  simpl.
+  auto.
+
+  split ; intros ; discriminate.
+
+  split ; intros ; discriminate.
+
+  split ; intros ; try discriminate.
+
+  induction B ; simpl ; intros ; try discriminate.
+  
+  elim conv_sort_prod with s0 T U ; auto with coc.
+  elim conv_prod_ref with T U n ; auto with coc.
+  elim conv_prod_abs with T U B1 B2 ; auto with coc.
+
+  pose (term_type_range_kinded H0 H4).
+  rewrite H1 in e0.
+  inversion e0.
+  rewrite H6 in H2.
+  pose (gen_sorting_app H2).
+  destruct i ; discriminate.
+  elim conv_prod_pair with T U B1 B2 B3 ; auto.
+
+  destruct (IHtyp2 B2 s s') ; auto with coc.
+  destruct (generation_prod2 H2).
+  apply typ_conv_env with (B1 :: e) ; auto with coc core.
+  destruct H5.
+  apply coerce_env_hd with x.
+
+  pose (IHtyp1 
+  apply coerce_conv with B1 B1 ; auto with coc.
+
+Focus 2.
+  apply IHtyp1 with s0 ; auto.
+  rewrite H3 in H2.
+  apply (coerce_propset_r H2).
+
+  pose (term_type_range_kinded H H4).
+  
+  induction H1 ; intuition.
+  rewrite H6 in e0 ; discriminate.
+
+  induction B ; simpl ; intros ; try discriminate.
+
+  elim conv_sort_sum with s0 T U ; auto with coc.
+
+  elim conv_sum_ref with T U n ; auto.
+
+  elim (sorting_lambda H3).
+
+  inversion H2.
+  rewrite <- H9 in H3.
+  rewrite H8 in H3.
+  pose (gen_sorting_app H3).
+  destruct i ; discriminate.
+
+  elim conv_sum_pair with T U B1 B2 B3 ; auto.
+
+  elim conv_prod_sum with B1 B2 T U ; auto with coc.
+  inversion H2.
+  rewrite <- H9 in H3.
+  pose (generation_sum2 H3).
+  destruct e1 ; intuition.
+  destruct H11.
+  intuition.
+  induction H12 ; intuition ; try discriminate.
+  rewrite H8 in H14 ; discriminate.
+  rewrite H7 in H10.
+  rewrite H1 in IHtyp1.
+  pose (IHtyp1 kind (refl_equal (Srt kind)) B1 H10).
+
+  intros.
+
+  
+
+
+(*
+Lemma type_range_conv : forall e T U s, conv T U -> e |- T : Srt kind -> e |- U : Srt kind ->
+  forall s0, type_range T = Srt s0 -> type_range U = Srt s0.
+Proof.
+  intros.
+  *)
+
 
 Lemma type_range_sub : forall e T U s, e |- T >> U : s ->
-  forall s0, type_range U = Srt s0 -> type_range T = Srt s0.
+  forall s0, (type_range U = Srt s0 -> type_range T = Srt s0) /\
+  (type_dom U = Srt s0 -> type_dom T = Srt s0).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-  
-  pose (coerce_sort_r H).
-  pose (term_type_range_kinded t H1).
+
+  destruct (IHcoerce1 s). 
+  destruct (IHcoerce2 s0).
+  split ; intros ; auto.
   discriminate.
-  
+
+  destruct (IHcoerce1 s0). 
+  destruct (IHcoerce2 s0).
+  split ; intros ; auto.
+
+  pose (coerce_sort_r H).
+  destruct (IHcoerce s0). 
+  split ; intros ; auto.
+
+  pose (term_type_range_kinded t H3).
+  discriminate.
+
+  pose (coerce_sort_l H).
+  pose (term_type_dom_kinded t H3).
+  discriminate.
+
+  split ; intros ; discriminate.
+  split ; intros.
+
   pose (term_type_range_kinded H2 H6).
   inversion e0.
   rewrite H8 in H.
   rewrite H8 in H0.
   rewrite H8 in H1.
   rewrite H8 in H2.
-  pose (type_kind_range H).
-  pose (type_kind_range H0).
+  pose (sort_of_kinded H).
+  pose (sort_of_kinded H0).
+  pose (sort_of_kinded H1).
+  pose (sort_of_kinded H7).
+  destruct (is_low_type_range H7 i2).
+  pose (H9 s0) ; contradiction.
+  do 2 destruct H9.
+  
+  pose (is_prop_is_low_sort H10).
+  rewrite <- H9 in i3.
+
+  destruct (is_low_type_range H1 i1).
+  
+  
+Focus 2.
+  pose (H9 s0) ; contradiction.
+  do 2 destruct H9.
+  
+  pose (is_prop_is_low_sort H10).
+  rewrite <- H9 in i3.
+
+  assert(is_low_sort (type_range D)).
+  rewrite H9 ; unfold is_low_sort ; destruct H10 ; simpl ; auto.
+  rewrite H10 ; auto.
+  rewrite H10 ; auto.
+
+
+  pose (conv_is_low_range_full H3 H11 i0).
+  
+  pose (is_low_type_range H0).
+  pose (is_low_type_range H0).
+
+
   pose (type_kind_range H1).
   pose (type_kind_range H7).
-  pose (conv_is_low_range_full H3 i i0).
+  
   pose (conv_is_low_range_full H5 i1 i2).
   rewrite H6 in e2.
   pose (IHcoerce _ e2).
   rewrite <- e3.
   assumption.
 Qed.
-(*
-Lemma conv_ref_prod : forall n A B, ~ conv (Ref n) (Prod A B).
-Admitted.
 
-Lemma conv_ref_sum : forall n A B, ~ conv (Ref n) (Sum A B).
-Admitted.
 
-Lemma conv_abs_prod : forall T M A B, ~ conv (Abs T M) (Prod A B).
-Admitted.
 
-Lemma conv_abs_sum : forall T M A B, ~ conv (Abs T M) (Sum A B).
-Admitted.
 
 
 Lemma type_dom_sub : forall e T U s, e |- T >> U : s ->
@@ -707,8 +811,105 @@ Lemma type_dom_sub : forall e T U s, e |- T >> U : s ->
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
 
+  apply type_range_sub with e A' s ; auto with coc.
+
+  pose (coerce_sort_r H).
+  pose (term_type_dom_kinded t H1).
+  discriminate.
+  
+  induction D ; simpl in H6 ; try discriminate.
+
+  destruct (typ_sort H2).
+  inversion H8.
+  rewrite H10 in H1.
+  pose (type_kind_range H1).
+  pose (conv_is_low_range (sym_conv _ _ H5) i).
+  rewrite e0 in IHcoerce.
+  inversion H6.
+  assert (type_dom B = Srt s0).
+  apply IHcoerce.
+  rewrite H11 ; simpl ; auto.
+
+  pose (sort_conv_eq H1 H5).
+  rewrite e1 in H4.
+  pose (coerce_propset_r H4).
+  rewrite e2 in H3.
+  rewrite H10 in H.
+  pose (sort_conv_eq H H3).
+  rewrite e3 ; simpl ; auto.
+
+  pose (generation_sum2 H2).
+  destruct e0.
+  intuition.
+  pose (term_type_range_kinded H8 H6).
+  inversion e0.
+
+  pose (term_type_dom_kinded H2 H6).
+  inversion e1.
+
+  
+  rewrite H8 in H.
+  rewrite H8 in H0.
+  rewrite H8 in H1.
+  rewrite H8 in H2.
+  pose (type_kind_dom H).
+  pose (type_kind_dom H0).
+  pose (type_kind_dom H1).
+  pose (type_kind_dom H7 H6).
+  
+
+
+  pose (conv_is_low_dom_full H3).
+  pose (conv_is_low_range_full H5 i1 i2).
+  rewrite H6 in e2.
+  pose (IHcoerce _ e2).
+  rewrite <- e3.
+  assumption.
+
+
+
+  unfold sum_sort in H10.
+  intuition.
+  rewrite H10 in H6.
+  simpl in H9 ; inversion H9.
+  
+  
+
+  Focus 2.
+  
+
+rewrite H10 in H.
+  pose (type_kind_range H).
+  pose(conv_is_low_range).
+  induction i.
+  pose (term_type_range_
+
+  pose (conv_is_low_range).
+ 
+  pose (term_type_dom_kinded H2 H6).
+  inversion e0.
+  rewrite H8 in H.
+  rewrite H8 in H0.
+  rewrite H8 in H1.
+  clear e0.
+  rewrite H8 in H2.
+  pose (type_kind_dom H2 H6).
+
+  pose (conv_is_low_dom_full).
+  
+  pose (type_kind_dom H).
+  pose (type_kind_range H0).
+  pose (type_kind_range H1).
+  pose (conv_is_low_dom_full H3 i i0).
+  pose (conv_is_low_dom_full H5 i1 i2).
+  rewrite H6 in e2.
+  pose (IHcoerce _ e2).
+  rewrite <- e3.
+  assumption.
+
   induction B ; try discriminate.
   simpl in H2.
+
   inversion H2.
   induction (typ_sort _ _ _ H0).
   inversion H5.
@@ -773,6 +974,7 @@ apply kind_is_prod with e (Srt s) ; auto.
   pose (term_type_range_kinded t H1).
   discriminate.
 Qed.
+
 Lemma var_sort_dom_item : forall e n T, e |- Ref n : T ->
   forall s, type_dom T = (Srt s) -> 
   exists T', item_lift T' e n /\ type_dom T' = Srt s.
@@ -796,9 +998,7 @@ Proof.
   inversion H5.
   auto.
 Qed.
-
 *)
-
 Lemma var_sort_range_item_aux : forall e t T, e |- t : T ->
   forall n, t = Ref n -> 
   forall s, type_range T = (Srt s) -> 

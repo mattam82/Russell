@@ -21,7 +21,7 @@ Lemma inv_conv_prod_sort_l : forall e U V U' V' s, e |- Prod U V : Srt s -> e |-
 Admitted.
 
 Lemma inv_conv_prod_sort_r : forall e U V U' V' s, e |- Prod U V : Srt s -> e |- Prod U' V' : Srt s ->
-  conv (Prod U V) (Prod U' V') -> { s2 : sort | U' :: e |- V : Srt s2 /\ U' :: e |- V : Srt s2 }. 
+  conv (Prod U V) (Prod U' V') -> U' :: e |- V : Srt s /\ U' :: e |- V' : Srt s. 
 Admitted.
 
 Lemma inv_conv_sum_sort_l : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
@@ -29,7 +29,7 @@ Lemma inv_conv_sum_sort_l : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- S
 Admitted.
 
 Lemma inv_conv_sum_sort_r : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
-  conv (Sum U V) (Sum U' V') -> { s2 : sort | U' :: e |- V : Srt s2 /\ U' :: e |- V : Srt s2 }. 
+  conv (Sum U V) (Sum U' V') -> U :: e |- V : Srt s /\ U :: e |- V' : Srt s.
 Admitted.
 
 Require Import Omega.

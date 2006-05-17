@@ -55,13 +55,12 @@ apply wf_var with s1 ; auto with coc core arith datatypes.
 rewrite distr_lift_subst.
 apply type_app with (lift_rec 1 V n); auto with coc core arith datatypes.
 
-apply type_pair with s1 s2 ; auto with coc core arith datatypes.
+apply type_pair with s1 s2 s3 ; auto with coc core arith datatypes.
 apply IHIH3 ; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core arith datatypes.
 
 rewrite <- distr_lift_subst.
 apply IHIH4 ; auto with coc core arith datatypes.
-apply sum_sort_lift ; auto with coc.
 
 cut (wf (lift_rec 1 T n :: f)).
 intro.
@@ -70,8 +69,7 @@ apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T n :: f)).
 intro.
-apply type_sum with s1; auto with coc core arith datatypes.
-apply sum_sort_lift ; auto with coc.
+apply type_sum with s1 s2; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T n :: f)).
@@ -101,7 +99,7 @@ apply IHIH6 ; auto with coc core.
 apply wf_var with s.
 apply IHIH2 ; auto with coc core.
 
-apply coerce_sum with s ; auto with coc.
+apply coerce_sum with s s' ; auto with coc.
 
 apply IHIH4 ; auto with coc.
 apply wf_var with s.
@@ -113,9 +111,6 @@ apply IHIH3 ; auto with coc core.
 apply IHIH6 ; auto with coc core.
 apply wf_var with s.
 apply IHIH2 ; auto with coc core.
-
-apply sum_sort_lift ; auto with coc.
-apply sum_sort_lift ; auto with coc.
 
 apply coerce_sub_l ; auto with coc core.
 
@@ -177,13 +172,12 @@ apply wf_var with s1 ; auto with coc core arith datatypes.
 rewrite distr_lift_subst.
 apply type_app with (lift_rec 1 V n); auto with coc core arith datatypes.
 
-apply type_pair with s1 s2 ; auto with coc core arith datatypes.
+apply type_pair with s1 s2 s3 ; auto with coc core arith datatypes.
 apply IHIH1 ; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core arith datatypes.
 
 rewrite <- distr_lift_subst.
 apply IHIH2 ; auto with coc core arith datatypes.
-apply sum_sort_lift ; auto with coc.
 
 cut (wf (lift_rec 1 T n :: f)).
 intro.
@@ -192,8 +186,7 @@ apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T n :: f)).
 intro.
-apply type_sum with s1; auto with coc core arith datatypes.
-apply sum_sort_lift ; auto with coc.
+apply type_sum with s1 s2; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T n :: f)).
@@ -223,7 +216,7 @@ apply IHIH6 ; auto with coc core.
 apply wf_var with s.
 apply IHIH2 ; auto with coc core.
 
-apply coerce_sum with s ; auto with coc.
+apply coerce_sum with s s' ; auto with coc.
 
 apply IHIH4 ; auto with coc.
 apply wf_var with s.
@@ -236,8 +229,6 @@ apply IHIH6 ; auto with coc core.
 apply wf_var with s.
 apply IHIH2 ; auto with coc core.
 
-apply sum_sort_lift ; auto with coc core.
-apply sum_sort_lift ; auto with coc core.
 apply coerce_sub_l ; auto with coc core.
 apply IHIH0 ; auto with coc core.
 apply wf_var with set.

@@ -132,7 +132,7 @@ apply wf_var with s1; auto with coc core arith datatypes.
 apply type_app with V; auto with coc core arith datatypes.
 
 cut (wf (U :: f)); intros.
-apply type_pair with s1 s2; auto with coc core arith datatypes.
+apply type_pair with s1 s2 s3; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core.
 
 cut (wf (T :: f)); intros.
@@ -141,7 +141,7 @@ apply type_prod with s1; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (T :: f)); intros.
-apply type_sum with s1; auto with coc core arith datatypes.
+apply type_sum with s1 s2; auto with coc core arith datatypes.
 
 apply wf_var with s1; auto with coc core arith datatypes.
 
@@ -168,7 +168,7 @@ apply wf_var with s ; auto with coc core arith datatypes.
 
 cut (wf (A' :: f)) ; intros.
 cut (wf (A :: f)) ; intros.
-apply coerce_sum with s ;auto with coc core arith datatypes.
+apply coerce_sum with s s' ;auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
 
@@ -215,7 +215,7 @@ apply wf_var with s1; auto with coc core arith datatypes.
 apply type_app with V; auto with coc core arith datatypes.
 
 cut (wf (U :: f)); intros.
-apply type_pair with s1 s2; auto with coc core arith datatypes.
+apply type_pair with s1 s2 s3; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core.
 
 cut (wf (T :: f)); intros.
@@ -224,7 +224,7 @@ apply type_prod with s1; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (T :: f)); intros.
-apply type_sum with s1; auto with coc core arith datatypes.
+apply type_sum with s1 s2; auto with coc core arith datatypes.
 
 apply wf_var with s1; auto with coc core arith datatypes.
 
@@ -251,7 +251,7 @@ apply wf_var with s ; auto with coc core arith datatypes.
 
 cut (wf (A' :: f)) ; intros.
 cut (wf (A :: f)) ; intros.
-apply coerce_sum with s ;auto with coc core arith datatypes.
+apply coerce_sum with s s' ;auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
 apply wf_var with s ; auto with coc core arith datatypes.
 
@@ -508,7 +508,7 @@ Proof.
   apply coerce_env_hd with s ; auto with coc.
   apply wf_var with s ; auto with coc.
 
-  apply coerce_sum with s ; auto with coc.
+  apply coerce_sum with s s' ; auto with coc.
   apply coerce_conv_env with (A :: e) ; auto with coc core arith datatypes.
   apply coerce_env_hd with s ; auto with coc.
   apply wf_var with s ; auto with coc.

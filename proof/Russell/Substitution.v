@@ -74,11 +74,10 @@ apply wf_var with s1; auto with coc core arith datatypes.
 rewrite distr_subst.
 apply type_app with (subst_rec d V n); auto with coc core arith datatypes.
 
-apply type_pair with s1 s2 ; auto with coc core arith datatypes.
+apply type_pair with s1 s2 s3 ; auto with coc core arith datatypes.
 apply IHIH3 ; auto with coc.
 apply wf_var with s1 ; auto with coc.
 rewrite <- distr_subst ; auto with coc core arith datatypes.
-apply sum_sort_subst ; auto with coc.
 
 cut (wf (subst_rec d T n :: f)); intros.
 apply type_prod with s1; auto with coc core arith datatypes.
@@ -86,8 +85,7 @@ apply type_prod with s1; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
-apply type_sum with s1; auto with coc core arith datatypes.
-apply sum_sort_subst ; auto with coc.
+apply type_sum with s1 s2; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
@@ -117,12 +115,10 @@ apply wf_var with s ; auto with coc core.
 apply IHIH6 ; auto with coc core.
 apply wf_var with s ; auto with coc core.
 
-apply coerce_sum with s ; auto with coc core.
+apply coerce_sum with s s' ; auto with coc core.
 apply IHIH4 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH5 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH6 ; auto with coc core ; apply wf_var with s ; auto with coc core.
-apply sum_sort_subst ; auto with coc.
-apply sum_sort_subst ; auto with coc.
 
 apply coerce_sub_l ; auto with coc core.
 apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.
@@ -197,11 +193,10 @@ apply wf_var with s1; auto with coc core arith datatypes.
 rewrite distr_subst.
 apply type_app with (subst_rec d V n); auto with coc core arith datatypes.
 
-apply type_pair with s1 s2 ; auto with coc core arith datatypes.
+apply type_pair with s1 s2 s3 ; auto with coc core arith datatypes.
 apply IHIH1 ; auto with coc.
 apply wf_var with s1 ; auto with coc.
 rewrite <- distr_subst ; auto with coc core arith datatypes.
-apply sum_sort_subst ; auto with coc.
 
 cut (wf (subst_rec d T n :: f)); intros.
 apply type_prod with s1; auto with coc core arith datatypes.
@@ -209,8 +204,7 @@ apply type_prod with s1; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
-apply type_sum with s1; auto with coc core arith datatypes.
-apply sum_sort_subst ; auto with coc.
+apply type_sum with s1 s2; auto with coc core arith datatypes.
 apply wf_var with s1; auto with coc core arith datatypes.
 
 cut (wf (subst_rec d T n :: f)); intros.
@@ -240,13 +234,10 @@ apply wf_var with s ; auto with coc core.
 apply IHIH6 ; auto with coc core.
 apply wf_var with s ; auto with coc core.
 
-apply coerce_sum with s ; auto with coc core.
+apply coerce_sum with s s' ; auto with coc core.
 apply IHIH4 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH5 ; auto with coc core ; apply wf_var with s ; auto with coc core.
 apply IHIH6 ; auto with coc core ; apply wf_var with s ; auto with coc core.
-
-apply sum_sort_subst ; auto with coc.
-apply sum_sort_subst ; auto with coc.
 
 apply coerce_sub_l ; auto with coc core.
 apply IHIH0 ; auto with coc core ; apply wf_var with set ; auto with coc core.

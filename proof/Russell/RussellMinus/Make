@@ -1,0 +1,4 @@
+-I ../.. -R . RussellMinus
+# List of vernac files to compile
+Env.v
+Types.v

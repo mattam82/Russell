@@ -24,7 +24,7 @@ forall s1 s2,
 (type_range T = Srt s1 -> type_range T' = Srt s2 -> s1 = s2)(* /\
 (type_dom T = Srt s1 -> type_dom T' = Srt s2 -> s1 = s2)*).
 Proof.
-  induction t ; simpl ; intros ;
+  induction t ; simpl ; intros ; 
   auto with coc core arith datatypes ; try discriminate.
 
   destruct (typ_sort H).
@@ -32,22 +32,13 @@ Proof.
   rewrite H4 in H1.
   rewrite H6 in H2.
   simpl in H1, H2.
-  inversion H2 ; inversion H1.
+  inversion H1 ; inversion H2.
   auto.
-
-(*  destruct (typ_sort _ _ _ H).
-  destruct (typ_sort _ _ _ H0).
-  rewrite H4 in H1.
-  rewrite H6 in H2.
-  simpl in H1, H2.
-  inversion H2 ; inversion H1.
-  auto.*)
 
   (* Var *)
   exact (unique_var_range_sort H H1 H0 H2).
-(*  exact (unique_var_dom_sort H H1 H0 H2).*)
     
-  (* Abs *)
+  (* Abs *)  
   induction (sort_of_abs_range H H1).
   do 2 destruct H3 ; intuition.
   induction (sort_of_abs_range H0 H2).
@@ -136,6 +127,7 @@ Proof.
   do 2 destruct H3 ; intuition.
   induction (sort_of_pi1_range H0 H2).
   do 2 destruct H5 ; intuition.
+  
   unfold sum_sort in H6.
   destruct H6.
 
