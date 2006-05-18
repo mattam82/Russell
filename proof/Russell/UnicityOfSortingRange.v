@@ -19,34 +19,43 @@ Implicit Types e f g : env.
 
 Set Implicit Arguments.
 
-Lemma unique_range_sort : forall t e s1 s2, e |- t : Srt s1 -> e |- t : Srt s2 -> 
-  s1 = s2.
+Lemma unique_range_sort : forall t e T T', e |- t : T -> e |- t : T' -> 
+forall s1 s2, T = Srt s1 -> T' = Srt s2 -> s1 = s2.
+(*(type_range T = Srt s1 -> type_range T' = Srt s2 -> s1 = s2) /\
+(type_dom T = Srt s1 -> type_dom T' = Srt s2 -> s1 = s2)*)
 Proof.
   induction t ; simpl ; intros ; 
   auto with coc core arith datatypes ; try discriminate.
 
   destruct (typ_sort H).
   destruct (typ_sort H0).
-  inversion H2 ; inversion H4.
+  rewrite H4 in H1.
+  rewrite H6 in H2.
+  simpl in H1, H2.
+  inversion H1 ; inversion H2.
   auto.
 
+  Focus 3.
+
   (* Var *)
-  exact (unique_var_sort H H0).
+  exact (unique_var_range_sort H H1 H0 H2).
+  exact (unique_var_range_sort H H1 H0 H2).
     
   (* Abs *)  
-  elim (sorting_lambda H).
+  induction (sort_of_abs_range H H1).
+  do 2 destruct H3 ; intuition.
+  induction (sort_of_abs_range H0 H2).
+  do 2 destruct H6 ; intuition.
+
+  apply (IHt2 _ _ _ H3 H6 s1 s2) ; simpl ; auto.
 
   (* App goes well *)
-  induction (sort_of_app H).
-  destruct H1 ; intuition.
-  induction (sort_of_app H0).
-  destruct H2.
-  destruct (type_sorted H1) ; try discriminate.
-  destruct (type_sorted H2) ; try discriminate.
-  destruct H3 ; destruct H4.
-  pose (generation_prod2 H1).
+  induction (sort_of_app_range H H1).
+  destruct H3 ; intuition.
+  induction (sort_of_app_range H0 H2).
+  destruct H6 ; intuition.
 
-  apply (IHt1 _ _ _ H1 H2) ; simpl ; auto.
+  apply (IHt1 _ _ _ H3 H6) ; simpl ; auto.
 
   pose (term_type_range_kinded H4 H8).
   rewrite e0 in H3.

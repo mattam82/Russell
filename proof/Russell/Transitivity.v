@@ -16,22 +16,6 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
-Lemma inv_conv_prod_sort_l : forall e U V U' V' s, e |- Prod U V : Srt s -> e |- Prod U' V' : Srt s ->
-  conv (Prod U V) (Prod U' V') -> { s1 : sort | e |- U : Srt s1 /\ e |- U' : Srt s1 }. 
-Admitted.
-
-Lemma inv_conv_prod_sort_r : forall e U V U' V' s, e |- Prod U V : Srt s -> e |- Prod U' V' : Srt s ->
-  conv (Prod U V) (Prod U' V') -> U' :: e |- V : Srt s /\ U' :: e |- V' : Srt s. 
-Admitted.
-
-Lemma inv_conv_sum_sort_l : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
-  conv (Sum U V) (Sum U' V') -> { s1 : sort | e |- U : Srt s1 /\ e |- U' : Srt s1 }. 
-Admitted.
-
-Lemma inv_conv_sum_sort_r : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
-  conv (Sum U V) (Sum U' V') -> U :: e |- V : Srt s /\ U :: e |- V' : Srt s.
-Admitted.
-
 Require Import Omega.
 Require Import Coq.Arith.Max.
 

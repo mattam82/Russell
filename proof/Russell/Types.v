@@ -57,7 +57,7 @@ where "G |- T >> U : s" := (coerce G T U s)
 with wf : env -> Prop :=
   | wf_nil : wf nil
   | wf_var : forall e T s, e |- T : (Srt s) -> wf (T :: e)
-
+(*
 with convt : env -> term -> term -> sort -> Prop :=
   | convt_prod : forall e U V U' V' s1 s2, 
   e |- U = U' : s1 -> U' :: e |- V = V' : s2 ->
@@ -73,7 +73,7 @@ with convt : env -> term -> term -> sort -> Prop :=
   
   | convt_conv : forall e U V s, 
   e |- U : s -> e |- V : s -> conv U V -> e |- U = V : s.
-
+*)
 with typ : env -> term -> term -> Prop :=
   | type_prop : forall e, wf e -> e |- (Srt prop) : (Srt kind)
   | type_set : forall e, wf e -> e |- (Srt set) : (Srt kind)	

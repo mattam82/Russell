@@ -10,7 +10,7 @@ Require Import CCPD.Substitution.
 Require Import CCPD.Transitivity.
 Require Import CCPD.Inversion.
 Require Import CCPD.Generation.
-Require Import CCPD.UnicityOfSorting.
+(*Require Import CCPD.UnicityOfSorting.*)
 
 Set Implicit Arguments.
 

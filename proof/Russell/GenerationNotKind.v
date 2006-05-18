@@ -260,15 +260,6 @@ Proof.
 Qed.
 
 Lemma type_no_kind_prod_type : forall G t U V, 
-  G |- t : Prod U V -> type_no_kind V.
-Proof.
-  intros.
-  pose (type_no_kind_type H (or_introl _ (refl_equal (Prod U V)))).
-  simpl in t0.
-  intuition.
-Qed.
-
-Lemma type_no_kind_prod_type2 : forall G t U V, 
   G |- t : Prod U V -> type_no_kind (Prod U V).
 Proof.
   intros.
@@ -279,11 +270,13 @@ Proof.
 Qed.
 
 Lemma type_no_kind_sum_type : forall G t U V, 
-  G |- t : Sum U V -> type_no_kind V.
+  G |- t : Sum U V -> type_no_kind (Sum U V).
 Proof.
   intros.
   pose (type_no_kind_type H (or_intror _ (refl_equal (Sum U V)))).
   simpl in t0.
+  intuition.
+  simpl.
   intuition.
 Qed.
  
