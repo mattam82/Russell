@@ -63,14 +63,12 @@ Lemma gen_sorting_var_aux : forall e t T, e |- t : T ->
   forall s, T = (Srt s) ->
   is_prop s.
 Proof.
-  induction 1 using typ_mutwf with
+  induction 1 using typ_wf_mut with
    (P := fun e t T => fun H : e |- t : T =>
    forall n, t = Ref n -> 
    forall s, T = (Srt s) ->
    is_prop s)
-   (P0 := fun e T U s => fun H : e |- T >> U : s =>
-   True)
-   (P1 := fun e => fun H : wf e =>
+   (P0 := fun e => fun H : wf e =>
    forall s, forall n, item _ (Srt s) e n -> is_prop s)
  ; try (simpl ; intros ; try discriminate ; auto with coc).
  
@@ -399,20 +397,25 @@ Qed.
 
 Lemma sort_of_app_aux : forall e t Ts, e |- t : Ts ->
   forall M N, t = App M N ->
-  forall s, Ts = Srt s ->
-  (exists V, e |- M : Prod V (Srt s)) \/ N = Srt s.
+  forall s, Ts = Srt s -> 
+  (exists V, e |- M : Prod V (Srt s) /\ e |- N : V). 
 Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
   inversion H1.
 
   induction (inv_subst_sort _ _ _ H2).
-  rewrite <- H5.
-  right ; auto.
+  rewrite H3 in H.
+  destruct (typ_sort H).
+  rewrite H7 in H0.
+  pose (type_no_kind_prod_type H0).
+  simpl in t.
+  intuition.
   
   rewrite H3 in H0.
   rewrite H4 in H0.
-  left ; exists V ; auto.
+  exists V ; intuition ; auto.
+  rewrite <- H5 ; auto.
 
   rewrite H4 in H2.
   pose (coerce_propset_r H2).
@@ -420,10 +423,37 @@ Proof.
 Qed.
 
 Lemma sort_of_app : forall e M N s, e |- App M N : Srt s ->
-  (exists V, e |- M : Prod V (Srt s)) \/ N = Srt s.
+  exists V, e |- M : Prod V (Srt s) /\ e |- N : V.
 Proof.
   intros. 
-  eapply sort_of_app_aux ; auto ; auto.
+  eapply sort_of_app_aux ; auto ; auto ; auto.
+Qed.
+
+
+Lemma sort_of_app_aux2 : forall e t Ts, e |- t : Ts ->
+  forall M N, t = App M N ->
+  forall s, Ts = Srt s -> 
+  forall s', ~ N = Srt s'.
+Proof.
+  intros.
+  red ; intros.
+  rewrite H1 in H.
+  rewrite H0 in H.
+  destruct (sort_of_app H).
+  destruct H3.
+  rewrite H2 in H4.
+  pose (typ_sort H4).
+  destruct a.
+  rewrite H6 in H3.
+  pose (type_no_kind_prod_type H3).
+  simpl in t0.
+  intuition.
+Qed.
+
+Lemma sort_of_app2 : forall e M N s, e |- App M N : Srt s -> forall s', ~ N = Srt s'.
+Proof.
+  intros. 
+  eapply (sort_of_app_aux2 H) ; auto ; auto ; auto.
 Qed.
 
 Lemma strength_sort_judgement : forall T e s s', T :: e |- Srt s : Srt s' ->
@@ -528,4 +558,3 @@ Proof.
   
   right ; exists s ; auto.
 Qed.
-

@@ -18,7 +18,7 @@ Lemma typ_sub_weak : forall g (d : term) t, g |- d : t ->
    f |- (subst_rec d u n) : (subst_rec d U n).
 Proof.
 intros g d t H e u U IH.
-induction IH using typ_mut with
+induction IH using typ_coerce_mut with
  (P := fun e u (U : term) => fun H0 : e |- u : U =>
  forall f n,
  sub_in_env d t n e f ->
@@ -137,7 +137,7 @@ Lemma coerce_sub_weak : forall g (d : term) t, g |- d : t ->
    f |- (subst_rec d T n) >> (subst_rec d U n) : s.
 Proof.
 intros g d t H e T U s IH.
-induction IH using coerce_mut with
+induction IH using coerce_typ_mut with
  (P := fun e u (U : term) => fun H0 : e |- u : U =>
  forall f n,
  sub_in_env d t n e f ->

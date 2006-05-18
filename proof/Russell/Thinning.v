@@ -17,7 +17,7 @@ Lemma typ_weak_weak : forall A e t T, e |- t : T ->
    f |- (lift_rec 1 t n) : (lift_rec 1 T n).
 Proof.
 intros A e t T IH.
-induction IH using typ_mut with 
+induction IH using typ_coerce_mut with 
  (P := fun e t T => fun IH : typ e t T =>
    forall n f,
    ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))
@@ -134,7 +134,7 @@ Lemma coerce_weak_weak : forall A e T U s, e |- T >> U : s ->
   f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s.
 Proof.
 intros A e T U s IH.
-induction IH using coerce_mut with 
+induction IH using coerce_typ_mut with 
  (P := fun e t T => fun IHt : typ e t T =>
    forall n f,
    ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))

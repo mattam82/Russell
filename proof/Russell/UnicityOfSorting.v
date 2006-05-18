@@ -44,7 +44,7 @@ Proof.
   destruct (type_sorted H1) ; try discriminate.
   destruct (type_sorted H2) ; try discriminate.
   destruct H3 ; destruct H4.
-  pose (generation_prod2 H1).
+  pose (generation_prod2 H3).
 
   apply (IHt1 _ _ _ H1 H2) ; simpl ; auto.
 

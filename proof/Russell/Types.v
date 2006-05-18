@@ -149,12 +149,16 @@ Hint Resolve type_pi1 type_pi2 type_pair type_prop type_set type_var: coc.
 
 Scheme typ_dep := Induction for typ Sort Prop.
 
-Scheme typ_mut := Induction for typ Sort Prop
-with coerce_mut := Induction for coerce Sort Prop.
+Scheme typ_wf_mut := Induction for typ Sort Prop
+with wf_typ_mut := Induction for wf Sort Prop.
 
-Scheme typ_mutwf := Induction for typ Sort Prop
-with coerce_mutwf := Induction for coerce Sort Prop
-with wf_mut := Induction for wf Sort Prop.
+Scheme typ_coerce_mut := Induction for typ Sort Prop
+with coerce_typ_mut := Induction for coerce Sort Prop.
+
+Scheme typ_coerce_wf_mut := Induction for typ Sort Prop
+with coerce_typ_wf_mut := Induction for coerce Sort Prop
+with wf_typ_coerce_mut := Induction for wf Sort Prop.
+
 
 Lemma not_t_let_in : forall G t T, G |- t : T -> forall u v, t <> Let_in u v.
 Proof.

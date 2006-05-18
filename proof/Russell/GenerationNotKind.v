@@ -135,13 +135,10 @@ Qed.
 Lemma type_no_kind_type : forall G t T, G |- t : T -> 
   forall U V, (T = Prod U V \/ T = Sum U V) -> type_no_kind T.
 Proof.
-  induction 1 using typ_mutwf with
+  induction 1 using typ_wf_mut with
   (P := fun G t T => fun H : G |- t : T =>
   forall U V, (T = Prod U V \/ T = Sum U V) -> type_no_kind T)
-  (P0 := fun G U V s => fun H : G |- U >> V : s => True (*
-    (forall X Y, U = Prod X Y -> prod_sort Y <> Srt kind) /\
-    (forall X Y, U = Prod X Y -> prod_sort Y <> Srt kind)*))
-  (P1 := fun e => fun H : wf e => 
+  (P0 := fun e => fun H : wf e => 
     forall T n, item_lift T e n -> 
     forall U V, (T = Prod U V \/ T = Sum U V) -> type_no_kind T)
  ; simpl ; intros ; auto with coc ; try discriminate ; 

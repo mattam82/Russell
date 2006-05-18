@@ -376,18 +376,85 @@ Lemma conv_sum_abs : forall U V M N, ~ conv (Sum U V) (Abs M N).
 Admitted.
 
 
+Lemma conv_sort_abs : forall s T M, ~ conv (Abs T M) (Srt s).
+Admitted.
 
-Lemma conv_dom : forall e A Ts, e |- A : Ts -> 
+Lemma sort_conv_eq' : forall G T s, G |- T : Srt s -> forall s', conv T (Srt s') -> T = Srt s'.
+Proof.
+  intros.
+  destruct (church_rosser _ _ H0).
+  pose (red_sort_eq H2).
+  rewrite e in H1.
+  pose (type_sorted H).
+  destruct o.
+  inversion H3.
+  rewrite H5 in H.
+  apply sort_conv_eq with G ; auto.
+  destruct H3.
+  destruct (typ_sort H3).
+  destruct H4.
+  rewrite H4 in H.
+
+  generalize H1 ; generalize H ; generalize H0.
+  clear H H0 H1 H2 e H3 H4 H5.
+  generalize s' ; generalize G.
+  clear G s s' x x0.
+  
+  induction T ; intros ;  try (simpl in i ; destruct i ; inversion H1 ; try discriminate) ; auto with coc core.
+
+  rewrite (conv_sort _ _ H0).
+  auto.
+
+  elim conv_sort_ref with s' n ; auto with coc.
+
+  elim conv_sort_abs with s' T1 T2 ; auto with coc.
+
+  inversion H1.
+  inversion H3.
+  destruct (inv_subst_sort _ _ _ H7).
+  rewrite H6 in H5.
+  rewrite <- H5 in H2.
+  inversion H2.
+  rewrite H10 in H.
+  pose (sort_of_app2 H).
+  pose (n s').
+  elim n0 ; auto.
+
+  Foc
+  rewrite (conv_sort _ _ H0).
+  auto.
+
+  pose (conv_sort_prod s T1 T2).
+  pose (sym_conv _ _ H0).
+  contradiction.
+
+  pose (conv_sort_sum s T1 T2).
+  pose (sym_conv _ _ H0).
+  contradiction.
+
+  pose (conv_sort_sum s T1 T2).
+  pose (sym_conv _ _ H0).
+  contradiction.
+Qed.
+
+
+
+Lemma conv_dom : 
+  forall e A Ts, e |- A : Ts -> 
   forall B s s', Ts = Srt s -> 
-  e |- B : Srt s ->
-  conv A B -> (type_dom A = Srt s' -> type_dom B = Srt s')
+  forall s'', e |- B : Srt s'' -> conv A B -> 
+  (s = s'') /\
+  (type_dom A = Srt s' -> type_dom B = Srt s')
   /\ (type_range A = Srt s' -> type_range B = Srt s')
   .
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
+  
+  split.
+  pose (sort_conv_eq).
 
   inversion H0.
-  rewrite <- H4 in H1.
+  rewrite <- H5 in H1.
   pose (sort_conv_eq H1 (sym_conv _ _ H2)).
   rewrite e0.
   simpl.
@@ -505,9 +572,23 @@ Proof.
   pose (inv_conv_sum_l _ _ _ _ H4).
   pose (inv_conv_sum_r _ _ _ _ H4).
 
+  split ; intros.
+  induction H1 ; induction H11 ; intuition ; try rewrite H12 ; try rewrite H1 ; try rewrite H11 ; try discriminate ;
+  try (rewrite H15 in H17 ; discriminate) ; auto.
+  rewrite H13 in H.
+  pose (term_type_range_kinded H H12) ; discriminate.
+
+  rewrite H13 in H.
+  pose (term_type_range_kinded H H12) ; discriminate.
+  rewrite H13 in H.
+  pose (term_type_range_kinded H H12) ; discriminate.
+
+  pose (term_type_range_kinded H H5) ; discriminate.
+
   destruct (IHtyp1 B1 x s') ; auto with coc. 
   induction H1 ; induction H11 ; intuition ; try rewrite H12 ; try rewrite H1 ; try rewrite H11 ; try discriminate ;
   try (rewrite H14 in H16 ; discriminate) ; auto.
+
   
   
 

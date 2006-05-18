@@ -108,7 +108,7 @@ Lemma typ_conv_env :
   wf f -> f |- t : T.
 Proof.
 intros e t T IH.
-induction IH using typ_mut with 
+induction IH using typ_coerce_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
@@ -191,7 +191,7 @@ Lemma coerce_conv_env :
   wf f -> f |- T >> U : s.
 Proof.
 intros e T U s IH.
-induction IH using coerce_mut with 
+induction IH using coerce_typ_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
