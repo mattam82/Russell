@@ -32,8 +32,8 @@ Inductive coerces : env -> term -> term -> sort -> Set :=
   (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
   forall s', (A :: e) |- B >>>> B' : s' ->
   (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
-  sum_sort A B s s' -> sum_sort A' B' s s' ->
-  e |- (Sum A B) >>>> (Sum A' B') : s'
+  forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
+  e |- (Sum A B) >>>> (Sum A' B') : s''
 
   | coerce_sub_l : forall e U P U',
   e |- U >>>> U' : set ->
@@ -73,8 +73,8 @@ Inductive coerces_db : env -> term -> term -> sort -> Set :=
   (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
   forall s', (A :: e) |- B >>> B' : s' ->
   (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
-  sum_sort A B s s' -> sum_sort A' B' s s' ->
-  e |- (Sum A B) >>> (Sum A' B') : s'
+  forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
+  e |- (Sum A B) >>> (Sum A' B') : s''
 
   | coerces_sub_l : forall e U P U',
   e |- U >>> U' : set ->
@@ -107,7 +107,7 @@ Fixpoint depth (e : env) (T U : term) (s : sort) (d : e |- T >>> U : s) {struct 
   | coerces_refl e A s As => 0
   | coerces_prod e A B A' B' s HsubA A's As s' HsubBB' Bs B's =>
     S (max (depth HsubA) (depth HsubBB'))
-  | coerces_sum e A B A' B' s HsubA A's As s' HsubBB' Bs B's sum sum' =>
+  | coerces_sum e A B A' B' s HsubA A's As s' HsubBB' Bs B's s'' sum sum' =>
     S (max (depth HsubA) (depth HsubBB'))
   | coerces_sub_l e U P U' HsubU Ps => S (depth HsubU)
   | coerces_sub_r e U U' P HsubU Ps => S (depth HsubU)
@@ -122,7 +122,7 @@ Proof.
 
   apply coerces_prod with s; auto with coc.
   
-  apply coerces_sum with s; auto with coc.
+  apply coerces_sum with s s'; auto with coc.
 
   apply coerces_conv_l with B ; auto with coc.
   apply coerces_conv_r with C ; auto with coc.
@@ -134,7 +134,7 @@ Proof.
 
   apply coerce_prod with s; auto with coc.
   
-  apply coerce_sum with s; auto with coc.
+  apply coerce_sum with s s'; auto with coc.
 
   apply coerce_conv with B C ; auto with coc.
   apply coerce_conv with A B ; auto with coc.

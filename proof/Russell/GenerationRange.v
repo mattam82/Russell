@@ -378,7 +378,7 @@ Admitted.
 
 Lemma conv_sort_abs : forall s T M, ~ conv (Abs T M) (Srt s).
 Admitted.
-
+(*
 Lemma sort_conv_eq' : forall G T s, G |- T : Srt s -> forall s', conv T (Srt s') -> T = Srt s'.
 Proof.
   intros.
@@ -392,13 +392,12 @@ Proof.
   apply sort_conv_eq with G ; auto.
   destruct H3.
   destruct (typ_sort H3).
-  destruct H4.
-  rewrite H4 in H.
 
   generalize H1 ; generalize H ; generalize H0.
-  clear H H0 H1 H2 e H3 H4 H5.
+  generalize H4 ; generalize s.
+  clear H H0 H1 H2 e H3 H4 H5 s.
   generalize s' ; generalize G.
-  clear G s s' x x0.
+  clear G s' x x0.
   
   induction T ; intros ;  try (simpl in i ; destruct i ; inversion H1 ; try discriminate) ; auto with coc core.
 
@@ -411,6 +410,7 @@ Proof.
 
   inversion H1.
   inversion H3.
+  
   destruct (inv_subst_sort _ _ _ H7).
   rewrite H6 in H5.
   rewrite <- H5 in H2.
@@ -437,7 +437,7 @@ Proof.
   contradiction.
 Qed.
 
-
+*)
 
 Lemma conv_dom : 
   forall e A Ts, e |- A : Ts -> 

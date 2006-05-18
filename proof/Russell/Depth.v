@@ -31,8 +31,8 @@ Inductive coerces_db : env -> term -> term -> sort -> nat -> Prop :=
   (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
   forall s' m, (A :: e) |- B >>> B' : s' [m] ->
   (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
-  sum_sort A B s s' -> sum_sort A' B' s s' ->
-  e |- (Sum A B) >>> (Sum A' B') : s' [S (max n m)]
+  forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
+  e |- (Sum A B) >>> (Sum A' B') : s'' [S (max n m)]
 
   | coerces_sub_l : forall e U P U' n,
   e |- U >>> U' : set [n]->
@@ -70,7 +70,7 @@ Proof.
 
   destruct IHcoerce1 as [n d1n] ; destruct IHcoerce2 as [m d2m].
   exists (S (max n m)) ; auto with coc.
-  apply coerces_sum with s ; auto with coc.
+  apply coerces_sum with s s' ; auto with coc.
 
   destruct IHcoerce as [n d1n].
   exists (S n) ; auto with coc.
@@ -91,7 +91,7 @@ Proof.
 
   apply coerce_prod with s; auto with coc.
   
-  apply coerce_sum with s; auto with coc.
+  apply coerce_sum with s s'; auto with coc.
 
   apply coerce_conv with B C ; auto with coc.
   apply coerce_conv with A B ; auto with coc.

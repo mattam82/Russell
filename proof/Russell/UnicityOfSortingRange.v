@@ -11,6 +11,7 @@ Require Import CCPD.Coercion.
 Require Import CCPD.GenerationNotKind.
 Require Import CCPD.GenerationCoerce.
 Require Import CCPD.Generation.
+Require Import CCPD.GenerationRange.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -20,22 +21,20 @@ Implicit Types e f g : env.
 Set Implicit Arguments.
 
 Lemma unique_range_sort : forall t e T T', e |- t : T -> e |- t : T' -> 
-forall s1 s2, T = Srt s1 -> T' = Srt s2 -> s1 = s2.
-(*(type_range T = Srt s1 -> type_range T' = Srt s2 -> s1 = s2) /\
-(type_dom T = Srt s1 -> type_dom T' = Srt s2 -> s1 = s2)*)
+forall s1 s2, 
+(type_range T = Srt s1 -> type_range T' = Srt s2 -> s1 = s2) /\
+(type_dom T = Srt s1 -> type_dom T' = Srt s2 -> s1 = s2).
 Proof.
   induction t ; simpl ; intros ; 
   auto with coc core arith datatypes ; try discriminate.
 
   destruct (typ_sort H).
   destruct (typ_sort H0).
-  rewrite H4 in H1.
-  rewrite H6 in H2.
-  simpl in H1, H2.
-  inversion H1 ; inversion H2.
-  auto.
-
-  Focus 3.
+  rewrite H4.
+  rewrite H2.
+  simpl.
+  split ; intros ; intuition;
+  inversion H5 ; inversion H6 ;  auto.
 
   (* Var *)
   exact (unique_var_range_sort H H1 H0 H2).
