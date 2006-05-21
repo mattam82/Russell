@@ -29,6 +29,8 @@ Proof.
   apply inv_typ_prod with e U' V' (Srt s) ; auto with coc ; intros.
   exists s1.
   apply coerce_conv ; auto with coc.
+  Focus 6.
+
 Admitted.
 
 Lemma inv_sub_prod_l : forall e U U' V V' s, e |- Prod U V >> Prod U' V' : s ->

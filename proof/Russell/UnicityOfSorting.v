@@ -19,7 +19,7 @@ Implicit Types e f g : env.
 
 Set Implicit Arguments.
 
-(*Lemma unique_range_sort : forall t e s1 s2, e |- t : Srt s1 -> e |- t : Srt s2 -> 
+Lemma unique_range_sort : forall t e s1 s2, e |- t : Srt s1 -> e |- t : Srt s2 -> 
   s1 = s2.
 Proof.
 
@@ -44,7 +44,9 @@ Proof.
   destruct H3.
   destruct (type_sorted H1) ; try discriminate.
   destruct (type_sorted H2) ; try discriminate.
-  destruct H3 ; destruct H4.
+  destruct H5.
+  
+
   pose (generation_prod2 H3).
 
   apply (IHt1 _ _ _ H1 H2) ; simpl ; auto.

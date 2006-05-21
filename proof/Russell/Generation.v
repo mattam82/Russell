@@ -250,7 +250,10 @@ Lemma generation_sum_aux : forall e T Ts, e |- T : Ts ->
   forall U V, T = Sum U V -> exists s, Ts = Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
-  exists s3 ; auto.
+  exists s2 ; auto.
+  inversion H1 ; intuition.
+  inversion H3 ; inversion H6 ; auto.
+  inversion H3 ; inversion H6 ; auto.
 
   destruct (IHtyp1 U0 V0 H3).
   rewrite H4 in H1.
@@ -270,31 +273,42 @@ Proof.
 Qed.
 
 Lemma generation_sum2_aux : forall e T Ts, e |- T : Ts ->
-  forall U V, T = Sum U V -> forall s, Ts = Srt s -> 
-  exists s', e |- U : Srt s' /\ exists s'', (U :: e) |- V : Srt s'' /\ sum_sort s' s'' s.
+  forall U V, T = Sum U V -> forall s, Ts = Srt s ->
+  e |- U : Srt s /\ (U :: e) |- V : Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
   inversion H2.
-  rewrite <- H6.
   rewrite <- H5.
+  rewrite <- H6.
+  inversion H3.
+  rewrite H7 in H1.
+  induction H1 ; intuition.
+  rewrite H9.
+  rewrite H4 in H.
+  assumption.
+  rewrite H9.
+  rewrite H1 in H0.
+  assumption.
 
-  exists s1 ; intuition.
-  exists s2 ; intuition.
-  inversion H3 ; auto.
-  rewrite <- H7 ; auto.
+  rewrite H9.
+  rewrite H4 in H.
+  assumption.
+  rewrite H9.
+  rewrite H1 in H0.
+  assumption.
 
+  destruct (IHtyp1 U0 V0 H3 s0).
   rewrite H4 in H2.
-  pose (coerce_propset_r H2).
-
-  apply (IHtyp1 U0 V0 H3 s0 e0) ; auto.
+  apply (coerce_propset_r H2).
+  intuition.
 Qed.
 
 Lemma generation_sum2 : forall e U V s, e |- Sum U V : Srt s ->
-  exists s', e |- U : Srt s' /\ exists s'', (U :: e) |- V : Srt s'' /\ sum_sort s' s'' s.
+  e |- U : Srt s /\ (U :: e) |- V : Srt s.
 Proof.
   intros.
-  eapply generation_sum2_aux  ; auto ; auto.
+  eapply generation_sum2_aux with (Sum U V) (Srt s); auto.
 Qed.
 
 Lemma generation_subset_aux : forall e T Ts, e |- T : Ts ->
@@ -360,7 +374,7 @@ Proof.
   assumption.
 Qed. 
 
-
+(*
 Lemma var_sort_dom_item : forall e n T, e |- Ref n : T ->
   forall s, type_dom T = (Srt s) -> 
   exists T', item_lift T' e n /\ type_dom T' = Srt s.
@@ -384,7 +398,7 @@ Proof.
   inversion H5.
   auto.
 Qed.
-
+*)
 Lemma unique_var_sort : forall e n s, e |- Ref n : Srt s ->
   forall s', e |- Ref n : Srt s' -> s = s'.
 Proof.
@@ -516,42 +530,22 @@ Proof.
   unfold sum_sort in H1.
   inversion H2.
   intuition ; try rewrite H4 in H5 ; try rewrite H4 in H1 ; try discriminate.
-  left ; rewrite H7 ; auto.
-  left ; rewrite H7 ; auto.
-  induction H2.
-  induction IHtyp1.
-  inversion H3.
-  rewrite H5 in H1.
-  induction H1 ; intuition ; try discriminate.
-  left ; rewrite H7 ; auto.
-  destruct H3.
-  right ; exists kind ; auto.
-  assert(s1 <> kind).
-  pose (typ_not_kind H3) .
-  red ; intros H4 ; apply n ; rewrite H4 ; auto.
-  assert(s2 <> kind).
-  pose (typ_not_kind H2) .
-  red ; intros H5 ; apply n ; rewrite H5 ; auto.
+  right ; exists kind.
   pose (typ_wf H).
-  induction H1 ; intuition ; try contradiction; 
-  rewrite H8 ; auto with coc.
+  induction H1 ; intuition ; try discriminate ; rewrite H5 ; auto with coc.
   
   induction IHtyp ; try discriminate.
   induction H0.
   induction (generation_sum2 H0).
-  destruct H1.
-  right ; exists x0 ; auto.
+  right ; exists x ; auto.
 
   induction IHtyp ; try discriminate.
   induction H0.
   induction (generation_sum2 H0).
-  destruct H1.
-  destruct H2.
   right.
   assert (e |- Pi1 t : U).
   apply type_pi1 with V ; auto.
-  destruct H2.
-  exists x1.
+  exists x.
   replace (Srt x) with (subst (Pi1 t) (Srt x)).
   apply (substitution H2 H3).
   unfold subst ; unfold subst_rec ; auto.

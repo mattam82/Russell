@@ -15,7 +15,6 @@ Definition sum_sort U V s1 s2 :=
   (U = Srt set /\ V = Srt set) \/
   (s1 = set /\ s2 = set).
 
-
 Lemma sum_sort_lift : forall T U s1 s2, sum_sort T U s1 s2 ->
   forall n n' k k', sum_sort (lift_rec n T k) (lift_rec n' U k') s1 s2.
 Proof.

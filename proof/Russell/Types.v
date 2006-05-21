@@ -16,8 +16,6 @@ Reserved Notation "G |- T : U" (at level 70, T, U at next level).
 
 Definition sum_sort s1 s2 s3 :=
   (s1 = set /\ s2 = set /\ s3 = set) \/
-  (s1 = kind /\ s2 = set /\ s3 = kind) \/
-  (s1 = set /\ s2 = kind /\ s3 = kind) \/
   (s1 = prop /\ s2 = prop /\ s3 = prop).
 
 Inductive coerce : env -> term -> term -> sort -> Prop :=

@@ -20,13 +20,6 @@ Set Implicit Arguments.
 Fixpoint type_range (t : term) : term :=
   match t with
   | Prod U V => type_range V
-  | Sum U V => type_range V
-  | _ => t
-  end.
-
-Definition type_dom (t : term) : term :=
-  match t with
-  | Sum U V => type_range U
   | _ => t
   end.
 
@@ -53,7 +46,6 @@ Qed.
 Fixpoint is_low t : Prop :=
   match t with 
   | Prod T U => is_low U
-  | Sum U V => is_low U \/ is_low V
   | Srt s => is_prop s
   | _ => False
   end.
@@ -89,10 +81,6 @@ Proof.
   rewrite H4 in H1.
   induction H1 ; intuition ; try discriminate.
 
-  rewrite H1 in IHtyp1.
-  intuition.
-  rewrite H1 in IHtyp2 ; intuition.
-  
   pose (type_no_kind_type H (or_intror _ (refl_equal (Sum U V)))).
   rewrite H0 in t0.
   simpl in t0.
@@ -139,14 +127,6 @@ Proof.
   auto.
 
   pose (conv_sort_prod s T1 T2).
-  pose (sym_conv _ _ H0).
-  contradiction.
-
-  pose (conv_sort_sum s T1 T2).
-  pose (sym_conv _ _ H0).
-  contradiction.
-
-  pose (conv_sort_sum s T1 T2).
   pose (sym_conv _ _ H0).
   contradiction.
 Qed.
@@ -238,7 +218,6 @@ Qed.
 Fixpoint no_sort t : Prop :=
   match t with 
   | Prod T U => no_sort U
-  | Sum U V => no_sort U /\ no_sort V
   | Srt s => False
   | _ => True
   end.
@@ -246,8 +225,6 @@ Fixpoint no_sort t : Prop :=
 Fixpoint is_low_full t : Prop :=
   match t with 
   | Prod T U => is_low_full U
-  | Sum U V => (is_low_full U /\ is_low_full V) \/ (is_low_full U /\ no_sort V) \/
-  (is_low_full V /\ no_sort U)
   | Srt s => is_prop s
   | _ => False
   end.
@@ -289,35 +266,9 @@ Proof.
   rewrite H3 in H1.
   induction H1 ; intuition ; try discriminate.
 
-  rewrite H1 in IHtyp1.
-  destruct (IHtyp1 kind) ; auto.
-
-  destruct (IHtyp2 set) ; auto.
-  rewrite H5 ; auto.
-  right ; left ; intuition.
-
-  destruct (IHtyp1 set) ; auto.
-  rewrite H5 ; auto.
-  destruct (IHtyp2 kind) ; auto.
-  rewrite H1 ; auto.
-  right ; right ; intuition.
-
-  destruct H3.
-  rewrite H3 in H1 ; destruct H1 ; intuition ; try discriminate.
-  destruct (IHtyp1 prop) ; auto.
-  rewrite H5 ; auto.
-  destruct (IHtyp2 prop) ; auto.
-  rewrite H1 ; auto.
-  
-  rewrite H3 in H1 ; destruct H1 ; intuition ; try discriminate.
-  destruct (IHtyp1 set) ; auto.
-  rewrite H5 ; auto.
-  destruct (IHtyp2 set) ; auto.
-  rewrite H1 ; auto.
-
-  split ; intros.
-  rewrite H2 in H1 ; discriminate.
   auto.
+  inversion H1.
+  intuition ; intros ; try discriminate.
 
   split ; intros.
   rewrite H1 in H0.
