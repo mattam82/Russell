@@ -89,7 +89,6 @@ Qed.
       | Pair _ _ v => v
       | t => Pi2 t
        end
-    | Let_in u v => norm (subst (norm u) v)
     end.
 
   Theorem compute_nf :
@@ -97,7 +96,7 @@ Qed.
 intros.
 elimtype (Acc ord_norm t).
 clear t H.
-intros [s| n| T t| a b| T a b | T U | T U | T U | t | t | v t] _ norm_rec. 
+intros [s| n| T t| a b| T a b | T U | T U | T U | t | t ] _ norm_rec. 
 exists (Srt s); auto with coc.
 red in |- *; red in |- *; intros.
 inversion_clear H.
@@ -116,7 +115,7 @@ elim nt with M'; trivial.
 
 elim norm_rec with b; auto with coc; intros v' redv nv.
 elim norm_rec with a; auto with coc.
-intros [s| n| T t| u v| T u v | T U | T U | T U | t | t | v t] redu nu. 
+intros [s| n| T t| u v| T u v | T U | T U | T U | t | t ] redu nu. 
 
 exists (App (Srt s) v'); auto with coc.
 red in |- *; red in |- *; intros.
@@ -180,12 +179,6 @@ inversion_clear H.
 elim nu with N1; trivial.
 elim nv with N2; trivial.
 
-exists (App (Let_in v t) v'); auto with coc.
-red in |- *; red in |- *; intros.
-inversion_clear H.
-elim nu with N1; trivial.
-elim nv with N2; trivial.
-
 elim norm_rec with T ; auto with coc core ; intros T' redT' nT'.
 elim norm_rec with a ; auto with coc core ; intros a' reda' na'.
 elim norm_rec with b ; auto with coc core ; intros b' redb' nb'.
@@ -221,7 +214,7 @@ elim nT with N1; trivial.
 elim nU with N2; trivial.
 
 elim norm_rec with t; auto with coc.
-intros [s| n| T t'| u v| T u v | T U | T U | T U | t' | t' | v t'] redu nu. 
+intros [s| n| T t'| u v| T u v | T U | T U | T U | t' | t' ] redu nu. 
 
 exists (Pi1 (Srt s)); auto with coc ; red in |- *; red in |- *; intros.
 inversion_clear H ; auto with coc core ;
@@ -265,12 +258,8 @@ exists (Pi1 (Pi2 t')); auto with coc ; red in |- *; red in |- *; intros.
 inversion_clear H ; auto with coc core ;
 elim nu with N; trivial.
 
-exists (Pi1 (Let_in v t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
-elim nu with N; trivial.
-
 elim norm_rec with t; auto with coc.
-intros [s| n| T t'| u v| T u v | T U | T U | T U | t' | t' | v t'] redu nu. 
+intros [s| n| T t'| u v| T u v | T U | T U | T U | t' | t' ] redu nu. 
 
 exists (Pi2 (Srt s)); auto with coc ; red in |- *; red in |- *; intros.
 inversion_clear H ; auto with coc core ;
@@ -313,18 +302,6 @@ elim nu with N; trivial.
 exists (Pi2 (Pi2 t')); auto with coc ; red in |- *; red in |- *; intros.
 inversion_clear H ; auto with coc core ;
 elim nu with N; trivial.
-
-exists (Pi2 (Let_in v t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
-elim nu with N; trivial.
-
-elim norm_rec with v ;  auto with coc ; intros v' redv nv.
-elim norm_rec with t ;  auto with coc ; intros t' redt nt.
-exists (Let_in v' t') ; auto with coc.
-red in |- *; red in |- *; intros.
-inversion_clear H.
-elim nv with N1; trivial.
-elim nt with N2; trivial.
 
 apply wf_ord_norm; auto with coc.
 Qed.

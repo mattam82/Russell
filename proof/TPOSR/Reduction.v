@@ -37,11 +37,7 @@ forall M1 N1, lred1 M1 N1 -> forall M2, lred1 (Sum_l M1 M2) (Sum_l N1 M2)
     | pi1_lred :
         forall M N, lred1 M N -> lred1 (Pi1_l M) (Pi1_l N)
     | pi2_lred :
-        forall M N, lred1 M N -> lred1 (Pi2_l M) (Pi2_l N)
-    | let_in_lred_l :
-        forall M1 N1, lred1 M1 N1 -> forall M2, lred1 (Let_in_l M1 M2) (Let_in_l N1 M2)
-    | let_in_lred_r :
-        forall M2 N2, lred1 M2 N2 -> forall M1, lred1 (Let_in_l M1 M2) (Let_in_l M1 N2).
+        forall M N, lred1 M N -> lred1 (Pi2_l M) (Pi2_l N).
       
   Inductive lred M : lterm -> Prop :=
     | refl_lred : lred M M
@@ -92,19 +88,15 @@ forall M1 N1, lred1 M1 N1 -> forall M2, lred1 (Sum_l M1 M2) (Sum_l N1 M2)
     | pi1_par_lred :
         forall M M', par_lred1 M M' -> par_lred1 (Pi1_l M) (Pi1_l M')
     | pi2_par_lred :
-        forall M M', par_lred1 M M' -> par_lred1 (Pi2_l M) (Pi2_l M')
-    | let_in_par_lred :
-        forall M M',
-        par_lred1 M M' ->
-        forall N N', par_lred1 N N' -> par_lred1 (Let_in_l M N) (Let_in_l M' N').
+        forall M M', par_lred1 M M' -> par_lred1 (Pi2_l M) (Pi2_l M').
 
   Definition par_lred := clos_trans lterm par_lred1.
 
   Hint Resolve beta pi1 pi2 abs_lred_l abs_lred_r app_lred_T app_lred_l app_lred_r pair_lred_T pair_lred_l pair_lred_r : coc.
-  Hint Resolve prod_lred_l prod_lred_r sum_lred_l sum_lred_r subset_lred_l subset_lred_r pi1_lred pi2_lred let_in_lred_l let_in_lred_r : coc.
+  Hint Resolve prod_lred_l prod_lred_r sum_lred_l sum_lred_r subset_lred_l subset_lred_r pi1_lred pi2_lred : coc.
   Hint Resolve refl_lred refl_conv: coc.
   Hint Resolve par_beta par_pi1 par_pi2 sort_par_lred ref_par_lred abs_par_lred app_par_lred pair_par_lred
-    prod_par_lred sum_par_lred subset_par_lred pi1_par_lred pi2_par_lred let_in_par_lred: coc.
+    prod_par_lred sum_par_lred subset_par_lred pi1_par_lred pi2_par_lred : coc.
 
   Hint Unfold par_lred: coc.
 
@@ -268,18 +260,8 @@ intros.
 apply trans_lred with (Pi2_l P); auto with coc core arith sets.
 Qed.
 
-  Lemma lred_lred_let_in :
-   forall u u0 v v0, lred u u0 -> lred v v0 -> lred (Let_in_l u v) (Let_in_l u0 v0).
-simple induction 1.
-simple induction 1; intros; auto with coc core arith sets.
-apply trans_lred with (Let_in_l u P); auto with coc core arith sets.
-
-intros.
-apply trans_lred with (Let_in_l P v0); auto with coc core arith sets.
-Qed.
-
   Hint Resolve lred_lred_app lred_lred_abs lred_lred_prod: coc.
-  Hint Resolve lred_lred_pair lred_lred_sum lred_lred_subset lred_lred_let_in lred_lred_pi1 lred_lred_pi2 : coc.
+  Hint Resolve lred_lred_pair lred_lred_sum lred_lred_subset lred_lred_pi1 lred_lred_pi2 : coc.
 
 
   Lemma lred1_llift :
@@ -627,13 +609,7 @@ intros.
 apply Sbtrm_bind with t; auto with coc core arith sets.
 Qed.
 
-  Lemma sublterm_let_in : forall t (m : lterm), sublterm m (Let_in_l t m).
-intros.
-apply Sbtrm_bind with t; auto with coc core arith sets.
-Qed.
-
-Hint Resolve sublterm_abs sublterm_prod sublterm_sum sublterm_subset
-  sublterm_let_in : coc.
+Hint Resolve sublterm_abs sublterm_prod sublterm_sum sublterm_subset : coc.
 
 
 (*
@@ -694,11 +670,6 @@ apply mem_pi1 ; apply H with n k; auto with coc core arith sets.
 inversion_clear H0.
 apply mem_pi2 ; apply H with n k; auto with coc core arith sets.
 
-inversion_clear H1.
-apply mem_let_in_l; apply H with n k; auto with coc core arith sets.
-
-apply mem_let_in_r; apply H0 with n (S k); auto with coc core arith sets.
-
 Qed.
 
 
@@ -756,9 +727,6 @@ elim H with a n s; auto with coc core arith sets ].
 inversion_clear H0 ; [
 elim H with a n s; auto with coc core arith sets ].
 
-inversion_clear H1 ; [
-elim H with a n s; auto with coc core arith sets |
-elim H0 with a (S n) s; intros; auto with coc core arith sets].
 Qed.
 
   Lemma lred_sort_mem : forall t s, lred t (Srt_l s) -> mem_sort s t.
@@ -801,8 +769,6 @@ exists (Sum_l t z); auto with coc core arith sets.
 
 exists (Subset_l t z); auto with coc core arith sets.
 
-exists (Let_in_l t z); auto with coc core arith sets.
-
 inversion_clear H0.
 exists (Abs_l z n); auto with coc core arith sets.
 
@@ -821,7 +787,6 @@ exists (Sum_l z n); auto with coc core arith sets.
 exists (Subset_l z n); auto with coc core arith sets.
 exists (Pi1_l z); auto with coc core arith sets.
 exists (Pi2_l z); auto with coc core arith sets.
-exists (Let_in_l z n); auto with coc core arith sets.
 Qed.
 
 
@@ -871,16 +836,6 @@ apply Acc_intro; auto with coc core arith sets.
 Qed.
 
   Lemma sn_subset : forall A, sn A -> forall B, sn B -> sn (Subset_l A B).
-unfold sn in |- *.
-simple induction 1.
-simple induction 3; intros.
-apply Acc_intro; intros.
-inversion_clear H5; auto with coc core arith sets.
-apply H1; auto with coc core arith sets.
-apply Acc_intro; auto with coc core arith sets.
-Qed.
-
-  Lemma sn_let_in : forall A, sn A -> forall B, sn B -> sn (Let_in_l A B).
 unfold sn in |- *.
 simple induction 1.
 simple induction 3; intros.

@@ -145,12 +145,6 @@ elim IHpar_red1 with M'0.
 intros.
 exists (Pi2 x) ; auto with coc core arith sets.
 assumption.
-
-intros.
-inversion_clear H1.
-elim IHpar_red1_1 with M'0; auto with coc core arith sets; intros.
-elim IHpar_red1_2 with N'0; auto with coc core arith sets; intros.
-exists (Let_in x x0); auto with coc core arith sets.
 Qed.
 
   Lemma strip_lemma : commut _ par_red (transp _ par_red1).

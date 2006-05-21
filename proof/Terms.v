@@ -32,8 +32,7 @@ Qed.
     | Sum : term -> term -> term
     | Subset : term -> term -> term
     | Pi1 : term -> term
-    | Pi2 : term -> term
-    | Let_in : term -> term -> term.
+    | Pi2 : term -> term.
 
   Implicit Types A B M N T t u v : term.
 
@@ -54,7 +53,6 @@ Qed.
 	| Subset A B => Subset (lift_rec n A k) (lift_rec n B (S k))
 	| Pi1 A => Pi1 (lift_rec n A k)
 	| Pi2 A => Pi2 (lift_rec n A k)
-	| Let_in A B => Let_in (lift_rec n A k) (lift_rec n B (S k))
       end.
 
   Definition lift n t := lift_rec n t 0.
@@ -80,7 +78,6 @@ Qed.
 	| Subset T U => Subset (subst_rec N T k) (subst_rec N U (S k))
 	| Pi1 T => Pi1 (subst_rec N T k)
 	| Pi2 T => Pi2 (subst_rec N T k)
-	| Let_in T U => Let_in (subst_rec N T k) (subst_rec N U (S k))
     end.
 
   Definition subst N M := subst_rec N M 0.
@@ -101,17 +98,14 @@ Qed.
     | db_subset :
         forall k A B, free_db k A -> free_db (S k) B -> free_db k (Subset A B)
     | db_pi1 : forall k A, free_db k A -> free_db k (Pi1 A)
-    | db_pi2 : forall k A, free_db k A -> free_db k (Pi2 A)
-    | db_let_in :
-        forall k A B, free_db k A -> free_db (S k) B -> free_db k (Let_in A B).
+    | db_pi2 : forall k A, free_db k A -> free_db k (Pi2 A).
 
 
   Inductive subt_bind T M : term -> Prop :=
     | Bsbt_abs : subt_bind T M (Abs T M)
     | Bsbt_prod : subt_bind T M (Prod T M)
     | Bsbt_sum : subt_bind T M (Sum T M)
-    | Bsbt_subset : subt_bind T M (Subset T M)
-    | Bsbt_let_in : subt_bind T M (Let_in T M).
+    | Bsbt_subset : subt_bind T M (Subset T M).
 
   Inductive subt_nobind (m : term) : term -> Prop :=
     | Nbsbt_abs : forall n : term, subt_nobind m (Abs m n)
@@ -124,8 +118,7 @@ Qed.
     | Nbsbt_sum : forall n : term, subt_nobind m (Sum m n)
     | Nbsbt_subset : forall n : term, subt_nobind m (Subset m n)
     | Nbsbt_pi1 : subt_nobind m (Pi1 m)
-    | Nbsbt_pi2 : subt_nobind m (Pi2 m)
-    | Nbsbt_let_in : forall n : term, subt_nobind m (Let_in m n).
+    | Nbsbt_pi2 : subt_nobind m (Pi2 m).
 
   Inductive subterm (m n : term) : Prop :=
     | Sbtrm_bind : forall t, subt_bind t m n -> subterm m n
@@ -147,20 +140,16 @@ Qed.
     | mem_subset_l : forall u v, mem_sort s u -> mem_sort s (Subset u v)
     | mem_subset_r : forall u v, mem_sort s v -> mem_sort s (Subset u v)
     | mem_pi1 : forall u, mem_sort s u -> mem_sort s (Pi1 u)
-    | mem_pi2 : forall u, mem_sort s u -> mem_sort s (Pi2 u)
-    | mem_let_in_l : forall u v, mem_sort s u -> mem_sort s (Let_in u v)
-    | mem_let_in_r : forall u v, mem_sort s v -> mem_sort s (Let_in u v).
+    | mem_pi2 : forall u, mem_sort s u -> mem_sort s (Pi2 u).
 
-Hint Resolve db_srt db_ref db_abs db_app db_pair db_prod db_sum db_subset db_let_in db_pi1 db_pi2 : coc.
-Hint Resolve Bsbt_abs Bsbt_prod Bsbt_sum Bsbt_subset Bsbt_let_in : coc.
+Hint Resolve db_srt db_ref db_abs db_app db_pair db_prod db_sum db_subset db_pi1 db_pi2 : coc.
+Hint Resolve Bsbt_abs Bsbt_prod Bsbt_sum Bsbt_subset : coc.
 Hint Resolve Nbsbt_abs Nbsbt_app_l Nbsbt_app_r Nbsbt_pair_T Nbsbt_pair_l
-    Nbsbt_pair_r Nbsbt_pi1 Nbsbt_pi2 Nbsbt_prod Nbsbt_sum Nbsbt_subset
-    Nbsbt_let_in : coc.
+    Nbsbt_pair_r Nbsbt_pi1 Nbsbt_pi2 Nbsbt_prod Nbsbt_sum Nbsbt_subset : coc.
 Hint Resolve Sbtrm_nobind: coc.
   
 Hint Resolve mem_eq mem_prod_l mem_prod_r mem_abs_l mem_abs_r mem_app_l
   mem_app_r mem_pair_T mem_pair_l mem_pair_r : coc.
-Hint Resolve mem_sum_l mem_sum_r mem_subset_l mem_subset_r mem_pi1 mem_pi2
-  mem_let_in_l mem_let_in_r : coc.
+Hint Resolve mem_sum_l mem_sum_r mem_subset_l mem_subset_r mem_pi1 mem_pi2 : coc.
 
 
