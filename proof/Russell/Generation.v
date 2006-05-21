@@ -274,7 +274,7 @@ Qed.
 
 Lemma generation_sum2_aux : forall e T Ts, e |- T : Ts ->
   forall U V, T = Sum U V -> forall s, Ts = Srt s ->
-  e |- U : Srt s /\ (U :: e) |- V : Srt s.
+  e |- U : Srt s /\ (U :: e) |- V : Srt s /\ sum_sort s s s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
@@ -291,12 +291,14 @@ Proof.
   rewrite H1 in H0.
   assumption.
 
+  rewrite H9 ; unfold sum_sort ; intuition.
   rewrite H9.
   rewrite H4 in H.
   assumption.
   rewrite H9.
   rewrite H1 in H0.
   assumption.
+  rewrite H9 ; unfold sum_sort ; intuition.
 
   destruct (IHtyp1 U0 V0 H3 s0).
   rewrite H4 in H2.
@@ -305,7 +307,7 @@ Proof.
 Qed.
 
 Lemma generation_sum2 : forall e U V s, e |- Sum U V : Srt s ->
-  e |- U : Srt s /\ (U :: e) |- V : Srt s.
+  e |- U : Srt s /\ (U :: e) |- V : Srt s /\ sum_sort s s s.
 Proof.
   intros.
   eapply generation_sum2_aux with (Sum U V) (Srt s); auto.
@@ -547,6 +549,7 @@ Proof.
   apply type_pi1 with V ; auto.
   exists x.
   replace (Srt x) with (subst (Pi1 t) (Srt x)).
+  destruct H2.
   apply (substitution H2 H3).
   unfold subst ; unfold subst_rec ; auto.
   

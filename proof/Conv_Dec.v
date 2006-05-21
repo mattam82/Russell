@@ -1,11 +1,9 @@
-
 Require Import Peano_dec.
 Require Import Transitive_Closure.
 Require Import Union.
-Require Import Termes.
-Require Import Reduction.
-
-Require Import Conv.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
 
   Definition ord_norm1 := union _ subterm (transp _ red1).
   Definition ord_norm := clos_trans _ ord_norm1.

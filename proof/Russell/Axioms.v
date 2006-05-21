@@ -61,24 +61,17 @@ Proof.
   intros.
   destruct (generation_sum2 H).
   destruct (generation_sum2 H0).
-  destruct H2 ; destruct H3.
-  destruct H4 ; destruct H5.
+  pose (generation_sum H).
+  destruct H3 ; destruct e0 ; destruct H5.
   intuition.
   pose (inv_conv_sum_l _ _ _ _ H1).
   pose (inv_conv_sum_r _ _ _ _ H1).
-  pose (unique_sort_conv H2 H3 c).
-  rewrite <- e0 in H3.
-  exists x ; exists x1 ; intuition.
-
-
-  cut (U :: e |- V' : Srt x2) ; intros.
-  pose (unique_sort_conv H6 H9 c0).
-  rewrite e1 ; auto.
+  exists s ; exists s ; intuition.
 
   apply typ_conv_env with (U' :: e) ; auto with coc.
-  apply coerce_env_hd with x ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
   apply coerce_conv with U U ; auto with coc.
-  apply wf_var with x ; auto with coc.
+  apply wf_var with s ; auto with coc.
 Qed.
 
 (* Set versions of the lemmas derived from the axiom *)

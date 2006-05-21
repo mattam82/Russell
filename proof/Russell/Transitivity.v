@@ -864,7 +864,7 @@ Proof.
 
   (* conv_r < sum, sum *)
   simpl in H0.
-  induction (inv_conv_sum_sort_l t0 t1 c0).
+  induction (inv_conv_sum_sort_l_set t0 t1 c0).
   intuition.
   pose (unique_sort t6 H2).
   pose (unique_sort t3 H3).
@@ -875,11 +875,17 @@ Proof.
   generalize dependent c1 ; generalize dependent t7 ; rewrite e0.
   intros.
   clear e0 ; clear e1.
+  assert(s' = s'0).
+  inversion s0 ; inversion s3 ; intuition ; try discriminate.
+  rewrite H5 ; rewrite H7 ; auto.
+  rewrite H10 in H9 ; discriminate.
+  rewrite H10 in H9 ; discriminate.
+  rewrite H5 ; rewrite H7 ; auto.
 
   pose (inv_conv_sum_l _ _ _ _ c0).
   pose (coerces_conv_r t7 H2 t3 c1 c).
   
-  apply coerces_sum with s ; auto with coc core.
+  apply coerces_sum with s s' ; auto with coc core.
 
   apply (IH (depth c3 + depth d2_1)) with A0 c3 d2_1.
   rewrite H0 ; simpl.
@@ -891,7 +897,10 @@ Proof.
   apply wf_var with s ; auto with coc.
 
   pose (inv_conv_sum_r _ _ _ _ c0).
-  destruct (coerce_conv_env d2_2 H4 H5).
+  destruct (coerce_conv_env d2_2 H5 H6).
+  generalize dependent e.
+  rewrite <- H4.
+  intros.
   pose (coerces_conv_l (coerces_sort_r c2) (coerces_sort_l x1)  (coerces_sort_r x1)  c4 x1).
   
   apply (IH (depth c2 + depth c5)) with B'0 c2 c5.
@@ -899,7 +908,7 @@ Proof.
   rewrite e0. apply depth_conv_sum2 .
   auto.
   apply coerce_env_hd with s ; auto with coc core.
-  rewrite <- (unique_sort t6 H2).
+  rewrite H4.
   assumption.
 
   (* conv_r  < sub_l, sum *)
@@ -1115,7 +1124,7 @@ Proof.
   destruct IHcoerces_db1.
   destruct IHcoerces_db2.
   exists (S (max x x0)) ; simpl ; auto with coc.
-  apply Depth.coerces_sum with s ; auto.
+  apply Depth.coerces_sum with s s' ; auto.
 
   destruct IHcoerces_db.
   exists (S x) ; simpl ; auto with coc.

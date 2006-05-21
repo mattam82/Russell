@@ -1,8 +1,4 @@
--R . Lambda
-MyList.v
-ListType.v
-Names.v
-MlTypes.v
+-R .. Lambda -R . TPOSR
 Terms.v
 LiftSubst.v
 Reduction.v

@@ -97,7 +97,10 @@ Proof.
   rewrite H4 in H0.
   induction (generation_sum2 H).
   induction (generation_sum2 H0).
+  destruct H6.
+  destruct H8.
   apply (IHt2 _ _ _ H6 H8).
+
   rewrite <- H3 ; auto.
   rewrite <- H4 ; auto.
 
@@ -121,11 +124,3 @@ Proof.
   auto.
 Qed.
 
-Theorem unique_sort : forall t e s s', 
-  e |- t : (Srt s) -> e |- t : (Srt s') -> s = s'.
-Proof.
-  intros.
-  exact (unique_range_sort H H0 (refl_equal (Srt s)) (refl_equal (Srt s'))).
-Qed.
-  
-  

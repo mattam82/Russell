@@ -6,25 +6,25 @@ Names.vo: Names.v MyList.vo MlTypes.vo
 Names.vi: Names.v MyList.vo MlTypes.vo
 MlTypes.vo: MlTypes.v
 MlTypes.vi: MlTypes.v
-Termes.vo: Termes.v
-Termes.vi: Termes.v
-LiftSubst.vo: LiftSubst.v Termes.vo
-LiftSubst.vi: LiftSubst.v Termes.vo
-Reduction.vo: Reduction.v Termes.vo LiftSubst.vo
-Reduction.vi: Reduction.v Termes.vo LiftSubst.vo
-Conv.vo: Conv.v Termes.vo LiftSubst.vo Reduction.vo
-Conv.vi: Conv.v Termes.vo LiftSubst.vo Reduction.vo
-Conv_Dec.vo: Conv_Dec.v Termes.vo Reduction.vo Conv.vo
-Conv_Dec.vi: Conv_Dec.v Termes.vo Reduction.vo Conv.vo
-Env.vo: Env.v Termes.vo Reduction.vo LiftSubst.vo MyList.vo
-Env.vi: Env.v Termes.vo Reduction.vo LiftSubst.vo MyList.vo
+Terms.vo: Terms.v
+Terms.vi: Terms.v
+LiftSubst.vo: LiftSubst.v Terms.vo
+LiftSubst.vi: LiftSubst.v Terms.vo
+Reduction.vo: Reduction.v Terms.vo LiftSubst.vo
+Reduction.vi: Reduction.v Terms.vo LiftSubst.vo
+Conv.vo: Conv.v Terms.vo LiftSubst.vo Reduction.vo
+Conv.vi: Conv.v Terms.vo LiftSubst.vo Reduction.vo
+Conv_Dec.vo: Conv_Dec.v Terms.vo Reduction.vo Conv.vo
+Conv_Dec.vi: Conv_Dec.v Terms.vo Reduction.vo Conv.vo
+Env.vo: Env.v Terms.vo Reduction.vo LiftSubst.vo MyList.vo
+Env.vi: Env.v Terms.vo Reduction.vo LiftSubst.vo MyList.vo
 MyList.html: MyList.v
 ListType.html: ListType.v MyList.html
 Names.html: Names.v MyList.html MlTypes.html
 MlTypes.html: MlTypes.v
-Termes.html: Termes.v
-LiftSubst.html: LiftSubst.v Termes.html
-Reduction.html: Reduction.v Termes.html LiftSubst.html
-Conv.html: Conv.v Termes.html LiftSubst.html Reduction.html
-Conv_Dec.html: Conv_Dec.v Termes.html Reduction.html Conv.html
-Env.html: Env.v Termes.html Reduction.html LiftSubst.html MyList.html
+Terms.html: Terms.v
+LiftSubst.html: LiftSubst.v Terms.html
+Reduction.html: Reduction.v Terms.html LiftSubst.html
+Conv.html: Conv.v Terms.html LiftSubst.html Reduction.html
+Conv_Dec.html: Conv_Dec.v Terms.html Reduction.html Conv.html
+Env.html: Env.v Terms.html Reduction.html LiftSubst.html MyList.html

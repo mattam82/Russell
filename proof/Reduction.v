@@ -1,5 +1,5 @@
-Require Import Termes.
-Require Import LiftSubst.
+Require Import Lambda.Terms.
+Require Import Lambda.LiftSubst.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.

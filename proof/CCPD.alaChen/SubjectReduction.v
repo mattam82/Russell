@@ -17,6 +17,237 @@ Implicit Types A B M N T t u v : term.
 
 Lemma inv_sub_prod_l_aux : forall e T T' s, e |- T >> T' : s ->
   forall U U' V V', T = Prod U V -> T' = Prod U' V' -> 
+  (exists s1, e |- U' >> U : s1) /\ U' :: e |- V >> V' : s.
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc ; try discriminate.
+  
+  rewrite H0 in H.
+  rewrite H1 in H0.
+  inversion H0.
+  destruct (generation_prod2 H).
+  destruct H2.
+  split.
+  exists x ; auto with coc.
+  apply coerce_refl ; auto with coc.
+
+  inversion H5.
+  inversion H6.
+  rewrite <- H8.
+  rewrite <- H9.
+  rewrite <- H10.
+  rewrite <- H11.
+  split.
+  exists s ; auto.
+  auto.
+
+  rewrite H6 in H.
+  rewrite H7 in H2.
+  rewrite H6 in H3.
+  rewrite H7 in H5.
+
+  clear IHcoerce.
+  induction H4.
+  pose (trans_conv_conv _ _ _ H3 H5).
+  destruct (inv_conv_prod_sort_l H H2 c).
+  split.
+  exists x ; auto with coc.
+  pose (inv_conv_prod_l _ _ _ _ c).
+  intuition.
+  apply coerce_conv with U U ; auto with coc.
+
+  destruct (inv_conv_prod_sort_r H H2 c).
+  apply coerce_conv with V V ; auto with coc.
+  apply (inv_conv_prod_r _ _ _ _ c).
+
+ 
+  clear IHcoerce1 IHcoerce2.
+  pose (inv_conv_prod_l _ _ _ _ H3).
+  pose (inv_conv_prod_l _ _ _ _ H5).
+  destruct (inv_conv_prod_sort_l H H0 H3).
+  destruct (inv_conv_prod_sort_l H1 H2 H5).
+  destruct a ; destruct a0.
+  pose (unique_sort H13 H4).
+  pose (unique_sort H12 H8).
+
+  split.
+  exists s.
+  apply coerce_conv with A' A0 ; auto with coc.
+  rewrite <- e0 ; auto.
+  rewrite <- e1 ; auto.
+  
+  pose (inv_conv_prod_r _ _ _ _ H3).
+  pose (inv_conv_prod_r _ _ _ _ H5).
+  destruct (inv_conv_prod_sort_r H H0 H3).
+  destruct (inv_conv_prod_sort_r H1 H2 H5).
+
+  rewrite e0 in H13.
+  rewrite e0 in H14.
+  rewrite e1 in H11.
+  rewrite e1 in H12.
+  
+  apply coerce_conv with B B' ; auto with coc.
+
+  apply typ_conv_env with (A0 :: e) ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerce_conv with A' A0 ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  apply typ_conv_env with (A0 :: e) ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerce_conv with A' A0 ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  apply coerce_conv_env with (A' :: e) ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerce_conv with A' A' ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  elim conv_prod_sum with U V A0 B ; auto with coc.
+
+  elim conv_prod_subset with U V U0 P ; auto with coc.
+
+  elim conv_prod_subset with U' V' U'0 P ; auto with coc.
+
+  apply IHcoerce ; auto with coc.
+  apply trans_conv_conv with A0 ; auto with coc.
+  apply trans_conv_conv with D0 ; auto with coc.
+Qed.
+
+Lemma inv_sub_prod_l : forall e U U' V V' s, e |- Prod U V >> Prod U' V' : s ->
+  exists s1, e |- U' >> U : s1.
+Proof.
+  intros.
+  destruct (inv_sub_prod_l_aux H (refl_equal (Prod U V)) (refl_equal (Prod U' V'))).
+  assumption.
+Qed.
+
+Lemma inv_sub_prod_r : 
+  forall e U U' V V' s, e |- Prod U V >> Prod U' V' : s ->
+  U' :: e |- V >> V' : s.
+Proof.
+  intros.
+  destruct (inv_sub_prod_l_aux H (refl_equal (Prod U V)) (refl_equal (Prod U' V'))).
+  assumption.
+Qed.
+
+Lemma inv_sub_sum_aux : forall e T T' s, e |- T >> T' : s ->
+  forall U U' V V', T = Sum U V -> T' = Sum U' V' -> 
+  (exists s1, e |- U >> U' : s1) /\ U :: e |- V >> V' : s.
+Proof.
+
+  induction 1 ; simpl ; intros ; auto with coc ; try discriminate.
+  
+  rewrite H0 in H.
+  rewrite H1 in H0.
+  inversion H0.
+  destruct (generation_sum2 H).
+  destruct H2.
+  split.
+  exists x ; auto with coc.
+  intuition ; apply coerce_refl ; auto with coc.
+
+  inversion H7.
+  inversion H8.
+  rewrite <- H10.
+  rewrite <- H11.
+  rewrite <- H12.
+  rewrite <- H13.
+  split.
+  exists s ; auto.
+  auto.
+
+  rewrite H6 in H.
+  rewrite H7 in H2.
+  rewrite H6 in H3.
+  rewrite H7 in H5.
+
+  clear IHcoerce.
+  induction H4.
+  pose (trans_conv_conv _ _ _ H3 H5).
+  destruct (inv_conv_sum_sort_l H H2 c).
+  split.
+  exists x ; auto with coc.
+  pose (inv_conv_sum_l _ _ _ _ c).
+  intuition.
+  apply coerce_conv with U U ; auto with coc.
+
+  destruct (inv_conv_sum_sort_r H H2 c).
+  apply coerce_conv with V V ; auto with coc.
+  apply (inv_conv_sum_r _ _ _ _ c).
+
+  elim conv_prod_sum with A' B' U' V' ; auto with coc.
+
+  clear IHcoerce1 IHcoerce2.
+  pose (inv_conv_sum_l _ _ _ _ H3).
+  pose (inv_conv_sum_l _ _ _ _ H5).
+  destruct (inv_conv_sum_sort_l H H0 H3).
+  destruct (inv_conv_sum_sort_l H1 H2 H5).
+  destruct a ; destruct a0.
+  pose (unique_sort H14 H8).
+  pose (unique_sort H15 H4).
+
+  split.
+  exists s.
+  apply coerce_conv with A0 A' ; auto with coc.
+  rewrite <- e0 ; auto.
+  rewrite <- e1 ; auto.
+  
+  pose (inv_conv_sum_r _ _ _ _ H3).
+  pose (inv_conv_sum_r _ _ _ _ H5).
+  destruct (inv_conv_sum_sort_r H H0 H3).
+  destruct (inv_conv_sum_sort_r H1 H2 H5).
+
+  rewrite e0 in H13.
+  rewrite e0 in H14.
+  rewrite e1 in H15.
+  rewrite e1 in H16.
+  
+  apply coerce_conv with B B' ; auto with coc.
+
+  apply typ_conv_env with (A' :: e) ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerce_conv with A0 A' ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  apply typ_conv_env with (A' :: e) ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerce_conv with A0 A' ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  apply coerce_conv_env with (A0 :: e) ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerce_conv with A0 A0 ; auto with coc.
+  apply wf_var with s ; auto with coc.
+
+  elim conv_subset_sum with U0 P U V ; auto with coc.
+
+  elim conv_subset_sum with U'0 P U' V' ; auto with coc.
+
+  apply IHcoerce ; auto with coc.
+  apply trans_conv_conv with A0 ; auto with coc.
+  apply trans_conv_conv with D0 ; auto with coc.
+Qed.
+
+Lemma inv_sub_sum_l : forall e U U' V V' s, e |- Sum U V >> Sum U' V' : s ->
+  exists s1, e |- U >> U' : s1.
+Proof.
+  intros.
+  destruct (inv_sub_sum_aux H (refl_equal (Sum U V)) (refl_equal (Sum U' V'))).
+  assumption.
+Qed.
+
+Lemma inv_sub_sum_r : forall e U U' V V' s, e |- Sum U V >> Sum U' V' : s ->
+  U :: e |- V >> V' : s.
+Proof.
+  intros.
+  destruct (inv_sub_sum_aux H (refl_equal (Sum U V)) (refl_equal (Sum U' V'))).
+  assumption.
+Qed.
+
+
+
+Lemma inv_sub_prod_l_aux : forall e T T' s, e |- T >> T' : s ->
+  forall U U' V V', T = Prod U V -> T' = Prod U' V' -> 
   exists s1, e |- U' >> U : s1.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc.
@@ -30,6 +261,19 @@ Proof.
   exists s1.
   apply coerce_conv ; auto with coc.
   Focus 6.
+
+  rewrite H1 in H.
+  inversion H.
+  rewrite H2 in H0.
+  inversion H0.
+  
+  Focus 2.
+  rewrite <- H17 in H5.
+  pose (inv_conv_prod_l _ _ _ _ H5).
+  exists s1.
+  apply coerce_trans with A1 ; auto with coc.
+  apply coerce_conv ; auto with coc.
+
 
 Admitted.
 

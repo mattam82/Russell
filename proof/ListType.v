@@ -1,6 +1,5 @@
-
 Require Import Arith.
-Require Import MyList.
+Require Import Lambda.MyList.
 
 Section TListes.
 

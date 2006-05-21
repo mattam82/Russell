@@ -8,8 +8,10 @@ Substitution.v
 GenerationNotKind.v
 GenerationCoerce.v
 Generation.v
-Axioms.v
+GenerationRange.v
+UnicityOfSortingRange.v
 UnicityOfSorting.v
+Axioms.v
 Depth.v
 Narrowing.v
 Transitivity.v

@@ -1,25 +1,25 @@
-Require Import Lambda.Terms.
-Require Import Lambda.Reduction.
-Require Import Lambda.LiftSubst.
 Require Export Lambda.MyList.
+Require Import TPOSR.Terms.
+Require Import TPOSR.Reduction.
+Require Import TPOSR.LiftSubst.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
-Implicit Types A B M N T t u v : term.
+Implicit Types A B M N T t u v : lterm.
 
-Definition env := list term.
+Definition env := list lterm.
 
 Implicit Types e f g : env.
 
-Definition item_lift t e n :=
-ex2 (fun u => t = lift (S n) u) (fun u => item term u (e:list term) n).
+Definition item_llift t e n :=
+ex2 (fun u => t = llift (S n) u) (fun u => item lterm u (e:list lterm) n).
 
 Inductive ins_in_env A : nat -> env -> env -> Prop :=
 | ins_O : forall e, ins_in_env A 0 e (A :: e)
     | ins_S :
         forall n e f t,
         ins_in_env A n e f ->
-        ins_in_env A (S n) (t :: e) (lift_rec 1 t n :: f).
+        ins_in_env A (S n) (t :: e) (llift_rec 1 t n :: f).
 
   Hint Resolve ins_O ins_S: coc.
 
@@ -38,7 +38,7 @@ Qed.
    forall A n e f,
    ins_in_env A n e f ->
    forall v : nat,
-   n > v -> forall t, item_lift t e v -> item_lift (lift_rec 1 t n) f v.
+   n > v -> forall t, item_llift t e v -> item_llift (llift_rec 1 t n) f v.
 simple induction 1.
 intros.
 inversion_clear H0.
@@ -46,25 +46,25 @@ inversion_clear H0.
 simple destruct v; intros.
 elim H3; intros.
 rewrite H4.
-exists (lift_rec 1 t n0); auto with coc core arith datatypes.
+exists (llift_rec 1 t n0); auto with coc core arith datatypes.
 inversion_clear H5.
-elim permute_lift with t n0; auto with coc core arith datatypes.
+elim permute_llift with t n0; auto with coc core arith datatypes.
 
 elim H3; intros.
 rewrite H4.
 inversion_clear H5.
-elim H1 with n1 (lift (S n1) x); intros; auto with coc core arith datatypes.
+elim H1 with n1 (llift (S n1) x); intros; auto with coc core arith datatypes.
 exists x0; auto with coc core arith datatypes.
-pattern (lift (S (S n1)) x0) at 1 in |- *.
-rewrite simpl_lift; auto with coc core arith datatypes.
+pattern (llift (S (S n1)) x0) at 1 in |- *.
+rewrite simpl_llift; auto with coc core arith datatypes.
 elim H5.
 change
-  (lift_rec 1 (lift (S (S n1)) x) (S n0) =
-   lift 1 (lift_rec 1 (lift (S n1) x) n0)) in |- *.
-rewrite (permute_lift (lift (S n1) x) n0).
-unfold lift at 2 in |- *.
-pattern (lift (S (S n1)) x) in |- *.
-rewrite simpl_lift; auto with coc core arith datatypes.
+  (llift_rec 1 (llift (S (S n1)) x) (S n0) =
+   llift 1 (llift_rec 1 (llift (S n1) x) n0)) in |- *.
+rewrite (permute_llift (llift (S n1) x) n0).
+unfold llift at 2 in |- *.
+pattern (llift (S (S n1)) x) in |- *.
+rewrite simpl_llift; auto with coc core arith datatypes.
 
 exists x; auto with coc core arith datatypes.
 Qed.
@@ -76,7 +76,7 @@ Qed.
     | sub_S :
         forall e f n u,
         sub_in_env t T n e f ->
-        sub_in_env t T (S n) (u :: e) (subst_rec t u n :: f).
+        sub_in_env t T (S n) (u :: e) (lsubst_rec t u n :: f).
 
   Hint Resolve sub_O sub_S: coc.
 
@@ -104,7 +104,7 @@ Qed.
    forall t T n e f,
    sub_in_env t T n e f ->
    forall v : nat,
-   n > v -> forall u, item_lift u e v -> item_lift (subst_rec t u n) f v.
+   n > v -> forall u, item_llift u e v -> item_llift (lsubst_rec t u n) f v.
 simple induction 1.
 intros.
 inversion_clear H0.
@@ -113,22 +113,22 @@ simple destruct v; intros.
 elim H3; intros.
 rewrite H4.
 inversion_clear H5.
-exists (subst_rec t u n0); auto with coc core arith datatypes.
-apply commut_lift_subst; auto with coc core arith datatypes.
+exists (lsubst_rec t u n0); auto with coc core arith datatypes.
+apply commut_llift_lsubst; auto with coc core arith datatypes.
 
 elim H3; intros.
 rewrite H4.
 inversion_clear H5.
-elim H1 with n1 (lift (S n1) x); intros; auto with coc core arith datatypes.
+elim H1 with n1 (llift (S n1) x); intros; auto with coc core arith datatypes.
 exists x0; auto with coc core arith datatypes.
-rewrite simpl_lift; auto with coc core arith datatypes.
-pattern (lift (S (S n1)) x0) in |- *.
-rewrite simpl_lift; auto with coc core arith datatypes.
+rewrite simpl_llift; auto with coc core arith datatypes.
+pattern (llift (S (S n1)) x0) in |- *.
+rewrite simpl_llift; auto with coc core arith datatypes.
 elim H5.
 change
-  (subst_rec t (lift 1 (lift (S n1) x)) (S n0) =
-   lift 1 (subst_rec t (lift (S n1) x) n0)) in |- *.
-apply commut_lift_subst; auto with coc core arith datatypes.
+  (lsubst_rec t (llift 1 (llift (S n1) x)) (S n0) =
+   llift 1 (lsubst_rec t (llift (S n1) x) n0)) in |- *.
+apply commut_llift_lsubst; auto with coc core arith datatypes.
 
 exists x; auto with coc core arith datatypes.
 Qed.

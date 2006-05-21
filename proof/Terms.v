@@ -1,4 +1,3 @@
-
 Require Export Arith.
 Require Export Compare_dec.
 Require Export Relations.

@@ -1,6 +1,6 @@
 Require Import Arith.
-Require Import MyList.
-Require Export MlTypes.
+Require Import Lambda.MyList.
+Require Export Lambda.MlTypes.
 
 
   (* type des noms *)
