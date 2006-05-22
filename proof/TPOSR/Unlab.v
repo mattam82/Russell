@@ -12,7 +12,7 @@ Require Import TPOSR.Env.
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
-Implicit Types e f g : env.
+Implicit Types e f g : lenv.
 
 Set Implicit Arguments.
 
@@ -28,10 +28,9 @@ Fixpoint unlab (t : lterm) : term :=
   | Subset_l T U => Subset (unlab T) (unlab U)
   | Pi1_l t => Pi1 (unlab t)
   | Pi2_l t => Pi2 (unlab t)
-  | Let_in_l u v => Let_in (unlab u) (unlab v)
   end.
 
-Fixpoint unlab_ctx (t : env) : Lambda.Env.env :=
+Fixpoint unlab_ctx (t : lenv) : env :=
   match t with
   | nil => nil
   | cons A tl => cons (unlab A) (unlab_ctx tl)
@@ -90,7 +89,7 @@ Proof.
   apply Lambda.Reduction.beta.
 Qed.
 
-Lemma unlab_lab_red : forall (M : lterm) (N : term), red1 (|M|) N -> 
+Lemma unlab_lab_red1 : forall (M : lterm) (N : term), red1 (|M|) N -> 
   exists N', |N'| = N /\ lred1 M N'.
 Proof.
   induction M ; simpl ; intros ; auto with coc.
@@ -166,24 +165,136 @@ Proof.
 
   destruct (IHM _ H1).
   exists (Pi2_l x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
+Qed.
+
+Lemma unlab_lab_red : forall (M : lterm) (N : term), red (|M|) N -> 
+  exists N', |N'| = N /\ lred M N'.
+Proof.
+  induction 1.
+  exists M ; intuition ; auto with coc.
+  destruct IHred.
+  intuition.
+  rewrite <- H2 in H0.
+  destruct (unlab_lab_red1 _ H0).
+  exists x0 ; intuition ; auto with coc.
+  apply trans_lred with x ; auto with coc.
+Qed.
+
+Lemma unlab_lab_par_red1 : forall (M : lterm) (N : term), par_red1 (|M|) N -> 
+  exists N', |N'| = N /\ par_lred1 M N'.
+Proof.
+  induction M ; simpl ; intros ; auto with coc.
+  
+  inversion H.
+  exists (Srt_l s) ; simpl ; intuition ; rewrite H0 ; auto.
 
   inversion H.
-  
+  exists (Ref_l n) ; simpl ; intuition ; rewrite H0 ; auto.
 
+  inversion H.
   destruct (IHM1 _ H4).
-  exists (Pair_l x M2 M3 ) ; simpl ; intuition ; rewrite H6 ; auto with coc.
-  destruct (IHM2 _ H4).
-  exists (Pair_l M1 x M3) ; simpl ; intuition ; rewrite H6 ; auto with coc.
+  destruct (IHM2 _ H2).
+  intuition.
+  exists (Abs_l x x0) ; simpl ; intuition ; rewrite H5 ; rewrite H7 ; auto with coc.
+  
+  inversion H.
+  destruct M2 ; simpl in H1 ; try discriminate.
+  simpl in H0 ; inversion H0.
+  rewrite H7 in H2.
   destruct (IHM3 _ H4).
-  exists (Pair_l M1 M2 x) ; simpl ; intuition ; rewrite H6 ; auto with coc.
+  destruct (IHM2 (Abs T M')).
+  simpl.
+  constructor ; auto.
+  rewrite H6 ; auto with coc.
+
+  destruct H8.
+  destruct x0 ; simpl in H8 ; try discriminate.
+  exists (lsubst x x0_2).
+  intuition.
+  rewrite <- H10.
+  inversion H8.
+  apply lab_subst.
+  
+  constructor ; auto with coc.
+  inversion H9.
+  auto.
+  
+  destruct (IHM2 _ H2).
+  destruct (IHM3 _ H4).
+  intuition.
+  exists (App_l M1 x x0 ) ; simpl ; intuition ; rewrite H7 ; rewrite H5 ; auto with coc.
+
+  inversion H.
+  destruct (IHM1 _ H3).
+  destruct (IHM2 _ H5).
+  destruct (IHM3 _ H6).
+  intuition.
+  exists (Pair_l x x0 x1 ) ; simpl ; intuition ; rewrite H10 ; rewrite H7 ; rewrite H8 ; auto with coc.
+
+  inversion H.
+  destruct (IHM1 _ H2).
+  destruct (IHM2 _ H4).
+  intuition.
+  exists (Prod_l x x0 ) ; simpl ; intuition ; rewrite H5 ; rewrite H7 ; auto with coc.
+
+  inversion H.
+  destruct (IHM1 _ H2).
+  destruct (IHM2 _ H4).
+  intuition.
+  exists (Sum_l x x0 ) ; simpl ; intuition ; rewrite H5 ; rewrite H7 ; auto with coc.
+
+  inversion H.
+  destruct (IHM1 _ H2).
+  destruct (IHM2 _ H4).
+  intuition.
+  exists (Subset_l x x0 ) ; simpl ; intuition ; rewrite H5 ; rewrite H7 ; auto with coc.
+
+  inversion H.
+  destruct M ; simpl in H0 ; try discriminate.
+  inversion H0.
+  inversion H.
+  destruct (IHM (Pair (|M1|) N (|M3|))).
+  simpl ; constructor ; auto with coc.
+  intuition.
+  destruct x ; simpl in H12 ; try discriminate.
+  inversion H12.
+  exists x2 ; intuition ; try rewrite <- H15 ; auto with coc.
+  inversion H13.
+  constructor.
+  assumption.
+  
+  destruct (IHM _ H7).
+  intuition.
+  exists (Pi1_l x) ; simpl ; intuition ; rewrite H10 ; auto with coc.
+
+  destruct (IHM _ H1).
+  intuition.
+  exists (Pi1_l x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
+
+  inversion H.
+  destruct M ; simpl in H0 ; try discriminate.
+  inversion H0.
+  inversion H.
+  destruct (IHM (Pair (|M1|) (|M2|) N)).
+  simpl ; constructor ; auto with coc.
+  intuition.
+  destruct x ; simpl in H12 ; try discriminate.
+  inversion H12.
+  exists x3 ; intuition ; try rewrite <- H16 ; auto with coc.
+  inversion H13.
+  constructor.
+  assumption.
+  
+  destruct (IHM _ H7).
+  intuition.
+  exists (Pi2_l x) ; simpl ; intuition ; rewrite H10 ; auto with coc.
 
 
+  destruct (IHM _ H1).
+  intuition.
+  exists (Pi2_l x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
+Qed.
 
-
-
-
-  exists (Srt_l s) ; intuition.
-  inversion (red1_sort).
 
 
 
