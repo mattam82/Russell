@@ -482,7 +482,6 @@ pose (inv_sub_sum_l H9).
 pose (unicity_coerce_r c H4).
 apply type_conv with U0 s1 ; auto with coc.
 apply (coerce_sort_l c0).
-apply coerce_sym ; auto.
 
 pose (IHtyp _ H).
 apply type_pi1 with V ; auto.
@@ -496,7 +495,6 @@ pose (unicity_coerce_r c H1).
 pose (coerce_sort_l c0).
 assert (e |- M : U).
 apply type_conv with U0 s1 ; auto with coc.
-apply coerce_sym ; auto with coc.
 
 apply inv_typ_sum2 with e U V (Srt s) ; auto with coc ; intros.
 

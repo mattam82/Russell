@@ -12,12 +12,16 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Lemma typ_weak_weak : forall A e t T, e |- t : T ->
+Lemma double_weak_weak : forall A,
+  (forall e t T, e |- t : T ->
    forall n f, ins_in_env A n e f -> wf f -> 
-   f |- (lift_rec 1 t n) : (lift_rec 1 T n).
+   f |- (lift_rec 1 t n) : (lift_rec 1 T n)) /\
+ (forall e T U s, e |- T >> U : s ->
+  forall n f, ins_in_env A n e f -> wf f -> 
+  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s).
 Proof.
-intros A e t T IH.
-induction IH using typ_coerce_mut with 
+intros A.
+apply double_typ_coerce_mut with 
  (P := fun e t T => fun IH : typ e t T =>
    forall n f,
    ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))
@@ -56,11 +60,11 @@ rewrite distr_lift_subst.
 apply type_app with (lift_rec 1 V n); auto with coc core arith datatypes.
 
 apply type_pair with s1 s2 s3 ; auto with coc core arith datatypes.
-apply IHIH3 ; auto with coc core arith datatypes.
+apply H1 ; auto with coc core arith datatypes.
 apply wf_var with s1 ; auto with coc core arith datatypes.
 
 rewrite <- distr_lift_subst.
-apply IHIH4 ; auto with coc core arith datatypes.
+apply H2 ; auto with coc core arith datatypes.
 
 cut (wf (lift_rec 1 T n :: f)).
 intro.
@@ -87,159 +91,43 @@ apply type_conv with (lift_rec 1 U n) s; auto with coc core arith datatypes.
 
 apply coerce_prod with s ; auto with coc.
 
-apply IHIH4 ; auto with coc core.
+apply H2 ; auto with coc core.
 apply wf_var with s.
 
-apply IHIH2 ; auto with coc core.
-apply IHIH5 ; auto with coc core.
+apply H0 ; auto with coc core.
+apply H3 ; auto with coc core.
 apply wf_var with s.
-apply IHIH3 ; auto with coc core.
-
-apply IHIH6 ; auto with coc core.
+apply H1 ; auto with coc core.
+apply H4 ; auto with coc core.
 apply wf_var with s.
-apply IHIH2 ; auto with coc core.
+apply H0 ; auto with coc core.
 
 apply coerce_sum with s s' ; auto with coc.
 
-apply IHIH4 ; auto with coc.
+apply H2 ; auto with coc core.
 apply wf_var with s.
-apply IHIH3 ; auto with coc core.
-apply IHIH5 ; auto with coc core.
-apply wf_var with s.
-apply IHIH3 ; auto with coc core.
 
-apply IHIH6 ; auto with coc core.
+apply H1 ; auto with coc core.
+apply H3 ; auto with coc core.
 apply wf_var with s.
-apply IHIH2 ; auto with coc core.
+apply H1 ; auto with coc core.
+apply H4 ; auto with coc core.
+apply wf_var with s.
+apply H0 ; auto with coc core.
 
 apply coerce_sub_l ; auto with coc core.
 
 
-apply IHIH0 ; auto with coc core.
+apply H0 ; auto with coc core.
 apply wf_var with set.
 eapply coerce_sort_l  ; auto with coc.
 
 apply coerce_sub_r ; auto with coc core.
-apply IHIH0 ; auto with coc core.
+apply H0 ; auto with coc core.
 apply wf_var with set.
 eapply coerce_sort_r  ; auto with coc.
 
 apply coerce_conv with (lift_rec 1 B n) (lift_rec 1 C n) ; auto with coc core.
-Qed.
-
-
-
-Lemma coerce_weak_weak : forall A e T U s, e |- T >> U : s ->
-  forall n f, ins_in_env A n e f -> wf f -> 
-  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s.
-Proof.
-intros A e T U s IH.
-induction IH using coerce_typ_mut with 
- (P := fun e t T => fun IHt : typ e t T =>
-   forall n f,
-   ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))
- (P0 := fun e T U s => fun IHt : coerce e T U s =>
-   forall n f,
-   ins_in_env A n e f -> wf f -> coerce f (lift_rec 1 T n) (lift_rec 1 U n) s) ;
-   simpl in |- *; 
-   try simpl in IHIH ; 
-   try simpl in IHIH0 ; 
-   try simpl in IHIH1 ; 
-   try simpl in IHIH2 ; 
-   try simpl in IHIH3 ; 
-   try simpl in IHIH4 ; 
-   try simpl in IHIH5 ; 
-   try simpl in IHIH6 ; 
-   intros; auto with coc core arith datatypes.
-
-elim (le_gt_dec n0 n); intros; apply type_var;
- auto with coc core arith datatypes.
-elim i; intros.
-exists x.
-rewrite H1.
-unfold lift in |- *.
-rewrite simpl_lift_rec; simpl in |- *; auto with coc core arith datatypes.
-
-apply ins_item_ge with A n0 e; auto with coc core arith datatypes.
-
-apply ins_item_lt with A e; auto with coc core arith datatypes.
-
-cut (wf (lift_rec 1 T n :: f)).
-intro.
-apply type_abs with s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core arith datatypes.
-
-rewrite distr_lift_subst.
-apply type_app with (lift_rec 1 V n); auto with coc core arith datatypes.
-
-apply type_pair with s1 s2 s3 ; auto with coc core arith datatypes.
-apply IHIH1 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core arith datatypes.
-
-rewrite <- distr_lift_subst.
-apply IHIH2 ; auto with coc core arith datatypes.
-
-cut (wf (lift_rec 1 T n :: f)).
-intro.
-apply type_prod with s1; auto with coc core arith datatypes.
-apply wf_var with s1; auto with coc core arith datatypes.
-
-cut (wf (lift_rec 1 T n :: f)).
-intro.
-apply type_sum with s1 s2; auto with coc core arith datatypes.
-apply wf_var with s1; auto with coc core arith datatypes.
-
-cut (wf (lift_rec 1 T n :: f)).
-intro.
-apply type_subset ; auto with coc core arith datatypes.
-apply wf_var with set; auto with coc core arith datatypes.
-
-apply type_pi1 with (lift_rec 1 V (S n)) ; auto with coc.
-
-rewrite distr_lift_subst.
-simpl.
-apply type_pi2 with (lift_rec 1 U n); auto with coc.
-
-apply type_conv with (lift_rec 1 U n) s; auto with coc core arith datatypes.
-
-apply coerce_prod with s ; auto with coc.
-
-apply IHIH4 ; auto with coc core.
-apply wf_var with s.
-
-apply IHIH2 ; auto with coc core.
-apply IHIH5 ; auto with coc core.
-apply wf_var with s.
-apply IHIH3 ; auto with coc core.
-
-apply IHIH6 ; auto with coc core.
-apply wf_var with s.
-apply IHIH2 ; auto with coc core.
-
-apply coerce_sum with s s' ; auto with coc.
-
-apply IHIH4 ; auto with coc.
-apply wf_var with s.
-apply IHIH3 ; auto with coc core.
-apply IHIH5 ; auto with coc core.
-apply wf_var with s.
-apply IHIH3 ; auto with coc core.
-
-apply IHIH6 ; auto with coc core.
-apply wf_var with s.
-apply IHIH2 ; auto with coc core.
-
-apply coerce_sub_l ; auto with coc core.
-apply IHIH0 ; auto with coc core.
-apply wf_var with set.
-eapply coerce_sort_l  ; auto with coc.
-
-apply coerce_sub_r ; auto with coc core.
-apply IHIH0 ; auto with coc core.
-apply wf_var with set.
-eapply coerce_sort_r  ; auto with coc.
-
-apply coerce_conv with (lift_rec 1 B n) (lift_rec 1 C n); auto with coc core.
 Qed.
 
   Theorem thinning :
@@ -249,7 +137,8 @@ Proof.
 unfold lift in |- *.
 intros.
 inversion_clear H0.
-apply typ_weak_weak with A e; auto with coc core arith datatypes.
+destruct (double_weak_weak A).
+apply H0 with e; auto with coc core arith datatypes.
 apply wf_var with s; auto with coc core arith datatypes.
 Qed.
 
@@ -260,7 +149,8 @@ Theorem thinning_coerce :
 Proof.
 unfold lift ; intros.
 inversion_clear H0.
-apply coerce_weak_weak with A e; auto with coc core arith datatypes.
+destruct (double_weak_weak A).
+apply H2 with e; auto with coc core arith datatypes.
 apply wf_var with s0; auto with coc core arith datatypes.
 Qed.
 

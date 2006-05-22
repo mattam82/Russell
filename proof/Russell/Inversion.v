@@ -435,8 +435,6 @@ apply typ_inversion with e (Pi1 t) T; simpl in |- *;
 
 apply H0 with s U V ; auto with coc.
 exact (coerce_sort_l H2).
-
-apply coerce_sym ; auto.
 Qed.
 
 Lemma inv_typ_pi2 : 
@@ -450,29 +448,9 @@ apply typ_inversion with e (Pi2 t) T; simpl in |- *;
 
 apply H0 with s U V ; auto with coc.
 exact (coerce_sort_l H2).
-
-apply coerce_sym ; auto.
-Qed.
-(*
-Lemma inv_typ_let_in : 
-  forall (P : Prop) e v t T,
-   typ e (Let_in v t) T ->
-   (forall V, typ e v V -> 
-   forall s1, typ e V (Srt s1) ->
-   forall T', typ (V :: e) t T' ->
-   forall s2, typ (V :: e) T' (Srt s2) ->
-   coerce e (subst v T')  T -> P) -> P.
-Proof.
-intros.
-apply typ_inversion with e (Let_in v t) T; simpl in |- *;
- auto with coc core arith datatypes; intros.
-apply (H0 U H1 s1 H2 M H3 s2 H4) ; auto with coc.
 Qed.
 
-*)
-
-
-  Lemma typ_mem_kind : forall e t T, mem_sort kind t -> ~ typ e t T.
+Lemma typ_mem_kind : forall e t T, mem_sort kind t -> ~ typ e t T.
 red in |- * ; intros.
 
 apply typ_inversion with e t T; auto with coc core arith datatypes.
