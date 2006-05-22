@@ -4,9 +4,9 @@ Require Import Lambda.Conv.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
 Require Import JRussell.Types.
-Require Import JRussell.Thinning.
+(*Require Import JRussell.Thinning.
 Require Import JRussell.Substitution.
-
+*)
 Set Implicit Arguments.
 
 Implicit Types i k m n p : nat.
@@ -214,3 +214,66 @@ Proof.
 Qed.
 
 Hint Resolve coerce_sym : coc.
+
+(*
+Lemma typ_sort_aux : forall G t T, G |- t : T -> 
+  forall s, t = (Srt s) -> is_prop s /\ T = (Srt kind).
+Proof.
+induction 1 ; intros ; try discriminate.
+
+injection H0 ; intro ; rewrite <- H1 ; unfold is_prop ; intuition.
+
+injection H0 ; intro ; rewrite <- H1 ; unfold is_prop ; intuition.
+
+induction (IHtyp s0 H1).
+split ; auto.
+
+generalize  H0 H3.
+induction 1 ; simpl ; intros ; try discriminate.
+elim typ_not_kind with e A (Srt s) ; auto with coc.
+
+pose (IHcoerce H IHtyp H4 H3 H6).
+rewrite e0 in H0.
+
+
+
+destruct (IHtyp3 _ H5).
+unfold is_prop in H6.
+induction H6 ; discriminate.
+Qed.
+
+Lemma typ_sort : forall G s T, G |- (Srt s) : T -> is_prop s /\ T = (Srt kind).
+Proof.
+intros.
+apply (typ_sort_aux H (refl_equal (Srt s))).
+Qed.
+
+
+Hint Resolve typ_not_kind typ_wf : coc.
+
+Lemma coerce_sort : forall G T U s, 
+  G |- T >> U : s -> (G |- T : Srt s /\ G |- U : Srt s).
+Proof.
+  induction 1 ; intros ; split ; try (intuition ; intros ; auto with coc core).
+  apply type_prod with s ; auto with coc core.
+  apply type_prod with s ; auto with coc core.
+  apply type_sum with s s' ; auto with coc core.
+  apply type_sum with s s' ; auto with coc core.
+  apply type_subset ; auto with coc core.
+  apply type_subset ; auto with coc core.
+Qed.
+
+Lemma coerce_sort_l : forall G T U s, 
+  G |- T >> U : s -> G |- T : Srt s.
+Proof. 
+  intros G T U s H.
+  apply (proj1 (coerce_sort H)).
+Save.
+
+Lemma coerce_sort_r : forall G T U s, 
+  G |- T >> U : s -> G |- U : Srt s.
+Proof. 
+  intros G T U s H.
+  apply (proj2 (coerce_sort  H)).
+Save.
+

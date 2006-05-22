@@ -12,22 +12,29 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Lemma double_weak_weak : forall A,
+Lemma weak_weak : forall A,
   (forall e t T, e |- t : T ->
    forall n f, ins_in_env A n e f -> wf f -> 
    f |- (lift_rec 1 t n) : (lift_rec 1 T n)) /\
  (forall e T U s, e |- T >> U : s ->
   forall n f, ins_in_env A n e f -> wf f -> 
-  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s).
+  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s) /\
+ (forall e U V T, e |- U = V : T ->
+  forall n f, ins_in_env A n e f -> wf f -> 
+  f |- (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n))
+.
 Proof.
 intros A.
-apply double_typ_coerce_mut with 
+apply typ_coerce_jeq_ind with 
  (P := fun e t T => fun IH : typ e t T =>
    forall n f,
    ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))
  (P0 := fun e T U s => fun IH : coerce e T U s =>
    forall n f,
-   ins_in_env A n e f -> wf f -> f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s) ;
+   ins_in_env A n e f -> wf f -> f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s) 
+(P1 := fun e U V T => fun H : e |- U = V : T =>
+  forall n f, ins_in_env A n e f -> wf f -> 
+  f |- (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n));
    simpl in |- *; 
    try simpl in IHIH ; 
    try simpl in IHIH0 ; 
@@ -116,18 +123,58 @@ apply wf_var with s.
 apply H0 ; auto with coc core.
 
 apply coerce_sub_l ; auto with coc core.
-
-
-apply H0 ; auto with coc core.
+apply H2 ; auto with coc core.
 apply wf_var with set.
-eapply coerce_sort_l  ; auto with coc.
+apply H0 ; auto with coc.
 
 apply coerce_sub_r ; auto with coc core.
-apply H0 ; auto with coc core.
+apply H2 ; auto with coc core.
 apply wf_var with set.
-eapply coerce_sort_r  ; auto with coc.
+apply H1 ; auto with coc.
 
 apply coerce_conv with (lift_rec 1 B n) (lift_rec 1 C n) ; auto with coc core.
+
+apply jeq_prod with s1 ; auto with coc core arith datatypes.
+apply H0 ; auto with coc core.
+
+
+pose (H n f H1 H2).
+pose (H0 n f H1 H2).
+
+rewrite distr_lift_subst.
+apply type_app with (lift_rec 1 V n); auto with coc core arith datatypes.
+
+apply type_pair with s1 s2 s3 ; auto with coc core arith datatypes.
+apply H1 ; auto with coc core arith datatypes.
+apply wf_var with s1 ; auto with coc core arith datatypes.
+
+rewrite <- distr_lift_subst.
+apply H2 ; auto with coc core arith datatypes.
+
+cut (wf (lift_rec 1 T n :: f)).
+intro.
+apply type_prod with s1; auto with coc core arith datatypes.
+apply wf_var with s1; auto with coc core arith datatypes.
+
+cut (wf (lift_rec 1 T n :: f)).
+intro.
+apply type_sum with s1 s2; auto with coc core arith datatypes.
+apply wf_var with s1; auto with coc core arith datatypes.
+
+cut (wf (lift_rec 1 T n :: f)).
+intro.
+apply type_subset ; auto with coc core arith datatypes.
+apply wf_var with set; auto with coc core arith datatypes.
+
+apply type_pi1 with (lift_rec 1 V (S n)) ; auto with coc.
+
+rewrite distr_lift_subst.
+simpl.
+apply type_pi2 with (lift_rec 1 U n); auto with coc.
+
+apply type_conv with (lift_rec 1 U n) s; auto with coc core arith datatypes.
+
+
 Qed.
 
   Theorem thinning :
