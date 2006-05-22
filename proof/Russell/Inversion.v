@@ -1,18 +1,19 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import LiftSubst.
-Require Import Env.
-Require Import Reduction.
-Require Import CCPD.Types.
-Require Import CCPD.Thinning.
-Require Import CCPD.Substitution.
-Require Import CCPD.Coercion.
-Require Import CCPD.GenerationNotKind.
-Require Import CCPD.Generation.
-Require Import CCPD.GenerationCoerce.
-Require Import CCPD.UnicityOfSorting.
-Require Import CCPD.Transitivity.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Env.
+Require Import Lambda.Reduction.
+Require Import Russell.Types.
+Require Import Russell.Thinning.
+Require Import Russell.Substitution.
+Require Import Russell.Coercion.
+Require Import Russell.GenerationNotKind.
+Require Import Russell.Generation.
+Require Import Russell.GenerationCoerce.
+Require Import Russell.GenerationRange.
+Require Import Russell.UnicityOfSorting.
+Require Import Russell.Transitivity.
 
 Set Implicit Arguments.
 
@@ -49,8 +50,8 @@ Definition inv_type (P : Prop) e t T : Prop :=
     | Sum A B =>
         forall s1 s2,
         typ e A (Srt s1) -> typ (A :: e) B (Srt s2) -> 
-        sum_sort A B s1 s2 ->
-        (T = Srt kind \/ coerce e T (Srt s2) kind) -> P
+        forall s3,  sum_sort s1 s2 s3 ->
+        coerce e T (Srt s3) kind -> P
     | Subset A B =>
         forall s1 s2,
         s1 = set -> s2 = prop ->
@@ -63,11 +64,6 @@ Definition inv_type (P : Prop) e t T : Prop :=
         forall U V,
         typ e t (Sum U V) -> 
         forall s, coerce e T (subst (Pi1 t) V) s -> P
-    | Let_in t v =>
-        forall U, typ e t U -> 
-	forall s1, typ e U (Srt s1) ->
-        forall M, typ (U :: e) v M -> 
-        forall s, coerce e T (subst t M) s -> P
     end.
 
 Lemma unicity_coerce_l : forall e U V s s', e |- U >> V : s -> e |- U : Srt s' -> e |- U >> V : s'.
@@ -120,11 +116,7 @@ elim coerce_not_kind_r with e U s' ; auto.
 right.
 apply Htr with V s' ; auto.
 
-apply H with s1 s2; auto with coc core arith datatypes.
-destruct H3.
-rewrite H3 in Hco.
-elim coerce_not_kind_r with e U s' ; auto.
-right.
+apply H with s1 s2 s3; auto with coc core arith datatypes.
 apply Htr with V s' ; auto.
 
 apply H with s1 s2 ; auto with coc core arith datatypes.
@@ -135,9 +127,6 @@ apply Htr with V s' ; auto.
 
 apply H with U0 V0 s'; auto with coc core arith datatypes.
 apply Htr2 with V s ; auto.
-
-apply H with U0 s1 M s; auto with coc core arith datatypes.
-apply Htr with V s' ; auto.
 
 intros.
 eapply coerce_trans with V ; auto with coc.
@@ -196,10 +185,14 @@ apply (typ_wf H).
 
 
 destruct o.
-apply H0 with s1 s2 ; auto with coc.
+apply H0 with s1 s2 s3 ; auto with coc.
+inversion H.
+intuition.
+rewrite H5 in H1; discriminate.
+intuition.
+rewrite H5 in H1; discriminate.
 destruct H1.
-apply H0 with s1 s2 ; auto with coc.
-right.
+apply H0 with s1 s2 s3 ; auto with coc.
 destruct (typ_sort H1) ; auto with coc.
 cut (wf e) ; auto with coc.
 apply (typ_wf H1).
@@ -213,35 +206,19 @@ apply (typ_wf H).
 
 destruct o.
 pose (sort_of_pi1_range Ht).
-rewrite H in e0.
-simpl in e0.
-destruct (e0 kind (refl_equal (Srt kind))).
-clear e0.
-do 2 destruct H1 ; intuition.
-unfold sum_sort in H4.
-do 2 destruct H4.
-rewrite H4 in H1 ; simpl in H1 ; discriminate.
-discriminate.
-
+rewrite H in n.
+simpl in n.
+destruct (n kind (refl_equal (Srt kind))).
 destruct H.
-apply H0 with U V x; auto with coc core arith datatypes.
+apply H0 with U V x ; auto with coc.
 
 destruct o.
 pose (sort_of_pi2_range Ht).
-rewrite H in e0.
-simpl in e0.
-destruct (e0 kind (refl_equal (Srt kind))).
-clear e0.
-do 2 destruct H1 ; intuition.
-unfold sum_sort in H4.
-do 2 destruct H4.
-destruct (type_range_subst _ _ _ H1).
-simpl ; discriminate.
-rewrite H5 in H6 ; simpl in H6 ; discriminate.
-discriminate.
-
+rewrite H in n.
+simpl in n.
+destruct (n kind (refl_equal (Srt kind))).
 destruct H.
-apply H0 with U V x; auto with coc core arith datatypes.
+apply H0 with U V x ; auto with coc.
 
 pose (coerce_sym H).
 apply IHHt0_1 ; auto with coc core arith.
@@ -411,21 +388,23 @@ Qed.
 Lemma inv_typ_sum2 :
    forall (P : Prop) e T (U s : term),
    typ e (Sum T U) s ->
-   (forall s1,
-    typ e T (Srt s1) -> typ (T :: e) U s -> P) -> P.
+   (typ e T s -> typ (T :: e) U s -> P) -> P.
 intros.
 apply typ_inversion with e (Sum T U) s; simpl in |- *;
  auto with coc core arith datatypes; intros.
-
-apply H0 with s1; auto with coc core arith datatypes.
-destruct H4.
-rewrite H4 in H.
-destruct (generation_sum2 H).
-intuition.
-rewrite H4 ; assumption.
-
+inversion H3 ; intuition.
 pose (coerce_propset_r H4).
-rewrite e0 ; auto.
+rewrite H8 in e0.
+rewrite e0 in H0.
+rewrite H6 in H1.
+rewrite H5 in H2.
+apply H0 ; auto.
+pose (coerce_propset_r H4).
+rewrite H8 in e0.
+rewrite e0 in H0.
+rewrite H6 in H1.
+rewrite H5 in H2.
+apply H0 ; auto.
 Qed.
 
   Lemma inv_typ_subset :
@@ -536,10 +515,6 @@ apply typ_inversion with (u :: e0) v (Srt prop); auto with coc core arith dataty
 apply typ_inversion with e0 u (Sum U V); auto with coc core arith datatypes.
 
 apply typ_inversion with (e0) u (Sum U V); auto with coc core arith datatypes.
-
-apply typ_inversion with e0 u U; auto with coc core arith datatypes.
-
-apply typ_inversion with (U :: e0) v M; auto with coc core arith datatypes.
 Qed.
 
 Lemma inv_typ_conv_kind : forall e t T, conv t (Srt kind) -> ~ typ e t T.

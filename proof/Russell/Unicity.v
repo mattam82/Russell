@@ -1,13 +1,13 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import LiftSubst.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.LiftSubst.
 Require Import CCSum.Types.
 Require Import CCSum.Inversion.
 Require Import CCSum.Thinning.
 Require Import CCSum.Substitution.
 Require Import CCSum.TypeCase.
-Require Import CCSum.SubjectReduction.
+Require Import CCSum.SubjectLambda.Reduction.
 
 
 Implicit Types i k m n p : nat.

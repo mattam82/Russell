@@ -1,18 +1,18 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import Conv_Dec.
-Require Import LiftSubst.
-Require Import Env.
-Require Import CCPD.Types.
-Require Import CCPD.Thinning.
-Require Import CCPD.Substitution.
-Require Import CCPD.Coercion.
-Require Import CCPD.GenerationNotKind.
-Require Import CCPD.GenerationCoerce.
-Require Import CCPD.Generation.
-Require Import CCPD.GenerationRange.
-Require Import CCPD.UnicityOfSortingRange.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.Conv_Dec.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Env.
+Require Import Russell.Types.
+Require Import Russell.Thinning.
+Require Import Russell.Substitution.
+Require Import Russell.Coercion.
+Require Import Russell.GenerationNotKind.
+Require Import Russell.GenerationCoerce.
+Require Import Russell.Generation.
+Require Import Russell.GenerationRange.
+Require Import Russell.UnicityOfSortingRange.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -28,7 +28,7 @@ Proof.
   intros.
   exact (unique_range_sort H H0 (refl_equal (Srt s)) (refl_equal (Srt s'))).
 Qed.
-
+(*
 Theorem uniqueness_of_types : forall G t T, G |- t : T ->
   forall T', G |- t : T' ->
   (exists s, T = Srt s /\ T = T') \/ (exists s', G |- T >> T' : s').
@@ -50,3 +50,4 @@ Proof.
   
   destruct (wf_sort_lift H H0).
   
+*)

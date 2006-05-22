@@ -1,17 +1,17 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import Conv_Dec.
-Require Import LiftSubst.
-Require Import Env.
-Require Import CCPD.Types.
-Require Import CCPD.Thinning.
-Require Import CCPD.Substitution.
-Require Import CCPD.Coercion.
-Require Import CCPD.GenerationNotKind.
-Require Import CCPD.GenerationCoerce.
-Require Import CCPD.Generation.
-Require Import CCPD.GenerationRange.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.Conv_Dec.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Env.
+Require Import Russell.Types.
+Require Import Russell.Thinning.
+Require Import Russell.Substitution.
+Require Import Russell.Coercion.
+Require Import Russell.GenerationNotKind.
+Require Import Russell.GenerationCoerce.
+Require Import Russell.Generation.
+Require Import Russell.GenerationRange.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -118,9 +118,5 @@ Proof.
 
   (* Pi2 *)
   induction (sort_of_pi2_range H H1).
-
-  (* Let_in *)
-  elim (@not_t_let_in _ _ _ H t1 t2).
-  auto.
 Qed.
 

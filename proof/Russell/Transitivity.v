@@ -1,15 +1,15 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import LiftSubst.
-Require Import Env.
-Require Import CCPD.Types.
-Require Import CCPD.Thinning.
-Require Import CCPD.Substitution.
-Require Import CCPD.Generation.
-Require Import CCPD.UnicityOfSorting.
-Require Import CCPD.Narrowing.
-Require Import CCPD.Axioms.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Env.
+Require Import Russell.Types.
+Require Import Russell.Thinning.
+Require Import Russell.Substitution.
+Require Import Russell.Generation.
+Require Import Russell.UnicityOfSorting.
+Require Import Russell.Narrowing.
+Require Import Russell.Axioms.
 
 Set Implicit Arguments.
 
@@ -1072,7 +1072,7 @@ Proof.
   reflexivity.
 Qed.
 
-Require Import CCPD.Depth.
+Require Import Russell.Depth.
 
 Theorem coerces_db_depth : forall e T U s n1, Depth.coerces_db e T U s n1 -> 
   exists d : (Narrowing.coerces_db e T U s), depth d = n1.

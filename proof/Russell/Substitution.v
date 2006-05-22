@@ -1,9 +1,9 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import LiftSubst.
-Require Import Env.
-Require Import CCPD.Types.
-Require Import CCPD.Thinning.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Env.
+Require Import Russell.Types.
+Require Import Russell.Thinning.
 
 Set Implicit Arguments.
 

@@ -1,8 +1,8 @@
-Require Import Termes.
-Require Import LiftSubst.
-Require Import Reduction.
-Require Import Conv.
-Require Import Env.
+Require Import Lambda.Terms.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.Env.
 
 Set Implicit Arguments.
 
@@ -125,14 +125,6 @@ with typ : env -> term -> term -> Prop :=
       forall e t U V, e |- t : (Sum U V) -> 
       e |- (Pi2 t) : (subst (Pi1 t) V)
 
-(*  | type_let_in :
-      forall e t U, e |- t : U ->
-      forall s1, e |- U : (Srt s1) -> (* Just for easier induction, derivable from the next 
-	 judgment *)
-      forall v M, (U :: e) |- v : M -> 
-      forall s2, (U :: e) |- M : (Srt s2) ->
-      e |- (Let_in t v) : (subst t M) *)
-
   | type_conv :
       forall e t (U V : term),
       e |- t : U -> 
@@ -157,11 +149,6 @@ Scheme typ_coerce_wf_mut := Induction for typ Sort Prop
 with coerce_typ_wf_mut := Induction for coerce Sort Prop
 with wf_typ_coerce_mut := Induction for wf Sort Prop.
 
-
-Lemma not_t_let_in : forall G t T, G |- t : T -> forall u v, t <> Let_in u v.
-Proof.
-  simple induction 1 ; intros ; auto with coc core arith datatypes ; try discriminate.
-Qed.
 
   Lemma type_prop_set :
    forall s, is_prop s -> forall e, wf e -> typ e (Srt s) (Srt kind).

@@ -1,4 +1,4 @@
--I .. -R . CCPD
+-R .. Lambda -R . Russell
 # List of vernac files to compile
 Types.v
 Coercion.v

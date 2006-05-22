@@ -1,16 +1,18 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import LiftSubst.
-Require Import Env.
-Require Import CCPD.Types.
-Require Import CCPD.Thinning.
-Require Import CCPD.Coercion.
-Require Import CCPD.Substitution.
-Require Import CCPD.Transitivity.
-Require Import CCPD.Inversion.
-Require Import CCPD.Generation.
-(*Require Import CCPD.UnicityOfSorting.*)
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Env.
+Require Import Russell.Types.
+Require Import Russell.Thinning.
+Require Import Russell.Coercion.
+Require Import Russell.Substitution.
+Require Import Russell.Transitivity.
+Require Import Russell.Inversion.
+Require Import Russell.Generation.
+Require Import Russell.GenerationRange.
+Require Import Russell.UnicityOfSorting.
+Require Import Russell.Axioms.
 
 Set Implicit Arguments.
 
@@ -68,25 +70,25 @@ Proof.
   pose (inv_conv_prod_l _ _ _ _ H5).
   destruct (inv_conv_prod_sort_l H H0 H3).
   destruct (inv_conv_prod_sort_l H1 H2 H5).
-  destruct a ; destruct a0.
-  pose (unique_sort H13 H4).
-  pose (unique_sort H12 H8).
+  destruct H11 ; destruct H12.
+  pose (unique_sort H13 H8).
+  pose (unique_sort H12 H4).
 
   split.
   exists s.
   apply coerce_conv with A' A0 ; auto with coc.
-  rewrite <- e0 ; auto.
   rewrite <- e1 ; auto.
-  
+  rewrite <- e0 ; auto. 
+ 
   pose (inv_conv_prod_r _ _ _ _ H3).
   pose (inv_conv_prod_r _ _ _ _ H5).
   destruct (inv_conv_prod_sort_r H H0 H3).
   destruct (inv_conv_prod_sort_r H1 H2 H5).
 
   rewrite e0 in H13.
-  rewrite e0 in H14.
-  rewrite e1 in H11.
+  rewrite e0 in H11.
   rewrite e1 in H12.
+  rewrite e1 in H14.
   
   apply coerce_conv with B B' ; auto with coc.
 
@@ -135,7 +137,7 @@ Qed.
 
 Lemma inv_sub_sum_aux : forall e T T' s, e |- T >> T' : s ->
   forall U U' V V', T = Sum U V -> T' = Sum U' V' -> 
-  (exists s1, e |- U >> U' : s1) /\ U :: e |- V >> V' : s.
+  (e |- U >> U' : s) /\ U :: e |- V >> V' : s.
 Proof.
 
   induction 1 ; simpl ; intros ; auto with coc ; try discriminate.
@@ -144,10 +146,8 @@ Proof.
   rewrite H1 in H0.
   inversion H0.
   destruct (generation_sum2 H).
-  destruct H2.
-  split.
-  exists x ; auto with coc.
-  intuition ; apply coerce_refl ; auto with coc.
+  destruct H5.
+  intuition ; auto with coc.
 
   inversion H7.
   inversion H8.
@@ -155,9 +155,15 @@ Proof.
   rewrite <- H11.
   rewrite <- H12.
   rewrite <- H13.
-  split.
-  exists s ; auto.
-  auto.
+  split ; auto with coc.
+  
+  destruct (sum_sort_prop H5).
+  intuition.
+  rewrite <- H16 ; rewrite <- H15 ; assumption.
+
+  destruct (sum_sort_prop H5).
+  intuition.
+  rewrite <- H16 ; assumption.
 
   rewrite H6 in H.
   rewrite H7 in H2.
@@ -167,14 +173,25 @@ Proof.
   clear IHcoerce.
   induction H4.
   pose (trans_conv_conv _ _ _ H3 H5).
-  destruct (inv_conv_sum_sort_l H H2 c).
-  split.
-  exists x ; auto with coc.
-  pose (inv_conv_sum_l _ _ _ _ c).
+  destruct (inv_conv_sum_sort H H2 c).
+  destruct H8.
+  destruct H8.
+  destruct H9.
+  destruct H10.
+  destruct H11.
+  destruct (sum_sort_prop H12).
+  destruct H14.
+  rewrite <- H15.
   intuition.
+  pose (inv_conv_sum_l _ _ _ _ c).
   apply coerce_conv with U U ; auto with coc.
+  rewrite <- H14 ; auto.
+  rewrite <- H14 ; auto.
+  rewrite <- H14 ; auto.
+  rewrite <- H14 ; auto.
+  rewrite <- H14 ; auto.
+  apply coerce_refl ; auto with coc.
 
-  destruct (inv_conv_sum_sort_r H H2 c).
   apply coerce_conv with V V ; auto with coc.
   apply (inv_conv_sum_r _ _ _ _ c).
 
@@ -183,28 +200,45 @@ Proof.
   clear IHcoerce1 IHcoerce2.
   pose (inv_conv_sum_l _ _ _ _ H3).
   pose (inv_conv_sum_l _ _ _ _ H5).
-  destruct (inv_conv_sum_sort_l H H0 H3).
-  destruct (inv_conv_sum_sort_l H1 H2 H5).
-  destruct a ; destruct a0.
-  pose (unique_sort H14 H8).
-  pose (unique_sort H15 H4).
+  destruct (inv_conv_sum_sort H H0 H3).
+  destruct (inv_conv_sum_sort H1 H2 H5).
+  destruct H13 ; destruct H14.
+  destruct H13 ; destruct H14.
+  destruct H15 ; destruct H16 ; destruct H17 ; destruct H19.
+  destruct H18 ; destruct H21.
+  pose (unique_sort H14 H4).
+  pose (unique_sort H15 H8).
+  destruct (sum_sort_prop H22).
+  destruct H24.
+  destruct (sum_sort_prop H20).
+  destruct H27.
+  destruct (sum_sort_prop H11).
+  destruct H30.
 
-  split.
-  exists s.
+  assert(s'' = s).
+  rewrite H30.
+  auto.
+  rewrite <- H30 in H4_0 ; rewrite <- H30 in H9.
+  rewrite <- H30 in H10.
+
+  assert(x = s).
+  rewrite H27.
+  rewrite H28 ; auto.
+  rewrite H33 in H13 ; rewrite H33 in H15.
+  assert(x1 = s).
+  rewrite H28 ; auto.
+  rewrite H35 in H17 ; rewrite H35 in H19.
+  assert(x2 = s).
+  rewrite H25 ; auto.
+  rewrite H36 in H18 ; rewrite H36 in H21.
+  assert(x0 = s).
+  rewrite H24 ; auto.
+  rewrite H37 in H14 ; rewrite H37 in H16.
+
+  rewrite H32.
+  split ; auto with coc.
   apply coerce_conv with A0 A' ; auto with coc.
-  rewrite <- e0 ; auto.
-  rewrite <- e1 ; auto.
-  
-  pose (inv_conv_sum_r _ _ _ _ H3).
-  pose (inv_conv_sum_r _ _ _ _ H5).
-  destruct (inv_conv_sum_sort_r H H0 H3).
-  destruct (inv_conv_sum_sort_r H1 H2 H5).
 
-  rewrite e0 in H13.
-  rewrite e0 in H14.
-  rewrite e1 in H15.
-  rewrite e1 in H16.
-  
   apply coerce_conv with B B' ; auto with coc.
 
   apply typ_conv_env with (A' :: e) ; auto with coc.
@@ -216,11 +250,13 @@ Proof.
   apply coerce_env_hd with s ; auto with coc.
   apply coerce_conv with A0 A' ; auto with coc.
   apply wf_var with s ; auto with coc.
+  apply (inv_conv_sum_r _ _ _ _ H3).
 
   apply coerce_conv_env with (A0 :: e) ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
   apply coerce_conv with A0 A0 ; auto with coc.
   apply wf_var with s ; auto with coc.
+  apply (inv_conv_sum_r _ _ _ _ H5).
 
   elim conv_subset_sum with U0 P U V ; auto with coc.
 
@@ -232,7 +268,7 @@ Proof.
 Qed.
 
 Lemma inv_sub_sum_l : forall e U U' V V' s, e |- Sum U V >> Sum U' V' : s ->
-  exists s1, e |- U >> U' : s1.
+  e |- U >> U' : s.
 Proof.
   intros.
   destruct (inv_sub_sum_aux H (refl_equal (Sum U V)) (refl_equal (Sum U' V'))).
@@ -352,44 +388,45 @@ pose (IHtyp1 _ H).
 replace (Srt x) with (subst N2 (Srt x)); auto with coc core arith datatypes.
 apply substitution with V; auto with coc core arith datatypes.
 
-assert(e |- Sum U V : Srt s2).
-apply type_sum with s1 ; auto with coc core.
+assert(e |- Sum U V : Srt s3).
+apply type_sum with s1 s2 ; auto with coc core.
 
 inversion_clear H3.
 inversion_clear H5.
-destruct s.
-destruct H5.
-rewrite H5 in H3.
-inversion H3.
+pose (sum_sort_prop s).
+destruct a.
+destruct H6.
+apply inv_typ_sum2 with e U V (Srt s3) ; auto with coc ; intros.
 
 pose (IHtyp1 _ H3).
-assert(e |- Sum N1 V : Srt s2).
-apply type_sum with s1 ; auto with coc core.
+assert(s1 = s3).
+rewrite H6 ; auto.
+assert(e |- Sum N1 V : Srt s3).
+apply type_sum with s1 s2 ; auto with coc core.
 
 apply typ_red_env with U s1 ; auto with coc core.
-right ; auto.
 
-apply type_conv with (Sum N1 V) s2 ; auto with coc.
-apply type_pair with s1 s2 ; auto with coc core.
+apply type_conv with (Sum N1 V) s3 ; auto with coc.
+apply type_pair with s1 s2 s3 ; auto with coc core.
 apply type_conv with U s1 ; auto with coc core.
 apply conv_coerce ; auto with coc.
 apply typ_red_env with U s1; auto with coc core arith datatypes.
-right ; auto.
 
 apply conv_coerce ; auto with coc.
 
-destruct s.
-destruct H5.
-rewrite H6 in H3.
-inversion H3.
+pose (sum_sort_prop s).
+destruct a.
+destruct H6.
+apply inv_typ_sum2 with e U V (Srt s3) ; auto with coc ; intros.
 
 pose (IHtyp3 _ H3).
-assert(e |- Sum U N2 : Srt s2).
-apply type_sum with s1 ; auto with coc core.
-right ; auto.
+assert(s1 = s3).
+rewrite H6 ; auto.
+assert(e |- Sum U N2 : Srt s3).
+apply type_sum with s1 s2 ; auto with coc core.
 
-apply type_conv with (Sum U N2) s2 ; auto with coc.
-apply type_pair with s1 s2 ; auto with coc core.
+apply type_conv with (Sum U N2) s3 ; auto with coc.
+apply type_pair with s1 s2 s3 ; auto with coc core.
 apply type_conv with (subst u V) s2 ; auto with coc core.
 replace (Srt s2) with (subst u (Srt s2)).
 apply substitution with U ; auto with coc core arith datatypes.
@@ -399,11 +436,10 @@ apply substitution with U ; auto with coc core arith datatypes.
 simpl ; auto.
 apply substitution_coerce with U ; auto with coc core arith datatypes.
 apply conv_coerce ; auto with coc.
-right ; auto.
 apply conv_coerce ; auto with coc.
 
 pose (IHtyp2 _ H5).
-apply type_pair with s1 s2 ; auto with coc core.
+apply type_pair with s1 s2 s3 ; auto with coc core.
 
 apply type_conv with (subst u V) s2 ; auto with coc.
 replace (Srt s2) with (subst N1 (Srt s2)).
@@ -415,7 +451,7 @@ simpl ; auto.
 apply substitution_coerce_conv_l with U ; auto with coc core arith datatypes.
 
 pose (IHtyp4 _ H5).
-apply type_pair with s1 s2 ; auto with coc core.
+apply type_pair with s1 s2 s3 ; auto with coc core.
 
 inversion_clear H1.
 apply type_prod with s1; auto with coc core arith datatypes.
@@ -424,20 +460,9 @@ apply typ_red_env with T s1; auto with coc core arith datatypes.
 apply type_prod with s1; auto with coc core arith datatypes.
 
 inversion_clear H1.
-apply type_sum with s1 ; auto with coc core.
+apply type_sum with s1 s2 ; auto with coc core.
 apply typ_red_env with T s1 ; auto with coc core.
-destruct s.
-destruct H1.
-rewrite H1 in H2.
-inversion H2.
-right ; auto.
-
-apply type_sum with s1 ; auto with coc core.
-destruct s.
-destruct H1.
-rewrite H3 in H2.
-inversion H2.
-right ; auto.
+apply type_sum with s1 s2 ; auto with coc core.
 
 inversion H1.
 apply type_subset ; auto with coc core.
@@ -453,11 +478,10 @@ induction H0.
 apply inv_typ_sum2 with e U V (Srt x) ; auto ; intros.
 apply inv_typ_pair with e T u N (Sum U V) ; auto with coc ; intros.
 
-destruct (inv_sub_sum_l H9).
-pose (unicity_coerce_r H10 H4).
-apply type_conv with U0 s0 ; auto with coc.
-apply (coerce_sort_l c).
-
+pose (inv_sub_sum_l H9).
+pose (unicity_coerce_r c H4).
+apply type_conv with U0 s1 ; auto with coc.
+apply (coerce_sort_l c0).
 apply coerce_sym ; auto.
 
 pose (IHtyp _ H).
@@ -467,9 +491,9 @@ generalize H IHtyp ; clear H IHtyp.
 inversion_clear H0 ; intros.
 
 apply inv_typ_pair with e T M u (Sum U V) ; auto with coc ; intros.
-destruct (inv_sub_sum_l H6).
-pose (unicity_coerce_r H7 H1).
-pose (coerce_sort_l c).
+pose (inv_sub_sum_l H6).
+pose (unicity_coerce_r c H1).
+pose (coerce_sort_l c0).
 assert (e |- M : U).
 apply type_conv with U0 s1 ; auto with coc.
 apply coerce_sym ; auto with coc.
@@ -487,7 +511,7 @@ replace (Srt s) with (subst M (Srt s)).
 apply substitution with U ; auto with coc core arith datatypes.
 apply typ_conv_env with (U0 :: e) ; auto with coc.
 apply coerce_env_hd with s1 ; auto with coc.
-apply wf_var with s0; auto with coc.
+apply wf_var with s; auto with coc.
 simpl ; auto.
 
 apply substitution_coerce with U ; auto with coc core arith datatypes.
