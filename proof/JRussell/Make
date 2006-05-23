@@ -1,10 +1,13 @@
 -R .. Lambda -R . JRussell
 # List of vernac files to compile
 Types.v
+Freevars.v
+Basic.v
+Conversion.v
 Coercion.v
-Inversion.v
-Thinning.v
 Substitution.v
+PreFunctionality.v
+Inversion.v
 GenerationNotKind.v
 GenerationCoerce.v
 Generation.v

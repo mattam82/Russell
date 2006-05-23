@@ -5,11 +5,10 @@ Require Import Lambda.Conv_Dec.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
 Require Import JRussell.Types.
-Require Import JRussell.Thinning.
-Require Import JRussell.Substitution.
+Require Import JRussell.Basic.
 Require Import JRussell.Coercion.
-Require Import JRussell.GenerationNotKind.
-Require Import JRussell.GenerationCoerce.
+Require Import JRussell.Substitution.
+Require Import JRussell.PreFunctionality.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -17,23 +16,6 @@ Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
 Set Implicit Arguments.
-
-Lemma wf_is_sorted : forall e, wf e ->
-  forall x n, item _ x e n -> forall s, x = Srt s -> is_prop s.
-Proof.
-  induction 1 ; simpl ; intros ; auto with coc.
-  elim (inv_nth_nl _ _ _ H).
-  pose (item_trunc).
-  induction (item_trunc _ _ _ _ H0).
-
-  pose (wf_sort).
-  pose (wf_var H).
-  induction (wf_sort  H2 w H0).
-  rewrite H1 in H3.
-  pose (typ_sort H3).
-  intuition.
-Qed.
-
 
 Lemma inv_lift_sort : forall t s n, lift n t = Srt s -> t = Srt s.
 Proof.
@@ -57,6 +39,100 @@ Proof.
   intros.
   discriminate.
 Qed.
+
+Inductive trans_jeq : env -> term -> term -> Prop :=
+ | refl_trans_jeq : forall e T, trans_jeq e T T
+ | step_trans_jeq : forall e T U W, e |- T = U : W -> forall V, trans_jeq e U V ->
+   trans_jeq e T V.
+
+Hint Resolve refl_trans_jeq step_trans_jeq : coc.
+
+Ltac extensionalpattern a :=
+let t := fresh "t" in (
+let H := fresh "H" in (
+let Heqt := fresh "Heqt" in (
+set (t := a) ; intro H ;
+assert(Heqt : t = a) ; [ (unfold t ; reflexivity) |
+generalize H Heqt ; clear H Heqt ;
+generalize t ; clear t ; intros t]))).
+(*
+Lemma coerce_sort_l : forall e T U s, e |- T >> U : s ->
+  (trans_jeq e T (Srt s) -> trans_jeq e U (Srt s)) /\ (trans_jeq e U (Srt s) -> 
+  trans_jeq e T (Srt s)).
+Proof.
+  induction 1 ; simpl ; intros; split ; intros ; try discriminate.
+  rewrite H0 in H.
+  inversion H.
+*)
+
+Lemma jeq_not_kind : forall e T U W, e |- T = U : W -> (T = Srt kind -> False) /\ (U = Srt kind -> False).
+Proof.
+  induction 1 ; simpl ; intros ; split ; intros ; 
+  (try destruct IHjeq) ; (try destruct IHjeq1) ; (try destruct IHjeq2) ;
+  try discriminate ; auto with coc.
+  
+  apply H2 ; apply (inv_lift_sort _ _ H1).
+  apply H3 ; apply (inv_lift_sort _ _ H1).
+
+  destruct (inv_subst_sort _ _ _ H3).
+  rewrite H4 in H2.
+  elim (left_not_kind H2) ; auto.
+  elim (left_not_kind H1) ; auto.
+
+  elim (left_not_kind H2) ; auto.
+  elim (left_not_kind H3) ; auto.
+  
+  elim (left_not_kind H) ; auto.
+  elim (left_not_kind H) ; auto.
+Qed.
+
+Lemma coerce_not_kind : forall e T U s, e |- T >> U : s -> (T = Srt kind -> False) /\ (U = Srt kind -> False).
+Proof.
+  induction 1 ; simpl ; intros ; split ; intros ; 
+  (try destruct IHcoerce) ; (try destruct IHcoerce1) ; (try destruct IHcoerce2) ;
+  try discriminate ; auto with coc.
+  
+  elim (jeq_not_kind H) ; auto.
+  elim (jeq_not_kind H) ; auto.
+  
+  apply H2 ; apply (inv_lift_sort _ _ H1).
+  apply H3 ; apply (inv_lift_sort _ _ H1).
+Qed.
+
+Lemma trans_jeq_kind : forall e U, trans_jeq e U (Srt kind) -> U = Srt kind.
+Proof.
+  intros e U.
+  extensionalpattern (Srt kind).
+  induction 1 ; simpl ; intros ; auto with coc.
+  pose (IHtrans_jeq Heqt).
+  rewrite e0 in H.
+  rewrite Heqt in H.
+  destruct (jeq_not_kind H).
+  elim H2 ; auto.
+Qed.
+
+Lemma generation_sort :  forall e s T, e |- Srt s : T ->
+  trans_jeq e T (Srt kind).
+Proof.
+  intros e s T.
+  extensionalpattern (Srt s).
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  pose (inv_lift_sort _ _ Heqt).
+  pose (IHtyp1 e0).
+  pose (trans_jeq_kind t0).
+  rewrite e1.
+  simpl ; auto with coc.
+
+  pose (IHtyp Heqt).
+  pose (trans_jeq_kind t0).
+  rewrite e0 in H0.
+  elim (coerce_not_kind H0) ; intros.
+  elim H1 ; auto.
+Qed.
+
+
+
 
 Lemma gen_sorting_var_aux : forall e t T, e |- t : T ->
   forall n, t = Ref n -> 

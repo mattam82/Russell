@@ -108,7 +108,6 @@ Proof.
   apply kind_is_prod_aux with G (Srt kind) ; auto.
 Qed.
 
-
 Lemma sort_conv_eq : forall G T s, G |- T : Srt kind -> conv T (Srt s) -> T = Srt s.
 Proof.
   intros.
