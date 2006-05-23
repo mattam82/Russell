@@ -6,7 +6,9 @@ Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
 Require Import JRussell.Types.
 Require Import JRussell.Basic.
+Require Import JRussell.Conversion.
 Require Import JRussell.Coercion.
+Require Import JRussell.Thinning.
 Require Import JRussell.Substitution.
 Require Import JRussell.PreFunctionality.
 
@@ -40,13 +42,6 @@ Proof.
   discriminate.
 Qed.
 
-Inductive trans_jeq : env -> term -> term -> Prop :=
- | refl_trans_jeq : forall e T, trans_jeq e T T
- | step_trans_jeq : forall e T U W, e |- T = U : W -> forall V, trans_jeq e U V ->
-   trans_jeq e T V.
-
-Hint Resolve refl_trans_jeq step_trans_jeq : coc.
-
 Ltac extensionalpattern a :=
 let t := fresh "t" in (
 let H := fresh "H" in (
@@ -55,15 +50,6 @@ set (t := a) ; intro H ;
 assert(Heqt : t = a) ; [ (unfold t ; reflexivity) |
 generalize H Heqt ; clear H Heqt ;
 generalize t ; clear t ; intros t]))).
-(*
-Lemma coerce_sort_l : forall e T U s, e |- T >> U : s ->
-  (trans_jeq e T (Srt s) -> trans_jeq e U (Srt s)) /\ (trans_jeq e U (Srt s) -> 
-  trans_jeq e T (Srt s)).
-Proof.
-  induction 1 ; simpl ; intros; split ; intros ; try discriminate.
-  rewrite H0 in H.
-  inversion H.
-*)
 
 Lemma jeq_not_kind : forall e T U W, e |- T = U : W -> (T = Srt kind -> False) /\ (U = Srt kind -> False).
 Proof.
@@ -99,20 +85,55 @@ Proof.
   apply H3 ; apply (inv_lift_sort _ _ H1).
 Qed.
 
-Lemma trans_jeq_kind : forall e U, trans_jeq e U (Srt kind) -> U = Srt kind.
+Inductive equiv : env -> term -> term -> Prop :=
+ |equiv_refl : forall e T, equiv e T T
+ |equiv_step : forall e T U s, e |- T >> U : s -> forall V, equiv e U V -> equiv e T V.
+
+Lemma equiv_lift : forall e T U, equiv e T U -> 
+ forall V s, e |- V : Srt s -> equiv (V :: e) (lift 1 T) (lift 1 U).
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  left ; auto.
+  
+  right with (lift 1 U) s.
+  apply coerce_weak with s0 ; auto.
+  apply IHequiv with s0 ; auto with coc.
+Qed.
+
+Hint Resolve equiv_refl : coc.
+
+Lemma equiv_coerce : forall e V V', equiv e V V' -> forall T U,
+  forall s, e |- T >> U : s ->
+  forall s', e |- T >> V : s' -> equiv e U V'.
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+
+  right with T0 s ; auto with coc.
+  right with T s' ; auto with coc.
+
+  right with T0 s0 ; auto with coc.
+  right with T s' ; auto with coc.
+  right with U s ; auto with coc.
+Qed.
+
+Lemma equiv_kind : forall e U, equiv e U (Srt kind) -> U = Srt kind.
 Proof.
   intros e U.
   extensionalpattern (Srt kind).
   induction 1 ; simpl ; intros ; auto with coc.
-  pose (IHtrans_jeq Heqt).
-  rewrite e0 in H.
-  rewrite Heqt in H.
-  destruct (jeq_not_kind H).
-  elim H2 ; auto.
+  
+  destruct H0.
+  pose (coerce_not_kind H).
+  intuition.
+
+  pose (IHequiv Heqt).
+  rewrite Heqt in e0.
+  elim (coerce_not_kind H).
+  intuition.
 Qed.
 
-Lemma generation_sort :  forall e s T, e |- Srt s : T ->
-  trans_jeq e T (Srt kind).
+Lemma generation_sort :  forall e s T, e |- Srt s : T -> equiv e T (Srt kind).
 Proof.
   intros e s T.
   extensionalpattern (Srt s).
@@ -120,489 +141,394 @@ Proof.
 
   pose (inv_lift_sort _ _ Heqt).
   pose (IHtyp1 e0).
-  pose (trans_jeq_kind t0).
-  rewrite e1.
-  simpl ; auto with coc.
+  pose (equiv_kind e1).
+  rewrite e2.
+  simpl ; left ; auto with coc.
 
   pose (IHtyp Heqt).
-  pose (trans_jeq_kind t0).
-  rewrite e0 in H0.
+  pose (equiv_kind e0).
+  rewrite e1 in H0.
   elim (coerce_not_kind H0) ; intros.
   elim H1 ; auto.
 Qed.
 
-
-
-
-Lemma gen_sorting_var_aux : forall e t T, e |- t : T ->
-  forall n, t = Ref n -> 
-  forall s, T = (Srt s) ->
-  is_prop s.
+Lemma inv_lift_ref : forall t n, lift 1 t = Ref n -> exists n', t = Ref n' /\ S n' = n.
 Proof.
-  induction 1 using typ_wf_mut with
-   (P := fun e t T => fun H : e |- t : T =>
-   forall n, t = Ref n -> 
-   forall s, T = (Srt s) ->
-   is_prop s)
-   (P0 := fun e => fun H : wf e =>
-   forall s, forall n, item _ (Srt s) e n -> is_prop s)
- ; try (simpl ; intros ; try discriminate ; auto with coc).
- 
-  rewrite H0 in i.
-  destruct i.
-  rewrite (inv_lift_sort x (S n) (sym_eq H1)) in H2.
-  apply (IHtyp s n).
-  auto.
- 
-  rewrite H3 in H0.
-  pose (typ_sort H0).
-  intuition.
- 
-  elim (inv_nth_nl _ _ _ H).
-
-  pose (wf_is_sorted).
-  apply wf_is_sorted with (T :: e) (Srt s0) n ; auto with coc.
-  eapply wf_var with s ; auto with coc.
+  induction t ; simpl ; intros ; try discriminate ; auto with coc.
+  unfold lift in H ; simpl in H.
+  inversion H.
+  exists n ; intuition.
 Qed.
 
-Lemma gen_sorting_var : 
-  forall e n s, e |- Ref n : Srt s -> is_prop s.
+Lemma generation_var_aux : forall e T A, e |- T : A -> 
+  forall n, T = Ref n ->
+  exists B, item_lift B e n /\ equiv e A B.
 Proof.
-  intros.
-  apply gen_sorting_var_aux with e (Ref n) (Srt s) n ; auto.
-Qed.
-
-Lemma gen_sorting_app_aux : forall e t Ts, e |- t : Ts ->
-  forall M N, t = App M N ->
-  forall s, Ts = Srt s -> is_prop s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-
-  inversion_clear H1.
-  pose (type_no_kind_prod_type H0).
-  induction s ; unfold is_prop ; simpl ; auto.
-  pose (subst_to_sort _ H2 (typ_not_kind H)).
-  rewrite e0 in t.
-  simpl in t ; intuition ; contradiction.
-
-  rewrite H4 in H0.
-  pose (typ_sort H0).
-  intuition.
-Qed.
-
-Lemma gen_sorting_app : forall e M N s, e |- App M N : Srt s -> is_prop s.
-Proof.
-  intros.
-  eapply gen_sorting_app_aux with e (App M N) (Srt s) M N ; auto ; auto.
-Qed.
-
-Lemma gen_sorting_pi1_aux : forall e t Ts, e |- t : Ts ->
-  forall M, t = Pi1 M ->
-  forall s, Ts = Srt s -> is_prop s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
+  intros e T A.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
 
   inversion H0.
-  pose (type_no_kind_sum_type H).
-  induction s ; unfold is_prop ; simpl ; auto.
-  rewrite H1 in t0.
-  simpl in t0 ; intuition ; contradiction.
-
-  rewrite H4 in H0.
-  pose (typ_sort H0).
-  intuition.
-Qed.
-
-Lemma gen_sorting_pi1 : forall e M s, e |- Pi1 M : Srt s -> is_prop s.
-Proof.
-  intros.
-  eapply gen_sorting_pi1_aux with e (Pi1 M) (Srt s) M ; auto ; auto.
-Qed.
-
-Lemma gen_sorting_pi2_aux : forall e t Ts, e |- t : Ts ->
-  forall M, t = Pi2 M ->
-  forall s, Ts = Srt s -> is_prop s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-
-  inversion H0.
-  pose (type_no_kind_sum_type H).
-  assert(Pi1 t <> Srt s) ; try (red ; intros ; discriminate).
-  pose (subst_to_sort _ H1 H2).
-  induction s ; unfold is_prop ; simpl ; auto.
-  rewrite e0 in t0.
-  simpl in t0 ; intuition ; contradiction.
-
-  rewrite H4 in H0.
-  pose (typ_sort H0).
-  intuition.
-Qed.
-
-Lemma gen_sorting_pi2 : forall e M s, e |- Pi2 M : Srt s -> is_prop s.
-Proof.
-  intros.
-  eapply gen_sorting_pi2_aux with e (Pi2 M) (Srt s) M ; auto ; auto.
-Qed.
-
-Lemma sorting_lambda_aux : forall e t Ts, e |- t : Ts ->
-  forall T M, t = Abs T M -> forall s, Ts <> Srt s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-  unfold not ; intros.
-  rewrite H4 in H0.
-  destruct (typ_sort H0).
-  inversion H6.
-  rewrite H8 in H2.
-  rewrite H4 in H2.
-  pose (coerce_propset_r H2).
-  pose (IHtyp1 T M H3 s0).
-  contradiction.
-Qed.
-
-Lemma sorting_lambda : forall e T M s, ~ e |- Abs T M : Srt s.
-Proof.
-  unfold not ; intros.
-  apply (sorting_lambda_aux H (refl_equal (Abs T M)) (refl_equal (Srt s))).
-Qed.
-
-Lemma generation_prod_aux : forall e T Ts, e |- T : Ts ->
-  forall U V, T = Prod U V -> exists s, Ts = Srt s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-  exists s2 ; auto.
-
-  destruct (IHtyp1 U0 V0 H3).
-  rewrite H4 in H1.
-  induction (typ_sort H1).
-  inversion H6.
-  rewrite H8 in H2.
-  rewrite H4 in H2.
-  pose (coerce_propset_l H2).
-  exists x ; auto.
-Qed.
-
-Lemma generation_prod : forall e U V Ts, e |- Prod U V : Ts ->
-  exists s, Ts = Srt s.
-Proof.
-  intros.
-  eapply generation_prod_aux with e (Prod U V) U V ; auto.
-Qed.
-
-Lemma generation_prod2_aux : forall e T Ts, e |- T : Ts ->
-  forall U V, T = Prod U V -> forall s, Ts = Srt s ->
-  (exists s', e |- U : Srt s') /\ (U :: e) |- V : Srt s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-
-  inversion H1.
-  rewrite H4 in H.
-  rewrite H5 in H0.
-  rewrite H4 in H0.
-
+  exists (lift 1 T).
   split.
-  exists s1 ; auto.
-  inversion H2.
-  rewrite <- H6.
+  exists T ; auto.
+  constructor.
+  left ; auto with coc.
+  
+  pose (inv_lift_ref _ H1).
+  destruct e0.
+  destruct H2.
+  destruct (IHtyp1 _ H2).
+  destruct H4.
+  exists (lift 1 x0).
+  split.
+  destruct H4.
+  exists x1 ; auto.
+  rewrite H4.
+  rewrite <- simpl_lift.
+  rewrite H3.
+  reflexivity.
+  rewrite <- H3.
+  constructor.
   assumption.
 
-  rewrite H4 in H2.
-  rewrite H4 in H0.
-  induction (typ_sort H0).
-  inversion H6.
-  rewrite H8 in H2.
-  pose (coerce_propset_r H2).
+  apply equiv_lift with s ; auto.
 
-  apply (IHtyp1 U0 V0 H3 s0 e0).
+  pose (IHtyp _ H1).
+  destruct e0.
+  destruct H2.
+  exists x ; intuition.
+  right with U s ; auto with coc.
 Qed.
 
-Lemma generation_prod2 : forall e U V s, e |- Prod U V : Srt s ->
-  (exists s', e |- U : Srt s') /\ (U :: e) |- V : Srt s.
+Lemma generation_var : forall e n A, e |- Ref n : A -> 
+  exists B, item_lift B e n /\ equiv e A B.
 Proof.
-  intros.
-  eapply generation_prod2_aux  ; auto ; auto.
+  intros ; eapply generation_var_aux ; auto ; auto.
 Qed.
 
-Lemma generation_sum_aux : forall e T Ts, e |- T : Ts ->
-  forall U V, T = Sum U V -> exists s, Ts = Srt s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-  exists s2 ; auto.
-  inversion H1 ; intuition.
-  inversion H3 ; inversion H6 ; auto.
-  inversion H3 ; inversion H6 ; auto.
-
-  destruct (IHtyp1 U0 V0 H3).
-  rewrite H4 in H1.
-  induction (typ_sort H1).
-  inversion H6.
-  rewrite H8 in H2.
-  rewrite H4 in H2.
-  pose (coerce_propset_l H2).
-  exists x ; auto.
-Qed.
-
-Lemma generation_sum : forall e U V Ts, e |- Sum U V : Ts ->
-  exists s, Ts = Srt s.
-Proof.
-  intros.
-  eapply generation_sum_aux with e (Sum U V) U V ; auto.
-Qed.
-
-Lemma generation_sum2_aux : forall e T Ts, e |- T : Ts ->
-  forall U V, T = Sum U V -> forall s, Ts = Srt s ->
-  e |- U : Srt s /\ (U :: e) |- V : Srt s /\ sum_sort s s s.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-
-  inversion H2.
-  rewrite <- H5.
-  rewrite <- H6.
-  inversion H3.
-  rewrite H7 in H1.
-  induction H1 ; intuition.
-  rewrite H9.
-  rewrite H4 in H.
-  assumption.
-  rewrite H9.
-  rewrite H1 in H0.
-  assumption.
-
-  rewrite H9 ; unfold sum_sort ; intuition.
-  rewrite H9.
-  rewrite H4 in H.
-  assumption.
-  rewrite H9.
-  rewrite H1 in H0.
-  assumption.
-  rewrite H9 ; unfold sum_sort ; intuition.
-
-  destruct (IHtyp1 U0 V0 H3 s0).
-  rewrite H4 in H2.
-  apply (coerce_propset_r H2).
-  intuition.
-Qed.
-
-Lemma generation_sum2 : forall e U V s, e |- Sum U V : Srt s ->
-  e |- U : Srt s /\ (U :: e) |- V : Srt s /\ sum_sort s s s.
-Proof.
-  intros.
-  eapply generation_sum2_aux with (Sum U V) (Srt s); auto.
-Qed.
-
-Lemma generation_subset_aux : forall e T Ts, e |- T : Ts ->
-  forall U V, T = Subset U V -> Ts = Srt set.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-  auto.
-
-  pose (IHtyp1 U0 V0 H3).
-  rewrite e0 in H2.
-  exact (coerce_propset_l H2).
-Qed.
-
-Lemma generation_subset : forall e U V Ts, e |- Subset U V : Ts ->
-  Ts = Srt set.
-Proof.
-  intros.
-  eapply generation_subset_aux with e (Subset U V) U V ; auto.
-Qed.
-
-Lemma generation_subset2_aux : forall e T Ts, e |- T : Ts ->
-  forall U V, T = Subset U V -> Ts = Srt set ->
-  e |- U : Srt set /\ (U :: e) |- V : Srt prop.
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate.
-
-  inversion H1.
-  rewrite H4 in H.
-  rewrite H5 in H0.
-  rewrite H4 in H0.
-  intuition.
-
-  rewrite H4 in H2.
-  pose (coerce_propset_r H2).
- 
-  apply (IHtyp1 U0 V0 H3 e0).
-Qed.
-
-Lemma generation_subset2 : forall e U V s, e |- Subset U V : Srt set ->
-  (e |- U : Srt set) /\ (U :: e) |- V : Srt prop.
-Proof.
-  intros.
-  eapply generation_subset2_aux  ; auto ; auto.
-Qed.
-
-Lemma var_sort_item : forall e t T, e |- t : T ->
-  forall n, t = Ref n -> 
-  forall s, T = (Srt s) -> item _ (Srt s) e n.
+Lemma generation_prod_aux : forall e T A, e |- T : A -> forall U V, T = Prod U V ->
+  exists s1, exists s2, e |- U : Srt s1 /\ U :: e |- V : Srt s2 /\ equiv e A (Srt s2).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-  inversion H1.
 
-  rewrite H2 in H0.
-  rewrite <- H4 ; auto.
-  destruct H0.
-  assert(x = Srt s).
-  apply (inv_lift_sort) with (S n) ; auto.
-  rewrite H5 in H3 ; assumption.
-
-  rewrite H4 in H2.
-  pose (coerce_propset_r H2).
-  pose (IHtyp1 n H3 s0 e0).
-  assumption.
-Qed. 
-
-Lemma unique_var_sort : forall e n s, e |- Ref n : Srt s ->
-  forall s', e |- Ref n : Srt s' -> s = s'.
-Proof.
-  intros.
-  pose (var_sort_item H (refl_equal (Ref n)) (refl_equal (Srt s))).
-  pose (var_sort_item H0 (refl_equal (Ref n)) (refl_equal (Srt s'))).
-  pose (fun_item _ _ _ _ _ i i0).
-  inversion e0 ; auto.
-Qed.
-
-Lemma sort_of_app_aux : forall e t Ts, e |- t : Ts ->
-  forall M N, t = App M N ->
-  forall s, Ts = Srt s -> 
-  (exists V, e |- M : Prod V (Srt s) /\ e |- N : V). 
-Proof.
-  induction 1 ; simpl ; intros ;
-  auto with coc core arith datatypes ; try discriminate.
-  inversion H1.
-
-  induction (inv_subst_sort _ _ _ H2).
-  rewrite H3 in H.
-  destruct (typ_sort H).
-  rewrite H7 in H0.
-  pose (type_no_kind_prod_type H0).
-  simpl in t.
-  intuition.
-  
-  rewrite H3 in H0.
-  rewrite H4 in H0.
-  exists V ; intuition ; auto.
-  rewrite <- H5 ; auto.
-
-  rewrite H4 in H2.
-  pose (coerce_propset_r H2).
-  exact (IHtyp1 _ _ H3 _ e0).
-Qed.
-
-Lemma sort_of_app : forall e M N s, e |- App M N : Srt s ->
-  exists V, e |- M : Prod V (Srt s) /\ e |- N : V.
-Proof.
-  intros. 
-  eapply sort_of_app_aux ; auto ; auto ; auto.
-Qed.
-
-
-Lemma sort_of_app_aux2 : forall e t Ts, e |- t : Ts ->
-  forall M N, t = App M N ->
-  forall s, Ts = Srt s -> 
-  forall s', ~ N = Srt s'.
-Proof.
-  intros.
-  red ; intros.
-  rewrite H1 in H.
-  rewrite H0 in H.
-  destruct (sort_of_app H).
-  destruct H3.
-  rewrite H2 in H4.
-  pose (typ_sort H4).
-  destruct a.
-  rewrite H6 in H3.
-  pose (type_no_kind_prod_type H3).
-  simpl in t0.
-  intuition.
-Qed.
-
-Lemma sort_of_app2 : forall e M N s, e |- App M N : Srt s -> forall s', ~ N = Srt s'.
-Proof.
-  intros. 
-  eapply (sort_of_app_aux2 H) ; auto ; auto ; auto.
-Qed.
-
-Lemma strength_sort_judgement : forall T e s s', T :: e |- Srt s : Srt s' ->
-  e |- Srt s : Srt s'.
-Proof.
-  intros.
-  pose (typ_wf H).
-  inversion w.
-  pose (typ_wf H1).
-  inversion H ; auto with coc.
-
-  destruct (typ_sort H).
-  inversion H11.
-  rewrite H13 in H4.
-  pose (type_has_no_kind H4).
-  simpl in t0.
-  intuition.
-Qed.
-
-Lemma type_sorted : forall e t T, e |- t : T ->
-  T = Srt kind \/ exists s, e |- T : Srt s.
-Proof.
-  induction 1 ; simpl ; intros ; auto with coc ; try discriminate ; 
- try (destruct H ; discriminate) ;  try (destruct H1 ; discriminate).
-
-  right; exact (wf_sort_lift H H0).
- 
-  right.
-  exists s2.
-  apply type_prod with s1 ; auto.
-
-  induction IHtyp2 ; try discriminate.
-  induction H1.
-  induction IHtyp1.
-  rewrite H2 in H0.
-  pose (type_no_kind_prod_type H0).
-  simpl in t.
-  intuition.
-
-  induction H2.
-  right.
-  exists x.
-  induction (generation_prod2 H1).
-  replace (Srt x) with (subst v (Srt x)).
-  apply (substitution H4 H).
-  unfold subst ; unfold subst_rec ; auto.
-
-  right.
-  exists s3.
-  apply type_sum with s1 s2 ; auto.
-
-  induction IHtyp2.
-  left ; assumption.
-  induction H1.
-  right.
-  exists x ; auto.
-  eapply strength_sort_judgement with T ; auto.
-  
-  induction IHtyp2.
-  unfold sum_sort in H1.
-  inversion H2.
-  intuition ; try rewrite H4 in H5 ; try rewrite H4 in H1 ; try discriminate.
-  right ; exists kind.
-  pose (typ_wf H).
-  induction H1 ; intuition ; try discriminate ; rewrite H5 ; auto with coc.
-  
-  induction IHtyp ; try discriminate.
-  induction H0.
-  induction (generation_sum2 H0).
-  right ; exists x ; auto.
-
-  induction IHtyp ; try discriminate.
-  induction H0.
-  induction (generation_sum2 H0).
-  right.
-  assert (e |- Pi1 t : U).
-  apply type_pi1 with V ; auto.
-  exists x.
-  replace (Srt x) with (subst (Pi1 t) (Srt x)).
+  induction t ; simpl in H1 ; try discriminate.
+  clear IHt1 IHt2.
+  destruct (IHtyp1 t1 t2) ; auto with coc.
   destruct H2.
-  apply (substitution H2 H3).
-  unfold subst ; unfold subst_rec ; auto.
+  intuition.
+  unfold lift in H1 ; simpl in H1.
+  inversion H1.
+  exists x ; exists x0.
+  intuition ; auto with coc.
+  change (Srt x) with (lift 1 (Srt x)).
+  unfold lift.
+  pose (type_weak H3 H0) ; auto with coc.
+
   
-  right ; exists s ; auto.
+
+  change (Srt x0) with (lift_rec 1 (Srt x0) 1).
+  apply (type_weak_weak H0 H2) ; auto with coc.
+  
+  pose (equiv_lift H5 H0).
+  unfold lift in e0 ; simpl in e0.
+  unfold lift ; apply e0.
+
+  inversion H1.
+  rewrite <- H3 ; rewrite <- H4.
+  exists s1 ; exists s2 ; intuition ; auto with coc.
+  
+  destruct (IHtyp _ _ H1).
+  destruct H2.
+  intuition.
+  exists x ; exists x0 ; intuition ; auto with coc.
+  right with U s ; auto with coc.
 Qed.
+
+Lemma generation_prod : forall e U V A, e |- Prod U V : A -> 
+  exists s1, exists s2, e |- U : Srt s1 /\ U :: e |- V : Srt s2 /\ equiv e A (Srt s2).
+Proof.
+  intros ; eapply generation_prod_aux ; auto ; auto.
+Qed.
+
+Lemma generation_sum_aux : forall e T A, e |- T : A -> forall U V, T = Sum U V ->
+  exists s1, exists s2, exists s3,
+  e |- U : Srt s1 /\ 
+  U :: e |- V : Srt s2 /\
+  sum_sort s1 s2 s3 /\
+  equiv e A (Srt s3).
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct t ; simpl in H1 ; try discriminate.
+  destruct (IHtyp1 t1 t2) ; auto with coc.
+  destruct H2.
+  destruct H2.
+  intuition.
+  unfold lift in H1 ; simpl in H1.
+  inversion H1.
+  exists x ; exists x0 ; exists x1.
+  intuition ; auto with coc.
+  change (Srt x) with (lift 1 (Srt x)).
+  unfold lift.
+  pose (type_weak H3 H0) ; auto with coc.
+  change (Srt x0) with (lift_rec 1 (Srt x0) 1).
+  apply (type_weak_weak H0 H2) ; auto with coc.
+  
+  pose (equiv_lift H6 H0).
+  unfold lift in e0 ; simpl in e0.
+  unfold lift ; apply e0.
+
+  inversion H2.
+  rewrite <- H4 ; rewrite <- H5.
+  exists s1 ; exists s2 ; exists s3 ; intuition ; auto with coc.
+  
+  destruct (IHtyp _ _ H1).
+  do 2 destruct H2.
+  intuition.
+  exists x ; exists x0 ; exists x1 ; intuition ; auto with coc.
+  right with U s ; auto with coc.
+Qed.
+
+Lemma generation_sum : forall e U V A, e |- Sum U V : A -> 
+  exists s1, exists s2, exists s3,
+  e |- U : Srt s1 /\ 
+  U :: e |- V : Srt s2 /\
+  sum_sort s1 s2 s3 /\
+  equiv e A (Srt s3).
+Proof.
+  intros ; eapply generation_sum_aux ; auto ; auto.
+Qed.
+
+Lemma generation_lambda_aux : forall e t A, e |- t : A -> forall T M, t = Abs T M ->
+  exists s1, exists s2, exists C, 
+  e |- T : Srt s1 /\ 
+  T :: e |- C : Srt s2 /\
+  T :: e |- M : C /\
+  equiv e A (Prod T C).
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct t ; simpl in H1 ; try discriminate.
+  destruct (IHtyp1 t1 t2) ; auto with coc.
+  do 2 destruct H2.
+  intuition.
+  unfold lift in H1 ; simpl in H1.
+  inversion H1.
+  exists x ; exists x0 ; exists (lift_rec 1 x1 1).
+  intuition ; auto with coc.
+  change (Srt x) with (lift 1 (Srt x)).
+  unfold lift.
+  pose (type_weak H3 H0) ; auto with coc.
+
+  change (Srt x0) with (lift_rec 1 (Srt x0) 1).
+  apply (type_weak_weak H0 H2) ; auto with coc.
+
+  apply (type_weak_weak H0 H4) ; auto with coc.
+  
+  pose (equiv_lift H6 H0).
+  apply e0.
+
+  inversion H2.
+  rewrite <- H4 ; rewrite <- H5.
+  exists s1 ; exists s2 ; exists U ; intuition ; auto with coc.
+  
+  destruct (IHtyp _ _ H1).
+  do 2 destruct H2.
+  intuition.
+  exists x ; exists x0 ; exists x1 ; intuition ; auto with coc.
+  right with U s ; auto with coc.
+Qed.
+
+Lemma generation_lambda : forall e T M A, e |- Abs T M : A -> 
+  exists s1, exists s2, exists C, 
+  e |- T : Srt s1 /\ 
+  T :: e |- C : Srt s2 /\
+  T :: e |- M : C /\
+  equiv e A (Prod T C).
+Proof.
+  intros ; eapply generation_lambda_aux ; auto ; auto.
+Qed.
+
+Lemma generation_app_aux : forall e t C, e |- t : C -> forall M N, t = App M N ->
+  exists A, exists B,
+  e |- M : Prod A B /\ 
+  e |- N : A /\
+  equiv e C (subst N B).
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct t ; simpl in H1 ; try discriminate.
+  destruct (IHtyp1 t1 t2) ; auto with coc.
+  do 2 destruct H2.
+  intuition.
+  unfold lift in H1 ; simpl in H1.
+  inversion H1.
+  exists (lift_rec 1 x 0) ; exists (lift_rec 1 x0 1); intuition ; auto with coc.
+  pose (type_weak H2 H0) ; auto with coc.
+
+  apply (type_weak_lift_rec H4 H0) ; auto with coc.
+  
+  pose (equiv_lift H5 H0).
+  rewrite <- distr_lift_subst.
+  apply e0.
+
+  inversion H1.
+  rewrite <- H4 ; rewrite <- H3.
+  exists V ; exists Ur ; intuition ; auto with coc.
+  
+  destruct (IHtyp _ _ H1).
+  do 2 destruct H2.
+  intuition.
+  exists x ; exists x0 ; intuition ; auto with coc.
+  right with U s ; auto with coc.
+Qed.
+
+Lemma generation_app : forall e M N C, e |- App M N : C -> 
+  exists A, exists B,
+  e |- M : Prod A B /\ 
+  e |- N : A /\
+  equiv e C (subst N B).
+Proof.
+  intros ; eapply generation_app_aux ; auto ; auto.
+Qed.
+
+Lemma generation_pair_aux : forall e t C, e |- t : C -> forall T M N, t = Pair T M N ->
+  exists A, exists B, exists s1, exists s2, exists s3,
+  T = Sum A B /\
+  e |- A : Srt s1 /\
+  A :: e |- B : Srt s2 /\
+  sum_sort s1 s2 s3 /\
+  e |- M : A /\ 
+  e |- N : subst M B /\
+  equiv e C (Sum A B).
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct t ; simpl in H1 ; try discriminate.
+  destruct (IHtyp1 t1 t2 t3) ; auto with coc.
+  do 4 destruct H2.
+  intuition.
+  unfold lift in H1 ; simpl in H1.
+  inversion H1.
+  exists (lift_rec 1 x 0) ; exists (lift_rec 1 x0 1);
+  exists x1 ; exists x2 ; exists x3 ; intuition ; auto with coc.
+  clear IHtyp2.
+  rewrite H3 ; simpl ; auto.
+  
+  change (Srt x1) with (lift_rec 1 (Srt x1) 0).
+  apply (type_weak H2 H0) ; auto with coc.
+
+  change (Srt x2) with (lift_rec 1 (Srt x2) 1).
+  apply (type_weak_weak H0 H4) ; auto with coc.
+
+  pose (type_weak H6 H0) ; auto with coc.
+
+  rewrite <- distr_lift_subst.
+  apply (type_weak_lift_rec H7 H0) ; auto with coc.
+  
+  pose (equiv_lift H9 H0).
+  apply e0.
+
+  inversion H4.
+  rewrite <- H7 ; rewrite <- H8.
+  exists U ; exists V ; exists s1 ; exists s2 ; exists s3 ; intuition ; auto with coc.
+   
+  destruct (IHtyp _ _ _ H1).
+  do 4 destruct H2.
+  intuition.
+  exists x ; exists x0 ; exists x1 ; exists x2 ; exists x3 ; intuition ; auto with coc.
+  right with U s ; auto with coc.
+Qed.
+
+Lemma generation_pair : forall e T M N C, e |- Pair T M N : C ->
+  exists A, exists B, exists s1, exists s2, exists s3,
+  T = Sum A B /\
+  e |- A : Srt s1 /\
+  A :: e |- B : Srt s2 /\
+  sum_sort s1 s2 s3 /\
+  e |- M : A /\ 
+  e |- N : subst M B /\
+  equiv e C (Sum A B).
+Proof.
+  intros ; eapply generation_pair_aux ; auto ; auto.
+Qed.
+
+Lemma generation_pi1_aux : forall e t C, e |- t : C -> forall M, t = Pi1 M ->
+  exists A, exists B,
+  e |- M : Sum A B /\ 
+  equiv e C A.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct t ; simpl in H1 ; try discriminate.
+  destruct (IHtyp1 t) ; auto with coc.
+  destruct H2.
+  intuition.
+  unfold lift in H1 ; simpl in H1.
+  inversion H1.
+  exists (lift_rec 1 x 0) ; exists (lift_rec 1 x0 1); intuition ; auto with coc.
+  pose (type_weak H3 H0) ; auto with coc.
+
+  pose (equiv_lift H4 H0).
+  apply e0.
+
+  inversion H0.
+  rewrite <- H2.
+  exists U ; exists V ; intuition ; auto with coc.
+  
+  destruct (IHtyp _ H1).
+  destruct H2.
+  intuition.
+  exists x ; exists x0 ; intuition ; auto with coc.
+  right with U s ; auto with coc.
+Qed.
+
+Lemma generation_pi1 : forall e M C, e |- Pi1 M : C ->
+  exists A, exists B,
+  e |- M : Sum A B /\ 
+  equiv e C A.
+Proof.
+  intros ; eapply generation_pi1_aux ; auto ; auto.
+Qed.
+
+Lemma generation_pi2_aux : forall e t C, e |- t : C -> forall M, t = Pi2 M ->
+  exists A, exists B,
+  e |- M : Sum A B /\ 
+  equiv e C (subst (Pi1 M) B).
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct t ; simpl in H1 ; try discriminate.
+  destruct (IHtyp1 t) ; auto with coc.
+  destruct H2.
+  intuition.
+  unfold lift in H1 ; simpl in H1.
+  inversion H1.
+  exists (lift_rec 1 x 0) ; exists (lift_rec 1 x0 1); intuition ; auto with coc.
+  pose (type_weak H3 H0) ; auto with coc.
+
+  pose (equiv_lift H4 H0).
+  unfold lift in e0.
+  rewrite distr_lift_subst in e0.
+  simpl in e0.
+  apply e0.
+
+  inversion H0.
+  rewrite <- H2.
+  exists U ; exists V ; intuition ; auto with coc.
+  
+  destruct (IHtyp _ H1).
+  destruct H2.
+  intuition.
+  exists x ; exists x0 ; intuition ; auto with coc.
+  right with U s ; auto with coc.
+Qed.
+
+Lemma generation_pi2 : forall e M C, e |- Pi2 M : C ->
+  exists A, exists B,
+  e |- M : Sum A B /\ 
+  equiv e C (subst (Pi1 M) B).
+Proof.
+  intros ; eapply generation_pi2_aux ; auto ; auto.
+Qed.
+

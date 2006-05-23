@@ -202,6 +202,13 @@ Hint Resolve coerce_conv coerce_weak coerce_sym coerce_prod coerce_sum coerce_su
 Hint Resolve jeq_refl jeq_sym jeq_beta : coc.
 Hint Resolve type_pi1 type_pi2 type_pair type_prop type_set type_var type_weak: coc.
 
+Inductive consistent : env -> Prop :=
+ | consistent_nil : consistent nil
+ | consistent_cons : forall e, consistent e ->
+ forall T s, e |- T : Srt s -> consistent (T :: e).
+
+Hint Resolve consistent_nil consistent_cons : coc.
+
 Scheme typ_dep := Induction for typ Sort Prop.
 
 Scheme typ_coerce_jeq_mutind := Induction for typ Sort Prop

@@ -1,4 +1,4 @@
--R .. Lambda -R . TPOSR
+-R .. Lambda -R ../JRussell JRussell -R ../Russell Russell -R . TPOSR
 Terms.v
 LiftSubst.v
 Reduction.v
@@ -7,6 +7,7 @@ Conv_Dec.v
 Env.v
 Unlab.v
 Types.v
+TPOSR_Jeq.v
 #Class.v
 #Can.v
 #Int_term.v

@@ -5,12 +5,11 @@ Freevars.v
 Basic.v
 Conversion.v
 Coercion.v
+Thinning.v
 Substitution.v
 PreFunctionality.v
-Inversion.v
-GenerationNotKind.v
-GenerationCoerce.v
 Generation.v
+Validity.v
 GenerationRange.v
 UnicityOfSortingRange.v
 UnicityOfSorting.v

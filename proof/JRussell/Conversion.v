@@ -21,7 +21,7 @@ Inductive conv_in_env : env -> env -> Prop :=
 
 Hint Resolve conv_env_hd conv_env_tl: coc.
 
-Lemma double_conv_env :
+Lemma ind_conv_env :
   (forall e t T, e |- t : T -> 
   forall f, conv_in_env e f -> f |- t : T) /\
   (forall e T U s, e |- T >> U : s -> 
@@ -121,3 +121,16 @@ apply jeq_trans with N ; auto with coc.
 
 apply jeq_conv with A s ; auto with coc.
 Qed.
+
+Lemma type_conv_env : forall e t T, e |- t : T -> 
+  forall f, conv_in_env e f -> f |- t : T.
+Proof (proj1 ind_conv_env).
+
+Lemma coerce_conv_env : forall e T U s, e |- T >> U : s -> 
+  forall f, conv_in_env e f -> f |- T >> U : s.
+Proof (proj1 (proj2 ind_conv_env)).
+
+Lemma jeq_conv_env : forall e U V T, e |- U = V : T ->
+  forall f, conv_in_env e f -> f |- U = V : T.
+Proof (proj2 (proj2 ind_conv_env)).
+
