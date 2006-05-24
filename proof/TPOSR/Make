@@ -9,4 +9,9 @@ Unlab.v
 Types.v
 Basic.v
 Thinning.v
-
+CtxReduction.v
+LeftReflexivity.v
+Substitution.v
+RightReflexivity.v
+CtxConversion.v
+Generation.v
