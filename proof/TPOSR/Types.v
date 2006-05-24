@@ -89,9 +89,13 @@ with tposr : lenv -> lterm -> lterm -> lterm -> Prop :=
   forall s3, sum_sort s1 s2 s3 ->
   forall u u' v v', 
   e |- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B ->
-  e |- Pi2_l (Pair_l (Sum_l A B) u v) -> v : lsubst u B
+  e |- Pi2_l (Pair_l (Sum_l A B) u v) -> v : lsubst (Pi1_l (Pair_l (Sum_l A B) u v)) B
 
 where "G |- T -> U : s" := (tposr G T U s).
+
+Hint Resolve wf_nil tposr_set tposr_prop : coc.
+
+Scheme ind_tposr := Induction for tposr Sort Prop.
 
 Scheme tposr_wf_mutind := Induction for tposr Sort Prop
 with wf_tposr_mutind :=  Induction for tposr_wf Sort Prop.
@@ -206,7 +210,7 @@ forall
                 : Sum_l A B),
         P e (Pair_l (Sum_l A B) u v) (Pair_l (Sum_l A' B') u' v') (Sum_l A B)
           t1 ->
-        P e (Pi2_l (Pair_l (Sum_l A B) u v)) v (lsubst u B)
+        P e (Pi2_l (Pair_l (Sum_l A B) u v)) v (lsubst (Pi1_l (Pair_l (Sum_l A B) u v)) B)
           (tposr_pi2_red t t0 s t1)) ->
        P0 nil wf_nil ->
        (forall (G : lenv) (A A' : lterm) (s : sort)
@@ -239,43 +243,3 @@ Inductive tposr_eq : lenv -> lterm -> lterm -> sort -> Prop :=
 
 where "G |- T ~= U : s" := (tposr_eq G T U s).
 
-Lemma tposr_conv : forall e A B s, e |- A ~= B : s -> 
-  forall M N, (e |- M -> N : A -> e |- M -> N : B) /\ (e |- M -> N : B -> e |- M -> N : A).
-Proof.
-  induction 1 ; simpl ; intros.
-  
-  split ; intros.
-  apply tposr_red with X s ; auto.
-  apply tposr_exp with Y s ; auto.
-
-  pose (IHtposr_eq M N).
-  intuition ; auto with coc.
-
-  pose (IHtposr_eq1 M N).
-  pose (IHtposr_eq2 M N).
-  intuition ; auto with coc.
-Qed.
-
-Lemma tposr_lred : forall e M N Z, e |- M -> N : Z -> lred M N.
-Proof.
-  induction 1 ; simpl ; auto with coc.
-
-  apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
-Qed.
-
-Lemma tposr_eq_conv : forall e M N Z, e |- M ~= N : Z -> conv M N.
-Proof.
-  induction 1 ; simpl ; auto with coc.
-  
-  pose (tposr_lred H) ; auto with coc.
-  apply trans_conv_conv with X ; auto with coc.
-Qed.
-
-Lemma wf_tposr : forall e M N T, e |- M -> N : T -> tposr_wf e.
-Proof.
-  induction 1 ; simpl ; auto with coc.
-Qed.
-
-
-
-  

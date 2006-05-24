@@ -640,7 +640,7 @@ apply mem_abs_l; apply H with n k; auto with coc core arith sets.
 apply mem_abs_r; apply H0 with n (S k); auto with coc core arith sets.
 
 inversion_clear H2.
-apply mem_app_T; apply H with n k; auto with coc core arith sets.
+apply mem_app_T; apply H with n (S k); auto with coc core arith sets.
 apply mem_app_l; apply H0 with n k; auto with coc core arith sets.
 apply mem_app_r; apply H1 with n k; auto with coc core arith sets.
 
@@ -702,7 +702,7 @@ inversion_clear H0.
     elim H0 with a n s; intros; auto with coc core arith sets]).
 
 inversion_clear H2 ; [
-elim H with a n s; auto with coc core arith sets |
+elim H with a (S n) s; auto with coc core arith sets |
 elim H0 with a n s; auto with coc core arith sets |
 elim H1 with a n s; intros; auto with coc core arith sets].
 

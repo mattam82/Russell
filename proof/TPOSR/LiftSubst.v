@@ -60,7 +60,7 @@ intros; unfold llift in |- *.
 apply llift_rec0; auto with coc core arith sets.
 Qed.
 
-
+Require Import Omega.
   Lemma simpl_llift_rec :
    forall M n k p i,
    i <= k + n ->
@@ -77,6 +77,11 @@ rewrite plus_comm; apply le_trans with (k + n0);
 
 rewrite llift_ref_lt; auto with coc core arith sets.
 apply le_gt_trans with k; auto with coc core arith sets.
+
+rewrite H1 ; auto with arith.
+rewrite H ; auto with arith.
+rewrite H0 ; auto with arith.
+omega.
 Qed.
 
 
@@ -141,6 +146,11 @@ apply le_trans with (S (n0 + k)); auto with coc core arith sets.
 
 rewrite lsubst_ref_lt; auto with coc core arith sets.
 apply le_gt_trans with k; auto with coc core arith sets.
+
+rewrite H ; try omega.
+rewrite H0 ; try omega. 
+rewrite H1 ; try omega.
+reflexivity.
 Qed.
 
 

@@ -30,7 +30,7 @@ Implicit Type s : sort.
             | right _ => Ref_l i
           end
 	| Abs_l T M => Abs_l (llift_rec n T k) (llift_rec n M (S k))
-	| App_l T u v => App_l  (llift_rec n T k) (llift_rec n u k) (llift_rec n v k)
+	| App_l T u v => App_l (llift_rec n T (S k)) (llift_rec n u k) (llift_rec n v k)
 	| Pair_l T A B => Pair_l (llift_rec n T k) (llift_rec n A k) (llift_rec n B k)
 	| Prod_l A B => Prod_l (llift_rec n A k) (llift_rec n B (S k))
 	| Sum_l A B => Sum_l (llift_rec n A k) (llift_rec n B (S k))
@@ -55,7 +55,7 @@ Implicit Type s : sort.
             | inright _ => Ref_l i
           end
 	| Abs_l A B => Abs_l (lsubst_rec N A k) (lsubst_rec N B (S k))
-	| App_l T u v => App_l (lsubst_rec N T k) (lsubst_rec N u k) (lsubst_rec N v k)
+	| App_l T u v => App_l (lsubst_rec N T (S k)) (lsubst_rec N u k) (lsubst_rec N v k)
 	| Pair_l T A B => Pair_l (lsubst_rec N T k) (lsubst_rec N A k) (lsubst_rec N B k)
 	| Prod_l T U => Prod_l (lsubst_rec N T k) (lsubst_rec N U (S k))
 	| Sum_l T U => Sum_l (lsubst_rec N T k) (lsubst_rec N U (S k))
@@ -72,7 +72,7 @@ Implicit Type s : sort.
     | db_abs :
         forall k A M, free_db k A -> free_db (S k) M -> free_db k (Abs_l A M)
     | db_app :
-        forall k T u v, free_db k T -> free_db k u -> free_db k v -> free_db k (App_l T u v)
+        forall k T u v, free_db (S k) T -> free_db k u -> free_db k v -> free_db k (App_l T u v)
     | db_pair :
         forall k T u v, free_db k T -> free_db k u -> free_db k v -> free_db k (Pair_l T u v)
     | db_prod :

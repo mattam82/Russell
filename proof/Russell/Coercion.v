@@ -102,13 +102,15 @@ eapply thinning_n_coerce ; auto with coc core.
 exists x; auto with coc core arith datatypes.
 Qed.
 
-Lemma typ_conv_env :
-  forall e t T, e |- t : T -> 
+Lemma double_conv_env :
+  (forall e t T, e |- t : T -> 
   forall f, coerce_in_env e f -> 
-  wf f -> f |- t : T.
+  wf f -> f |- t : T) /\
+  (forall e T U s, e |- T >> U : s -> 
+  forall f, coerce_in_env e f -> 
+  wf f -> f |- T >> U : s).
 Proof.
-intros e t T IH.
-induction IH using typ_coerce_mut with 
+apply double_typ_coerce_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
@@ -154,10 +156,6 @@ apply type_pi1 with V ; auto with coc core arith datatypes.
 
 apply type_pi2 with U ; auto with coc core arith datatypes.
 
-(*cut (wf (U :: f)); intros.
-apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.*)
-
 apply type_conv with U s; auto with coc core arith datatypes.
 
 cut (wf (A' :: f)) ; intros.
@@ -185,91 +183,14 @@ apply coerce_sort_r with U ; auto with coc core arith datatypes.
 apply coerce_conv with B C ; auto with coc core arith datatypes.
 Qed.
 
-Lemma coerce_conv_env :
-  forall e T U s, e |- T >> U : s -> 
+Lemma typ_conv_env : forall e t T, e |- t : T -> forall f, coerce_in_env e f -> 
+  wf f -> f |- t : T.
+Proof (proj1 double_conv_env).
+
+Lemma coerce_conv_env : forall e T U s, e |- T >> U : s -> 
   forall f, coerce_in_env e f -> 
   wf f -> f |- T >> U : s.
-Proof.
-intros e T U s IH.
-induction IH using coerce_typ_mut with 
-(P := fun e t T => fun H : typ e t T =>
-  forall f, coerce_in_env e f -> 
-  wf f -> typ f t T)
-(P0 := fun e T U s => fun H : e |- T >> U : s =>
-  forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U : s) ; intros ;
-auto with coc core arith datatypes.
-
-elim conv_item with n T e f; auto with coc core arith datatypes; intros.
-repeat destruct H1.
-destruct H2.
-destruct H2.
-destruct H3.
-destruct (coerce_sort H3).
-apply type_conv with x x0 ; auto with coc core.
-
-cut (wf (T :: f)); intros.
-apply type_abs with s1 s2; auto with coc core arith datatypes.
-apply wf_var with s1; auto with coc core arith datatypes.
-
-apply type_app with V; auto with coc core arith datatypes.
-
-cut (wf (U :: f)); intros.
-apply type_pair with s1 s2 s3; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.
-
-cut (wf (T :: f)); intros.
-apply type_prod with s1; auto with coc core arith datatypes.
-
-apply wf_var with s1; auto with coc core arith datatypes.
-
-cut (wf (T :: f)); intros.
-apply type_sum with s1 s2; auto with coc core arith datatypes.
-
-apply wf_var with s1; auto with coc core arith datatypes.
-
-cut (wf (T :: f)); intros.
-apply type_subset; auto with coc core arith datatypes.
-
-apply wf_var with set; auto with coc core arith datatypes.
-
-apply type_pi1 with V ; auto with coc core arith datatypes.
-
-apply type_pi2 with U ; auto with coc core arith datatypes.
-(*
-cut (wf (U :: f)); intros.
-apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.*)
-
-apply type_conv with U s; auto with coc core arith datatypes.
-
-cut (wf (A' :: f)) ; intros.
-cut (wf (A :: f)) ; intros.
-apply coerce_prod with s ;auto with coc core arith datatypes.
-apply wf_var with s ; auto with coc core arith datatypes.
-apply wf_var with s ; auto with coc core arith datatypes.
-
-cut (wf (A' :: f)) ; intros.
-cut (wf (A :: f)) ; intros.
-apply coerce_sum with s s' ;auto with coc core arith datatypes.
-apply wf_var with s ; auto with coc core arith datatypes.
-apply wf_var with s ; auto with coc core arith datatypes.
-
-cut (wf (U :: f)) ; intros.
-apply coerce_sub_l ; auto with coc core arith datatypes.
-eapply wf_var ; auto with coc core arith datatypes.
-apply coerce_sort_l with U' ; auto with coc core arith datatypes.
-
-cut (wf (U' :: f)) ; intros.
-apply coerce_sub_r ; auto with coc core arith datatypes.
-eapply wf_var ; auto with coc core arith datatypes.
-apply coerce_sort_r with U ; auto with coc core arith datatypes.
-
-apply coerce_conv with B C ; auto with coc core arith datatypes.
-Qed.
-
-Hint Resolve coerce_refl : coc.
-
+Proof (proj2 double_conv_env).
 
 Lemma coerce_sym : forall e T U s, e |- T >> U : s -> e |- U >> T : s.
 Proof.

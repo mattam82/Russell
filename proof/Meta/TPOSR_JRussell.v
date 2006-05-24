@@ -8,6 +8,7 @@ Require Import JRussell.Types.
 Require Import JRussell.Basic.
 Require Import JRussell.Generation.
 Require Import JRussell.Thinning.
+Require Import JRussell.Substitution.
 Require Import JRussell.Validity.
 
 Require Import TPOSR.Terms.
@@ -116,9 +117,19 @@ Proof.
   intuition.
   inversion H3.
   rewrite lab_subst.
+  apply jeq_conv with (subst (|u|) (|B|)) s2 ; auto with coc.
   apply jeq_pi2_red with s1 s2 s3 ; auto with coc.
   rewrite H10 ; assumption.
   rewrite H11 ; assumption.
+  apply coerce_conv.
+  change (Srt s2) with (subst (|u|) (Srt s2)).
+  apply functionality with x ; auto with coc.
+  apply jeq_sym.
+  simpl.
+  rewrite <- H10 ; apply jeq_pi1_red with s1 s2 s3 ; auto with coc.
+  rewrite H10 ; auto.
+  rewrite H11 ; auto.
+  rewrite <- H10 ; auto.
 
   split ; auto with coc.
   split ; auto with coc.
