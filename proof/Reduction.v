@@ -412,6 +412,20 @@ apply trans_conv_red with (Prod P d); auto with coc core arith sets.
 apply trans_conv_exp with (Prod P d); auto with coc core arith sets.
 Qed.
 
+Lemma conv_conv_abs : forall a b c d : term, conv a b -> conv c d -> conv (Abs a c) (Abs b d).
+Proof.
+intros.
+apply trans_conv_conv with (Abs a d).
+elim H0; intros; auto with coc core arith sets.
+apply trans_conv_red with (Abs a P); auto with coc core arith sets.
+
+apply trans_conv_exp with (Abs a P); auto with coc core arith sets.
+
+elim H; intros; auto with coc core arith sets.
+apply trans_conv_red with (Abs P d); auto with coc core arith sets.
+
+apply trans_conv_exp with (Abs P d); auto with coc core arith sets.
+Qed.
 
 Lemma conv_conv_sum : forall a b c d : term, conv a b -> conv c d -> conv (Sum a c) (Sum b d).
 Proof.
@@ -466,6 +480,41 @@ apply trans_conv_red with (Pair P b d); auto with coc core arith sets.
 apply trans_conv_exp with (Pair P b d); auto with coc core arith sets.
 Qed.
 
+
+Lemma conv_conv_app : forall a b c d : term, conv a b -> conv c d -> conv (App a c) (App b d).
+Proof.
+intros.
+apply trans_conv_conv with (App a d).
+elim H0; intros; auto with coc core arith sets.
+apply trans_conv_red with (App a P); auto with coc core arith sets.
+
+apply trans_conv_exp with (App a P); auto with coc core arith sets.
+
+elim H; intros; auto with coc core arith sets.
+apply trans_conv_red with (App P d); auto with coc core arith sets.
+
+apply trans_conv_exp with (App P d); auto with coc core arith sets.
+Qed.
+
+Lemma conv_conv_pi1 : forall a b : term, conv a b -> conv (Pi1 a) (Pi1 b).
+Proof.
+intros.
+elim H; intros; auto with coc core arith sets.
+apply trans_conv_red with (Pi1 P); auto with coc core arith sets.
+
+apply trans_conv_exp with (Pi1 P); auto with coc core arith sets.
+Qed.
+
+Lemma conv_conv_pi2 : forall a b : term, conv a b -> conv (Pi2 a) (Pi2 b).
+Proof.
+intros.
+elim H; intros; auto with coc core arith sets.
+apply trans_conv_red with (Pi2 P); auto with coc core arith sets.
+
+apply trans_conv_exp with (Pi2 P); auto with coc core arith sets.
+Qed.
+
+Hint Resolve conv_conv_pi1 conv_conv_pi2 : coc.
 
   Lemma conv_conv_lift :
    forall (a b : term) n k,

@@ -15,10 +15,10 @@ Axioms.v
 Depth.v
 Narrowing.v
 Transitivity.v
-#TypeCase.v
 Inversion.v
 SubjectReduction.v
-#Unicity.v
+TypeCase.v
+Unicity.v
 #Class.v
 #Can.v
 #Int_term.v

@@ -70,7 +70,6 @@ Proof.
 
   apply typ_conv_env with (U' :: e) ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
-  apply coerce_conv with U U ; auto with coc.
   apply wf_var with s ; auto with coc.
 Qed.
 

@@ -58,10 +58,10 @@ Proof.
   exists x ; auto with coc.
   pose (inv_conv_prod_l _ _ _ _ c).
   intuition.
-  apply coerce_conv with U U ; auto with coc.
 
   destruct (inv_conv_prod_sort_r H H2 c).
-  apply coerce_conv with V V ; auto with coc.
+  apply conv_coerce ; auto with coc.
+
   apply (inv_conv_prod_r _ _ _ _ c).
 
  
@@ -104,7 +104,6 @@ Proof.
 
   apply coerce_conv_env with (A' :: e) ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
-  apply coerce_conv with A' A' ; auto with coc.
   apply wf_var with s ; auto with coc.
 
   elim conv_prod_sum with U V A0 B ; auto with coc.
@@ -254,7 +253,6 @@ Proof.
 
   apply coerce_conv_env with (A0 :: e) ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
-  apply coerce_conv with A0 A0 ; auto with coc.
   apply wf_var with s ; auto with coc.
   apply (inv_conv_sum_r _ _ _ _ H5).
 
@@ -321,7 +319,6 @@ assert (e |- Prod M' U : Srt s2).
 apply type_prod with s1 ; auto with coc.
 apply type_conv with (Prod M' U) s2; auto with coc core arith datatypes.
 apply type_abs with s1 s2; auto with coc core arith datatypes.
-apply conv_coerce ; auto with coc.
 apply wf_var with s1 ; auto with coc core arith datatypes.
 
 pose (IHtyp3 _ H3).
@@ -409,10 +406,8 @@ apply typ_red_env with U s1 ; auto with coc core.
 apply type_conv with (Sum N1 V) s3 ; auto with coc.
 apply type_pair with s1 s2 s3 ; auto with coc core.
 apply type_conv with U s1 ; auto with coc core.
-apply conv_coerce ; auto with coc.
 apply typ_red_env with U s1; auto with coc core arith datatypes.
 
-apply conv_coerce ; auto with coc.
 
 pose (sum_sort_prop s).
 destruct a.
@@ -435,8 +430,6 @@ replace (Srt s2) with (subst u (Srt s2)).
 apply substitution with U ; auto with coc core arith datatypes.
 simpl ; auto.
 apply substitution_coerce with U ; auto with coc core arith datatypes.
-apply conv_coerce ; auto with coc.
-apply conv_coerce ; auto with coc.
 
 pose (IHtyp2 _ H5).
 apply type_pair with s1 s2 s3 ; auto with coc core.
