@@ -56,6 +56,17 @@ Lemma conv_env :
 Proof.
 Admitted.
 
+Corollary conv_env_eq : 
+  (forall e t u s, e |-- t ~= u : s -> 
+  forall f, conv_in_env e f -> f |-- t ~= u : s).
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+
+  apply tposr_eq_tposr ; auto.
+  apply conv_env with e ; auto.
+
+  apply tposr_eq_trans with X ; auto with coc.
+Qed.
 
 (*
 Lemma ind_conv_env :

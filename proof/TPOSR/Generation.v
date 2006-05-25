@@ -490,3 +490,11 @@ Proof.
 Qed.
 *)
 
+Lemma generation_subset : forall e U V X A m, e |-- Subset_l U V -> X : A [m] -> 
+  exists2 U' n, 
+  exists2 V' p, 
+  e |-- U -> U' : Srt_l set [n] /\ n < m /\
+  U :: e |-- V -> V' : Srt_l prop [p] /\ p < m /\
+  X = Subset_l U' V' /\ equiv e A (Srt_l set).
+Admitted.
+

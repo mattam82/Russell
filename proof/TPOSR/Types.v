@@ -263,3 +263,4 @@ Inductive tposr_eq : lenv -> lterm -> lterm -> sort -> Prop :=
 
 where "G |-- T ~= U : s" := (tposr_eq G T U s).
 
+Hint Resolve tposr_eq_tposr tposr_eq_sym : coc.

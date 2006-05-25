@@ -16,3 +16,5 @@ Implicit Types e f g : lenv.
 
 Lemma left_refl : forall e u v T, e |-- u -> v : T -> e |-- u -> u : T.
 Admitted.
+
+Hint Resolve left_refl : coc.

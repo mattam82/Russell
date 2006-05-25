@@ -21,3 +21,5 @@ Admitted.
 Corollary conv_refls : forall e u v s, e |-- u ~= v : s -> 
   e |-- u -> u : Srt_l s /\ e |-- v -> v : Srt_l s.
 Admitted.
+
+Hint Resolve right_refl conv_refls : coc.
