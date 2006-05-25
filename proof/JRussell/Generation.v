@@ -51,7 +51,7 @@ assert(Heqt : t = a) ; [ (unfold t ; reflexivity) |
 generalize H Heqt ; clear H Heqt ;
 generalize t ; clear t ; intros t]))).
 
-Lemma jeq_not_kind : forall e T U W, e |- T = U : W -> (T = Srt kind -> False) /\ (U = Srt kind -> False).
+Lemma jeq_not_kind : forall e T U W, e |-= T = U : W -> (T = Srt kind -> False) /\ (U = Srt kind -> False).
 Proof.
   induction 1 ; simpl ; intros ; split ; intros ; 
   (try destruct IHjeq) ; (try destruct IHjeq1) ; (try destruct IHjeq2) ;
@@ -72,7 +72,7 @@ Proof.
   elim (left_not_kind H) ; auto.
 Qed.
 
-Lemma coerce_not_kind : forall e T U s, e |- T >> U : s -> (T = Srt kind -> False) /\ (U = Srt kind -> False).
+Lemma coerce_not_kind : forall e T U s, e |-= T >> U : s -> (T = Srt kind -> False) /\ (U = Srt kind -> False).
 Proof.
   induction 1 ; simpl ; intros ; split ; intros ; 
   (try destruct IHcoerce) ; (try destruct IHcoerce1) ; (try destruct IHcoerce2) ;
@@ -87,10 +87,10 @@ Qed.
 
 Inductive equiv : env -> term -> term -> Prop :=
  |equiv_refl : forall e T, equiv e T T
- |equiv_step : forall e T U s, e |- T >> U : s -> forall V, equiv e U V -> equiv e T V.
+ |equiv_step : forall e T U s, e |-= T >> U : s -> forall V, equiv e U V -> equiv e T V.
 
 Lemma equiv_lift : forall e T U, equiv e T U -> 
- forall V s, e |- V : Srt s -> equiv (V :: e) (lift 1 T) (lift 1 U).
+ forall V s, e |-= V : Srt s -> equiv (V :: e) (lift 1 T) (lift 1 U).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
 
@@ -104,8 +104,8 @@ Qed.
 Hint Resolve equiv_refl : coc.
 
 Lemma equiv_coerce : forall e V V', equiv e V V' -> forall T U,
-  forall s, e |- T >> U : s ->
-  forall s', e |- T >> V : s' -> equiv e U V'.
+  forall s, e |-= T >> U : s ->
+  forall s', e |-= T >> V : s' -> equiv e U V'.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc.
 
@@ -133,7 +133,7 @@ Proof.
   intuition.
 Qed.
 
-Lemma generation_sort :  forall e s T, e |- Srt s : T -> equiv e T (Srt kind).
+Lemma generation_sort :  forall e s T, e |-= Srt s : T -> equiv e T (Srt kind).
 Proof.
   intros e s T.
   extensionalpattern (Srt s).
@@ -160,7 +160,7 @@ Proof.
   exists n ; intuition.
 Qed.
 
-Lemma generation_var_aux : forall e T A, e |- T : A -> 
+Lemma generation_var_aux : forall e T A, e |-= T : A -> 
   forall n, T = Ref n ->
   exists B, item_lift B e n /\ equiv e A B.
 Proof.
@@ -200,14 +200,14 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_var : forall e n A, e |- Ref n : A -> 
+Lemma generation_var : forall e n A, e |-= Ref n : A -> 
   exists B, item_lift B e n /\ equiv e A B.
 Proof.
   intros ; eapply generation_var_aux ; auto ; auto.
 Qed.
 
-Lemma generation_prod_aux : forall e T A, e |- T : A -> forall U V, T = Prod U V ->
-  exists s1, exists s2, e |- U : Srt s1 /\ U :: e |- V : Srt s2 /\ equiv e A (Srt s2).
+Lemma generation_prod_aux : forall e T A, e |-= T : A -> forall U V, T = Prod U V ->
+  exists s1, exists s2, e |-= U : Srt s1 /\ U :: e |-= V : Srt s2 /\ equiv e A (Srt s2).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
 
@@ -244,16 +244,16 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_prod : forall e U V A, e |- Prod U V : A -> 
-  exists s1, exists s2, e |- U : Srt s1 /\ U :: e |- V : Srt s2 /\ equiv e A (Srt s2).
+Lemma generation_prod : forall e U V A, e |-= Prod U V : A -> 
+  exists s1, exists s2, e |-= U : Srt s1 /\ U :: e |-= V : Srt s2 /\ equiv e A (Srt s2).
 Proof.
   intros ; eapply generation_prod_aux ; auto ; auto.
 Qed.
 
-Lemma generation_sum_aux : forall e T A, e |- T : A -> forall U V, T = Sum U V ->
+Lemma generation_sum_aux : forall e T A, e |-= T : A -> forall U V, T = Sum U V ->
   exists s1, exists s2, exists s3,
-  e |- U : Srt s1 /\ 
-  U :: e |- V : Srt s2 /\
+  e |-= U : Srt s1 /\ 
+  U :: e |-= V : Srt s2 /\
   sum_sort s1 s2 s3 /\
   equiv e A (Srt s3).
 Proof.
@@ -289,21 +289,21 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_sum : forall e U V A, e |- Sum U V : A -> 
+Lemma generation_sum : forall e U V A, e |-= Sum U V : A -> 
   exists s1, exists s2, exists s3,
-  e |- U : Srt s1 /\ 
-  U :: e |- V : Srt s2 /\
+  e |-= U : Srt s1 /\ 
+  U :: e |-= V : Srt s2 /\
   sum_sort s1 s2 s3 /\
   equiv e A (Srt s3).
 Proof.
   intros ; eapply generation_sum_aux ; auto ; auto.
 Qed.
 
-Lemma generation_lambda_aux : forall e t A, e |- t : A -> forall T M, t = Abs T M ->
+Lemma generation_lambda_aux : forall e t A, e |-= t : A -> forall T M, t = Abs T M ->
   exists s1, exists s2, exists C, 
-  e |- T : Srt s1 /\ 
-  T :: e |- C : Srt s2 /\
-  T :: e |- M : C /\
+  e |-= T : Srt s1 /\ 
+  T :: e |-= C : Srt s2 /\
+  T :: e |-= M : C /\
   equiv e A (Prod T C).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -339,20 +339,20 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_lambda : forall e T M A, e |- Abs T M : A -> 
+Lemma generation_lambda : forall e T M A, e |-= Abs T M : A -> 
   exists s1, exists s2, exists C, 
-  e |- T : Srt s1 /\ 
-  T :: e |- C : Srt s2 /\
-  T :: e |- M : C /\
+  e |-= T : Srt s1 /\ 
+  T :: e |-= C : Srt s2 /\
+  T :: e |-= M : C /\
   equiv e A (Prod T C).
 Proof.
   intros ; eapply generation_lambda_aux ; auto ; auto.
 Qed.
 
-Lemma generation_app_aux : forall e t C, e |- t : C -> forall M N, t = App M N ->
+Lemma generation_app_aux : forall e t C, e |-= t : C -> forall M N, t = App M N ->
   exists A, exists B,
-  e |- M : Prod A B /\ 
-  e |- N : A /\
+  e |-= M : Prod A B /\ 
+  e |-= N : A /\
   equiv e C (subst N B).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -383,23 +383,23 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_app : forall e M N C, e |- App M N : C -> 
+Lemma generation_app : forall e M N C, e |-= App M N : C -> 
   exists A, exists B,
-  e |- M : Prod A B /\ 
-  e |- N : A /\
+  e |-= M : Prod A B /\ 
+  e |-= N : A /\
   equiv e C (subst N B).
 Proof.
   intros ; eapply generation_app_aux ; auto ; auto.
 Qed.
 
-Lemma generation_pair_aux : forall e t C, e |- t : C -> forall T M N, t = Pair T M N ->
+Lemma generation_pair_aux : forall e t C, e |-= t : C -> forall T M N, t = Pair T M N ->
   exists A, exists B, exists s1, exists s2, exists s3,
   T = Sum A B /\
-  e |- A : Srt s1 /\
-  A :: e |- B : Srt s2 /\
+  e |-= A : Srt s1 /\
+  A :: e |-= B : Srt s2 /\
   sum_sort s1 s2 s3 /\
-  e |- M : A /\ 
-  e |- N : subst M B /\
+  e |-= M : A /\ 
+  e |-= N : subst M B /\
   equiv e C (Sum A B).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -440,22 +440,22 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_pair : forall e T M N C, e |- Pair T M N : C ->
+Lemma generation_pair : forall e T M N C, e |-= Pair T M N : C ->
   exists A, exists B, exists s1, exists s2, exists s3,
   T = Sum A B /\
-  e |- A : Srt s1 /\
-  A :: e |- B : Srt s2 /\
+  e |-= A : Srt s1 /\
+  A :: e |-= B : Srt s2 /\
   sum_sort s1 s2 s3 /\
-  e |- M : A /\ 
-  e |- N : subst M B /\
+  e |-= M : A /\ 
+  e |-= N : subst M B /\
   equiv e C (Sum A B).
 Proof.
   intros ; eapply generation_pair_aux ; auto ; auto.
 Qed.
 
-Lemma generation_pi1_aux : forall e t C, e |- t : C -> forall M, t = Pi1 M ->
+Lemma generation_pi1_aux : forall e t C, e |-= t : C -> forall M, t = Pi1 M ->
   exists A, exists B,
-  e |- M : Sum A B /\ 
+  e |-= M : Sum A B /\ 
   equiv e C A.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -483,17 +483,17 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_pi1 : forall e M C, e |- Pi1 M : C ->
+Lemma generation_pi1 : forall e M C, e |-= Pi1 M : C ->
   exists A, exists B,
-  e |- M : Sum A B /\ 
+  e |-= M : Sum A B /\ 
   equiv e C A.
 Proof.
   intros ; eapply generation_pi1_aux ; auto ; auto.
 Qed.
 
-Lemma generation_pi2_aux : forall e t C, e |- t : C -> forall M, t = Pi2 M ->
+Lemma generation_pi2_aux : forall e t C, e |-= t : C -> forall M, t = Pi2 M ->
   exists A, exists B,
-  e |- M : Sum A B /\ 
+  e |-= M : Sum A B /\ 
   equiv e C (subst (Pi1 M) B).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -524,9 +524,9 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 
-Lemma generation_pi2 : forall e M C, e |- Pi2 M : C ->
+Lemma generation_pi2 : forall e M C, e |-= Pi2 M : C ->
   exists A, exists B,
-  e |- M : Sum A B /\ 
+  e |-= M : Sum A B /\ 
   equiv e C (subst (Pi1 M) B).
 Proof.
   intros ; eapply generation_pi2_aux ; auto ; auto.

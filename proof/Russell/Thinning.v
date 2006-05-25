@@ -13,12 +13,12 @@ Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
 Lemma double_weak_weak : forall A,
-  (forall e t T, e |- t : T ->
+  (forall e t T, e |-- t : T ->
    forall n f, ins_in_env A n e f -> wf f -> 
-   f |- (lift_rec 1 t n) : (lift_rec 1 T n)) /\
- (forall e T U s, e |- T >> U : s ->
+   f |-- (lift_rec 1 t n) : (lift_rec 1 T n)) /\
+ (forall e T U s, e |-- T >> U : s ->
   forall n f, ins_in_env A n e f -> wf f -> 
-  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s).
+  f |-- (lift_rec 1 T n) >> (lift_rec 1 U n) : s).
 Proof.
 intros A.
 apply double_typ_coerce_mut with 
@@ -27,7 +27,7 @@ apply double_typ_coerce_mut with
    ins_in_env A n e f -> wf f -> typ f (lift_rec 1 t n) (lift_rec 1 T n))
  (P0 := fun e T U s => fun IH : coerce e T U s =>
    forall n f,
-   ins_in_env A n e f -> wf f -> f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s) ;
+   ins_in_env A n e f -> wf f -> f |-- (lift_rec 1 T n) >> (lift_rec 1 U n) : s) ;
    simpl in |- *; 
    try simpl in IHIH ; 
    try simpl in IHIH0 ; 
@@ -144,8 +144,8 @@ Qed.
 
 Theorem thinning_coerce : 
    forall e T U s,
-   e |- T >> U : s ->
-   forall A, wf (A :: e) -> (A :: e) |- (lift 1 T) >> (lift 1 U) : s.
+   e |-- T >> U : s ->
+   forall A, wf (A :: e) -> (A :: e) |-- (lift 1 T) >> (lift 1 U) : s.
 Proof.
 unfold lift ; intros.
 inversion_clear H0.
@@ -182,7 +182,7 @@ apply wf_var with s; auto with coc core arith datatypes.
 Qed.
 
 Lemma thinning_n_coerce : forall n e f, trunc _ n e f ->
-  forall T U s, f |- T >> U : s -> wf e -> e |- (lift n T) >> (lift n U) : s.
+  forall T U s, f |-- T >> U : s -> wf e -> e |-- (lift n T) >> (lift n U) : s.
 Proof.
 simple induction n.
 intros.

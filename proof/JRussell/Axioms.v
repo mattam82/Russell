@@ -18,10 +18,10 @@ Implicit Types e f g : env.
 
 Set Implicit Arguments.
 
-Axiom unique_sort_conv : forall G A A' s1 s2, G |- A : Srt s1 -> G |- A' : Srt s2 -> conv A A' -> s1 = s2.
+Axiom unique_sort_conv : forall G A A' s1 s2, G |-= A : Srt s1 -> G |-= A' : Srt s2 -> conv A A' -> s1 = s2.
 
-Lemma inv_conv_prod_sort_l : forall e U V U' V' s, e |- Prod U V : Srt s -> e |- Prod U' V' : Srt s ->
-  conv (Prod U V) (Prod U' V') -> exists s1 : sort, e |- U : Srt s1 /\ e |- U' : Srt s1 .
+Lemma inv_conv_prod_sort_l : forall e U V U' V' s, e |-= Prod U V : Srt s -> e |-= Prod U' V' : Srt s ->
+  conv (Prod U V) (Prod U' V') -> exists s1 : sort, e |-= U : Srt s1 /\ e |-= U' : Srt s1 .
 Proof.
   intros.
   destruct (generation_prod2 H).
@@ -35,8 +35,8 @@ Proof.
   rewrite e0 ; assumption.
 Qed.
 
-Lemma inv_conv_prod_sort_r : forall e U V U' V' s, e |- Prod U V : Srt s -> e |- Prod U' V' : Srt s ->
-  conv (Prod U V) (Prod U' V') -> U' :: e |- V : Srt s /\ U' :: e |- V' : Srt s. 
+Lemma inv_conv_prod_sort_r : forall e U V U' V' s, e |-= Prod U V : Srt s -> e |-= Prod U' V' : Srt s ->
+  conv (Prod U V) (Prod U' V') -> U' :: e |-= V : Srt s /\ U' :: e |-= V' : Srt s. 
 Proof.
   intros.
   destruct (generation_prod2 H).
@@ -53,9 +53,9 @@ Proof.
   apply wf_var with x0 ; auto.
 Qed.
 
-Lemma inv_conv_sum_sort : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
+Lemma inv_conv_sum_sort : forall e U V U' V' s, e |-= Sum U V : Srt s -> e |-= Sum U' V' : Srt s ->
   conv (Sum U V) (Sum U' V') -> 
-  exists s1, exists s2, e |- U : Srt s1 /\ e |- U' : Srt s1 /\ U :: e |- V : Srt s2 /\ U :: e |- V' : Srt s2
+  exists s1, exists s2, e |-= U : Srt s1 /\ e |-= U' : Srt s1 /\ U :: e |-= V : Srt s2 /\ U :: e |-= V' : Srt s2
   /\ sum_sort s1 s2 s.	
 Proof. 
   intros.
@@ -75,22 +75,22 @@ Proof.
 Qed.
 
 (* Set versions of the lemmas derived from the axiom *)
-Axiom inv_conv_prod_sort_l_set : forall e U V U' V' s, e |- Prod U V : Srt s -> e |- Prod U' V' : Srt s ->
-  conv (Prod U V) (Prod U' V') -> { s1 : sort | e |- U : Srt s1 /\ e |- U' : Srt s1 }.
+Axiom inv_conv_prod_sort_l_set : forall e U V U' V' s, e |-= Prod U V : Srt s -> e |-= Prod U' V' : Srt s ->
+  conv (Prod U V) (Prod U' V') -> { s1 : sort | e |-= U : Srt s1 /\ e |-= U' : Srt s1 }.
 
 
-Axiom inv_conv_prod_sort_r_set : forall e U V U' V' s, e |- Prod U V : Srt s -> e |- Prod U' V' : Srt s ->
-  conv (Prod U V) (Prod U' V') -> U' :: e |- V : Srt s /\ U' :: e |- V' : Srt s. 
+Axiom inv_conv_prod_sort_r_set : forall e U V U' V' s, e |-= Prod U V : Srt s -> e |-= Prod U' V' : Srt s ->
+  conv (Prod U V) (Prod U' V') -> U' :: e |-= V : Srt s /\ U' :: e |-= V' : Srt s. 
 
-Axiom inv_conv_sum_sort_set : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
+Axiom inv_conv_sum_sort_set : forall e U V U' V' s, e |-= Sum U V : Srt s -> e |-= Sum U' V' : Srt s ->
   conv (Sum U V) (Sum U' V') -> 
-  { s1 : sort & { s2 : sort | e |- U : Srt s1 /\ e |- U' : Srt s1 /\ U :: e |- V : Srt s2 /\ U :: e |- V' : Srt s2
+  { s1 : sort & { s2 : sort | e |-= U : Srt s1 /\ e |-= U' : Srt s1 /\ U :: e |-= V : Srt s2 /\ U :: e |-= V' : Srt s2
   /\ sum_sort s1 s2 s}}.	
 
-Axiom inv_conv_sum_sort_l_set : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
+Axiom inv_conv_sum_sort_l_set : forall e U V U' V' s, e |-= Sum U V : Srt s -> e |-= Sum U' V' : Srt s ->
   conv (Sum U V) (Sum U' V') -> 
-  { s1 : sort | e |- U : Srt s1 /\ e |- U' : Srt s1 }.
+  { s1 : sort | e |-= U : Srt s1 /\ e |-= U' : Srt s1 }.
 
-Axiom inv_conv_sum_sort_r_set : forall e U V U' V' s, e |- Sum U V : Srt s -> e |- Sum U' V' : Srt s ->
+Axiom inv_conv_sum_sort_r_set : forall e U V U' V' s, e |-= Sum U V : Srt s -> e |-= Sum U' V' : Srt s ->
   conv (Sum U V) (Sum U' V') -> 
-  { s2 : sort | U :: e |- V : Srt s2 /\ U :: e |- V' : Srt s2 }.
+  { s2 : sort | U :: e |-= V : Srt s2 /\ U :: e |-= V' : Srt s2 }.

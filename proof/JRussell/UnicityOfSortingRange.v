@@ -20,7 +20,7 @@ Implicit Types e f g : env.
 
 Set Implicit Arguments.
 
-Lemma unique_range_sort : forall t e T T', e |- t : T -> e |- t : T' -> 
+Lemma unique_range_sort : forall t e T T', e |-= t : T -> e |-= t : T' -> 
 forall s1 s2, 
 (type_range T = Srt s1 -> type_range T' = Srt s2 -> s1 = s2).
 Proof.

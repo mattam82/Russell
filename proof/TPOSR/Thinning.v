@@ -14,15 +14,15 @@ Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
 Lemma weak_weak : forall A,
-  (forall e u v T, e |- u -> v : T ->
+  (forall e u v T, e |-- u -> v : T ->
    forall n f, ins_in_lenv A n e f -> tposr_wf f -> 
-   f |- (llift_rec 1 u n) -> (llift_rec 1 v n) : (llift_rec 1 T n)).
+   f |-- (llift_rec 1 u n) -> (llift_rec 1 v n) : (llift_rec 1 T n)).
 Proof.
 intros A.
 induction 1 using ind_tposr with 
- (P := fun e u v T => fun IH : e |- u -> v : T =>
+ (P := fun e u v T => fun IH : e |-- u -> v : T =>
    forall n f,
-   ins_in_lenv A n e f -> tposr_wf f -> f |- (llift_rec 1 u n) -> (llift_rec 1 v n) : (llift_rec 1 T n)) ;
+   ins_in_lenv A n e f -> tposr_wf f -> f |-- (llift_rec 1 u n) -> (llift_rec 1 v n) : (llift_rec 1 T n)) ;
    simpl in |- *; 
    try simpl in IHtposr1 ; 
    try simpl in IHtposr0 ; 
@@ -71,6 +71,10 @@ assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' 
 apply tposr_sum with s1 s2; auto with coc core arith datatypes.
 
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc.
+apply tposr_pair with s1 s2 s3 ; auto with coc.
+rewrite <- distr_llift_lsubst ; auto with coc.
+
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc.
 apply tposr_pi1 with (llift_rec 1 A' n) s1 (llift_rec 1 B (S n)) (llift_rec 1 B' (S n))  s2 s3 ; auto with coc.
 
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc.
@@ -89,7 +93,7 @@ Qed.
 
   Theorem thinning :
    forall e t t' T,
-   e |- t -> t' : T -> forall A, tposr_wf (A :: e) -> (A :: e) |- (llift 1 t) -> llift 1 t' : (llift 1 T).
+   e |-- t -> t' : T -> forall A, tposr_wf (A :: e) -> (A :: e) |-- (llift 1 t) -> llift 1 t' : (llift 1 T).
 Proof.
 unfold llift in |- *.
 intros.
@@ -101,7 +105,7 @@ Qed.
 Lemma thinning_n :
    forall n e f,
    trunc _ n e f ->
-   forall t t' T, f |- t -> t' : T -> tposr_wf e -> e |- (llift n t) -> (llift n t') : (llift n T).
+   forall t t' T, f |-- t -> t' : T -> tposr_wf e -> e |-- (llift n t) -> (llift n t') : (llift n T).
 Proof.
 simple induction n.
 intros.
@@ -128,7 +132,7 @@ apply wf_cons with A' s; auto with coc core arith datatypes.
 Qed.
 
 Lemma wf_sort_lift :
- forall n e t, tposr_wf e -> item_llift t e n -> exists s : sort, exists t', e |- t -> t' : (Srt_l s).
+ forall n e t, tposr_wf e -> item_llift t e n -> exists s : sort, exists t', e |-- t -> t' : (Srt_l s).
 simple induction n.
 simple destruct e; intros.
 elim H0; intros.

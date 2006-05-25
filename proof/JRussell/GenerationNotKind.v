@@ -28,7 +28,7 @@ Proof.
 unfold lift ; intros ; apply lift_rec_eq_sort with n 0 ; auto.
 Qed.
 
-Lemma typ_not_kind : forall G t T, G |- t : T -> t <> Srt kind.
+Lemma typ_not_kind : forall G t T, G |-= t : T -> t <> Srt kind.
 Proof.
 red ; intros.
 rewrite H0 in H.
@@ -38,7 +38,7 @@ unfold is_prop in H1.
 induction H1 ; discriminate.
 Qed.
 
-Lemma typ_not_kind2 : forall G T, ~ G |- Srt kind : T.
+Lemma typ_not_kind2 : forall G T, ~ G |-= Srt kind : T.
 Proof.
   unfold not ; intros.
   apply (typ_not_kind H).
@@ -55,7 +55,7 @@ Fixpoint type_no_kind (t : term) : Prop :=
   | _ => True
   end.
 
-Lemma type_has_no_kind : forall G t T, G |- t : T -> type_no_kind t.
+Lemma type_has_no_kind : forall G t T, G |-= t : T -> type_no_kind t.
 Proof.
   induction 1; simpl ; intros ; auto with coc ; try discriminate.
 Qed.
@@ -69,7 +69,7 @@ Proof.
   auto.
 Qed.
 (*
-Lemma type_range_not_kind_ps : forall G t T, G |- t : T -> 
+Lemma type_range_not_kind_ps : forall G t T, G |-= t : T -> 
   forall U V, t = Prod U V \/ t = Sum U V -> type_range U <> Srt kind /\
   type_range V <> Srt kind.
 Proof.
@@ -132,11 +132,11 @@ Proof.
   intuition.
 Qed.
  
-Lemma type_no_kind_type : forall G t T, G |- t : T -> 
+Lemma type_no_kind_type : forall G t T, G |-= t : T -> 
   forall U V, (T = Prod U V \/ T = Sum U V) -> type_no_kind T.
 Proof.
   induction 1 using typ_wf_mut with
-  (P := fun G t T => fun H : G |- t : T =>
+  (P := fun G t T => fun H : G |-= t : T =>
   forall U V, (T = Prod U V \/ T = Sum U V) -> type_no_kind T)
   (P0 := fun e => fun H : wf e => 
     forall T n, item_lift T e n -> 
@@ -147,7 +147,7 @@ Proof.
   apply IHtyp with n U V ; auto.
 
   destruct H2 ; try discriminate.
-  assert (e |- Prod T U : Srt s2).
+  assert (e |-= Prod T U : Srt s2).
   apply type_prod with s1 ; auto with coc.
   pose (type_has_no_kind H3) ; auto with coc.
 
@@ -257,7 +257,7 @@ Proof.
 Qed.
 
 Lemma type_no_kind_prod_type : forall G t U V, 
-  G |- t : Prod U V -> type_no_kind (Prod U V).
+  G |-= t : Prod U V -> type_no_kind (Prod U V).
 Proof.
   intros.
   pose (type_no_kind_type H (or_introl _ (refl_equal (Prod U V)))).
@@ -267,7 +267,7 @@ Proof.
 Qed.
 
 Lemma type_no_kind_sum_type : forall G t U V, 
-  G |- t : Sum U V -> type_no_kind (Sum U V).
+  G |-= t : Sum U V -> type_no_kind (Sum U V).
 Proof.
   intros.
   pose (type_no_kind_type H (or_intror _ (refl_equal (Sum U V)))).

@@ -131,7 +131,7 @@ Proof.
   omega.
 Qed.
 
-Lemma coerces_sort_l : forall e T U s, e |- T >>> U : s -> e |- T : Srt s.
+Lemma coerces_sort_l : forall e T U s, e |-= T >>> U : s -> e |-= T : Srt s.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc core.
   apply type_prod with s ; auto with coc.
@@ -139,7 +139,7 @@ Proof.
   apply type_subset ; auto with coc.
 Qed.
 
-Lemma coerces_sort_r : forall e T U s, e |- T >>> U : s -> e |- U : Srt s.
+Lemma coerces_sort_r : forall e T U s, e |-= T >>> U : s -> e |-= U : Srt s.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc core.
   apply type_prod with s ; auto with coc.
@@ -158,10 +158,10 @@ apply lt_wf.
 Qed.
 
 Theorem coerce_trans_aux : forall n : nat,
-(forall e A B s, forall d1 : e |- A >>> B : s, 
-forall C, forall d2 : e |- B >>> C : s,
+(forall e A B s, forall d1 : e |-= A >>> B : s, 
+forall C, forall d2 : e |-= B >>> C : s,
   n = (depth d1) + (depth d2) ->
-  e |- A >>> C : s).
+  e |-= A >>> C : s).
 Proof.
   intros n.
   pattern n.
@@ -172,10 +172,10 @@ Proof.
 
  clear e A B s d1; intros ; clear H H0.
  generalize H1 ; clear H1.
-   apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |- T0 >>> C0 : s0) =>
+   apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |-= T0 >>> C0 : s0) =>
      e1 = e -> T0 = Prod A' B' -> C0 = C -> s0 = s' ->     
      (x = depth (coerces_prod c t t0 c0 t1 t2) + depth d) ->
-     e |- Prod A B >>> C0 : s')) ; intros ; auto with coc ; try discriminate.
+     e |-= Prod A B >>> C0 : s')) ; intros ; auto with coc ; try discriminate.
 
   (* prod, refl *)
   rewrite H0 ;
@@ -202,7 +202,7 @@ Proof.
   rewrite <- e1.
   intros.
 
-  assert(e |- A'0 >>> A : s).
+  assert(e |-= A'0 >>> A : s).
   apply (IH (depth c1 + depth c)) with A' c1 c ; auto.
   rewrite H5.
   simpl.
@@ -256,9 +256,9 @@ Proof.
   intros.
   clear d2.
 
-  assert(e |- Prod A B : Srt s').
+  assert(e |-= Prod A B : Srt s').
   apply type_prod with s ; auto with coc.
-  assert(e |- Prod A B >>> Prod A' B' : s').
+  assert(e |-= Prod A B >>> Prod A' B' : s').
   apply coerces_prod with s ; auto with coc.
 
   destruct c2.
@@ -277,7 +277,7 @@ Proof.
   rewrite e2.
   intros.
 
-  assert(e |- A'0 >>> A : s).
+  assert(e |-= A'0 >>> A : s).
   pose (inv_conv_prod_l _ _ _ _ c1).
   pose(coerces_conv_l).
   rewrite e2 in t7.
@@ -293,8 +293,8 @@ Proof.
   assert(wf (A'0 :: e)).
   apply wf_var with s ; auto with coc.
 
-  cut(A'0 :: e |- B' : Srt s') ; intros.
-  cut(A'0 :: e |- B0 : Srt s') ; intros.
+  cut(A'0 :: e |-= B' : Srt s') ; intros.
+  cut(A'0 :: e |-= B0 : Srt s') ; intros.
   pose (inv_conv_prod_r _ _ _ _ c1).
   set (d := coerces_conv_l H7 H8 t9 c2 c2_2).
   destruct (coerce_conv_env c0 H5 H6).
@@ -374,10 +374,10 @@ Proof.
  generalize H1 ; clear H1.
  rename s0 into sum_sort0.
  rename s1 into sum_sort1.
-   apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |- T0 >>> C0 : s0) =>
+   apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |-= T0 >>> C0 : s0) =>
      e1 = e -> T0 = Sum A' B' -> C0 = C -> s0 = s'' ->     
      (x = depth (coerces_sum c t t0 c0 t1 t2 sum_sort0 sum_sort1) + depth d) ->
-     e |- Sum A B >>> C0 : s'')) ; intros ; auto with coc ; try discriminate.
+     e |-= Sum A B >>> C0 : s'')) ; intros ; auto with coc ; try discriminate.
 
   (* sum, refl *)
   rewrite H0 ;
@@ -405,7 +405,7 @@ Proof.
   rewrite <- e1.
   intros.
 
-  assert(e |- A >>> A'0 : s).
+  assert(e |-= A >>> A'0 : s).
   apply (IH (depth c1 + depth c)) with A' c c1 ; auto.
   rewrite H5 ; simpl ; auto with coc arith.
   apply depth_prod_prod_l.
@@ -467,11 +467,11 @@ Proof.
   intros.
   clear d2.
 
-  assert(e |- Sum A B : Srt s'').
+  assert(e |-= Sum A B : Srt s'').
   apply type_sum with s s' ; auto with coc.
-  assert(e |- Sum A' B' : Srt s'').
+  assert(e |-= Sum A' B' : Srt s'').
   apply type_sum with s s' ; auto with coc.
-  assert(e |- Sum A B >>> Sum A' B' : s'').
+  assert(e |-= Sum A B >>> Sum A' B' : s'').
   apply coerces_sum with s s' ; auto with coc.
   
   destruct c2.
@@ -493,7 +493,7 @@ Proof.
   rewrite e2.
   intros.
   
-  assert(e |- A >>> A'0 : s).
+  assert(e |-= A >>> A'0 : s).
   pose (inv_conv_sum_l _ _ _ _ c1).
   rewrite e2 in H3.
   set (d := coerces_conv_l t H5 t6 c2 c2_1).
@@ -505,7 +505,7 @@ Proof.
   induction (inv_conv_sum_sort_r_set t3 t4 c1).
   destruct p.
   pose (unique_sort t2 H6).
-  assert(A' :: e |- B0 : Srt s'0).
+  assert(A' :: e |-= B0 : Srt s'0).
   apply typ_conv_env with (A1 :: e) ; auto with coc.
   induction (inv_conv_sum_sort_l_set t3 t4 c1).
   apply coerce_env_hd with x2 ; intuition ; auto with coc.
@@ -527,9 +527,9 @@ Proof.
   rewrite <- e3.
   intros.
 
-  cut(A :: e |- B' : Srt s') ; intros.
-  cut(A :: e |- B0 : Srt s') ; intros.
-  cut(A :: e |- B'0 : Srt s') ; intros.
+  cut(A :: e |-= B' : Srt s') ; intros.
+  cut(A :: e |-= B0 : Srt s') ; intros.
+  cut(A :: e |-= B'0 : Srt s') ; intros.
   pose (inv_conv_sum_r _ _ _ _ c1).
   
   destruct (coerce_conv_env c2_2 H9 H10).
@@ -623,10 +623,10 @@ Proof.
    clear e A B s d1 ; intros.
    generalize H0 ; clear H0.
 
-  apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |- T0 >>> C0 : s0) =>
+  apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |-= T0 >>> C0 : s0) =>
      e1 = e -> T0 = Subset U' P -> C0 = C -> s0 = set ->     
      x = depth (coerces_sub_r c t) + depth d -> 
-     e |- U >>> C : set))  ; intros ; auto with coc ; try discriminate.
+     e |-= U >>> C : set))  ; intros ; auto with coc ; try discriminate.
 
    (* sub_r, refl *)
   generalize dependent e.
@@ -771,7 +771,7 @@ Proof.
   apply coerces_conv_r with B ; auto with coc.
 
   (* conv_r, prod *)
-  assert(e |- Prod A' B' : Srt s').
+  assert(e |-= Prod A' B' : Srt s').
   apply type_prod with s ; auto with coc.
   destruct c ;
   pose (H1 := coerces_prod d2_1 t2 t3 d2_2 t4 t5) .
@@ -851,7 +851,7 @@ Proof.
   auto.
   
   (* conv_r, sum *)
-  assert(e |- Sum A' B' : Srt s'').
+  assert(e |-= Sum A' B' : Srt s'').
   apply type_sum with s s' ; auto with coc.
   destruct c ;
   pose (H1 := coerces_sum d2_1 t2 t3 d2_2 t4 t5 s0 s1) .
@@ -943,9 +943,9 @@ Proof.
   pose (coerces_sub_l d2 t2).
   
   generalize H0 ; clear H0.  
-  apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |- T0 >>> C0 : s0) =>
+  apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |-= T0 >>> C0 : s0) =>
      e1 = e -> T0 = A -> C0 = B -> s0 = set ->     
-     x = S (depth d + S (depth d2)) -> e |- A >>> U' : set))  ; intros ; auto with coc ; try discriminate.
+     x = S (depth d + S (depth d2)) -> e |-= A >>> U' : set))  ; intros ; auto with coc ; try discriminate.
 
   (* conv_r < refl, sub_l *)
   rewrite <- H0.
@@ -1060,8 +1060,8 @@ Proof.
   auto.
 Qed.
 
-Theorem coerce_trans_db_set : forall e A B C s, e |- A >>> B : s -> e |- B >>> C : s ->
-  e |- A >>> C : s.
+Theorem coerce_trans_db_set : forall e A B C s, e |-= A >>> B : s -> e |-= B >>> C : s ->
+  e |-= A >>> C : s.
 Proof.
   intros.
   set (x := depth H).
@@ -1141,8 +1141,8 @@ Proof.
   apply coerces_conv_r with B ; auto with coc.
 Qed.
 
-Theorem coerce_trans_d : forall e A B C s n1 n2, e |- A >>> B : s [n1] -> e |- B >>> C : s [n2]->
-  exists m, e |- A >>> C : s [m].
+Theorem coerce_trans_d : forall e A B C s n1 n2, e |-= A >>> B : s [n1] -> e |-= B >>> C : s [n2]->
+  exists m, e |-= A >>> C : s [m].
 Proof.
   intros.
   destruct (coerces_db_depth H).
@@ -1151,7 +1151,7 @@ Proof.
   exact (depth_coerces_db c).
 Qed.
 
-Theorem coerce_trans : forall e A B C s, e |- A >> B : s -> e |- B >> C : s -> e |- A >> C : s.
+Theorem coerce_trans : forall e A B C s, e |-= A >> B : s -> e |-= B >> C : s -> e |-= A >> C : s.
 Proof.
   intros.
   destruct (coerce_coerces_db H).

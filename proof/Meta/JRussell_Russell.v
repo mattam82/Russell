@@ -22,18 +22,18 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
 Theorem jrussell_to_russell :
-  (forall G t T, JRussell.Types.typ G t T -> G |- t : T) /\
-  (forall G U V s, JRussell.Types.coerce G U V s -> G |- U : Srt s /\ G |- V : Srt s /\ 
-  G |- U >> V : s) /\
-  (forall G u v T, G |- u = v : T -> G |- u : T /\ G |- v : T /\ 
+  (forall G t T, G |-= t : T -> G |-- t : T) /\
+  (forall G U V s, G |-= U >> V : s -> G |-- U : Srt s /\ G |-- V : Srt s /\ 
+  G |-- U >> V : s) /\
+  (forall G u v T, G |-= u = v : T -> G |-- u : T /\ G |-- v : T /\ 
   conv u v).
 Proof. 
   apply typ_coerce_jeq_ind with
-  (P := fun G t T => fun H : JRussell.Types.typ G t T => G |- t : T)
+  (P := fun G t T => fun H : JRussell.Types.typ G t T => G |-- t : T)
   (P0 := fun G U V s => fun H : JRussell.Types.coerce G U V s => 
-  G |- U : Srt s /\ G |- V : Srt s /\ 
-  G |- U >> V : s)
-  (P1 := fun G u v T => fun H : G |- u = v : T => G |- u : T /\ G |- v : T /\ 
+  G |-- U : Srt s /\ G |-- V : Srt s /\ 
+  G |-- U >> V : s)
+  (P1 := fun G u v T => fun H : G |-= u = v : T => G |-- u : T /\ G |-- v : T /\ 
   conv u v) ; simpl ; intros ; auto with coc.
 
   apply type_var ; auto with coc.
@@ -120,10 +120,10 @@ Proof.
   pose (generation_prod2 H3).
   intuition.
   destruct H6.
-  assert(e |- subst N B : Srt x).
+  assert(e |-- subst N B : Srt x).
   change (Srt x) with (subst N (Srt x)).
   apply substitution with A ; auto with coc.
-  assert(e |- subst N' B : Srt x).
+  assert(e |-- subst N' B : Srt x).
   change (Srt x) with (subst N' (Srt x)).
   apply substitution with A ; auto with coc.
   apply type_conv with (subst N' B) x ; auto with coc.
@@ -150,13 +150,13 @@ Proof.
   apply wf_var with s1 ; auto.
   apply conv_conv_sum ; auto with coc.
 
-  assert(e |- subst u' B : Srt s2).
+  assert(e |-- subst u' B : Srt s2).
   change (Srt s2) with (subst u' (Srt s2)) ; auto with coc.
   apply substitution with A ; auto with coc ; intuition.
-  assert(e |- subst u B : Srt s2).
+  assert(e |-- subst u B : Srt s2).
   change (Srt s2) with (subst u (Srt s2)) ; auto with coc.
   apply substitution with A ; auto with coc ; intuition.
-  assert(e |- subst u' B' : Srt s2).
+  assert(e |-- subst u' B' : Srt s2).
   change (Srt s2) with (subst u' (Srt s2)) ; auto with coc.
   apply substitution with A ; auto with coc ; intuition.
   assert(coerce_in_env (A :: e) (A' :: e)).
@@ -194,8 +194,8 @@ Proof.
   destruct H1.
   destruct (generation_sum2 H1).
   intuition.
-  assert(e |- Pi1 t : A) by apply type_pi1 with B ; auto with coc.
-  assert(e |- Pi1 t' : A) by apply type_pi1 with B ; auto with coc.
+  assert(e |-- Pi1 t : A) by apply type_pi1 with B ; auto with coc.
+  assert(e |-- Pi1 t' : A) by apply type_pi1 with B ; auto with coc.
   pose (substitution H5 H4).
   pose (substitution H5 H7).
 
@@ -205,8 +205,8 @@ Proof.
   unfold subst ; apply conv_conv_subst ; auto with coc.
   
   intuition ; try apply type_pi2 with A ; auto with coc.
-  assert(e |- Pair (Sum A B) u v : Sum A B) by  apply type_pair with s1 s2 s3 ; auto with coc.
-  assert(e |- Pi1 (Pair (Sum A B) u v) : A) by apply type_pi1 with B ; auto.
+  assert(e |-- Pair (Sum A B) u v : Sum A B) by  apply type_pair with s1 s2 s3 ; auto with coc.
+  assert(e |-- Pi1 (Pair (Sum A B) u v) : A) by apply type_pi1 with B ; auto.
   pose (substitution H0 H1).
   apply type_conv with (subst (Pi1 (Pair (Sum A B) u v)) B) s2 ; auto with coc.
   apply type_pi2 with A ; auto with coc.
@@ -233,11 +233,11 @@ Proof.
   apply type_conv with A s ; auto.
 Qed.
 
-Corollary type_jrussell_to_russell : forall G t T, JRussell.Types.typ G t T -> G |- t : T.
+Corollary type_jrussell_to_russell : forall G t T, JRussell.Types.typ G t T -> G |-- t : T.
 Proof (proj1 (jrussell_to_russell)).
 
 Corollary coerce_jrussell_to_russell : forall G U V s, 
-   JRussell.Types.coerce G U V s -> G |- U >> V : s.
+   JRussell.Types.coerce G U V s -> G |-- U >> V : s.
 Proof.
   intros.
   destruct (jrussell_to_russell).
@@ -246,8 +246,8 @@ Proof.
   intuition.
 Qed.
 
-Corollary jeq_jrussell_to_russell : forall G u v T, G |- u = v : T -> 
-  G |- u : T /\ G |- v : T /\ conv u v.
+Corollary jeq_jrussell_to_russell : forall G u v T, G |-= u = v : T -> 
+  G |-- u : T /\ G |-- v : T /\ conv u v.
 Proof.
   intros.
   destruct (jrussell_to_russell).

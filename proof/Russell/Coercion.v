@@ -15,7 +15,7 @@ Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
 Inductive coerce_in_env : env -> env -> Prop :=
-  | coerce_env_hd : forall e t u s, e |- t >> u : s -> 
+  | coerce_env_hd : forall e t u s, e |-- t >> u : s -> 
 	coerce_in_env (u :: e) (t :: e)
   | coerce_env_tl :
         forall e f t, wf (t :: f) -> coerce_in_env e f -> coerce_in_env (t :: e) (t :: f).
@@ -28,7 +28,7 @@ Lemma conv_item :
    forall f, coerce_in_env e f ->
    item_lift t f n \/
    ((forall g, trunc _ (S n) e g -> trunc _ (S n) f g) /\
-   exists u, item_lift u f n /\ (exists s, f |- u >> t : s)).
+   exists u, item_lift u f n /\ (exists s, f |-- u >> t : s)).
 simple induction n.
 do 3 intro.
 elim H.
@@ -103,20 +103,20 @@ exists x; auto with coc core arith datatypes.
 Qed.
 
 Lemma double_conv_env :
-  (forall e t T, e |- t : T -> 
+  (forall e t T, e |-- t : T -> 
   forall f, coerce_in_env e f -> 
-  wf f -> f |- t : T) /\
-  (forall e T U s, e |- T >> U : s -> 
+  wf f -> f |-- t : T) /\
+  (forall e T U s, e |-- T >> U : s -> 
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U : s).
+  wf f -> f |-- T >> U : s).
 Proof.
 apply double_typ_coerce_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
-(P0 := fun e T U s => fun H : e |- T >> U : s =>
+(P0 := fun e T U s => fun H : e |-- T >> U : s =>
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U : s) ; intros ;
+  wf f -> f |-- T >> U : s) ; intros ;
 auto with coc core arith datatypes.
 
 elim conv_item with n T e f; auto with coc core arith datatypes; intros.
@@ -183,16 +183,16 @@ apply coerce_sort_r with U ; auto with coc core arith datatypes.
 apply coerce_conv with B C ; auto with coc core arith datatypes.
 Qed.
 
-Lemma typ_conv_env : forall e t T, e |- t : T -> forall f, coerce_in_env e f -> 
-  wf f -> f |- t : T.
+Lemma typ_conv_env : forall e t T, e |-- t : T -> forall f, coerce_in_env e f -> 
+  wf f -> f |-- t : T.
 Proof (proj1 double_conv_env).
 
-Lemma coerce_conv_env : forall e T U s, e |- T >> U : s -> 
+Lemma coerce_conv_env : forall e T U s, e |-- T >> U : s -> 
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U : s.
+  wf f -> f |-- T >> U : s.
 Proof (proj2 double_conv_env).
 
-Lemma coerce_sym : forall e T U s, e |- T >> U : s -> e |- U >> T : s.
+Lemma coerce_sym : forall e T U s, e |-- T >> U : s -> e |-- U >> T : s.
 Proof.
   intros e T U s H ; induction H ; intros ; auto with coc core.
   

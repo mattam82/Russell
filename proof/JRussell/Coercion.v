@@ -14,7 +14,7 @@ Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
 Inductive coerce_in_env : env -> env -> Prop :=
-  | coerce_env_hd : forall e t u s, e |- t >> u : s -> e |- u : Srt s -> 
+  | coerce_env_hd : forall e t u s, e |-= t >> u : s -> e |-= u : Srt s -> 
 	coerce_in_env (t :: e) (u :: e)
   | coerce_env_tl :
         forall e f t, coerce_in_env e f -> coerce_in_env (t :: e) (t :: f).
@@ -22,23 +22,23 @@ Inductive coerce_in_env : env -> env -> Prop :=
 Hint Resolve coerce_env_hd coerce_env_tl: coc.
 
 Lemma ind_coerce_env :
-  (forall e t T, e |- t : T -> 
-  forall f, coerce_in_env e f -> f |- t : T) /\
-  (forall e T U s, e |- T >> U : s -> 
-  forall f, coerce_in_env e f -> f |- T >> U : s) /\
-  (forall e U V T, e |- U = V : T ->
-  forall f, coerce_in_env e f -> f |- U = V : T).
+  (forall e t T, e |-= t : T -> 
+  forall f, coerce_in_env e f -> f |-= t : T) /\
+  (forall e T U s, e |-= T >> U : s -> 
+  forall f, coerce_in_env e f -> f |-= T >> U : s) /\
+  (forall e U V T, e |-= U = V : T ->
+  forall f, coerce_in_env e f -> f |-= U = V : T).
 Proof.
 apply typ_coerce_jeq_ind with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   typ f t T)
-(P0 := fun e T U s => fun H : e |- T >> U : s =>
+(P0 := fun e T U s => fun H : e |-= T >> U : s =>
   forall f, coerce_in_env e f -> 
-  f |- T >> U : s) 
-(P1 := fun e U V T => fun H : e |- U = V : T =>
+  f |-= T >> U : s) 
+(P1 := fun e U V T => fun H : e |-= U = V : T =>
   forall f, coerce_in_env e f -> 
-  f |- U = V : T) ;
+  f |-= U = V : T) ;
  intros ; try (solve [destruct (H f H0) ; clear H]); 
 auto with coc core arith datatypes.
 
@@ -119,18 +119,18 @@ apply jeq_trans with N ; auto with coc.
 apply jeq_conv with A s ; auto with coc.
 Qed.
 
-Lemma typ_coerce_env : forall e t T, e |- t : T -> forall f, coerce_in_env e f -> 
-  f |- t : T.
+Lemma typ_coerce_env : forall e t T, e |-= t : T -> forall f, coerce_in_env e f -> 
+  f |-= t : T.
 Proof (proj1 ind_coerce_env).
 
-Lemma coerce_coerce_env : forall e T U s, e |- T >> U : s -> 
+Lemma coerce_coerce_env : forall e T U s, e |-= T >> U : s -> 
   forall f, coerce_in_env e f -> 
-  f |- T >> U : s.
+  f |-= T >> U : s.
 Proof (proj1 (proj2 ind_coerce_env)).
 
-Lemma jeq_coerce_env : forall e U V T, e |- U = V : T -> 
+Lemma jeq_coerce_env : forall e U V T, e |-= U = V : T -> 
   forall f, coerce_in_env e f -> 
-  f |- U = V : T.
+  f |-= U = V : T.
 Proof (proj2 (proj2 ind_coerce_env)).
 
 

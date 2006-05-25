@@ -57,7 +57,7 @@ Proof.
   inversion H2.
 Qed.
 
-Lemma kind_is_prod_aux : forall G t T, G |- t : T -> 
+Lemma kind_is_prod_aux : forall G t T, G |-- t : T -> 
   T = Srt kind -> is_low t.
 Proof.
   unfold is_prop ; induction 1 ; intros ; try discriminate ; simpl ; auto.
@@ -102,14 +102,14 @@ Proof.
   auto.
 Qed.
 
-Lemma type_kind_range : forall G t, G |- t : Srt kind -> is_low t.
+Lemma type_kind_range : forall G t, G |-- t : Srt kind -> is_low t.
 Proof.
   intros.
   apply kind_is_prod_aux with G (Srt kind) ; auto.
 Qed.
 
 
-Lemma sort_conv_eq : forall G T s, G |- T : Srt kind -> conv T (Srt s) -> T = Srt s.
+Lemma sort_conv_eq : forall G T s, G |-- T : Srt kind -> conv T (Srt s) -> T = Srt s.
 Proof.
   intros.
   destruct (church_rosser _ _ H0).
@@ -131,7 +131,7 @@ Proof.
   contradiction.
 Qed.
 
-Lemma coerce_sort_l_in_kind : forall G A s s', G |- Srt s >> A : s' -> s' = kind.
+Lemma coerce_sort_l_in_kind : forall G A s s', G |-- Srt s >> A : s' -> s' = kind.
 Proof.
   intros.
   pose (coerce_sort_l H).
@@ -140,7 +140,7 @@ Proof.
   inversion H1 ; auto.
 Qed.
 
-Lemma coerce_sort_r_in_kind : forall G A s s', G |- A >> Srt s : s' -> s' = kind.
+Lemma coerce_sort_r_in_kind : forall G A s s', G |-- A >> Srt s : s' -> s' = kind.
 Proof.
   intros.
   pose (coerce_sort_r H).
@@ -149,7 +149,7 @@ Proof.
   inversion H1 ; auto.
 Qed.
 
-Lemma coerce_not_kind_l : forall G T s, ~ G |- Srt kind >> T : s.
+Lemma coerce_not_kind_l : forall G T s, ~ G |-- Srt kind >> T : s.
 Proof.
   red ; intros.
   pose (coerce_sort_l H).
@@ -157,7 +157,7 @@ Proof.
   auto.
 Qed.
 
-Lemma coerce_not_kind_r : forall G T s, ~ G |- T >> Srt kind : s.
+Lemma coerce_not_kind_r : forall G T s, ~ G |-- T >> Srt kind : s.
 Proof.
   red ; intros.
   pose (coerce_sort_r H).
@@ -165,7 +165,7 @@ Proof.
   auto.
 Qed.
 
-Lemma coerce_propset_l_aux : forall G Ts A s', G |- Ts >> A : s' ->
+Lemma coerce_propset_l_aux : forall G Ts A s', G |-- Ts >> A : s' ->
   forall s, Ts = Srt s ->  s' = kind -> A = Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto.
@@ -183,7 +183,7 @@ Proof.
   exact (sort_conv_eq H2 c0).
 Qed.
 
-Lemma coerce_propset_r_aux : forall G Ts A s', G |- A >> Ts : s' ->
+Lemma coerce_propset_r_aux : forall G Ts A s', G |-- A >> Ts : s' ->
   forall s, Ts = Srt s ->  s' = kind -> A = Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto.
@@ -199,7 +199,7 @@ Proof.
   exact (sort_conv_eq H H3).
 Qed.
 
-Lemma coerce_propset_l :  forall G s A s', G |- Srt s >> A : s' ->
+Lemma coerce_propset_l :  forall G s A s', G |-- Srt s >> A : s' ->
   A = Srt s.
 Proof.
   intros.
@@ -207,7 +207,7 @@ Proof.
   apply coerce_sort_l_in_kind with G A s ; auto.
 Qed.
 
-Lemma coerce_propset_r :  forall G s A s', G |- A >> Srt s : s' ->
+Lemma coerce_propset_r :  forall G s A s', G |-- A >> Srt s : s' ->
   A = Srt s.
 Proof.
   intros.
@@ -229,7 +229,7 @@ Fixpoint is_low_full t : Prop :=
   | _ => False
   end.
 
-Lemma sort_of_kinded_aux : forall G t T, G |- t : T -> 
+Lemma sort_of_kinded_aux : forall G t T, G |-- t : T -> 
   forall s, T = Srt s -> 
   (s = kind -> is_low_full t) /\ (is_prop s -> no_sort t).
 Proof.
@@ -317,21 +317,21 @@ Proof.
   auto.
 Qed.
 
-Lemma sorts_of_sorted : forall G t s, G |- t : Srt s -> 
+Lemma sorts_of_sorted : forall G t s, G |-- t : Srt s -> 
   (s = kind -> is_low_full t) /\ (is_prop s -> no_sort t).
 Proof.
   intros.
   apply sort_of_kinded_aux with G (Srt s) ; auto ; auto.
 Qed. 
 
-Lemma sort_of_kinded : forall G t, G |- t : Srt kind -> 
+Lemma sort_of_kinded : forall G t, G |-- t : Srt kind -> 
   is_low_full t.
 Proof.
   intros ; destruct (sorts_of_sorted H).
   apply H0 ; auto.
 Qed.
 
-Lemma sort_of_propset : forall G t s, G |- t : Srt s -> 
+Lemma sort_of_propset : forall G t s, G |-- t : Srt s -> 
   is_prop s -> no_sort t.
 Proof.
   intros ; destruct (sorts_of_sorted H).

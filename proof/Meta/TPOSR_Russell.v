@@ -31,8 +31,8 @@ Implicit Types e f g : lenv.
 
 Set Implicit Arguments.
 
-Theorem tposr_russell : forall G M N A, G |- M -> N : A ->
-  (unlab_ctx G) |- (|M|) : (|A|) /\ (unlab_ctx G) |- (|N|) : (|A|).
+Theorem tposr_russell : forall G M N A, G |-- M -> N : A ->
+  (unlab_ctx G) |-- (|M|) : (|A|) /\ (unlab_ctx G) |-- (|N|) : (|A|).
 Proof.
   intros.
   pose (unlab_sound_type H).
@@ -41,8 +41,8 @@ Proof.
   split ; apply type_jrussell_to_russell ; auto.
 Qed.
 
-Theorem tposr_eq_russell : forall G M N s, G |- M ~= N : s ->
-  (unlab_ctx G) |- (|M|) : Srt s /\ (unlab_ctx G) |- (|N|) : Srt s.
+Theorem tposr_eq_russell : forall G M N s, G |-- M ~= N : s ->
+  (unlab_ctx G) |-- (|M|) : Srt s /\ (unlab_ctx G) |-- (|N|) : Srt s.
 Proof.
   induction 1 ; simpl ; intros.
 
@@ -53,7 +53,7 @@ Proof.
   intuition.
 Qed.
 
-Theorem tposr_unique_sort : forall G A B C s s', G |- A -> B : Srt_l s -> G |- A -> C : Srt_l s' ->
+Theorem tposr_unique_sort : forall G A B C s s', G |-- A -> B : Srt_l s -> G |-- A -> C : Srt_l s' ->
   s = s'.
 Proof.
   intros.
@@ -63,7 +63,7 @@ Proof.
   apply (unique_sort H1 H3).
 Qed.
 
-Theorem tposr_eq_unique_sort : forall G A B C s s', G |- A ~= B : s -> G |- A ~= C : s' ->
+Theorem tposr_eq_unique_sort : forall G A B C s s', G |-- A ~= B : s -> G |-- A ~= C : s' ->
   s = s'.
 Proof.
   simpl ; intros.

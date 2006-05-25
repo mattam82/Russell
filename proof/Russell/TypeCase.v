@@ -255,7 +255,7 @@ pose (IHcoerce1 A0 B0 H1 x H3).
 
 
 
-Lemma inv_typ_sort_set : forall G t, G |- t : (Srt set) -> ~ conv t (Srt set).
+Lemma inv_typ_sort_set : forall G t, G |-- t : (Srt set) -> ~ conv t (Srt set).
 Proof.
 intros.
 red ; intros.
@@ -268,7 +268,7 @@ Admitted.
 
 
 
-Lemma subset_inv : forall G U P T, G |- Subset U P : T ->
+Lemma subset_inv : forall G U P T, G |-- Subset U P : T ->
   forall s, ~ conv U (Srt s).
 Proof.
 intros G U P T typUP.
@@ -287,8 +287,8 @@ Proof.
 
 (*
 Lemma coerce_sorts : forall G s1 Ts1 s2 Ts2, 
-  Ts1 = Srt s1 -> Ts2 = Srt s2 -> G |- Ts1 >> Ts2 -> 
-  forall s, G |- Ts1 : Srt s -> G |- Ts2 : Srt s -> s1 = s2.
+  Ts1 = Srt s1 -> Ts2 = Srt s2 -> G |-- Ts1 >> Ts2 -> 
+  forall s, G |-- Ts1 : Srt s -> G |-- Ts2 : Srt s -> s1 = s2.
 Proof.
   induction 3 ; intros ; try discriminate ; auto with coc.
   apply conv_sort.

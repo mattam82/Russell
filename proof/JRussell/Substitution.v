@@ -12,28 +12,28 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Lemma ind_sub_weak : forall g (d : term) t, g |- d : t ->
-   (forall e u (U : term), e |- u : U ->
+Lemma ind_sub_weak : forall g (d : term) t, g |-= d : t ->
+   (forall e u (U : term), e |-= u : U ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d u n) : (subst_rec d U n)) /\
-   (forall e T U s, e |- T >> U : s ->
+   f |-= (subst_rec d u n) : (subst_rec d U n)) /\
+   (forall e T U s, e |-= T >> U : s ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d T n) >> (subst_rec d U n) : s) /\
-   (forall e U V T, e |- U = V : T ->
+   f |-= (subst_rec d T n) >> (subst_rec d U n) : s) /\
+   (forall e U V T, e |-= U = V : T ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d U n) = (subst_rec d V n) : (subst_rec d T n)).
+   f |-= (subst_rec d U n) = (subst_rec d V n) : (subst_rec d T n)).
 Proof.
 intros g d t H.
 apply typ_coerce_jeq_ind with
-   (P:=fun e u (U : term) => fun H : e |- u : U =>
+   (P:=fun e u (U : term) => fun H : e |-= u : U =>
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d u n) : (subst_rec d U n)) 
-   (P1:=fun e U V T => fun H : e |- U = V : T =>
+   f |-= (subst_rec d u n) : (subst_rec d U n)) 
+   (P1:=fun e U V T => fun H : e |-= U = V : T =>
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d U n) = (subst_rec d V n) : (subst_rec d T n))
-   (P0:=fun e T U s => fun H : e |- T >> U : s =>
+   f |-= (subst_rec d U n) = (subst_rec d V n) : (subst_rec d T n))
+   (P0:=fun e T U s => fun H : e |-= T >> U : s =>
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d T n) >> (subst_rec d U n) : s) ;
+   f |-= (subst_rec d T n) >> (subst_rec d U n) : s) ;
  simpl in |- *;
  intros; auto with coc core arith datatypes.
 
@@ -177,35 +177,35 @@ apply jeq_trans with (subst_rec d N n) ; auto with coc.
 apply jeq_conv with (subst_rec d A n) s ; auto with coc.
 Qed.
 
-Lemma typ_sub_weak : forall g (d : term) t, g |- d : t ->
-   forall e u (U : term), e |- u : U ->
+Lemma typ_sub_weak : forall g (d : term) t, g |-= d : t ->
+   forall e u (U : term), e |-= u : U ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d u n) : (subst_rec d U n).
+   f |-= (subst_rec d u n) : (subst_rec d U n).
 Proof.
   intros g d t H.
   exact (proj1 (ind_sub_weak H)).
 Qed.
 
-Lemma coerce_sub_weak : forall g (d : term) t, g |- d : t ->
-   forall e T U s, e |- T >> U : s ->
+Lemma coerce_sub_weak : forall g (d : term) t, g |-= d : t ->
+   forall e T U s, e |-= T >> U : s ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d T n) >> (subst_rec d U n) : s.
+   f |-= (subst_rec d T n) >> (subst_rec d U n) : s.
 Proof.
   intros g d t H.
   exact (proj1 (proj2 (ind_sub_weak H))).
 Qed.
 
-Lemma jeq_sub_weak : forall g (d : term) t, g |- d : t ->
-   forall e U V T, e |- U = V : T ->
+Lemma jeq_sub_weak : forall g (d : term) t, g |-= d : t ->
+   forall e U V T, e |-= U = V : T ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-   f |- (subst_rec d U n) = (subst_rec d V n) : (subst_rec d T n).
+   f |-= (subst_rec d U n) = (subst_rec d V n) : (subst_rec d T n).
 Proof.
   intros g d t H.
   exact (proj2 (proj2 (ind_sub_weak H))).
 Qed.
 
-Theorem substitution : forall e t u U, (t :: e) |- u : U ->
-  forall d, e |- d : t -> e |- (subst d u) : (subst d U).
+Theorem substitution : forall e t u U, (t :: e) |-= u : U ->
+  forall d, e |-= d : t -> e |-= (subst d u) : (subst d U).
 Proof.
 intros.
 unfold subst in |- *.
@@ -214,8 +214,8 @@ apply H1 with (t :: e) ; auto with coc core arith datatypes.
 Qed.
 
 Theorem substitution_coerce : forall e t T (U : term) s,
-  (t :: e) |- T >> U : s ->
-  forall d, e |- d : t -> e |- (subst d T) >> (subst d U) : s.
+  (t :: e) |-= T >> U : s ->
+  forall d, e |-= d : t -> e |-= (subst d T) >> (subst d U) : s.
 Proof.
 intros.
 unfold subst in |- *.
@@ -225,8 +225,8 @@ apply H2 with (t :: e); auto with coc core arith datatypes.
 Qed.
 
 Theorem substitution_jeq : forall e t U V T,
-  (t :: e) |- U = V : T ->
-  forall d, e |- d : t -> e |- (subst d U) = (subst d V) : subst d T.
+  (t :: e) |-= U = V : T ->
+  forall d, e |-= d : t -> e |-= (subst d U) = (subst d V) : subst d T.
 Proof.
 intros.
 unfold subst in |- *.

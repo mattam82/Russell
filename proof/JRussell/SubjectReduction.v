@@ -20,9 +20,9 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
-Lemma inv_sub_prod_l_aux : forall e T T' s, e |- T >> T' : s ->
+Lemma inv_sub_prod_l_aux : forall e T T' s, e |-= T >> T' : s ->
   forall U U' V V', T = Prod U V -> T' = Prod U' V' -> 
-  (exists s1, e |- U' >> U : s1) /\ U' :: e |- V >> V' : s.
+  (exists s1, e |-= U' >> U : s1) /\ U' :: e |-= V >> V' : s.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc ; try discriminate.
   
@@ -118,8 +118,8 @@ Proof.
   apply trans_conv_conv with D0 ; auto with coc.
 Qed.
 
-Lemma inv_sub_prod_l : forall e U U' V V' s, e |- Prod U V >> Prod U' V' : s ->
-  exists s1, e |- U' >> U : s1.
+Lemma inv_sub_prod_l : forall e U U' V V' s, e |-= Prod U V >> Prod U' V' : s ->
+  exists s1, e |-= U' >> U : s1.
 Proof.
   intros.
   destruct (inv_sub_prod_l_aux H (refl_equal (Prod U V)) (refl_equal (Prod U' V'))).
@@ -127,17 +127,17 @@ Proof.
 Qed.
 
 Lemma inv_sub_prod_r : 
-  forall e U U' V V' s, e |- Prod U V >> Prod U' V' : s ->
-  U' :: e |- V >> V' : s.
+  forall e U U' V V' s, e |-= Prod U V >> Prod U' V' : s ->
+  U' :: e |-= V >> V' : s.
 Proof.
   intros.
   destruct (inv_sub_prod_l_aux H (refl_equal (Prod U V)) (refl_equal (Prod U' V'))).
   assumption.
 Qed.
 
-Lemma inv_sub_sum_aux : forall e T T' s, e |- T >> T' : s ->
+Lemma inv_sub_sum_aux : forall e T T' s, e |-= T >> T' : s ->
   forall U U' V V', T = Sum U V -> T' = Sum U' V' -> 
-  (e |- U >> U' : s) /\ U :: e |- V >> V' : s.
+  (e |-= U >> U' : s) /\ U :: e |-= V >> V' : s.
 Proof.
 
   induction 1 ; simpl ; intros ; auto with coc ; try discriminate.
@@ -267,24 +267,24 @@ Proof.
   apply trans_conv_conv with D0 ; auto with coc.
 Qed.
 
-Lemma inv_sub_sum_l : forall e U U' V V' s, e |- Sum U V >> Sum U' V' : s ->
-  e |- U >> U' : s.
+Lemma inv_sub_sum_l : forall e U U' V V' s, e |-= Sum U V >> Sum U' V' : s ->
+  e |-= U >> U' : s.
 Proof.
   intros.
   destruct (inv_sub_sum_aux H (refl_equal (Sum U V)) (refl_equal (Sum U' V'))).
   assumption.
 Qed.
 
-Lemma inv_sub_sum_r : forall e U U' V V' s, e |- Sum U V >> Sum U' V' : s ->
-  U :: e |- V >> V' : s.
+Lemma inv_sub_sum_r : forall e U U' V V' s, e |-= Sum U V >> Sum U' V' : s ->
+  U :: e |-= V >> V' : s.
 Proof.
   intros.
   destruct (inv_sub_sum_aux H (refl_equal (Sum U V)) (refl_equal (Sum U' V'))).
   assumption.
 Qed.
 
-Lemma typ_red_env : forall e U V s1, e |- U : Srt s1 -> e |- V : Srt s1 ->
-  red1 U V -> forall W T, U :: e |- W : T -> V :: e |- W : T.
+Lemma typ_red_env : forall e U V s1, e |-= U : Srt s1 -> e |-= V : Srt s1 ->
+  red1 U V -> forall W T, U :: e |-= W : T -> V :: e |-= W : T.
 Proof.
   intros.
   assert(coerce_in_env (U :: e) (V :: e)).
@@ -315,9 +315,9 @@ apply one_step_conv_exp ; auto.
 
 pose (typ_conv_env H0 H4 H2).
 pose (typ_conv_env H1 H4 H2).
-assert (e |- Prod T U : Srt s2).
+assert (e |-= Prod T U : Srt s2).
 apply type_prod with s1 ; auto with coc.
-assert (e |- Prod M' U : Srt s2).
+assert (e |-= Prod M' U : Srt s2).
 apply type_prod with s1 ; auto with coc.
 apply type_conv with (Prod M' U) s2; auto with coc core arith datatypes.
 apply type_abs with s1 s2; auto with coc core arith datatypes.
@@ -371,8 +371,8 @@ apply (substitution_coerce c H).
 
 apply type_app with V; auto with coc core arith datatypes.
 
-cut(e |- subst N2 Ur : Srt x).
-cut(e |- subst v Ur : Srt x).
+cut(e |-= subst N2 Ur : Srt x).
+cut(e |-= subst v Ur : Srt x).
 intros.
 apply type_conv with (subst N2 Ur) x; auto with coc core arith datatypes.
 apply type_app with V; auto with coc core arith datatypes.
@@ -388,7 +388,7 @@ pose (IHtyp1 _ H).
 replace (Srt x) with (subst N2 (Srt x)); auto with coc core arith datatypes.
 apply substitution with V; auto with coc core arith datatypes.
 
-assert(e |- Sum U V : Srt s3).
+assert(e |-= Sum U V : Srt s3).
 apply type_sum with s1 s2 ; auto with coc core.
 
 inversion_clear H3.
@@ -401,7 +401,7 @@ apply inv_typ_sum2 with e U V (Srt s3) ; auto with coc ; intros.
 pose (IHtyp1 _ H3).
 assert(s1 = s3).
 rewrite H6 ; auto.
-assert(e |- Sum N1 V : Srt s3).
+assert(e |-= Sum N1 V : Srt s3).
 apply type_sum with s1 s2 ; auto with coc core.
 
 apply typ_red_env with U s1 ; auto with coc core.
@@ -422,7 +422,7 @@ apply inv_typ_sum2 with e U V (Srt s3) ; auto with coc ; intros.
 pose (IHtyp3 _ H3).
 assert(s1 = s3).
 rewrite H6 ; auto.
-assert(e |- Sum U N2 : Srt s3).
+assert(e |-= Sum U N2 : Srt s3).
 apply type_sum with s1 s2 ; auto with coc core.
 
 apply type_conv with (Sum U N2) s3 ; auto with coc.
@@ -493,7 +493,7 @@ apply inv_typ_pair with e T M u (Sum U V) ; auto with coc ; intros.
 pose (inv_sub_sum_l H6).
 pose (unicity_coerce_r c H1).
 pose (coerce_sort_l c0).
-assert (e |- M : U).
+assert (e |-= M : U).
 apply type_conv with U0 s1 ; auto with coc.
 
 apply inv_typ_sum2 with e U V (Srt s) ; auto with coc ; intros.

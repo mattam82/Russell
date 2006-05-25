@@ -51,7 +51,7 @@ Proof.
 Qed.
 
 
-Lemma term_type_range_kinded : forall e t T, e |- t : T ->
+Lemma term_type_range_kinded : forall e t T, e |-- t : T ->
   forall s, type_range t = Srt s -> T = Srt kind. 
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -62,7 +62,7 @@ Proof.
   elim typ_not_kind2 with e (Srt s) ; auto.
 Qed.
 
-Lemma term_type_range_not_kind : forall e t T, e |- t : T ->
+Lemma term_type_range_not_kind : forall e t T, e |-- t : T ->
   forall s, type_range t = Srt s -> s <> kind. 
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -98,7 +98,7 @@ Proof.
   assumption.
 Qed.
 
-Lemma type_range_sub : forall e T U s, e |- T >> U : s ->
+Lemma type_range_sub : forall e T U s, e |-- T >> U : s ->
   forall s0, (type_range U = Srt s0 -> type_range T = Srt s0).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -124,7 +124,7 @@ Proof.
   apply (@conv_dom _ _  (sym_conv _ _ H3) s0 i0 i) ; auto.
 Qed.
 
-Lemma var_sort_range_item_aux : forall e t T, e |- t : T ->
+Lemma var_sort_range_item_aux : forall e t T, e |-- t : T ->
   forall n, t = Ref n -> 
   forall s, type_range T = (Srt s) -> 
   exists T', item_lift T' e n /\ type_range T' = Srt s.
@@ -153,7 +153,7 @@ Proof.
   exact (IHtyp1 n H3 s0 (type_range_sub H2 H4)).
 Qed. 
 
-Lemma var_sort_range_item : forall e n T, e |- Ref n : T ->
+Lemma var_sort_range_item : forall e n T, e |-- Ref n : T ->
   forall s, type_range T = (Srt s) -> 
   exists T', item_lift T' e n /\ type_range T' = Srt s.
 Proof.
@@ -161,9 +161,9 @@ Proof.
   eapply var_sort_range_item_aux with (Ref n) T; auto ; auto.
 Qed.
 
-Lemma unique_var_range_sort : forall e n T, e |- Ref n : T ->
+Lemma unique_var_range_sort : forall e n T, e |-- Ref n : T ->
   forall s, type_range T = Srt s ->
-  forall T', e |- Ref n : T' -> 
+  forall T', e |-- Ref n : T' -> 
   forall s', type_range T' = Srt s' -> s = s'.
 Proof.
   intros.
@@ -181,10 +181,10 @@ Proof.
 Qed.
 
 
-Lemma sort_of_app_range_aux : forall e t Ts, e |- t : Ts ->
+Lemma sort_of_app_range_aux : forall e t Ts, e |-- t : Ts ->
   forall M N, t = App M N ->
   forall s, type_range Ts = Srt s ->
-  exists V, exists T,  e |- N : V /\ e |- M : Prod V T /\
+  exists V, exists T,  e |-- N : V /\ e |-- M : Prod V T /\
   (type_range T = (Srt s) \/ type_range N = Srt s).
 Proof.
   induction 1 ; simpl ; intros ;
@@ -208,20 +208,20 @@ Proof.
   exact (IHtyp1 _ _ H3 _ e0).
 Qed.
 
-Lemma sort_of_app_range : forall e M N Ts, e |- App M N : Ts ->
+Lemma sort_of_app_range : forall e M N Ts, e |-- App M N : Ts ->
   forall s, type_range Ts = Srt s ->
-  exists V, exists T,  e |- N : V /\ e |- M : Prod V T /\
+  exists V, exists T,  e |-- N : V /\ e |-- M : Prod V T /\
   (type_range T = (Srt s) \/ type_range N = Srt s).
 Proof.
   intros. 
   apply sort_of_app_range_aux with (App M N) Ts  ; auto ; auto.
 Qed.
 
-Lemma sort_of_abs_range_aux : forall e t Ts, e |- t : Ts ->
+Lemma sort_of_abs_range_aux : forall e t Ts, e |-- t : Ts ->
   forall M N, t = Abs M N ->
   forall s, type_range Ts = Srt s ->
-  exists s1, exists s2, exists T, e |- M : (Srt s1) /\ M :: e |- N : T /\
-  M :: e |- T : Srt s2 /\ type_range T = (Srt s).
+  exists s1, exists s2, exists T, e |-- M : (Srt s1) /\ M :: e |-- N : T /\
+  M :: e |-- T : Srt s2 /\ type_range T = (Srt s).
 Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
@@ -237,16 +237,16 @@ Proof.
   apply (type_range_sub H2 H4).
 Qed.
 
-Lemma sort_of_abs_range : forall e M N Ts, e |- Abs M N : Ts ->
+Lemma sort_of_abs_range : forall e M N Ts, e |-- Abs M N : Ts ->
   forall s, type_range Ts = Srt s ->
-  exists s1, exists s2, exists T, e |- M : (Srt s1) /\ M :: e |- N : T /\
-  M :: e |- T : Srt s2 /\ type_range T = (Srt s).
+  exists s1, exists s2, exists T, e |-- M : (Srt s1) /\ M :: e |-- N : T /\
+  M :: e |-- T : Srt s2 /\ type_range T = (Srt s).
 Proof.
   intros. 
   apply sort_of_abs_range_aux with (Abs M N) Ts  ; auto ; auto.
 Qed.
 
-Lemma sort_of_pair_range_aux : forall e t Ts, e |- t : Ts ->
+Lemma sort_of_pair_range_aux : forall e t Ts, e |-- t : Ts ->
   forall T u v, t = Pair T u v ->
   forall s, type_range Ts <> Srt s.
 Proof.
@@ -259,7 +259,7 @@ Proof.
   contradiction.
 Qed.
 
-Lemma sort_of_pair_range : forall e T u v Ts, e |- Pair T u v : Ts ->
+Lemma sort_of_pair_range : forall e T u v Ts, e |-- Pair T u v : Ts ->
   forall s, type_range Ts <> Srt s.
 Proof.
   intros. 
@@ -280,7 +280,7 @@ Proof.
   unfold is_prop ; intuition.
 Qed.
 
-Lemma sort_of_sum_aux : forall e T Ts, e |- T : Ts -> 
+Lemma sort_of_sum_aux : forall e T Ts, e |-- T : Ts -> 
   forall U V, T = Sum U V -> 
   (forall s, type_range U <> Srt s) /\ 
   (forall s, type_range V <> Srt s).
@@ -302,14 +302,14 @@ Proof.
   intuition.
 Qed.
 
-Lemma sort_of_sum : forall e U V T, e |- Sum U V : T -> 
+Lemma sort_of_sum : forall e U V T, e |-- Sum U V : T -> 
   (forall s, type_range U <> Srt s) /\ 
   (forall s, type_range V <> Srt s).
 Proof.
   intros ; apply sort_of_sum_aux with e (Sum U V) T ; auto ; auto.
 Qed.
 
-Lemma sort_of_pi1_range_aux : forall e t Ts, e |- t : Ts ->
+Lemma sort_of_pi1_range_aux : forall e t Ts, e |-- t : Ts ->
   forall u, t = Pi1 u ->
   forall s, type_range Ts <> Srt s.
 Proof.
@@ -326,14 +326,14 @@ Proof.
   apply (IHtyp1 _ H3 s0 e0).
 Qed.
 
-Lemma sort_of_pi1_range :  forall e t Ts, e |- Pi1 t : Ts ->
+Lemma sort_of_pi1_range :  forall e t Ts, e |-- Pi1 t : Ts ->
   forall s, type_range Ts <> Srt s.
 Proof.
   intros. 
   apply (@sort_of_pi1_range_aux _ _ _  H t) ; auto ; auto.
 Qed.
 
-Lemma sort_of_pi2_range_aux : forall e t Ts, e |- t : Ts ->
+Lemma sort_of_pi2_range_aux : forall e t Ts, e |-- t : Ts ->
   forall u, t = Pi2 u ->
   forall s, type_range Ts <> Srt s.
 Proof.
@@ -354,7 +354,7 @@ Proof.
   apply (IHtyp1 u H3 s0 e0) ; auto.
 Qed.
 
-Lemma sort_of_pi2_range :  forall e t Ts, e |- Pi2 t : Ts ->
+Lemma sort_of_pi2_range :  forall e t Ts, e |-- Pi2 t : Ts ->
   forall s, type_range Ts <> Srt s.
 Proof.
   intros. 

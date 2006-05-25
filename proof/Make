@@ -1,4 +1,6 @@
 -R . Lambda
+Utils.v
+Tactics.v
 MyList.v
 ListType.v
 Names.v

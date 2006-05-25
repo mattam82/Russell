@@ -14,5 +14,5 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
-Lemma left_refl : forall e u v T, e |- u -> v : T -> e |- u -> u : T.
+Lemma left_refl : forall e u v T, e |-- u -> v : T -> e |-- u -> u : T.
 Admitted.

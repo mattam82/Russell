@@ -58,13 +58,13 @@ Proof.
   discriminate.
 Qed.
 
-Lemma gen_sorting_var_aux : forall e t T, e |- t : T ->
+Lemma gen_sorting_var_aux : forall e t T, e |-- t : T ->
   forall n, t = Ref n -> 
   forall s, T = (Srt s) ->
   is_prop s.
 Proof.
   induction 1 using typ_wf_mut with
-   (P := fun e t T => fun H : e |- t : T =>
+   (P := fun e t T => fun H : e |-- t : T =>
    forall n, t = Ref n -> 
    forall s, T = (Srt s) ->
    is_prop s)
@@ -90,13 +90,13 @@ Proof.
 Qed.
 
 Lemma gen_sorting_var : 
-  forall e n s, e |- Ref n : Srt s -> is_prop s.
+  forall e n s, e |-- Ref n : Srt s -> is_prop s.
 Proof.
   intros.
   apply gen_sorting_var_aux with e (Ref n) (Srt s) n ; auto.
 Qed.
 
-Lemma gen_sorting_app_aux : forall e t Ts, e |- t : Ts ->
+Lemma gen_sorting_app_aux : forall e t Ts, e |-- t : Ts ->
   forall M N, t = App M N ->
   forall s, Ts = Srt s -> is_prop s.
 Proof.
@@ -114,13 +114,13 @@ Proof.
   intuition.
 Qed.
 
-Lemma gen_sorting_app : forall e M N s, e |- App M N : Srt s -> is_prop s.
+Lemma gen_sorting_app : forall e M N s, e |-- App M N : Srt s -> is_prop s.
 Proof.
   intros.
   eapply gen_sorting_app_aux with e (App M N) (Srt s) M N ; auto ; auto.
 Qed.
 
-Lemma gen_sorting_pi1_aux : forall e t Ts, e |- t : Ts ->
+Lemma gen_sorting_pi1_aux : forall e t Ts, e |-- t : Ts ->
   forall M, t = Pi1 M ->
   forall s, Ts = Srt s -> is_prop s.
 Proof.
@@ -137,13 +137,13 @@ Proof.
   intuition.
 Qed.
 
-Lemma gen_sorting_pi1 : forall e M s, e |- Pi1 M : Srt s -> is_prop s.
+Lemma gen_sorting_pi1 : forall e M s, e |-- Pi1 M : Srt s -> is_prop s.
 Proof.
   intros.
   eapply gen_sorting_pi1_aux with e (Pi1 M) (Srt s) M ; auto ; auto.
 Qed.
 
-Lemma gen_sorting_pi2_aux : forall e t Ts, e |- t : Ts ->
+Lemma gen_sorting_pi2_aux : forall e t Ts, e |-- t : Ts ->
   forall M, t = Pi2 M ->
   forall s, Ts = Srt s -> is_prop s.
 Proof.
@@ -162,13 +162,13 @@ Proof.
   intuition.
 Qed.
 
-Lemma gen_sorting_pi2 : forall e M s, e |- Pi2 M : Srt s -> is_prop s.
+Lemma gen_sorting_pi2 : forall e M s, e |-- Pi2 M : Srt s -> is_prop s.
 Proof.
   intros.
   eapply gen_sorting_pi2_aux with e (Pi2 M) (Srt s) M ; auto ; auto.
 Qed.
 
-Lemma sorting_lambda_aux : forall e t Ts, e |- t : Ts ->
+Lemma sorting_lambda_aux : forall e t Ts, e |-- t : Ts ->
   forall T M, t = Abs T M -> forall s, Ts <> Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
@@ -183,13 +183,13 @@ Proof.
   contradiction.
 Qed.
 
-Lemma sorting_lambda : forall e T M s, ~ e |- Abs T M : Srt s.
+Lemma sorting_lambda : forall e T M s, ~ e |-- Abs T M : Srt s.
 Proof.
   unfold not ; intros.
   apply (sorting_lambda_aux H (refl_equal (Abs T M)) (refl_equal (Srt s))).
 Qed.
 
-Lemma generation_prod_aux : forall e T Ts, e |- T : Ts ->
+Lemma generation_prod_aux : forall e T Ts, e |-- T : Ts ->
   forall U V, T = Prod U V -> exists s, Ts = Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
@@ -205,16 +205,16 @@ Proof.
   exists x ; auto.
 Qed.
 
-Lemma generation_prod : forall e U V Ts, e |- Prod U V : Ts ->
+Lemma generation_prod : forall e U V Ts, e |-- Prod U V : Ts ->
   exists s, Ts = Srt s.
 Proof.
   intros.
   eapply generation_prod_aux with e (Prod U V) U V ; auto.
 Qed.
 
-Lemma generation_prod2_aux : forall e T Ts, e |- T : Ts ->
+Lemma generation_prod2_aux : forall e T Ts, e |-- T : Ts ->
   forall U V, T = Prod U V -> forall s, Ts = Srt s ->
-  (exists s', e |- U : Srt s') /\ (U :: e) |- V : Srt s.
+  (exists s', e |-- U : Srt s') /\ (U :: e) |-- V : Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
@@ -239,14 +239,14 @@ Proof.
   apply (IHtyp1 U0 V0 H3 s0 e0).
 Qed.
 
-Lemma generation_prod2 : forall e U V s, e |- Prod U V : Srt s ->
-  (exists s', e |- U : Srt s') /\ (U :: e) |- V : Srt s.
+Lemma generation_prod2 : forall e U V s, e |-- Prod U V : Srt s ->
+  (exists s', e |-- U : Srt s') /\ (U :: e) |-- V : Srt s.
 Proof.
   intros.
   eapply generation_prod2_aux  ; auto ; auto.
 Qed.
 
-Lemma generation_sum_aux : forall e T Ts, e |- T : Ts ->
+Lemma generation_sum_aux : forall e T Ts, e |-- T : Ts ->
   forall U V, T = Sum U V -> exists s, Ts = Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
@@ -265,16 +265,16 @@ Proof.
   exists x ; auto.
 Qed.
 
-Lemma generation_sum : forall e U V Ts, e |- Sum U V : Ts ->
+Lemma generation_sum : forall e U V Ts, e |-- Sum U V : Ts ->
   exists s, Ts = Srt s.
 Proof.
   intros.
   eapply generation_sum_aux with e (Sum U V) U V ; auto.
 Qed.
 
-Lemma generation_sum2_aux : forall e T Ts, e |- T : Ts ->
+Lemma generation_sum2_aux : forall e T Ts, e |-- T : Ts ->
   forall U V, T = Sum U V -> forall s, Ts = Srt s ->
-  e |- U : Srt s /\ (U :: e) |- V : Srt s /\ sum_sort s s s.
+  e |-- U : Srt s /\ (U :: e) |-- V : Srt s /\ sum_sort s s s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
@@ -306,14 +306,14 @@ Proof.
   intuition.
 Qed.
 
-Lemma generation_sum2 : forall e U V s, e |- Sum U V : Srt s ->
-  e |- U : Srt s /\ (U :: e) |- V : Srt s /\ sum_sort s s s.
+Lemma generation_sum2 : forall e U V s, e |-- Sum U V : Srt s ->
+  e |-- U : Srt s /\ (U :: e) |-- V : Srt s /\ sum_sort s s s.
 Proof.
   intros.
   eapply generation_sum2_aux with (Sum U V) (Srt s); auto.
 Qed.
 
-Lemma generation_subset_aux : forall e T Ts, e |- T : Ts ->
+Lemma generation_subset_aux : forall e T Ts, e |-- T : Ts ->
   forall U V, T = Subset U V -> Ts = Srt set.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
@@ -324,16 +324,16 @@ Proof.
   exact (coerce_propset_l H2).
 Qed.
 
-Lemma generation_subset : forall e U V Ts, e |- Subset U V : Ts ->
+Lemma generation_subset : forall e U V Ts, e |-- Subset U V : Ts ->
   Ts = Srt set.
 Proof.
   intros.
   eapply generation_subset_aux with e (Subset U V) U V ; auto.
 Qed.
 
-Lemma generation_subset2_aux : forall e T Ts, e |- T : Ts ->
+Lemma generation_subset2_aux : forall e T Ts, e |-- T : Ts ->
   forall U V, T = Subset U V -> Ts = Srt set ->
-  e |- U : Srt set /\ (U :: e) |- V : Srt prop.
+  e |-- U : Srt set /\ (U :: e) |-- V : Srt prop.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
@@ -349,14 +349,14 @@ Proof.
   apply (IHtyp1 U0 V0 H3 e0).
 Qed.
 
-Lemma generation_subset2 : forall e U V s, e |- Subset U V : Srt set ->
-  (e |- U : Srt set) /\ (U :: e) |- V : Srt prop.
+Lemma generation_subset2 : forall e U V s, e |-- Subset U V : Srt set ->
+  (e |-- U : Srt set) /\ (U :: e) |-- V : Srt prop.
 Proof.
   intros.
   eapply generation_subset2_aux  ; auto ; auto.
 Qed.
 
-Lemma var_sort_item : forall e t T, e |- t : T ->
+Lemma var_sort_item : forall e t T, e |-- t : T ->
   forall n, t = Ref n -> 
   forall s, T = (Srt s) -> item _ (Srt s) e n.
 Proof.
@@ -376,8 +376,8 @@ Proof.
   assumption.
 Qed. 
 
-Lemma unique_var_sort : forall e n s, e |- Ref n : Srt s ->
-  forall s', e |- Ref n : Srt s' -> s = s'.
+Lemma unique_var_sort : forall e n s, e |-- Ref n : Srt s ->
+  forall s', e |-- Ref n : Srt s' -> s = s'.
 Proof.
   intros.
   pose (var_sort_item H (refl_equal (Ref n)) (refl_equal (Srt s))).
@@ -386,10 +386,10 @@ Proof.
   inversion e0 ; auto.
 Qed.
 
-Lemma sort_of_app_aux : forall e t Ts, e |- t : Ts ->
+Lemma sort_of_app_aux : forall e t Ts, e |-- t : Ts ->
   forall M N, t = App M N ->
   forall s, Ts = Srt s -> 
-  (exists V, e |- M : Prod V (Srt s) /\ e |- N : V). 
+  (exists V, e |-- M : Prod V (Srt s) /\ e |-- N : V). 
 Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
@@ -413,15 +413,15 @@ Proof.
   exact (IHtyp1 _ _ H3 _ e0).
 Qed.
 
-Lemma sort_of_app : forall e M N s, e |- App M N : Srt s ->
-  exists V, e |- M : Prod V (Srt s) /\ e |- N : V.
+Lemma sort_of_app : forall e M N s, e |-- App M N : Srt s ->
+  exists V, e |-- M : Prod V (Srt s) /\ e |-- N : V.
 Proof.
   intros. 
   eapply sort_of_app_aux ; auto ; auto ; auto.
 Qed.
 
 
-Lemma sort_of_app_aux2 : forall e t Ts, e |- t : Ts ->
+Lemma sort_of_app_aux2 : forall e t Ts, e |-- t : Ts ->
   forall M N, t = App M N ->
   forall s, Ts = Srt s -> 
   forall s', ~ N = Srt s'.
@@ -441,14 +441,14 @@ Proof.
   intuition.
 Qed.
 
-Lemma sort_of_app2 : forall e M N s, e |- App M N : Srt s -> forall s', ~ N = Srt s'.
+Lemma sort_of_app2 : forall e M N s, e |-- App M N : Srt s -> forall s', ~ N = Srt s'.
 Proof.
   intros. 
   eapply (sort_of_app_aux2 H) ; auto ; auto ; auto.
 Qed.
 
-Lemma strength_sort_judgement : forall T e s s', T :: e |- Srt s : Srt s' ->
-  e |- Srt s : Srt s'.
+Lemma strength_sort_judgement : forall T e s s', T :: e |-- Srt s : Srt s' ->
+  e |-- Srt s : Srt s'.
 Proof.
   intros.
   pose (typ_wf H).
@@ -464,8 +464,8 @@ Proof.
   intuition.
 Qed.
 
-Lemma type_sorted : forall e t T, e |- t : T ->
-  T = Srt kind \/ exists s, e |- T : Srt s.
+Lemma type_sorted : forall e t T, e |-- t : T ->
+  T = Srt kind \/ exists s, e |-- T : Srt s.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc ; try discriminate ; 
  try (destruct H ; discriminate) ;  try (destruct H1 ; discriminate).
@@ -520,7 +520,7 @@ Proof.
   induction H0.
   induction (generation_sum2 H0).
   right.
-  assert (e |- Pi1 t : U).
+  assert (e |-- Pi1 t : U).
   apply type_pi1 with V ; auto.
   exists x.
   replace (Srt x) with (subst (Pi1 t) (Srt x)).

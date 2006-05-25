@@ -11,7 +11,7 @@ Require Import TPOSR.Env.
 
 Set Implicit Arguments.
 
-Reserved Notation "G |- T -> U : s" (at level 70, T, U, s at next level).
+Reserved Notation "G |-- T -> U : s" (at level 70, T, U, s at next level).
 
 Definition sum_sort s1 s2 s3 :=
   (s1 = set /\ s2 = set /\ s3 = set) \/
@@ -19,79 +19,86 @@ Definition sum_sort s1 s2 s3 :=
 
 Inductive tposr_wf : lenv -> Prop :=
   | wf_nil : tposr_wf nil
-  | wf_cons : forall G A A' s, G |- A -> A' : Srt_l s -> tposr_wf (A :: G)
+  | wf_cons : forall G A A' s, G |-- A -> A' : Srt_l s -> tposr_wf (A :: G)
 
 with tposr : lenv -> lterm -> lterm -> lterm -> Prop :=
   | tposr_var : forall e, tposr_wf e -> 
-  forall n T, item_llift T e n -> e |- (Ref_l n) -> (Ref_l n) : T
+  forall n T, item_llift T e n -> e |-- (Ref_l n) -> (Ref_l n) : T
 
-  | tposr_set : forall e, tposr_wf e -> e |- (Srt_l set) -> (Srt_l set) : Srt_l kind
-  | tposr_prop : forall e, tposr_wf e -> e |- (Srt_l prop) -> (Srt_l prop) : Srt_l kind
+  | tposr_set : forall e, tposr_wf e -> e |-- (Srt_l set) -> (Srt_l set) : Srt_l kind
+  | tposr_prop : forall e, tposr_wf e -> e |-- (Srt_l prop) -> (Srt_l prop) : Srt_l kind
 
-  | tposr_prod : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
-  e |- Prod_l A B -> Prod_l A' B' : Srt_l s2
+  | tposr_prod : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  e |-- Prod_l A B -> Prod_l A' B' : Srt_l s2
   
-  | tposr_abs : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
-  forall M M', (A :: e) |- M -> M' : B -> 
-  e |- Abs_l A M -> Abs_l A' M' : (Prod_l A B)
+  | tposr_abs : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall M M', (A :: e) |-- M -> M' : B -> 
+  e |-- Abs_l A M -> Abs_l A' M' : (Prod_l A B)
   
-  | tposr_app : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
-  forall M M', e |- M -> M' : (Prod_l A B) -> 
-  forall N N', e |- N -> N' : A ->
-  e |- App_l B M N -> App_l B' M' N' : lsubst N B
+  | tposr_app : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall M M', e |-- M -> M' : (Prod_l A B) -> 
+  forall N N', e |-- N -> N' : A ->
+  e |-- App_l B M N -> App_l B' M' N' : lsubst N B
 
-  | tposr_beta : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
-  forall M M', (A :: e) |- M -> M' : B -> 
-  forall N N', e |- N -> N' : A ->
-  e |- App_l B (Abs_l A M) N -> lsubst N' M' : lsubst N B
+  | tposr_beta : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall M M', (A :: e) |-- M -> M' : B -> 
+  forall N N', e |-- N -> N' : A ->
+  e |-- App_l B (Abs_l A M) N -> lsubst N' M' : lsubst N B
 
-  | tposr_red : forall e M N A, e |- M -> N : A -> 
-  forall B s, e |- A -> B : Srt_l s ->
-  e |- M -> N : B
+  | tposr_red : forall e M N A, e |-- M -> N : A -> 
+  forall B s, e |-- A -> B : Srt_l s ->
+  e |-- M -> N : B
   
-  | tposr_exp : forall e M N B, e |- M -> N : B -> 
-  forall A s, e |- A -> B : Srt_l s ->
-  e |- M -> N : A
+  | tposr_exp : forall e M N B, e |-- M -> N : B -> 
+  forall A s, e |-- A -> B : Srt_l s ->
+  e |-- M -> N : A
   
-  | tposr_subset : forall e A A', e |- A -> A' : Srt_l set ->
-  forall B B', (A :: e) |- B -> B' : Srt_l prop ->
-  e |- Subset_l A B -> Subset_l A' B' : Srt_l set
+  | tposr_subset : forall e A A', e |-- A -> A' : Srt_l set ->
+  forall B B', (A :: e) |-- B -> B' : Srt_l prop ->
+  e |-- Subset_l A B -> Subset_l A' B' : Srt_l set
 
-  | tposr_sum : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
+  | tposr_sum : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
-  e |- Sum_l A B -> Sum_l A' B' : Srt_l s3
+  e |-- Sum_l A B -> Sum_l A' B' : Srt_l s3
   
-  | tposr_pi1 : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
+  | tposr_pair : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
-  forall t t', e |- t -> t' : Sum_l A B ->
-  e |- Pi1_l t -> Pi1_l t' : A
+  forall u u', e |-- u -> u' : A ->
+  forall v v', e |-- v -> v' : lsubst u B ->
+  e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B
 
-  | tposr_pi1_red : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
+  | tposr_pi1 : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
-  forall u u' v v', e |- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B ->
-  e |- Pi1_l (Pair_l (Sum_l A B) u v) -> u : A
+  forall t t', e |-- t -> t' : Sum_l A B ->
+  e |-- Pi1_l t -> Pi1_l t' : A
 
-  | tposr_pi2 : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
+  | tposr_pi1_red : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
-  forall t t', e |- t -> t' : Sum_l A B ->
-  e |- Pi2_l t -> Pi2_l t' : lsubst (Pi1_l t) B
+  forall u u' v v', e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B ->
+  e |-- Pi1_l (Pair_l (Sum_l A B) u v) -> u : A
 
-  | tposr_pi2_red : forall e A A' s1, e |- A -> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |- B -> B' : Srt_l s2 ->
+  | tposr_pi2 : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall s3, sum_sort s1 s2 s3 ->
+  forall t t', e |-- t -> t' : Sum_l A B ->
+  e |-- Pi2_l t -> Pi2_l t' : lsubst (Pi1_l t) B
+
+  | tposr_pi2_red : forall e A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   forall u u' v v', 
-  e |- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B ->
-  e |- Pi2_l (Pair_l (Sum_l A B) u v) -> v : lsubst (Pi1_l (Pair_l (Sum_l A B) u v)) B
+  e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B ->
+  e |-- Pi2_l (Pair_l (Sum_l A B) u v) -> v : lsubst (Pi1_l (Pair_l (Sum_l A B) u v)) B
 
-where "G |- T -> U : s" := (tposr G T U s).
+where "G |-- T -> U : s" := (tposr G T U s).
 
 Hint Resolve wf_nil tposr_set tposr_prop : coc.
 
@@ -105,7 +112,7 @@ Check tposr_wf_mutind.
 Lemma ind_tposr_wf :
 forall
          (P : forall (l : lenv) (l0 l1 l2 : lterm),
-              l |- l0 -> l1 : l2 -> Prop)
+              l |-- l0 -> l1 : l2 -> Prop)
          (P0 : forall l : lenv, tposr_wf l -> Prop),
        (forall (e : lenv) (t : tposr_wf e),
         P0 e t ->
@@ -116,107 +123,120 @@ forall
        (forall (e : lenv) (t : tposr_wf e),
         P0 e t -> P e (Srt_l prop) (Srt_l prop) (Srt_l kind) (tposr_prop t)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
         P e (Prod_l A B) (Prod_l A' B') (Srt_l s2) (tposr_prod t t0)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
-        forall (M M' : lterm) (t1 : A :: e |- M -> M' : B),
+        forall (M M' : lterm) (t1 : A :: e |-- M -> M' : B),
         P (A :: e) M M' B t1 ->
         P e (Abs_l A M) (Abs_l A' M') (Prod_l A B) (tposr_abs t t0 t1)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
-        forall (M M' : lterm) (t1 : e |- M -> M' : Prod_l A B),
+        forall (M M' : lterm) (t1 : e |-- M -> M' : Prod_l A B),
         P e M M' (Prod_l A B) t1 ->
-        forall (N N' : lterm) (t2 : e |- N -> N' : A),
+        forall (N N' : lterm) (t2 : e |-- N -> N' : A),
         P e N N' A t2 ->
         P e (App_l B M N) (App_l B' M' N') (lsubst N B)
           (tposr_app t t0 t1 t2)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
-        forall (M M' : lterm) (t1 : A :: e |- M -> M' : B),
+        forall (M M' : lterm) (t1 : A :: e |-- M -> M' : B),
         P (A :: e) M M' B t1 ->
-        forall (N N' : lterm) (t2 : e |- N -> N' : A),
+        forall (N N' : lterm) (t2 : e |-- N -> N' : A),
         P e N N' A t2 ->
         P e (App_l B (Abs_l A M) N) (lsubst N' M') (lsubst N B)
           (tposr_beta t t0 t1 t2)) ->
-       (forall (e : lenv) (M N A : lterm) (t : e |- M -> N : A),
+       (forall (e : lenv) (M N A : lterm) (t : e |-- M -> N : A),
         P e M N A t ->
-        forall (B : lterm) (s : sort) (t0 : e |- A -> B : Srt_l s),
+        forall (B : lterm) (s : sort) (t0 : e |-- A -> B : Srt_l s),
         P e A B (Srt_l s) t0 -> P e M N B (tposr_red t t0)) ->
-       (forall (e : lenv) (M N B : lterm) (t : e |- M -> N : B),
+       (forall (e : lenv) (M N B : lterm) (t : e |-- M -> N : B),
         P e M N B t ->
-        forall (A : lterm) (s : sort) (t0 : e |- A -> B : Srt_l s),
+        forall (A : lterm) (s : sort) (t0 : e |-- A -> B : Srt_l s),
         P e A B (Srt_l s) t0 -> P e M N A (tposr_exp t t0)) ->
-       (forall (e : lenv) (A A' : lterm) (t : e |- A -> A' : Srt_l set),
+       (forall (e : lenv) (A A' : lterm) (t : e |-- A -> A' : Srt_l set),
         P e A A' (Srt_l set) t ->
-        forall (B B' : lterm) (t0 : A :: e |- B -> B' : Srt_l prop),
+        forall (B B' : lterm) (t0 : A :: e |-- B -> B' : Srt_l prop),
         P (A :: e) B B' (Srt_l prop) t0 ->
         P e (Subset_l A B) (Subset_l A' B') (Srt_l set) (tposr_subset t t0)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
         forall (s3 : sort) (s : sum_sort s1 s2 s3),
         P e (Sum_l A B) (Sum_l A' B') (Srt_l s3) (tposr_sum t t0 s)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
+        P (A :: e) B B' (Srt_l s2) t0 ->
+        forall (s3 : sort) (s : sum_sort s1 s2 s3) (u u' : lterm)
+          (t1 : e |-- u -> u' : A),
+        P e u u' A t1 ->
+        forall (v v' : lterm) (t2 : e |-- v -> v' : lsubst u B),
+        P e v v' (lsubst u B) t2 ->
+        P e (Pair_l (Sum_l A B) u v) (Pair_l (Sum_l A' B') u' v') (Sum_l A B)
+          (tposr_pair t t0 s t1 t2)) ->
+       (forall (e : lenv) (A A' : lterm) (s1 : sort)
+          (t : e |-- A -> A' : Srt_l s1),
+        P e A A' (Srt_l s1) t ->
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
         forall (s3 : sort) (s : sum_sort s1 s2 s3) (t1 t' : lterm)
-          (t2 : e |- t1 -> t' : Sum_l A B),
+          (t2 : e |-- t1 -> t' : Sum_l A B),
         P e t1 t' (Sum_l A B) t2 ->
         P e (Pi1_l t1) (Pi1_l t') A (tposr_pi1 t t0 s t2)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
         forall (s3 : sort) (s : sum_sort s1 s2 s3) (u u' v v' : lterm)
-          (t1 : e |- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v'
+          (t1 : e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v'
                 : Sum_l A B),
         P e (Pair_l (Sum_l A B) u v) (Pair_l (Sum_l A' B') u' v') (Sum_l A B)
           t1 ->
         P e (Pi1_l (Pair_l (Sum_l A B) u v)) u A (tposr_pi1_red t t0 s t1)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
         forall (s3 : sort) (s : sum_sort s1 s2 s3) (t1 t' : lterm)
-          (t2 : e |- t1 -> t' : Sum_l A B),
+          (t2 : e |-- t1 -> t' : Sum_l A B),
         P e t1 t' (Sum_l A B) t2 ->
         P e (Pi2_l t1) (Pi2_l t') (lsubst (Pi1_l t1) B) (tposr_pi2 t t0 s t2)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort)
-          (t : e |- A -> A' : Srt_l s1),
+          (t : e |-- A -> A' : Srt_l s1),
         P e A A' (Srt_l s1) t ->
-        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |- B -> B' : Srt_l s2),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B -> B' : Srt_l s2),
         P (A :: e) B B' (Srt_l s2) t0 ->
         forall (s3 : sort) (s : sum_sort s1 s2 s3) (u u' v v' : lterm)
-          (t1 : e |- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v'
+          (t1 : e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v'
                 : Sum_l A B),
         P e (Pair_l (Sum_l A B) u v) (Pair_l (Sum_l A' B') u' v') (Sum_l A B)
           t1 ->
-        P e (Pi2_l (Pair_l (Sum_l A B) u v)) v (lsubst (Pi1_l (Pair_l (Sum_l A B) u v)) B)
+        P e (Pi2_l (Pair_l (Sum_l A B) u v)) v
+          (lsubst (Pi1_l (Pair_l (Sum_l A B) u v)) B)
           (tposr_pi2_red t t0 s t1)) ->
        P0 nil wf_nil ->
        (forall (G : lenv) (A A' : lterm) (s : sort)
-          (t : G |- A -> A' : Srt_l s),
+          (t : G |-- A -> A' : Srt_l s),
         P G A A' (Srt_l s) t -> P0 (A :: G) (wf_cons t)) ->
-       (forall (l : lenv) (l0 l1 l2 : lterm) (t : l |- l0 -> l1 : l2),
+       (forall (l : lenv) (l0 l1 l2 : lterm) (t : l |-- l0 -> l1 : l2),
        P l l0 l1 l2 t) /\
        (forall (l : lenv) (t : tposr_wf l), P0 l t).
 Proof.
@@ -229,17 +249,17 @@ Proof.
 Qed.
 
 Inductive tposrp : lenv -> lterm -> lterm -> lterm -> Prop :=
-  | tposrp_tposr : forall e X Y Z, e |- X -> Y : Z -> tposrp e X Y Z
+  | tposrp_tposr : forall e X Y Z, e |-- X -> Y : Z -> tposrp e X Y Z
   | tposrp_trans : forall e W X Y Z, tposrp e W X Z -> tposrp e X Y Z ->
   tposrp e W Y Z.
 
-Reserved Notation "G |- T ~= U : s" (at level 70, T, U, s at next level).
+Reserved Notation "G |-- T ~= U : s" (at level 70, T, U, s at next level).
 
 Inductive tposr_eq : lenv -> lterm -> lterm -> sort -> Prop :=
-  | tposr_eq_tposr : forall e X Y s, e |- X -> Y : Srt_l s -> e |- X ~= Y : s
-  | tposr_eq_sym : forall e X Y s, e |- X ~= Y : s -> e |- Y ~= X : s
-  | tposr_eq_trans : forall e W X Y s, e |- W ~= X : s -> e |- X ~= Y : s ->
-  e |- W ~= Y : s
+  | tposr_eq_tposr : forall e X Y s, e |-- X -> Y : Srt_l s -> e |-- X ~= Y : s
+  | tposr_eq_sym : forall e X Y s, e |-- X ~= Y : s -> e |-- Y ~= X : s
+  | tposr_eq_trans : forall e W X Y s, e |-- W ~= X : s -> e |-- X ~= Y : s ->
+  e |-- W ~= Y : s
 
-where "G |- T ~= U : s" := (tposr_eq G T U s).
+where "G |-- T ~= U : s" := (tposr_eq G T U s).
 

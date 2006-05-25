@@ -23,8 +23,8 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
-Lemma type_pair_unique : forall e t T, e |- t : T -> 
-    forall U V u v, t = (Pair (Sum U V) u v) -> exists s, e |- (Sum U V) >> T : s.
+Lemma type_pair_unique : forall e t T, e |-- t : T -> 
+    forall U V u v, t = (Pair (Sum U V) u v) -> exists s, e |-- (Sum U V) >> T : s.
 Proof.
 intros ; induction H ; try discriminate.
 injection H0 ; intros.
@@ -57,7 +57,7 @@ apply H4.
 Qed.
 
 Theorem typ_unique : forall e t T, typ e t T -> (forall U : term, typ e t U -> 
-  ((U = Srt kind) \/ (exists s, e |- T >> U : s))).
+  ((U = Srt kind) \/ (exists s, e |-- T >> U : s))).
 induction 1 ; intros ; auto with coc core arith datatypes.
 
 elim inv_typ_prop with e U; auto with coc core arith datatypes.
@@ -98,7 +98,7 @@ pose (inv_sub_prod_r H6); auto with coc core arith datatypes.
 pose (inv_sub_prod_l H6); auto with coc core arith datatypes.
 destruct e0.
 pose (coerce_sort_r c).
-assert(V :: e |- Ur0 : Srt x).
+assert(V :: e |-- Ur0 : Srt x).
 apply typ_conv_env with (V0 :: e) ; auto with coc.
 apply coerce_env_hd with x0 ; auto with coc.
 apply wf_var with x0 ; auto with coc.
@@ -175,7 +175,7 @@ destruct (IHtyp _ H2) ; try discriminate.
 destruct H4.
 apply coerce_trans with (subst (Pi1 t) V0) ; auto with coc.
 pose (inv_sub_sum_r H4).
-assert(e |- Pi1 t : U) by apply type_pi1 with V ; auto.
+assert(e |-- Pi1 t : U) by apply type_pi1 with V ; auto.
 apply substitution_coerce with U ; auto.
 pose (coerce_sort_r c).
 pose (substitution t0 H5).
@@ -214,7 +214,7 @@ Qed.
 intros.
 elim type_case with e t T; intros; auto with coc core arith datatypes.
 inversion_clear H1.
-assert(e |- U : Srt x).
+assert(e |-- U : Srt x).
 apply subject_reduction with T; auto with coc core arith datatypes.
 apply type_conv with T x; auto with coc core arith datatypes.
 
@@ -225,8 +225,8 @@ inversion_clear H2.
 Qed.
 
 Lemma typ_conv_conv_coerce : forall e u (U : term) v (V : term), 
-  e |- u : U -> e |- v : V -> conv u v -> 
-  (U = V \/ exists s, e |- U >> V : s).
+  e |-- u : U -> e |-- v : V -> conv u v -> 
+  (U = V \/ exists s, e |-- U >> V : s).
 Proof.
 intros.
 elim church_rosser with u v; auto with coc core arith datatypes; intros.

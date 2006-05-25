@@ -14,7 +14,7 @@ Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
 Inductive red_in_env : lenv -> lenv -> Prop :=
-  | red_env_hd : forall e t u s, e |- t -> u : Srt_l s -> e |- u -> u : Srt_l s ->
+  | red_env_hd : forall e t u s, e |-- t -> u : Srt_l s -> e |-- u -> u : Srt_l s ->
 	red_in_env (t :: e) (u :: e)
   | red_env_tl :
       forall e f t, red_in_env e f -> red_in_env (t :: e) (t :: f).
@@ -22,29 +22,29 @@ Inductive red_in_env : lenv -> lenv -> Prop :=
 Hint Resolve red_env_hd red_env_tl: coc.
 
 Lemma red_env :
-  (forall e t u T, e |- t -> u : T -> 
-  forall f, red_in_env e f -> f |- t -> u : T).
+  (forall e t u T, e |-- t -> u : T -> 
+  forall f, red_in_env e f -> f |-- t -> u : T).
 Proof.
 Admitted.
 (*
 Lemma ind_conv_env :
-  (forall e t T, e |- t : T -> 
-  forall f, conv_in_env e f -> f |- t : T) /\
-  (forall e T U s, e |- T >> U : s -> 
-  forall f, conv_in_env e f -> f |- T >> U : s) /\
-  (forall e U V T, e |- U = V : T ->
-  forall f, conv_in_env e f -> f |- U = V : T).
+  (forall e t T, e |-- t : T -> 
+  forall f, conv_in_env e f -> f |-- t : T) /\
+  (forall e T U s, e |-- T >> U : s -> 
+  forall f, conv_in_env e f -> f |-- T >> U : s) /\
+  (forall e U V T, e |-- U = V : T ->
+  forall f, conv_in_env e f -> f |-- U = V : T).
 Proof.
 apply typ_coerce_jeq_ind with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, conv_in_env e f -> 
   typ f t T)
-(P0 := fun e T U s => fun H : e |- T >> U : s =>
+(P0 := fun e T U s => fun H : e |-- T >> U : s =>
   forall f, conv_in_env e f -> 
-  f |- T >> U : s) 
-(P1 := fun e U V T => fun H : e |- U = V : T =>
+  f |-- T >> U : s) 
+(P1 := fun e U V T => fun H : e |-- U = V : T =>
   forall f, conv_in_env e f -> 
-  f |- U = V : T) ;
+  f |-- U = V : T) ;
  intros ; try (solve [destruct (H f H0) ; clear H]); 
 auto with coc core arith datatypes.
 
@@ -128,16 +128,16 @@ apply jeq_trans with N ; auto with coc.
 apply jeq_conv with A s ; auto with coc.
 Qed.
 
-Lemma type_conv_env : forall e t T, e |- t : T -> 
-  forall f, conv_in_env e f -> f |- t : T.
+Lemma type_conv_env : forall e t T, e |-- t : T -> 
+  forall f, conv_in_env e f -> f |-- t : T.
 Proof (proj1 ind_conv_env).
 
-Lemma coerce_conv_env : forall e T U s, e |- T >> U : s -> 
-  forall f, conv_in_env e f -> f |- T >> U : s.
+Lemma coerce_conv_env : forall e T U s, e |-- T >> U : s -> 
+  forall f, conv_in_env e f -> f |-- T >> U : s.
 Proof (proj1 (proj2 ind_conv_env)).
 
-Lemma jeq_conv_env : forall e U V T, e |- U = V : T ->
-  forall f, conv_in_env e f -> f |- U = V : T.
+Lemma jeq_conv_env : forall e U V T, e |-- U = V : T ->
+  forall f, conv_in_env e f -> f |-- U = V : T.
 Proof (proj2 (proj2 ind_conv_env)).
 
 *)

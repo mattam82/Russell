@@ -15,10 +15,10 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Lemma pre_functionality_rec : forall g (d : term) t, g |- d : t -> forall d', g |- d = d' : t ->
-  forall e U T, e |- U : T ->
+Lemma pre_functionality_rec : forall g (d : term) t, g |-= d : t -> forall d', g |-= d = d' : t ->
+  forall e U T, e |-= U : T ->
   forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-  f |- (subst_rec d U n) = (subst_rec d' U n) : (subst_rec d T n).
+  f |-= (subst_rec d U n) = (subst_rec d' U n) : (subst_rec d T n).
 Proof.
   intros g d t H d' Heq.
   induction 1 ; simpl ; intros ; auto with coc arith ; try simpl in IHjeq1 ; try simpl in IHjeq2 
@@ -111,10 +111,10 @@ Proof.
   apply coerce_sub_weak with g t e ; auto with coc.
 Qed.
 
-Lemma pre_functionality : forall e (d : term) t, e |- d : t -> 
-  forall d', e |- d = d' : t ->
-  forall U T, t :: e |- U : T ->
-  e |- (subst d U) = (subst d' U) : (subst d T).
+Lemma pre_functionality : forall e (d : term) t, e |-= d : t -> 
+  forall d', e |-= d = d' : t ->
+  forall U T, t :: e |-= U : T ->
+  e |-= (subst d U) = (subst d' U) : (subst d T).
 Proof.
   intros.
   unfold subst ; pose pre_functionality_rec.

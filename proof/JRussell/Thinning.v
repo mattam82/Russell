@@ -12,8 +12,8 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Lemma type_weak_lift_rec : forall e t T, e |- t : T -> forall A s, e |- A : Srt s ->
-  (A :: e) |- lift_rec 1 t 0 : lift_rec 1 T 0. 
+Lemma type_weak_lift_rec : forall e t T, e |-= t : T -> forall A s, e |-= A : Srt s ->
+  (A :: e) |-= lift_rec 1 t 0 : lift_rec 1 T 0. 
 Proof.
   intros.
   pose (type_weak H H0).
@@ -21,8 +21,8 @@ Proof.
   apply t0.
 Qed.
 
-Lemma coerce_weak_lift_rec : forall e T U s, e |- T >> U : s -> forall A s', e |- A : Srt s' ->
-  (A :: e) |- lift_rec 1 T 0 >> lift_rec 1 U 0 : s. 
+Lemma coerce_weak_lift_rec : forall e T U s, e |-= T >> U : s -> forall A s', e |-= A : Srt s' ->
+  (A :: e) |-= lift_rec 1 T 0 >> lift_rec 1 U 0 : s. 
 Proof.
   intros.
   pose (coerce_weak H H0).
@@ -30,8 +30,8 @@ Proof.
   apply c.
 Qed.
 
-Lemma jeq_weak_lift_rec : forall e t u T, e |- t = u : T -> forall A s, e |- A : Srt s ->
-  (A :: e) |- lift_rec 1 t 0 = lift_rec 1 u 0 : lift_rec 1 T 0. 
+Lemma jeq_weak_lift_rec : forall e t u T, e |-= t = u : T -> forall A s, e |-= A : Srt s ->
+  (A :: e) |-= lift_rec 1 t 0 = lift_rec 1 u 0 : lift_rec 1 T 0. 
 Proof.
   intros.
   pose (jeq_weak H H0).
@@ -41,34 +41,34 @@ Qed.
 
 Hint Resolve type_weak_lift_rec : coc.
 
-Lemma ind_weak_weak : forall g A s, g |- A : Srt s ->
-  (forall e t T, e |- t : T ->
+Lemma ind_weak_weak : forall g A s, g |-= A : Srt s ->
+  (forall e t T, e |-= t : T ->
    forall n f, ins_in_env A n e f ->
    trunc _ n e g ->
-   f |- (lift_rec 1 t n) : (lift_rec 1 T n)) /\
- (forall e T U s, e |- T >> U : s ->
+   f |-= (lift_rec 1 t n) : (lift_rec 1 T n)) /\
+ (forall e T U s, e |-= T >> U : s ->
   forall n f, ins_in_env A n e f ->
   trunc _ n e g ->
-  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s) /\
- (forall e U V T, e |- U = V : T ->
+  f |-= (lift_rec 1 T n) >> (lift_rec 1 U n) : s) /\
+ (forall e U V T, e |-= U = V : T ->
   forall n f, ins_in_env A n e f ->
   trunc _ n e g ->
-  f |- (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n)).
+  f |-= (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n)).
 Proof.
 intros g A As HAs.
 apply typ_coerce_jeq_ind with 
  (P := fun e t T => fun IH : typ e t T =>
    forall n f, ins_in_env A n e f ->
    trunc _ n e g -> 
-   f |- (lift_rec 1 t n) : (lift_rec 1 T n))
+   f |-= (lift_rec 1 t n) : (lift_rec 1 T n))
  (P0 := fun e T U s => fun IH : coerce e T U s =>
   forall n f, ins_in_env A n e f ->
   trunc _ n e g ->
-  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s)
- (P1 := fun e U V T => fun IH : e |- U = V : T =>
+  f |-= (lift_rec 1 T n) >> (lift_rec 1 U n) : s)
+ (P1 := fun e U V T => fun IH : e |-= U = V : T =>
   forall n f, ins_in_env A n e f ->
   trunc _ n e g -> 
-  f |- (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n)) ; 
+  f |-= (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n)) ; 
   intros ; try simpl in H ; try simpl in H0 ; try simpl in H1 ; try simpl in H2 ; try simpl in H3 ; 
   try simpl in H4 ; 
   auto with coc core arith datatypes.
@@ -259,31 +259,31 @@ simpl; apply jeq_trans with (lift_rec 1 N n) ; auto with coc.
 simpl ; apply jeq_conv with (lift_rec 1 A0 n) s ; auto with coc.
 Qed.
 
-Lemma type_weak_weak : forall g A s, g |- A : Srt s ->
-  forall e t T, e |- t : T ->
+Lemma type_weak_weak : forall g A s, g |-= A : Srt s ->
+  forall e t T, e |-= t : T ->
    forall n f, ins_in_env A n e f ->
    trunc _ n e g ->
-   f |- (lift_rec 1 t n) : (lift_rec 1 T n).
+   f |-= (lift_rec 1 t n) : (lift_rec 1 T n).
 Proof.
   intros g A s H.
   exact (proj1 (ind_weak_weak H)).
 Qed.
 
-Lemma coerce_weak_weak : forall g A s, g |- A : Srt s ->
-  forall e T U s, e |- T >> U : s ->
+Lemma coerce_weak_weak : forall g A s, g |-= A : Srt s ->
+  forall e T U s, e |-= T >> U : s ->
   forall n f, ins_in_env A n e f ->
   trunc _ n e g ->
-  f |- (lift_rec 1 T n) >> (lift_rec 1 U n) : s.
+  f |-= (lift_rec 1 T n) >> (lift_rec 1 U n) : s.
 Proof.
   intros g A s H.
   exact (proj1 (proj2 (ind_weak_weak H))).
 Qed.
 
-Lemma jeq_weak_weak : forall g A s, g |- A : Srt s ->
-  forall e U V T, e |- U = V : T ->
+Lemma jeq_weak_weak : forall g A s, g |-= A : Srt s ->
+  forall e U V T, e |-= U = V : T ->
   forall n f, ins_in_env A n e f ->
   trunc _ n e g ->
-  f |- (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n).
+  f |-= (lift_rec 1 U n) = (lift_rec 1 V n) : (lift_rec 1 T n).
 Proof.
   intros g A s H.
   exact (proj2 (proj2 (ind_weak_weak H))).
@@ -315,7 +315,7 @@ apply H with f ; auto.
 Qed.
 
 Lemma thinning_n_coerce : forall n e f, trunc _ n e f -> 
-  forall T U s, f |- T >> U : s -> consistent e -> e |- (lift n T) >> (lift n U) : s.
+  forall T U s, f |-= T >> U : s -> consistent e -> e |-= (lift n T) >> (lift n U) : s.
 Proof.
 simple induction n.
 intros.
@@ -341,7 +341,7 @@ Qed.
 Hint Resolve thinning_n thinning_n_coerce : coc.
 
 Lemma item_ref_lift :
- forall n e t, item _ t e n -> consistent e -> e |- Ref n : lift (S n) t.
+ forall n e t, item _ t e n -> consistent e -> e |-= Ref n : lift (S n) t.
 simple induction n ; intros.
 inversion H.
 rewrite <- H1 in H0.
@@ -363,7 +363,7 @@ Qed.
 
 (*Lemma item_sorted_lift :
  forall e n t, item _ t e n -> 
- forall f, trunc _ n e f -> exists s : sort, f |- t : (Srt s).
+ forall f, trunc _ n e f -> exists s : sort, f |-= t : (Srt s).
 intros e u V H.
 simple induction n ; intros.
 

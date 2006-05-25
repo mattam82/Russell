@@ -23,14 +23,14 @@ Set Implicit Arguments.
 
 
 Theorem unique_sort : forall t e s s', 
-  e |- t : (Srt s) -> e |- t : (Srt s') -> s = s'.
+  e |-- t : (Srt s) -> e |-- t : (Srt s') -> s = s'.
 Proof.
   intros.
   exact (unique_range_sort H H0 (refl_equal (Srt s)) (refl_equal (Srt s'))).
 Qed.
 
-Lemma any_sort_coerce_l : forall e U V s, e |- U >> V : s -> forall s',
-  e |- U : Srt s' -> e |- U >> V : s'.
+Lemma any_sort_coerce_l : forall e U V s, e |-- U >> V : s -> forall s',
+  e |-- U : Srt s' -> e |-- U >> V : s'.
 Proof.
   intros.
   pose (coerce_sort_l H).
@@ -38,8 +38,8 @@ Proof.
   assumption.
 Qed.
 
-Lemma any_sort_coerce_r : forall e U V s, e |- U >> V : s -> forall s',
-  e |- V : Srt s' -> e |- U >> V : s'.
+Lemma any_sort_coerce_r : forall e U V s, e |-- U >> V : s -> forall s',
+  e |-- V : Srt s' -> e |-- U >> V : s'.
 Proof.
   intros.
   pose (coerce_sort_r H).

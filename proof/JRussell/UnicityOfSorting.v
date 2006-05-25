@@ -23,15 +23,15 @@ Set Implicit Arguments.
 
 
 Theorem unique_sort : forall t e s s', 
-  e |- t : (Srt s) -> e |- t : (Srt s') -> s = s'.
+  e |-= t : (Srt s) -> e |-= t : (Srt s') -> s = s'.
 Proof.
   intros.
   exact (unique_range_sort H H0 (refl_equal (Srt s)) (refl_equal (Srt s'))).
 Qed.
 (*
-Theorem uniqueness_of_types : forall G t T, G |- t : T ->
-  forall T', G |- t : T' ->
-  (exists s, T = Srt s /\ T = T') \/ (exists s', G |- T >> T' : s').
+Theorem uniqueness_of_types : forall G t T, G |-= t : T ->
+  forall T', G |-= t : T' ->
+  (exists s, T = Srt s /\ T = T') \/ (exists s', G |-= T >> T' : s').
 Proof.
   induction t ; simpl ; intros.
   

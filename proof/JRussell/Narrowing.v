@@ -15,86 +15,86 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Reserved Notation "G |- T >>>> U : s" (at level 70, T, U, s at next level).
+Reserved Notation "G |-= T >>>> U : s" (at level 70, T, U, s at next level).
 
 Inductive coerces : env -> term -> term -> sort -> Set :=
-  | coerce_refl : forall e A s, e |- A : Srt s -> e |- A >>>> A : s
+  | coerce_refl : forall e A s, e |-= A : Srt s -> e |-= A >>>> A : s
 
   | coerce_prod : forall e A B A' B',
-  forall s, e |- A' >>>> A : s ->
-  (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
-  forall s', (A' :: e) |- B >>>> B' : s' ->
-  (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
-  e |- (Prod A B) >>>> (Prod A' B') : s'
+  forall s, e |-= A' >>>> A : s ->
+  (* derivable *) e |-= A' : Srt s -> e |-= A : Srt s ->
+  forall s', (A' :: e) |-= B >>>> B' : s' ->
+  (* derivable *) A :: e |-= B : Srt s' -> A' :: e |-= B' : Srt s' ->
+  e |-= (Prod A B) >>>> (Prod A' B') : s'
 
   | coerce_sum : forall e A B A' B',
-  forall s, e |- A >>>> A' : s ->
-  (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
-  forall s', (A :: e) |- B >>>> B' : s' ->
-  (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
+  forall s, e |-= A >>>> A' : s ->
+  (* derivable *) e |-= A' : Srt s -> e |-= A : Srt s ->
+  forall s', (A :: e) |-= B >>>> B' : s' ->
+  (* derivable *) A :: e |-= B : Srt s' -> A' :: e |-= B' : Srt s' ->
   forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
-  e |- (Sum A B) >>>> (Sum A' B') : s''
+  e |-= (Sum A B) >>>> (Sum A' B') : s''
 
   | coerce_sub_l : forall e U P U',
-  e |- U >>>> U' : set ->
-  (* derivable *) U :: e |- P : Srt prop ->
-  e |- Subset U P >>>> U' : set
+  e |-= U >>>> U' : set ->
+  (* derivable *) U :: e |-= P : Srt prop ->
+  e |-= Subset U P >>>> U' : set
 
   | coerce_sub_r : forall e U U' P,
-  e |- U >>>> U' : set ->
-  (* derivable *) U' :: e |- P : Srt prop ->
-  e |- U >>>> (Subset U' P) : set
+  e |-= U >>>> U' : set ->
+  (* derivable *) U' :: e |-= P : Srt prop ->
+  e |-= U >>>> (Subset U' P) : set
 
   | coerce_conv : forall e A B C D s,
-  e |- A : Srt s -> e |- B : Srt s -> e |- C : Srt s -> e |- D : Srt s ->
-  conv A B -> e |- B >>>> C : s -> conv C D -> e |- A >>>> D : s
+  e |-= A : Srt s -> e |-= B : Srt s -> e |-= C : Srt s -> e |-= D : Srt s ->
+  conv A B -> e |-= B >>>> C : s -> conv C D -> e |-= A >>>> D : s
 
-where "G |- T >>>> U : s" := (coerces G T U s).
+where "G |-= T >>>> U : s" := (coerces G T U s).
 
 Hint Resolve coerce_refl coerce_prod coerce_sum coerce_sub_l coerce_sub_r : coc.
 Hint Resolve coerce_conv : coc.
 
 
 
-Reserved Notation "G |- T >>> U : s" (at level 70, T, U, s at next level).
+Reserved Notation "G |-= T >>> U : s" (at level 70, T, U, s at next level).
 
 Inductive coerces_db : env -> term -> term -> sort -> Set :=
-  | coerces_refl : forall e A s, e |- A : Srt s -> e |- A >>> A : s
+  | coerces_refl : forall e A s, e |-= A : Srt s -> e |-= A >>> A : s
 
   | coerces_prod : forall e A B A' B',
-  forall s, e |- A' >>> A : s ->
-  (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
-  forall s', (A' :: e) |- B >>> B' : s' ->
-  (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
-  e |- (Prod A B) >>> (Prod A' B') : s'
+  forall s, e |-= A' >>> A : s ->
+  (* derivable *) e |-= A' : Srt s -> e |-= A : Srt s ->
+  forall s', (A' :: e) |-= B >>> B' : s' ->
+  (* derivable *) A :: e |-= B : Srt s' -> A' :: e |-= B' : Srt s' ->
+  e |-= (Prod A B) >>> (Prod A' B') : s'
 
   | coerces_sum : forall e A B A' B',
-  forall s, e |- A >>> A' : s ->
-  (* derivable *) e |- A' : Srt s -> e |- A : Srt s ->
-  forall s', (A :: e) |- B >>> B' : s' ->
-  (* derivable *) A :: e |- B : Srt s' -> A' :: e |- B' : Srt s' ->
+  forall s, e |-= A >>> A' : s ->
+  (* derivable *) e |-= A' : Srt s -> e |-= A : Srt s ->
+  forall s', (A :: e) |-= B >>> B' : s' ->
+  (* derivable *) A :: e |-= B : Srt s' -> A' :: e |-= B' : Srt s' ->
   forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
-  e |- (Sum A B) >>> (Sum A' B') : s''
+  e |-= (Sum A B) >>> (Sum A' B') : s''
 
   | coerces_sub_l : forall e U P U',
-  e |- U >>> U' : set ->
-  (* derivable *) U :: e |- P : Srt prop ->
-  e |- Subset U P >>> U' : set
+  e |-= U >>> U' : set ->
+  (* derivable *) U :: e |-= P : Srt prop ->
+  e |-= Subset U P >>> U' : set
 
   | coerces_sub_r : forall e U U' P,
-  e |- U >>> U' : set ->
-  (* derivable *) U' :: e |- P : Srt prop ->
-  e |- U >>> (Subset U' P) : set
+  e |-= U >>> U' : set ->
+  (* derivable *) U' :: e |-= P : Srt prop ->
+  e |-= U >>> (Subset U' P) : set
 
   | coerces_conv_l : forall e A B C s,
-  e |- A : Srt s -> e |- B : Srt s -> e |- C : Srt s ->
-  conv A B -> e |- B >>> C : s -> e |- A >>> C : s
+  e |-= A : Srt s -> e |-= B : Srt s -> e |-= C : Srt s ->
+  conv A B -> e |-= B >>> C : s -> e |-= A >>> C : s
 
   | coerces_conv_r : forall e A B C s,
-  e |- A : Srt s -> e |- B : Srt s -> e |- C : Srt s ->
-  e |- A >>> B : s -> conv B C -> e |- A >>> C : s
+  e |-= A : Srt s -> e |-= B : Srt s -> e |-= C : Srt s ->
+  e |-= A >>> B : s -> conv B C -> e |-= A >>> C : s
 
-where "G |- T >>> U : s" := (coerces_db G T U s).
+where "G |-= T >>> U : s" := (coerces_db G T U s).
 
 Hint Resolve coerces_refl coerces_prod coerces_sum coerces_sub_l coerces_sub_r : coc.
 Hint Resolve coerces_conv_l coerces_conv_r : coc.
@@ -102,7 +102,7 @@ Hint Resolve coerces_conv_l coerces_conv_r : coc.
 Scheme coerces_db_dep := Induction for coerces_db Sort Type.
 
 Require Import Coq.Arith.Max.
-Fixpoint depth (e : env) (T U : term) (s : sort) (d : e |- T >>> U : s) {struct d}: nat :=
+Fixpoint depth (e : env) (T U : term) (s : sort) (d : e |-= T >>> U : s) {struct d}: nat :=
   match d with
   | coerces_refl e A s As => 0
   | coerces_prod e A B A' B' s HsubA A's As s' HsubBB' Bs B's =>
@@ -116,7 +116,7 @@ Fixpoint depth (e : env) (T U : term) (s : sort) (d : e |- T >>> U : s) {struct 
 
   end.
 
-Lemma coerces_coerces_db : forall G T U s, G |- T >>>> U : s -> G |- T >>> U : s.
+Lemma coerces_coerces_db : forall G T U s, G |-= T >>>> U : s -> G |-= T >>> U : s.
 Proof.
   induction 1 ; intros ; auto with coc core.
 
@@ -128,7 +128,7 @@ Proof.
   apply coerces_conv_r with C ; auto with coc.
 Qed.
 
-Lemma coerces_db_coerces : forall G T U s, G |- T >>> U : s -> G |- T >>>> U : s.
+Lemma coerces_db_coerces : forall G T U s, G |-= T >>> U : s -> G |-= T >>>> U : s.
 Proof.
   induction 1 ; intros ; auto with coc core.
 
@@ -141,7 +141,7 @@ Proof.
 Qed.
 
 Inductive coerce_in_env : env -> env -> Prop :=
-  | coerce_env_hd : forall e t u s, e |- t >>> u : s -> 
+  | coerce_env_hd : forall e t u s, e |-= t >>> u : s -> 
 	coerce_in_env (u :: e) (t :: e)
   | coerce_env_tl :
         forall e f t, wf (t :: f) -> coerce_in_env e f -> coerce_in_env (t :: e) (t :: f).
@@ -149,15 +149,15 @@ Inductive coerce_in_env : env -> env -> Prop :=
 Hint Resolve coerce_env_hd coerce_env_tl: coc.
 
 Axiom typ_conv_env :
-  forall e t T, forall d : (e |- t : T),
+  forall e t T, forall d : (e |-= t : T),
   forall f, coerce_in_env e f -> 
-  wf f -> f |- t : T.
+  wf f -> f |-= t : T.
 
 Axiom coerce_conv_env :
-  forall e T U s, forall d : (e |- T >>> U : s), 
+  forall e T U s, forall d : (e |-= T >>> U : s), 
   forall f, coerce_in_env e f -> 
   wf f -> 
-	{ d' : f |- T >>> U : s | (depth d') = depth d }.
+	{ d' : f |-= T >>> U : s | (depth d') = depth d }.
 
 
 (*
@@ -167,7 +167,7 @@ Lemma conv_item :
    forall f, coerce_in_env e f ->
    item_lift t f n \/
    ((forall g, trunc _ (S n) e g -> trunc _ (S n) f g) /\
-   exists u, item_lift u f n /\ (exists s, f |- u >> t : s)).
+   exists u, item_lift u f n /\ (exists s, f |-= u >> t : s)).
 simple induction n.
 do 3 intro.
 elim H.
@@ -242,18 +242,18 @@ exists x; auto with coc core arith datatypes.
 Qed.
 
 Lemma typ_conv_env :
-  forall e t T, e |- t : T -> 
+  forall e t T, e |-= t : T -> 
   forall f, coerce_in_env e f -> 
-  wf f -> f |- t : T.
+  wf f -> f |-= t : T.
 Proof.
 intros e t T IH.
 induction IH using typ_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
-(P0 := fun e T U s => fun H : e |- T >> U : s =>
+(P0 := fun e T U s => fun H : e |-= T >> U : s =>
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U : s) ; intros ;
+  wf f -> f |-= T >> U : s) ; intros ;
 auto with coc core arith datatypes.
 
 elim conv_item with n T e f; auto with coc core arith datatypes; intros.
@@ -325,18 +325,18 @@ apply coerce_conv with B C ; auto with coc core arith datatypes.
 Qed.
 
 Lemma coerce_conv_env :
-  forall e T U s, e |- T >> U : s -> 
+  forall e T U s, e |-= T >> U : s -> 
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U : s.
+  wf f -> f |-= T >> U : s.
 Proof.
 intros e T U s IH.
 induction IH using coerce_mut with 
 (P := fun e t T => fun H : typ e t T =>
   forall f, coerce_in_env e f -> 
   wf f -> typ f t T)
-(P0 := fun e T U s => fun H : e |- T >> U : s =>
+(P0 := fun e T U s => fun H : e |-= T >> U : s =>
   forall f, coerce_in_env e f -> 
-  wf f -> f |- T >> U : s) ; intros ;
+  wf f -> f |-= T >> U : s) ; intros ;
 auto with coc core arith datatypes.
 
 elim conv_item with n T e f; auto with coc core arith datatypes; intros.

@@ -12,13 +12,13 @@ Require Import TPOSR.Types.
 
 Set Implicit Arguments.
 
-Lemma wf_tposr : forall e M N T, e |- M -> N : T -> tposr_wf e.
+Lemma wf_tposr : forall e M N T, e |-- M -> N : T -> tposr_wf e.
 Proof.
   induction 1 ; simpl ; auto with coc.
 Qed.
 
-Lemma tposr_conv : forall e A B s, e |- A ~= B : s -> 
-  forall M N, (e |- M -> N : A -> e |- M -> N : B) /\ (e |- M -> N : B -> e |- M -> N : A).
+Lemma tposr_conv : forall e A B s, e |-- A ~= B : s -> 
+  forall M N, (e |-- M -> N : A -> e |-- M -> N : B) /\ (e |-- M -> N : B -> e |-- M -> N : A).
 Proof.
   induction 1 ; simpl ; intros.
   
@@ -34,14 +34,14 @@ Proof.
   intuition ; auto with coc.
 Qed.
 
-Lemma tposr_lred : forall e M N Z, e |- M -> N : Z -> lred M N.
+Lemma tposr_lred : forall e M N Z, e |-- M -> N : Z -> lred M N.
 Proof.
   induction 1 ; simpl ; auto with coc.
 
   apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
 Qed.
 
-Lemma tposr_eq_conv : forall e M N Z, e |- M ~= N : Z -> conv M N.
+Lemma tposr_eq_conv : forall e M N Z, e |-- M ~= N : Z -> conv M N.
 Proof.
   induction 1 ; simpl ; auto with coc.
   

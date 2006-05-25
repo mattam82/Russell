@@ -39,7 +39,7 @@ Qed.
 Require Import Omega.
 Require Import Arith.
 
-Lemma term_free_db : forall e t T, e |- t : T -> free_db (length e) t.
+Lemma term_free_db : forall e t T, e |-= t : T -> free_db (length e) t.
 Proof.
   simple induction 1 ; intros ; auto with coc core arith datatypes.
 
@@ -105,14 +105,14 @@ Proof.
 Qed.
 
 Lemma type_free_db : 
-  (forall e t T, e |- t : T -> free_db (length e) T) /\
-  (forall e U V s, e |- U >> V : s -> free_db (length e) U /\ free_db (length e) V) /\
-  (forall e U V T, e |- U = V : T -> free_db (length e) U /\ free_db (length e) V).
+  (forall e t T, e |-= t : T -> free_db (length e) T) /\
+  (forall e U V s, e |-= U >> V : s -> free_db (length e) U /\ free_db (length e) V) /\
+  (forall e U V T, e |-= U = V : T -> free_db (length e) U /\ free_db (length e) V).
 Proof.
   apply typ_coerce_jeq_ind with
-  (P:= fun e t T => fun H : e |- t : T => free_db (length e) T)
-  (P0:= fun e U V s => fun H : e |- U >> V : s => free_db (length e) U /\ free_db (length e) V)
-  (P1 := fun e U V T => fun H : e |- U = V : T => free_db (length e) U /\ free_db (length e) V) ;
+  (P:= fun e t T => fun H : e |-= t : T => free_db (length e) T)
+  (P0:= fun e U V s => fun H : e |-= U >> V : s => free_db (length e) U /\ free_db (length e) V)
+  (P1 := fun e U V T => fun H : e |-= U = V : T => free_db (length e) U /\ free_db (length e) V) ;
   simpl ; intros ; intuition ; try constructor ; try (apply (term_free_db t)) ; auto with coc core arith datatypes.
 
   apply free_db_lift1 ;  apply term_free_db with (Srt s) ; auto.
@@ -160,11 +160,11 @@ Proof.
   apply (term_free_db t2).
 Qed.
 
-Lemma typ_free_db : forall e t T, e |- t : T -> free_db (length e) T.
+Lemma typ_free_db : forall e t T, e |-= t : T -> free_db (length e) T.
 Proof (proj1 (type_free_db)).
 
-Lemma coerce_free_db : forall e T U s, e |- T >> U : s -> free_db (length e) T /\ free_db (length e) U.
+Lemma coerce_free_db : forall e T U s, e |-= T >> U : s -> free_db (length e) T /\ free_db (length e) U.
 Proof (proj1 (proj2 (type_free_db))).
 
-Lemma jeq_free_db : forall e U V T , e |- U = V : T -> free_db (length e) U /\ free_db (length e) V.
+Lemma jeq_free_db : forall e U V T , e |-= U = V : T -> free_db (length e) U /\ free_db (length e) V.
 Proof (proj2 (proj2 (type_free_db))).

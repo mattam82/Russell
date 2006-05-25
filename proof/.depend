@@ -1,3 +1,7 @@
+Utils.vo: Utils.v
+Utils.vi: Utils.v
+Tactics.vo: Tactics.v
+Tactics.vi: Tactics.v
 MyList.vo: MyList.v
 MyList.vi: MyList.v
 ListType.vo: ListType.v MyList.vo
@@ -18,6 +22,8 @@ Conv_Dec.vo: Conv_Dec.v Terms.vo Reduction.vo Conv.vo
 Conv_Dec.vi: Conv_Dec.v Terms.vo Reduction.vo Conv.vo
 Env.vo: Env.v Terms.vo Reduction.vo LiftSubst.vo MyList.vo
 Env.vi: Env.v Terms.vo Reduction.vo LiftSubst.vo MyList.vo
+Utils.html: Utils.v
+Tactics.html: Tactics.v
 MyList.html: MyList.v
 ListType.html: ListType.v MyList.html
 Names.html: Names.v MyList.html MlTypes.html

@@ -27,7 +27,7 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma strength_sort_judgement : forall e s s', e |- Srt s : Srt s' -> nil |- Srt s : Srt s'.
+Lemma strength_sort_judgement : forall e s s', e |-= Srt s : Srt s' -> nil |-= Srt s : Srt s'.
 Proof.
   intros.
   destruct s.
@@ -50,8 +50,8 @@ Proof.
   constructor ; auto.
 Qed.
 
-Lemma sort_judgement_empty_env : forall s s', nil |- Srt s : Srt s' ->
-  forall e, consistent e -> e |- Srt s : Srt s'.
+Lemma sort_judgement_empty_env : forall s s', nil |-= Srt s : Srt s' ->
+  forall e, consistent e -> e |-= Srt s : Srt s'.
 Proof.
   intros.
   pose (thinning_n (trunc_list e) H0 H). 
@@ -59,8 +59,8 @@ Proof.
   assumption.
 Qed.
 
-Lemma weak_one_sort_judgement : forall T e s s', T :: e |- Srt s : Srt s' -> 
-  e |- Srt s : Srt s'.
+Lemma weak_one_sort_judgement : forall T e s s', T :: e |-= Srt s : Srt s' -> 
+  e |-= Srt s : Srt s'.
 Proof.
   intros.
   pose (typ_consistent H).
@@ -72,22 +72,22 @@ Qed.
 Hint Resolve weak_one_sort_judgement : coc.
 
 Lemma validity_ind : 
-  (forall e t T, e |- t : T ->
-  T = Srt kind \/ exists s, e |- T : Srt s) /\
-  (forall e T U s, e |- T >> U : s ->
-  e |- T : Srt s /\ e |- U : Srt s) /\
-  (forall e t u T, e |- t = u : T ->
-  (e |- t : T /\ e |- u : T) /\
-  (T = Srt kind \/ exists s, e |- T : Srt s)).
+  (forall e t T, e |-= t : T ->
+  T = Srt kind \/ exists s, e |-= T : Srt s) /\
+  (forall e T U s, e |-= T >> U : s ->
+  e |-= T : Srt s /\ e |-= U : Srt s) /\
+  (forall e t u T, e |-= t = u : T ->
+  (e |-= t : T /\ e |-= u : T) /\
+  (T = Srt kind \/ exists s, e |-= T : Srt s)).
 Proof.
   apply typ_coerce_jeq_ind with 
-  (P := fun e t T => fun H : e |- t : T =>
-  T = Srt kind \/ exists s, e |- T : Srt s)
-  (P0 := fun e T U s => fun H : e |- T >> U : s =>
-  e |- T : Srt s /\ e |- U : Srt s)
-  (P1 := fun e t u T => fun H : e |- t = u : T =>
-  (e |- t : T /\ e |- u : T) /\
-  (T = Srt kind \/ exists s, e |- T : Srt s)) ;
+  (P := fun e t T => fun H : e |-= t : T =>
+  T = Srt kind \/ exists s, e |-= T : Srt s)
+  (P0 := fun e T U s => fun H : e |-= T >> U : s =>
+  e |-= T : Srt s /\ e |-= U : Srt s)
+  (P1 := fun e t u T => fun H : e |-= t = u : T =>
+  (e |-= t : T /\ e |-= u : T) /\
+  (T = Srt kind \/ exists s, e |-= T : Srt s)) ;
   simpl ; intros ; auto with coc ; try discriminate ; 
   try (destruct H ; discriminate) ;  try (destruct H1 ; discriminate).
 
@@ -435,23 +435,23 @@ Proof.
 Qed.
 
 Lemma validity_typ :
-  forall e t T, e |- t : T ->
-  T = Srt kind \/ exists s, e |- T : Srt s.
+  forall e t T, e |-= t : T ->
+  T = Srt kind \/ exists s, e |-= T : Srt s.
 Proof (proj1 validity_ind).
 
 Lemma validity_coerce :
-  forall e T U s, e |- T >> U : s ->
-  e |- T : Srt s /\ e |- U : Srt s.
+  forall e T U s, e |-= T >> U : s ->
+  e |-= T : Srt s /\ e |-= U : Srt s.
 Proof (proj1 (proj2 validity_ind)).
 
 Lemma validity_jeq :
- forall e t u T, e |- t = u : T ->
- (e |- t : T /\ e |- u : T) /\
- (T = Srt kind \/ exists s, e |- T : Srt s).
+ forall e t u T, e |-= t = u : T ->
+ (e |-= t : T /\ e |-= u : T) /\
+ (T = Srt kind \/ exists s, e |-= T : Srt s).
 Proof (proj2 (proj2 validity_ind)).
 
 Inductive conv_env : env -> env -> Prop :=
-  | conv_env_hd : forall e t u s, e |- t = u : Srt s -> conv_env (t :: e) (u :: e)
+  | conv_env_hd : forall e t u s, e |-= t = u : Srt s -> conv_env (t :: e) (u :: e)
   | conv_env_tl :
       forall e f t, conv_in_env e f -> conv_env (t :: e) (t :: f).
 
@@ -465,24 +465,24 @@ Proof.
   constructor ; auto.
 Qed.
 
-Lemma type_conv_env : forall e t T, e |- t : T -> 
-  forall f, conv_env e f -> f |- t : T.
+Lemma type_conv_env : forall e t T, e |-= t : T -> 
+  forall f, conv_env e f -> f |-= t : T.
 Proof.
   intros.
   apply Conversion.type_conv_env with e ; auto.
   apply conv_env_conv_in_env ; auto.
 Qed.
 
-Lemma coerce_conv_env : forall e T U s, e |- T >> U : s -> 
-  forall f, conv_env e f -> f |- T >> U : s.
+Lemma coerce_conv_env : forall e T U s, e |-= T >> U : s -> 
+  forall f, conv_env e f -> f |-= T >> U : s.
 Proof.
   intros.
   apply Conversion.coerce_conv_env with e ; auto.
   apply conv_env_conv_in_env ; auto.
 Qed.
 
-Lemma jeq_conv_env : forall e U V T, e |- U = V : T ->
-  forall f, conv_env e f -> f |- U = V : T.
+Lemma jeq_conv_env : forall e U V T, e |-= U = V : T ->
+  forall f, conv_env e f -> f |-= U = V : T.
 Proof.
   intros.
   apply Conversion.jeq_conv_env with e ; auto.
@@ -490,10 +490,10 @@ Proof.
 Qed.
 
 Lemma functionality_rec : forall g (d : term) t, 
-  forall d', g |- d = d' : t ->
-  forall e U T, e |- U : T ->
+  forall d', g |-= d = d' : t ->
+  forall e U T, e |-= U : T ->
   forall f n, sub_in_env d t n e f -> trunc _ n f g -> 
-  f |- (subst_rec d U n) = (subst_rec d' U n) : (subst_rec d T n).
+  f |-= (subst_rec d U n) = (subst_rec d' U n) : (subst_rec d T n).
 Proof.
   intros.
   apply pre_functionality_rec with g t e; auto.
@@ -503,10 +503,10 @@ Proof.
   assumption.
 Qed.
 
-Lemma functionality :forall e (d : term) t, e |- d : t -> 
-  forall d', e |- d = d' : t ->
-  forall U T, t :: e |- U : T ->
-  e |- (subst d U) = (subst d' U) : (subst d T).
+Lemma functionality :forall e (d : term) t, e |-= d : t -> 
+  forall d', e |-= d = d' : t ->
+  forall U T, t :: e |-= U : T ->
+  e |-= (subst d U) = (subst d' U) : (subst d T).
 Proof.
   intros.
   unfold subst ; pose functionality_rec.
@@ -515,28 +515,28 @@ Proof.
   constructor.
 Qed.
 
-Lemma jeq_type_l : forall e u v T, e |- u = v : T -> e |- u : T.
+Lemma jeq_type_l : forall e u v T, e |-= u = v : T -> e |-= u : T.
 Proof.
   intros.
   pose (validity_jeq H).
   intuition.
 Qed.
 
-Lemma jeq_type_r : forall e u v T, e |- u = v : T -> e |- v : T.
+Lemma jeq_type_r : forall e u v T, e |-= u = v : T -> e |-= v : T.
 Proof.
   intros.
   pose (validity_jeq H).
   intuition.
 Qed.
 
-Lemma coerce_sort_l : forall e U V s, e |- U >> V : s -> e |- U : Srt s.
+Lemma coerce_sort_l : forall e U V s, e |-= U >> V : s -> e |-= U : Srt s.
 Proof.
   intros.
   pose (validity_coerce H).
   intuition.
 Qed.
 
-Lemma coerce_sort_r : forall e U V s, e |- U >> V : s -> e |- V : Srt s.
+Lemma coerce_sort_r : forall e U V s, e |-= U >> V : s -> e |-= V : Srt s.
 Proof.
   intros.
   pose (validity_coerce H).
@@ -545,8 +545,8 @@ Qed.
 
 Hint Resolve jeq_type_l jeq_type_r coerce_sort_l coerce_sort_r : coc.
 
-Lemma jeq_subst_par : forall e u u' v v' A B, e |- u = u' : A -> A :: e |- v = v' : B ->
-  e |- subst u v = subst u' v' : subst u B.
+Lemma jeq_subst_par : forall e u u' v v' A B, e |-= u = u' : A -> A :: e |-= v = v' : B ->
+  e |-= subst u v = subst u' v' : subst u B.
 Proof.
   intros.
   pose (jeq_type_l H).

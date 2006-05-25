@@ -1,3 +1,4 @@
+Require Import Lambda.Utils.
 Require Import TPOSR.Terms.
 Require Import TPOSR.Reduction.
 Require Import TPOSR.Conv.
@@ -15,9 +16,10 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
-Definition equiv e A B s := e |- A ~= B : s.
+Definition equiv e A B := A = B \/ exists s, e |-- A ~= B : s.
+Definition equiv_sort e A B s := e |-- A ~= B : s.
 
-Lemma generation_sort :  forall e s u T, e |- Srt_l s -> u : T -> 
+Lemma generation_sort :  forall e s u T, e |-- Srt_l s -> u : T -> 
   u = Srt_l s /\ T = Srt_l kind.
 Admitted. (*
 Proof.
@@ -47,7 +49,7 @@ Proof.
 Qed.
 
 (*
-Lemma generation_var_aux : forall e T A, e |- T : A -> 
+Lemma generation_var_aux : forall e T A, e |-- T : A -> 
   forall n, T = Ref n ->
   exists B, item_lift B e n /\ equiv e A B.
 Proof.
@@ -87,10 +89,10 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 *)
-Lemma generation_var : forall e n X A, e |- Ref_l n -> X : A -> 
+Lemma generation_var : forall e n X A, e |-- Ref_l n -> X : A -> 
   X = Ref_l n /\
   exists B, item_llift B e n /\ 
-  exists s, equiv e A B s.
+  equiv e A B.
 Admitted.
 (*
 Proof.
@@ -98,8 +100,8 @@ Proof.
 Qed.
 
 
-Lemma generation_prod_aux : forall e T A, e |- T : A -> forall U V, T = Prod U V ->
-  exists s1, exists s2, e |- U : Srt s1 /\ U :: e |- V : Srt s2 /\ equiv e A (Srt s2).
+Lemma generation_prod_aux : forall e T A, e |-- T : A -> forall U V, T = Prod U V ->
+  exists s1, exists s2, e |-- U : Srt s1 /\ U :: e |-- V : Srt s2 /\ equiv e A (Srt s2).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
 
@@ -137,19 +139,23 @@ Proof.
 Qed.
 *)
 
-Lemma generation_prod : forall e U V X A, e |- Prod U V -> X : A -> 
-  exists s1, exists s2, e |- U : Srt s1 /\ U :: e |- V : Srt s2 /\ 
-  equiv e A (Srt s2) s.
+Require Import TPOSR.TypesDepth.
+
+Lemma generation_prod : forall e U V X A n, e |-- Prod_l U V -> X : A [n] -> 
+  exists3 U' s1 m, exists3 V' s2 p, 
+  e |-- U -> U' : Srt_l s1 [m] /\ m < n /\
+  U :: e |-- V -> V' : Srt_l s2 [p] /\ p < n /\
+  X = Prod_l U' V' /\ equiv e A (Srt_l s2).
 Admitted.
 (*
 Proof.
   intros ; eapply generation_prod_aux ; auto ; auto.
 Qed.
 
-Lemma generation_sum_aux : forall e T A, e |- T : A -> forall U V, T = Sum U V ->
+Lemma generation_sum_aux : forall e T A, e |-- T : A -> forall U V, T = Sum U V ->
   exists s1, exists s2, exists s3,
-  e |- U : Srt s1 /\ 
-  U :: e |- V : Srt s2 /\
+  e |-- U : Srt s1 /\ 
+  U :: e |-- V : Srt s2 /\
   sum_sort s1 s2 s3 /\
   equiv e A (Srt s3).
 Proof.
@@ -185,23 +191,24 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 *)
-Lemma generation_sum : forall e U V A, e |- Sum U V : A -> 
-  exists s1, exists s2, exists s3,
-  e |- U : Srt s1 /\ 
-  U :: e |- V : Srt s2 /\
+Lemma generation_sum : forall e U V X A m, e |-- Sum_l U V -> X : A [m] -> 
+  exists3 U' s1 n, 
+  exists3 V' s2 p, exists s3,
+  e |-- U -> U' : Srt_l s1 [n] /\ n < m /\
+  U :: e |-- V -> V' : Srt_l s2 [p] /\ p < m /\
   sum_sort s1 s2 s3 /\
-  equiv e A (Srt s3).
+  X = Sum_l U' V' /\ equiv e A (Srt_l s3).
 Admitted.
 (*
 Proof.
   intros ; eapply generation_sum_aux ; auto ; auto.
 Qed.
 
-Lemma generation_lambda_aux : forall e t A, e |- t : A -> forall T M, t = Abs T M ->
+Lemma generation_lambda_aux : forall e t A, e |-- t : A -> forall T M, t = Abs T M ->
   exists s1, exists s2, exists C, 
-  e |- T : Srt s1 /\ 
-  T :: e |- C : Srt s2 /\
-  T :: e |- M : C /\
+  e |-- T : Srt s1 /\ 
+  T :: e |-- C : Srt s2 /\
+  T :: e |-- M : C /\
   equiv e A (Prod T C).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -238,22 +245,22 @@ Proof.
 Qed.
 *)
 
-Lemma generation_lambda : forall e T M A, e |- Abs T M : A -> 
-  exists s1, exists s2, exists C, 
-  e |- T : Srt s1 /\ 
-  T :: e |- C : Srt s2 /\
-  T :: e |- M : C /\
-  equiv e A (Prod T C).
+Lemma generation_lambda : forall e T M X A m, e |-- Abs_l T M -> X : A [m] -> 
+  exists3 T' s1 n, exists3 M' s2 p, exists3 C C' q,
+  e |-- T -> T' : Srt_l s1 [n] /\ n < m /\
+  T :: e |-- M -> M' : C [p] /\ p < m /\
+  T :: e |-- C -> C' : Srt_l s2 [q] /\ q < m /\
+  X = Abs_l T' M' /\ equiv e A (Prod_l T C).
 Admitted.
 (*
 Proof.
   intros ; eapply generation_lambda_aux ; auto ; auto.
 Qed.
 
-Lemma generation_app_aux : forall e t C, e |- t : C -> forall M N, t = App M N ->
+Lemma generation_app_aux : forall e t C, e |-- t : C -> forall M N, t = App M N ->
   exists A, exists B,
-  e |- M : Prod A B /\ 
-  e |- N : A /\
+  e |-- M : Prod A B /\ 
+  e |-- N : A /\
   equiv e C (subst N B).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -285,11 +292,20 @@ Proof.
 Qed.
 *)
 
-Lemma generation_app : forall e M N C, e |- App M N : C -> 
-  exists A, exists B,
-  e |- M : Prod A B /\ 
-  e |- N : A /\
-  equiv e C (subst N B).
+Lemma generation_app : forall e V W X Y Z m, e |-- App_l V W X -> Y : Z [m] -> 
+  exists4 U U' s1 n,
+  exists3 V' s2 p,
+  exists2 X' q,
+  e |-- U -> U' : Srt_l s1 [n] /\ n < m /\
+  U :: e |-- V -> V' : Srt_l s2 [p] /\ p < m /\
+  e |-- X -> X' : U [q] /\ q < m /\
+  equiv_sort e Z (lsubst X V) s2 /\
+  ((exists2 W' r, e |-- W -> W' : Prod_l U V [r] /\ r < m /\
+  Y = App_l V' W' X') \/
+  (exists3 T T' r, 
+  W = Abs_l U T /\
+  U :: e |-- T -> T' : V [r] /\ r < m /\
+  Y = lsubst X' T')).
 Admitted.
 (*
 Proof.
@@ -297,14 +313,14 @@ Proof.
 Qed.
 
 
-Lemma generation_pair_aux : forall e t C, e |- t : C -> forall T M N, t = Pair T M N ->
+Lemma generation_pair_aux : forall e t C, e |-- t : C -> forall T M N, t = Pair T M N ->
   exists A, exists B, exists s1, exists s2, exists s3,
   T = Sum A B /\
-  e |- A : Srt s1 /\
-  A :: e |- B : Srt s2 /\
+  e |-- A : Srt s1 /\
+  A :: e |-- B : Srt s2 /\
   sum_sort s1 s2 s3 /\
-  e |- M : A /\ 
-  e |- N : subst M B /\
+  e |-- M : A /\ 
+  e |-- N : subst M B /\
   equiv e C (Sum A B).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -346,24 +362,26 @@ Proof.
 Qed.
 *)
 
-Lemma generation_pair : forall e T M N C, e |- Pair T M N : C ->
-  exists A, exists B, exists s1, exists s2, exists s3,
-  T = Sum A B /\
-  e |- A : Srt s1 /\
-  A :: e |- B : Srt s2 /\
+Lemma generation_pair : forall e T M N X C m, e |-- Pair_l T M N -> X : C [m] ->
+  exists4 A A' s1 n,
+  exists4 B B' s2 p,
+  exists s3,
+  T = Sum_l A B /\
+  e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
+  A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
   sum_sort s1 s2 s3 /\
-  e |- M : A /\ 
-  e |- N : subst M B /\
-  equiv e C (Sum A B).
+  exists2 M' q, e |-- M -> M' : A [q] /\ q < m /\
+  exists2 N' r, e |-- N -> N' : lsubst M B [r] /\ r < m /\
+  X = Sum_l A' B' /\ equiv e C (Sum_l A B).
 Admitted.
 (*
 Proof.
   intros ; eapply generation_pair_aux ; auto ; auto.
 Qed.
 
-Lemma generation_pi1_aux : forall e t C, e |- t : C -> forall M, t = Pi1 M ->
+Lemma generation_pi1_aux : forall e t C, e |-- t : C -> forall M, t = Pi1 M ->
   exists A, exists B,
-  e |- M : Sum A B /\ 
+  e |-- M : Sum A B /\ 
   equiv e C A.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -392,19 +410,31 @@ Proof.
 Qed.
 *)
 
-Lemma generation_pi1 : forall e M C, e |- Pi1 M : C ->
-  exists A, exists B,
-  e |- M : Sum A B /\ 
-  equiv e C A.
+Lemma generation_pi1 : forall e M X C m, e |-- Pi1_l M -> X : C [m] ->
+  exists4 A A' s1 n,
+  exists4 B B' s2 p,
+  exists s3,
+  e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
+  A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
+  sum_sort s1 s2 s3 /\ equiv e C A /\
+  ((exists2 M' r,
+  e |-- M -> M' : Sum_l A B [r] /\ r < m /\
+  X = Pi1_l M') \/
+  (exists3 u u' r,
+  exists3 v v' o,
+  M = Pair_l (Sum_l A B) u v /\
+  e |-- u -> u' : A [r] /\ r < m /\
+  e |-- v -> v' : lsubst u B [o] /\ o < m /\
+  X = u')).
 Admitted.
 (*
 Proof.
   intros ; eapply generation_pi1_aux ; auto ; auto.
 Qed.
 
-Lemma generation_pi2_aux : forall e t C, e |- t : C -> forall M, t = Pi2 M ->
+Lemma generation_pi2_aux : forall e t C, e |-- t : C -> forall M, t = Pi2 M ->
   exists A, exists B,
-  e |- M : Sum A B /\ 
+  e |-- M : Sum A B /\ 
   equiv e C (subst (Pi1 M) B).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
@@ -436,10 +466,23 @@ Proof.
 Qed.
 *)
 
-Lemma generation_pi2 : forall e M C, e |- Pi2 M : C ->
-  exists A, exists B,
-  e |- M : Sum A B /\ 
-  equiv e C (subst (Pi1 M) B).
+Lemma generation_pi2 :
+  forall e M X C m, e |-- Pi2_l M -> X : C [m] ->
+  exists4 A A' s1 n,
+  exists4 B B' s2 p,
+  exists s3,
+  e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
+  A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
+  sum_sort s1 s2 s3 /\ equiv e C (lsubst (Pi1_l M) B) /\
+  ((exists2 M' r,
+  e |-- M -> M' : Sum_l A B [r] /\ r < m /\
+  X = Pi2_l M') \/
+  (exists3 u u' r,
+  exists3 v v' o,
+  M = Pair_l (Sum_l A B) u v /\
+  e |-- u -> u' : A [r] /\ r < m /\
+  e |-- v -> v' : lsubst u B [o] /\ o < m /\
+  X = v')).
 Admitted.
 (*
 Proof.

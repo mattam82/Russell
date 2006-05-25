@@ -12,25 +12,25 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Lemma double_sub_weak : forall g (d : term) t, g |- d : t ->
-   (forall e u (U : term), e |- u : U ->
+Lemma double_sub_weak : forall g (d : term) t, g |-- d : t ->
+   (forall e u (U : term), e |-- u : U ->
    forall f n, sub_in_env d t n e f -> wf f -> trunc _ n f g -> 
-   f |- (subst_rec d u n) : (subst_rec d U n)) /\
-   (forall e T U s, e |- T >> U : s->
+   f |-- (subst_rec d u n) : (subst_rec d U n)) /\
+   (forall e T U s, e |-- T >> U : s->
    forall f n, sub_in_env d t n e f -> wf f -> trunc _ n f g -> 
-   f |- (subst_rec d T n) >> (subst_rec d U n) : s).
+   f |-- (subst_rec d T n) >> (subst_rec d U n) : s).
 Proof.
 intros g d t H.
 apply double_typ_coerce_mut with
- (P := fun e u (U : term) => fun H0 : e |- u : U =>
+ (P := fun e u (U : term) => fun H0 : e |-- u : U =>
  forall f n,
  sub_in_env d t n e f ->
- wf f -> trunc term n f g -> f |- subst_rec d u n : subst_rec d U n)
+ wf f -> trunc term n f g -> f |-- subst_rec d u n : subst_rec d U n)
  (P0 :=
- fun e T (U : term) s => fun H0 : e |- T >> U : s =>
+ fun e T (U : term) s => fun H0 : e |-- T >> U : s =>
  forall f n,
  sub_in_env d t n e f ->
- wf f -> trunc term n f g -> f |- subst_rec d T n >> subst_rec d U n : s) ;
+ wf f -> trunc term n f g -> f |-- subst_rec d T n >> subst_rec d U n : s) ;
  simpl in |- *;
  try simpl in IHIH ; 
  try simpl in IHIH0 ; 
@@ -134,8 +134,8 @@ eapply coerce_sort_r ; auto with coc core.
 apply coerce_conv with (subst_rec d B n) (subst_rec d C n); auto with coc core.
 Qed.
 
-Theorem substitution : forall e t u U, (t :: e) |- u : U ->
-  forall d, e |- d : t -> e |- (subst d u) : (subst d U).
+Theorem substitution : forall e t u U, (t :: e) |-- u : U ->
+  forall d, e |-- d : t -> e |-- (subst d u) : (subst d U).
 Proof.
 intros.
 unfold subst in |- *.
@@ -145,8 +145,8 @@ apply typ_wf with d t; auto with coc core arith datatypes.
 Qed.
 
 Theorem substitution_coerce : forall e t T (U : term) s,
-  (t :: e) |- T >> U : s ->
-  forall d, e |- d : t -> e |- (subst d T) >> (subst d U) : s.
+  (t :: e) |-- T >> U : s ->
+  forall d, e |-- d : t -> e |-- (subst d T) >> (subst d U) : s.
 Proof.
 intros.
 unfold subst in |- *.
@@ -158,9 +158,9 @@ Qed.
 Hint Resolve substitution substitution_coerce : coc.
 
 Theorem substitution_coerce_conv_l : forall e t T s,
-  (t :: e) |- T : Srt s ->
-  forall d u, e |- d : t -> e |- u : t -> conv d u -> 
-  e |- (subst d T) >> (subst u T) : s.
+  (t :: e) |-- T : Srt s ->
+  forall d u, e |-- d : t -> e |-- u : t -> conv d u -> 
+  e |-- (subst d T) >> (subst u T) : s.
 Proof.
 intros.
 assert(conv T T) ; auto with coc.
@@ -173,9 +173,9 @@ apply substitution with t ; auto with coc core).
 Qed.
 
 Theorem substitution_coerce_conv_l_n : forall e t T s,
-  (t :: e) |- T : Srt s ->
-  forall d u, e |- d : t -> e |- u : t -> conv d u -> 
-  forall n, e |- (subst d T) >> (subst u T) : s.
+  (t :: e) |-- T : Srt s ->
+  forall d u, e |-- d : t -> e |-- u : t -> conv d u -> 
+  forall n, e |-- (subst d T) >> (subst u T) : s.
 Proof.
 intros.
 assert(conv T T) ; auto with coc.

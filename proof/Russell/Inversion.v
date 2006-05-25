@@ -28,7 +28,7 @@ Definition inv_type (P : Prop) e t T : Prop :=
     | Srt set => T = (Srt kind) -> P
     | Srt kind => True
     | Ref n => forall x : term, item _ x e n -> 
-      forall s, e |- T >> (lift (S n) x) : s -> P
+      forall s, e |-- T >> (lift (S n) x) : s -> P
     | Abs A M =>
         forall s1 (U : term),
         typ e A (Srt s1) ->
@@ -66,7 +66,7 @@ Definition inv_type (P : Prop) e t T : Prop :=
         forall s, coerce e T (subst (Pi1 t) V) s -> P
     end.
 
-Lemma unicity_coerce_l : forall e U V s s', e |- U >> V : s -> e |- U : Srt s' -> e |- U >> V : s'.
+Lemma unicity_coerce_l : forall e U V s s', e |-- U >> V : s -> e |-- U : Srt s' -> e |-- U >> V : s'.
 Proof.
   intros.
   pose (coerce_sort_l H).
@@ -74,7 +74,7 @@ Proof.
   assumption.
 Qed.
 
-Lemma unicity_coerce_r : forall e U V s s', e |- U >> V : s -> e |- V : Srt s' -> e |- U >> V : s'.
+Lemma unicity_coerce_r : forall e U V s s', e |-- U >> V : s -> e |-- V : Srt s' -> e |-- U >> V : s'.
 Proof.
   intros.
   pose (coerce_sort_r H).
@@ -88,8 +88,8 @@ Hint Resolve unicity_coerce_l unicity_coerce_r : coc.
 Lemma inv_type_coerce : forall (P : Prop) e t (U V : term),
   inv_type P e t U -> forall s, coerce e U V s -> inv_type P e t V.
 intros P e.
-cut (forall U V W s s', e |- U >> V : s -> e |- V >> W : s' -> e |- U >> W : s') ; intro Htr.
-cut (forall U V W s s', e |- U >> V : s' -> e |- V >> W : s -> e |- U >> W : s') ; intro Htr2.
+cut (forall U V W s s', e |-- U >> V : s -> e |-- V >> W : s' -> e |-- U >> W : s') ; intro Htr.
+cut (forall U V W s s', e |-- U >> V : s' -> e |-- V >> W : s -> e |-- U >> W : s') ; intro Htr2.
 
 induction t ; simpl in |- *; intros U V H s' Hco ; intros.
 destruct (coerce_sort Hco).
@@ -233,7 +233,7 @@ right ; exists s ; auto.
 Qed.
 
 
-Lemma typ_sort_kind : forall G s s', G |- Srt s : Srt s' -> s' = kind.
+Lemma typ_sort_kind : forall G s s', G |-- Srt s : Srt s' -> s' = kind.
 Proof.
   intros.
   destruct (typ_sort H).
@@ -257,7 +257,7 @@ Qed.
   Lemma inv_typ_ref :
    forall (P : Prop) e T n,
    typ e (Ref n) T ->
-   (forall s, e |- T : Srt s -> forall U : term, item _ U e n -> e |- T >> (lift (S n) U) : s -> P) -> P.
+   (forall s, e |-- T : Srt s -> forall U : term, item _ U e n -> e |-- T >> (lift (S n) U) : s -> P) -> P.
 intros.
 apply typ_inversion with e (Ref n) T; simpl in |- *; intros;
  auto with coc core arith datatypes.
@@ -268,12 +268,12 @@ Qed.
   Lemma inv_typ_abs :
    forall (P : Prop) e A M (U : term),
    typ e (Abs A M) U ->
-   (forall s, e |- U : Srt s ->
+   (forall s, e |-- U : Srt s ->
     forall s1 T,
     typ e A (Srt s1) ->
     typ (A :: e) M T -> 
     typ (A :: e) T (Srt s) ->
-    e |- (Prod A T) >> U : s -> P) ->
+    e |-- (Prod A T) >> U : s -> P) ->
    P.
 intros.
 apply typ_inversion with e (Abs A M) U; simpl in |- *;
@@ -290,12 +290,12 @@ Qed.
 Lemma inv_typ_abs2 :
    forall (P : Prop) e A M (U : term),
    typ e (Abs A M) U ->
-   (forall s, e |- U : Srt s ->
+   (forall s, e |-- U : Srt s ->
     forall s1 T,
     typ e A (Srt s1) ->
     typ (A :: e) M T -> 
     typ (A :: e) T (Srt s) ->
-    e |- (Prod A T) >> U : s -> P) ->
+    e |-- (Prod A T) >> U : s -> P) ->
    P.
 intros.
 apply typ_inversion with e (Abs A M) U; simpl in |- *;
@@ -312,7 +312,7 @@ Qed.
 Lemma inv_typ_app :
  forall (P : Prop) e u v T,
  typ e (App u v) T ->
- (forall s, e |- T : Srt s ->
+ (forall s, e |-- T : Srt s ->
  forall V Ur : term,
  typ e u (Prod V Ur) -> typ e v V -> coerce e T (subst v Ur) s -> P) -> P.
 intros.
@@ -326,7 +326,7 @@ Qed.
   Lemma inv_typ_pair :
    forall (P : Prop) e T u v T',
    typ e (Pair T u v) T' ->
-   (forall s, e |- T' : Srt s ->
+   (forall s, e |-- T' : Srt s ->
      forall T U V : term, forall s1,
      typ e U (Srt s1) ->
      typ e u U -> typ (U :: e) V (Srt s) -> typ e v (subst u V) ->

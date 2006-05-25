@@ -40,22 +40,22 @@ Proof.
 Qed.
 
 Theorem unlab_sound  : 
-  (forall e u v T, e |- u -> v : T -> 
-  (unlab_ctx e) |- (|u|) = (|v|) : (|T|)) /\
+  (forall e u v T, e |-- u -> v : T -> 
+  (unlab_ctx e) |-= (|u|) = (|v|) : (|T|)) /\
   (forall e, tposr_wf e -> 
-  (unlab_ctx e) |- Srt prop : Srt kind /\
-  (unlab_ctx e) |- Srt set : Srt kind /\
+  (unlab_ctx e) |-= Srt prop : Srt kind /\
+  (unlab_ctx e) |-= Srt set : Srt kind /\
   (forall A n, item_llift A e n -> 
-  (unlab_ctx e) |- Ref n : (|A|))).
+  (unlab_ctx e) |-= Ref n : (|A|))).
 Proof.
   apply ind_tposr_wf with 
-  (P := fun e u v T=>  fun H : e |- u -> v : T =>
-  (unlab_ctx e) |- (|u|) = (|v|) : (|T|))
+  (P := fun e u v T =>  fun H : e |-- u -> v : T =>
+  (unlab_ctx e) |-= (|u|) = (|v|) : (|T|))
   (P0 := fun e => fun H : tposr_wf e =>
-  (unlab_ctx e) |- Srt prop : Srt kind /\
-  (unlab_ctx e) |- Srt set : Srt kind /\
+  (unlab_ctx e) |-= Srt prop : Srt kind /\
+  (unlab_ctx e) |-= Srt set : Srt kind /\
   (forall A n, item_llift A e n -> 
-  (unlab_ctx e) |- Ref n : (|A|))) ; simpl ; intros ; auto with coc.
+  (unlab_ctx e) |-= Ref n : (|A|))) ; simpl ; intros ; auto with coc.
 
   intuition.
 
@@ -89,7 +89,10 @@ Proof.
   apply jeq_subset ; auto with coc.
 
   apply jeq_sum  with s1 s2 ; auto with coc.
-
+  
+  rewrite lab_subst in H2.
+  apply jeq_pair with s1 s2 s3 ; auto with coc.
+ 
   apply jeq_pi1 with (|B|) ; auto with coc.
 
   pose (jeq_type_l H).
@@ -166,16 +169,16 @@ Proof.
   apply (jeq_type_l H).
 Qed.
 
-Corollary unlab_sound_type : forall e u v T, e |- u -> v : T -> 
-  (unlab_ctx e) |- (|u|) = (|v|) : (|T|).
+Corollary unlab_sound_type : forall e u v T, e |-- u -> v : T -> 
+  (unlab_ctx e) |-= (|u|) = (|v|) : (|T|).
 Proof (proj1 (unlab_sound)).
 
 Corollary unlab_sound_wf :
   (forall e, tposr_wf e -> 
-  (unlab_ctx e) |- Srt prop : Srt kind /\
-  (unlab_ctx e) |- Srt set : Srt kind /\
+  (unlab_ctx e) |-= Srt prop : Srt kind /\
+  (unlab_ctx e) |-= Srt set : Srt kind /\
   (forall A n, item_llift A e n -> 
-  (unlab_ctx e) |- Ref n : (|A|))).
+  (unlab_ctx e) |-= Ref n : (|A|))).
 Proof (proj2 (unlab_sound)).
 
 
