@@ -410,16 +410,18 @@ Proof.
 Qed.
 *)
 
-Lemma generation_pi1 : forall e M X C m, e |-- Pi1_l M -> X : C [m] ->
+Lemma generation_pi1 : forall e T M X C m, e |-- Pi1_l T M -> X : C [m] ->
   exists4 A A' s1 n,
   exists4 B B' s2 p,
   exists s3,
   e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
   A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
+  T = (Sum_l A B) /\
   sum_sort s1 s2 s3 /\ equiv e C A /\
-  ((exists2 M' r,
+  ((exists3 T' M' r,
+  T' = (Sum_l A' B') /\
   e |-- M -> M' : Sum_l A B [r] /\ r < m /\
-  X = Pi1_l M') \/
+  X = Pi1_l T' M') \/
   (exists3 u u' r,
   exists3 v v' o,
   M = Pair_l (Sum_l A B) u v /\
@@ -467,16 +469,17 @@ Qed.
 *)
 
 Lemma generation_pi2 :
-  forall e M X C m, e |-- Pi2_l M -> X : C [m] ->
+  forall e T M X C m, e |-- Pi2_l T M -> X : C [m] ->
   exists4 A A' s1 n,
   exists4 B B' s2 p,
   exists s3,
   e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
   A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
-  sum_sort s1 s2 s3 /\ equiv e C (lsubst (Pi1_l M) B) /\
-  ((exists2 M' r,
+  T = Sum_l A B /\
+  sum_sort s1 s2 s3 /\ equiv e C (lsubst (Pi1_l T M) B) /\
+  ((exists3 T' M' r,
   e |-- M -> M' : Sum_l A B [r] /\ r < m /\
-  X = Pi2_l M') \/
+  T' = Sum_l A' B' /\ X = Pi2_l T' M') \/
   (exists3 u u' r,
   exists3 v v' o,
   M = Pair_l (Sum_l A B) u v /\

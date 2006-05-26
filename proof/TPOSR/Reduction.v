@@ -7,8 +7,8 @@ Implicit Types A B M N T t u v : lterm.
 
 Inductive lred1 : lterm -> lterm -> Prop :=
 | beta : forall T1 M N T, lred1 (App_l T1 (Abs_l T M) N) (lsubst N M)
-| pi1 : forall T M N, lred1 (Pi1_l (Pair_l T M N)) M
-| pi2 : forall T M N, lred1 (Pi2_l (Pair_l T M N)) N
+| pi1 : forall T1 T M N, lred1 (Pi1_l T1 (Pair_l T M N)) M
+| pi2 : forall T1 T M N, lred1 (Pi2_l T1 (Pair_l T M N)) N
 | abs_lred_l : forall M M', lred1 M M' -> forall N, lred1 (Abs_l M N) (Abs_l M' N)
 | abs_lred_r : forall M M', lred1 M M' -> forall N, lred1 (Abs_l N M) (Abs_l N M')
 | app_lred_T :
@@ -34,10 +34,14 @@ forall M1 N1, lred1 M1 N1 -> forall M2, lred1 (Sum_l M1 M2) (Sum_l N1 M2)
         forall M1 N1, lred1 M1 N1 -> forall M2, lred1 (Subset_l M1 M2) (Subset_l N1 M2)
     | subset_lred_r :
         forall M2 N2, lred1 M2 N2 -> forall M1, lred1 (Subset_l M1 M2) (Subset_l M1 N2)
+    | pi1_lred_T :
+        forall M N, lred1 M N -> forall M2, lred1 (Pi1_l M M2) (Pi1_l N M2)
     | pi1_lred :
-        forall M N, lred1 M N -> lred1 (Pi1_l M) (Pi1_l N)
+        forall M N, lred1 M N -> forall M2, lred1 (Pi1_l M2 M) (Pi1_l M2 N)
+    | pi2_lred_T :
+        forall M N, lred1 M N -> forall M2, lred1 (Pi2_l M M2) (Pi2_l N M2)
     | pi2_lred :
-        forall M N, lred1 M N -> lred1 (Pi2_l M) (Pi2_l N).
+        forall M N, lred1 M N -> forall M2, lred1 (Pi2_l M2 M) (Pi2_l M2 N).
       
   Inductive lred M : lterm -> Prop :=
     | refl_lred : lred M M
@@ -55,10 +59,10 @@ forall M1 N1, lred1 M1 N1 -> forall M2, lred1 (Sum_l M1 M2) (Sum_l N1 M2)
         par_lred1 M M' ->
         forall N N',
         par_lred1 N N' -> forall T, par_lred1 (App_l Typ (Abs_l T M) N) (lsubst N' M')
-    | par_pi1 : forall M M', par_lred1 M M' -> 
-      forall T N, par_lred1 (Pi1_l (Pair_l T M N)) M'
-    | par_pi2 : forall N N', par_lred1 N N' -> forall T M,
-      par_lred1 (Pi2_l (Pair_l T M N)) N'
+    | par_pi1 : forall Typ, forall M M', par_lred1 M M' -> 
+      forall T N, par_lred1 (Pi1_l Typ (Pair_l T M N)) M'
+    | par_pi2 : forall Typ N N', par_lred1 N N' -> forall T M,
+      par_lred1 (Pi2_l Typ (Pair_l T M N)) N'
     | sort_par_lred : forall s, par_lred1 (Srt_l s) (Srt_l s)
     | ref_par_lred : forall n, par_lred1 (Ref_l n) (Ref_l n)
     | abs_par_lred :
@@ -85,15 +89,15 @@ forall M1 N1, lred1 M1 N1 -> forall M2, lred1 (Sum_l M1 M2) (Sum_l N1 M2)
         forall M M',
         par_lred1 M M' ->
         forall N N', par_lred1 N N' -> par_lred1 (Subset_l M N) (Subset_l M' N')
-    | pi1_par_lred :
-        forall M M', par_lred1 M M' -> par_lred1 (Pi1_l M) (Pi1_l M')
-    | pi2_par_lred :
-        forall M M', par_lred1 M M' -> par_lred1 (Pi2_l M) (Pi2_l M').
+    | pi1_par_lred :forall T T', par_lred1 T T' ->
+        forall M M', par_lred1 M M' -> par_lred1 (Pi1_l T M) (Pi1_l T' M')
+    | pi2_par_lred :forall T T', par_lred1 T T' ->
+        forall M M', par_lred1 M M' -> par_lred1 (Pi2_l T M) (Pi2_l T' M').
 
   Definition par_lred := clos_trans lterm par_lred1.
 
   Hint Resolve beta pi1 pi2 abs_lred_l abs_lred_r app_lred_T app_lred_l app_lred_r pair_lred_T pair_lred_l pair_lred_r : coc.
-  Hint Resolve prod_lred_l prod_lred_r sum_lred_l sum_lred_r subset_lred_l subset_lred_r pi1_lred pi2_lred : coc.
+  Hint Resolve prod_lred_l prod_lred_r sum_lred_l sum_lred_r subset_lred_l subset_lred_r pi1_lred_T pi1_lred  pi2_lred_T pi2_lred : coc.
   Hint Resolve refl_lred refl_conv: coc.
   Hint Resolve par_beta par_pi1 par_pi2 sort_par_lred ref_par_lred abs_par_lred app_par_lred pair_par_lred
     prod_par_lred sum_par_lred subset_par_lred pi1_par_lred pi2_par_lred : coc.
@@ -248,16 +252,22 @@ intros.
 apply trans_lred with (Subset_l P v0); auto with coc core arith sets.
 Qed.
 
-  Lemma lred_lred_pi1 : forall u u0, lred u u0 -> lred (Pi1_l u) (Pi1_l u0).
-simple induction 1 ; auto with coc core arith sets.
+  Lemma lred_lred_pi1 : forall u u0 v v0, lred u u0 -> lred v v0 -> lred (Pi1_l u v) (Pi1_l u0 v0).
+simple induction 1.
+simple induction 1; intros; auto with coc core arith sets.
+apply trans_lred with (Pi1_l u P); auto with coc core arith sets.
+
 intros.
-apply trans_lred with (Pi1_l P); auto with coc core arith sets.
+apply trans_lred with (Pi1_l P v0); auto with coc core arith sets.
 Qed.
 
-  Lemma lred_lred_pi2 : forall u u0, lred u u0 -> lred (Pi2_l u) (Pi2_l u0).
-simple induction 1 ; auto with coc core arith sets.
+  Lemma lred_lred_pi2 : forall u u0 v v0, lred u u0 -> lred v v0 -> lred (Pi2_l u v) (Pi2_l u0 v0).
+simple induction 1.
+simple induction 1; intros; auto with coc core arith sets.
+apply trans_lred with (Pi2_l u P); auto with coc core arith sets.
+
 intros.
-apply trans_lred with (Pi2_l P); auto with coc core arith sets.
+apply trans_lred with (Pi2_l P v0); auto with coc core arith sets.
 Qed.
 
   Hint Resolve lred_lred_app lred_lred_abs lred_lred_prod: coc.
@@ -533,8 +543,8 @@ Qed.
 simple induction 1.
 simple induction 1; intros; auto with coc core arith sets.
 apply trans_lred with (App_l Typ (Abs_l T M') N'); auto with coc core arith sets.
-apply trans_lred with (Pi1_l (Pair_l T M' N0)); auto with coc core arith sets.
-apply trans_lred with (Pi2_l (Pair_l T M0 N')); auto with coc core arith sets.
+apply trans_lred with (Pi1_l Typ (Pair_l T M' N0)); auto with coc core arith sets.
+apply trans_lred with (Pi2_l Typ (Pair_l T M0 N')); auto with coc core arith sets.
 
 intros.
 apply trans_lred_lred with y; auto with coc core arith sets.
@@ -664,11 +674,15 @@ apply mem_subset_l; apply H with n k; auto with coc core arith sets.
 
 apply mem_subset_r; apply H0 with n (S k); auto with coc core arith sets.
 
-inversion_clear H0.
-apply mem_pi1 ; apply H with n k; auto with coc core arith sets.
+inversion_clear H1.
+apply mem_pi1_T ; apply H with n k; auto with coc core arith sets.
 
-inversion_clear H0.
-apply mem_pi2 ; apply H with n k; auto with coc core arith sets.
+apply mem_pi1 ; apply H0 with n k; auto with coc core arith sets.
+
+inversion_clear H1.
+apply mem_pi2_T ; apply H with n k; auto with coc core arith sets.
+
+apply mem_pi2 ; apply H0 with n k; auto with coc core arith sets.
 
 Qed.
 
@@ -722,11 +736,13 @@ inversion_clear H1 ; [
 elim H with a n s; auto with coc core arith sets |
 elim H0 with a (S n) s; auto with coc core arith sets ].
 
-inversion_clear H0 ; [
-elim H with a n s; auto with coc core arith sets ].
-inversion_clear H0 ; [
-elim H with a n s; auto with coc core arith sets ].
+inversion_clear H1 ; [
+elim H with a n s; auto with coc core arith sets |
+elim H0 with a n s; auto with coc core arith sets ].
 
+inversion_clear H1 ; [
+elim H with a n s; auto with coc core arith sets |
+elim H0 with a n s; auto with coc core arith sets ].
 Qed.
 
   Lemma lred_sort_mem : forall t s, lred t (Srt_l s) -> mem_sort s t.
@@ -785,8 +801,10 @@ exists (Pair_l T u z); auto with coc core arith sets.
 exists (Prod_l z n); auto with coc core arith sets.
 exists (Sum_l z n); auto with coc core arith sets.
 exists (Subset_l z n); auto with coc core arith sets.
-exists (Pi1_l z); auto with coc core arith sets.
-exists (Pi2_l z); auto with coc core arith sets.
+exists (Pi1_l z v); auto with coc core arith sets.
+exists (Pi1_l T z); auto with coc core arith sets.
+exists (Pi2_l z v); auto with coc core arith sets.
+exists (Pi2_l T z); auto with coc core arith sets.
 Qed.
 
 

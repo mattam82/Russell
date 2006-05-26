@@ -26,8 +26,8 @@ Fixpoint unlab (t : lterm) : term :=
   | Prod_l T U => Prod (unlab T) (unlab U)
   | Sum_l T U => Sum (unlab T) (unlab U)
   | Subset_l T U => Subset (unlab T) (unlab U)
-  | Pi1_l t => Pi1 (unlab t)
-  | Pi2_l t => Pi2 (unlab t)
+  | Pi1_l T t => Pi1 (unlab t)
+  | Pi2_l T t => Pi2 (unlab t)
   end.
 
 Fixpoint unlab_ctx (t : lenv) : env :=
@@ -47,8 +47,9 @@ try (  rewrite (IHM1 n k) ; rewrite (IHM2 n (S k)) ; auto).
 
   rewrite (IHM2 n k) ; rewrite (IHM3 n k) ; auto.
   rewrite (IHM1 n k) ; rewrite (IHM2 n k) ; rewrite (IHM3 n k) ; auto.
-  rewrite (IHM n k) ; auto.
-  rewrite (IHM n k) ; auto.
+  
+  rewrite (IHM2 n k) ; auto.
+  rewrite (IHM2 n k) ; auto.
 Qed.
 
 Lemma lab_lift : forall M n, |llift n M| = lift n (|M|).
@@ -70,8 +71,8 @@ Proof.
   rewrite (IHN2 k) ; rewrite (IHN3 k) ; auto.
   rewrite (IHN1 k) ; rewrite (IHN2 k) ; rewrite (IHN3 k) ; auto.
 
-  rewrite (IHN k) ; auto.
-  rewrite (IHN k) ; auto.
+  rewrite (IHN2 k) ; auto.
+  rewrite (IHN2 k) ; auto.
 Qed.
 
 Lemma lab_subst : forall M N, |lsubst M N| = subst (|M|) (|N|).
@@ -143,28 +144,29 @@ Proof.
   exists (Subset_l M1 x) ; simpl ; intuition ; rewrite H5 ; auto with coc.
 
   inversion H.
-  destruct M ; simpl in H1 ; try discriminate.
+  destruct M2 ; simpl in H1 ; try discriminate.
+  inversion H1.
+  simpl in H.
+  inversion H.
+  exists M2_2 ; intuition.
+  
+  destruct (IHM2 _ H6).
+  exists (Pi1_l M1 x) ; simpl ; intuition ; rewrite H9 ; auto with coc.
+
+  destruct (IHM2 _ H1).
+  exists (Pi1_l M1 x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
+
+  inversion H.
+  destruct M2 ; simpl in H1 ; try discriminate.
   inversion H1.
   inversion H.
-  exists M2 ; intuition.
+  exists M2_3 ; intuition.
   
-  destruct (IHM _ H6).
-  exists (Pi1_l x) ; simpl ; intuition ; rewrite H9 ; auto with coc.
+  destruct (IHM2 _ H6).
+  exists (Pi2_l M1 x) ; simpl ; intuition ; rewrite H9 ; auto with coc.
 
-  destruct (IHM _ H1).
-  exists (Pi1_l x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
-
-  inversion H.
-  destruct M ; simpl in H1 ; try discriminate.
-  inversion H1.
-  inversion H.
-  exists M3 ; intuition.
-  
-  destruct (IHM _ H6).
-  exists (Pi2_l x) ; simpl ; intuition ; rewrite H9 ; auto with coc.
-
-  destruct (IHM _ H1).
-  exists (Pi2_l x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
+  destruct (IHM2 _ H1).
+  exists (Pi2_l M1 x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
 Qed.
 
 Lemma unlab_lab_red : forall (M : lterm) (N : term), red (|M|) N -> 
@@ -250,10 +252,10 @@ Proof.
   exists (Subset_l x x0 ) ; simpl ; intuition ; rewrite H5 ; rewrite H7 ; auto with coc.
 
   inversion H.
-  destruct M ; simpl in H0 ; try discriminate.
+  destruct M2 ; simpl in H0 ; try discriminate.
   inversion H0.
   inversion H.
-  destruct (IHM (Pair (|M1|) N (|M3|))).
+  destruct (IHM2 (Pair (|M2_1|) N (|M2_3|))).
   simpl ; constructor ; auto with coc.
   intuition.
   destruct x ; simpl in H12 ; try discriminate.
@@ -263,19 +265,19 @@ Proof.
   constructor.
   assumption.
   
-  destruct (IHM _ H7).
+  destruct (IHM2 _ H7).
   intuition.
-  exists (Pi1_l x) ; simpl ; intuition ; rewrite H10 ; auto with coc.
+  exists (Pi1_l M1 x) ; simpl ; intuition ; rewrite H10 ; auto with coc.
 
-  destruct (IHM _ H1).
+  destruct (IHM2 _ H1).
   intuition.
-  exists (Pi1_l x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
+  exists (Pi1_l M1 x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
 
   inversion H.
-  destruct M ; simpl in H0 ; try discriminate.
+  destruct M2 ; simpl in H0 ; try discriminate.
   inversion H0.
   inversion H.
-  destruct (IHM (Pair (|M1|) (|M2|) N)).
+  destruct (IHM2 (Pair (|M2_1|) (|M2_2|) N)).
   simpl ; constructor ; auto with coc.
   intuition.
   destruct x ; simpl in H12 ; try discriminate.
@@ -285,14 +287,14 @@ Proof.
   constructor.
   assumption.
   
-  destruct (IHM _ H7).
+  destruct (IHM2 _ H7).
   intuition.
-  exists (Pi2_l x) ; simpl ; intuition ; rewrite H10 ; auto with coc.
+  exists (Pi2_l M1 x) ; simpl ; intuition ; rewrite H10 ; auto with coc.
 
 
-  destruct (IHM _ H1).
+  destruct (IHM2 _ H1).
   intuition.
-  exists (Pi2_l x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
+  exists (Pi2_l M1 x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
 Qed.
 
 

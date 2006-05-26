@@ -100,33 +100,38 @@ Proof.
   right ; exists T x0 ; auto.
 
   pose (generation_pi1 H0) ; destruct_exists.
-  destruct H6 ; destruct_exists.
+  destruct H7 ; destruct_exists.
   right.
   exists b c.
-  rewrite H6.
+  rewrite H7.
   apply tposrd_tposr_type with d ; auto.
   right ; exists T x1.
-  destruct (conv_refls H6) ; assumption.
+  destruct (conv_refls H7) ; assumption.
 
   pose (generation_pi2 H0) ; destruct_exists.
-  destruct H6 ; destruct_exists.
+  destruct H7 ; destruct_exists.
   right.
-  exists (lsubst (Pi1_l t) b0) c0.
-  rewrite H6.
-  change (Srt_l c0) with (lsubst (Pi1_l t) (Srt_l c0)).
+  exists (lsubst (Pi1_l t1 t2) b0) c0.
+  rewrite H7.
+  change (Srt_l c0) with (lsubst (Pi1_l t1 t2) (Srt_l c0)).
   apply substitution with a ; auto with coc.
   apply tposrd_tposr_type with d0 ; auto.
-  apply tposr_pi1 with b c a0 b0 c0 x0 ; auto with coc.
+
+  rewrite H5.
+  apply tposr_pi1 with c c0 x0 ; auto with coc.
+  apply left_refl with b ; auto.
   apply tposrd_tposr_type with d ; auto.
+  apply left_refl with b0 ; auto.
   apply tposrd_tposr_type with d0 ; auto.
   pose (tposrd_tposr_type H1) ; auto.
   pose (tposrd_tposr_type H3) ; auto.
-  destruct H7 ; destruct_exists.
-  pose (tposrd_tposr_type H7) ; auto.
-  apply left_refl with a1 ; auto.
-  rewrite H7.
+  destruct H8 ; destruct_exists.
   pose (tposrd_tposr_type H8) ; auto.
-  pose (tposrd_tposr_type H10) ; auto.
+  apply left_refl with b1 ; auto.
+
+  rewrite H8.
+  pose (tposrd_tposr_type H9) ; auto.
+  pose (tposrd_tposr_type H11) ; auto.
   apply tposr_pair with c c0 x0 ; auto with coc.
   apply left_refl with b ; auto.
   apply left_refl with b0 ; auto.
@@ -134,5 +139,5 @@ Proof.
   apply left_refl with b2 ; auto.
   
   right ; exists T x1.
-  destruct (conv_refls H6) ; assumption.
+  destruct (conv_refls H7) ; assumption.
 Qed.

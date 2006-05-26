@@ -28,20 +28,16 @@ exists (lsubst x0 x); auto with coc core arith sets; unfold lsubst in |- *;
 inversion_clear H0.
 apply IHpar_lred1 ; auto.
 
-unfold transp.
-inversion_clear H1.
-unfold transp.
-induction (IHpar_lred1 M'1).
-exists x ;  auto with coc core arith sets.
-assumption.
+inversion_clear H2 ; auto with coc core.
+elim IHpar_lred1 with M'1 ; auto with coc core ; intros.
+exists x ; auto with coc core.
 
 inversion_clear H0.
 apply IHpar_lred1 ; auto.
 
-inversion_clear H1.
-induction (IHpar_lred1 N'0).
-exists x ;  auto with coc core arith sets.
-assumption.
+inversion_clear H2.
+elim IHpar_lred1 with N'0 ; auto with coc core ; intros.
+exists x ; auto with coc core.
 
 inversion_clear H.
 exists (Srt_l s); auto with coc core arith sets.
@@ -106,47 +102,52 @@ elim IHpar_lred1_1 with M'0; auto with coc core arith sets; intros.
 elim IHpar_lred1_2 with N'0; auto with coc core arith sets; intros.
 exists (Subset_l x x0); auto with coc core arith sets.
 
-generalize H IHpar_lred1.
-clear H IHpar_lred1.
-inversion_clear H0.
-intro.
-inversion_clear H0.
+generalize H H0 IHpar_lred1_1 IHpar_lred1_2.
+clear H H0 IHpar_lred1_1 IHpar_lred1_2.
+inversion_clear H1.
+do 2 intro.
+inversion_clear H1.
 intros.
-elim IHpar_lred1 with (Pair_l T' z N') ; auto with coc core arith sets; intros.
-apply inv_par_lred_pair with T' z N' x; intros; auto with coc core arith sets.
-generalize H0 H4.
-rewrite H5.
-clear H0 H4 ; intros.
-inversion_clear H0.
-inversion_clear H4.
-exists U' ; auto with coc core arith sets.
-
-intros.
-elim IHpar_lred1 with M'0.
-intros.
-exists (Pi1_l x) ; auto with coc core arith sets.
+elim IHpar_lred1_2 with (Pair_l T0 z N) ; auto with coc core arith sets; intros.
+apply inv_par_lred_pair with T0 z N x; intros; auto with coc core arith sets.
+exists U' ; auto with coc.
+unfold transp.
+apply par_pi1.
+rewrite H6 in H1.
+inversion H1.
 assumption.
 
+intros.
+elim IHpar_lred1_2 with M'0.
+intros.
+elim IHpar_lred1_1 with T'0.
+intros.
+exists (Pi1_l x0 x) ; auto with coc core arith sets.
+assumption.
+assumption.
 
-generalize H IHpar_lred1.
-clear H IHpar_lred1.
-inversion_clear H0.
-intro.
-inversion_clear H0.
+generalize H H0 IHpar_lred1_1 IHpar_lred1_2.
+clear H H0 IHpar_lred1_1 IHpar_lred1_2.
+inversion_clear H1.
+do 2 intro.
+inversion_clear H1.
 intros.
-elim IHpar_lred1 with (Pair_l T' M'0 z) ; auto with coc core arith sets; intros.
-apply inv_par_lred_pair with T' M'0 z x; intros; auto with coc core arith sets.
-generalize H0 H4.
-rewrite H5.
-clear H0 H4 ; intros.
-inversion_clear H0.
-inversion_clear H4.
-exists V' ; auto with coc core arith sets.
+elim IHpar_lred1_2 with (Pair_l T0 M0 z) ; auto with coc core arith sets; intros.
+apply inv_par_lred_pair with T0 M0 z x; intros; auto with coc core arith sets.
+exists V' ; auto with coc.
+unfold transp.
+apply par_pi2.
+rewrite H6 in H1.
+inversion H1.
+assumption.
 
 intros.
-elim IHpar_lred1 with M'0.
+elim IHpar_lred1_2 with M'0.
 intros.
-exists (Pi2_l x) ; auto with coc core arith sets.
+elim IHpar_lred1_1 with T'0.
+intros.
+exists (Pi2_l x0 x) ; auto with coc core arith sets.
+assumption.
 assumption.
 Qed.
 

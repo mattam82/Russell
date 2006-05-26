@@ -17,3 +17,5 @@ RightReflexivity.v
 CtxConversion.v
 Generation.v
 Validity.v
+TypesFunctionality.v
+UniquenessOfTypes.v

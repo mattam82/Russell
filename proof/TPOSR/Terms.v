@@ -15,8 +15,8 @@ Implicit Type s : sort.
     | Prod_l : lterm -> lterm -> lterm
     | Sum_l : lterm -> lterm -> lterm
     | Subset_l : lterm -> lterm -> lterm
-    | Pi1_l : lterm -> lterm
-    | Pi2_l : lterm -> lterm.
+    | Pi1_l : lterm -> lterm -> lterm
+    | Pi2_l : lterm -> lterm -> lterm.
 
   Implicit Types A B M N T t u v : lterm.
 
@@ -35,8 +35,8 @@ Implicit Type s : sort.
 	| Prod_l A B => Prod_l (llift_rec n A k) (llift_rec n B (S k))
 	| Sum_l A B => Sum_l (llift_rec n A k) (llift_rec n B (S k))
 	| Subset_l A B => Subset_l (llift_rec n A k) (llift_rec n B (S k))
-	| Pi1_l A => Pi1_l (llift_rec n A k)
-	| Pi2_l A => Pi2_l (llift_rec n A k)
+	| Pi1_l T A => Pi1_l (llift_rec n T k) (llift_rec n A k)
+	| Pi2_l T A => Pi2_l (llift_rec n T k) (llift_rec n A k)
       end.
 
   Definition llift n t := llift_rec n t 0.
@@ -60,8 +60,8 @@ Implicit Type s : sort.
 	| Prod_l T U => Prod_l (lsubst_rec N T k) (lsubst_rec N U (S k))
 	| Sum_l T U => Sum_l (lsubst_rec N T k) (lsubst_rec N U (S k))
 	| Subset_l T U => Subset_l (lsubst_rec N T k) (lsubst_rec N U (S k))
-	| Pi1_l T => Pi1_l (lsubst_rec N T k)
-	| Pi2_l T => Pi2_l (lsubst_rec N T k)
+	| Pi1_l T A => Pi1_l (lsubst_rec N T k) (lsubst_rec N A k)
+	| Pi2_l T A => Pi2_l (lsubst_rec N T k) (lsubst_rec N A k)
     end.
 
   Definition lsubst N M := lsubst_rec N M 0.
@@ -81,8 +81,8 @@ Implicit Type s : sort.
         forall k A B, free_db k A -> free_db (S k) B -> free_db k (Sum_l A B)
     | db_subset :
         forall k A B, free_db k A -> free_db (S k) B -> free_db k (Subset_l A B)
-    | db_pi1 : forall k A, free_db k A -> free_db k (Pi1_l A)
-    | db_pi2 : forall k A, free_db k A -> free_db k (Pi2_l A).
+    | db_pi1 : forall k T A, free_db k T -> free_db k A -> free_db k (Pi1_l T A)
+    | db_pi2 : forall k T A, free_db k T -> free_db k A -> free_db k (Pi2_l T A).
 
 
   Inductive subt_bind T M : lterm -> Prop :=
@@ -102,8 +102,10 @@ Implicit Type s : sort.
     | Nbsbt_prod : forall n : lterm, subt_nobind m (Prod_l m n)
     | Nbsbt_sum : forall n : lterm, subt_nobind m (Sum_l m n)
     | Nbsbt_subset : forall n : lterm, subt_nobind m (Subset_l m n)
-    | Nbsbt_pi1 : subt_nobind m (Pi1_l m)
-    | Nbsbt_pi2 : subt_nobind m (Pi2_l m).
+    | Nbsbt_pi1_T : forall v, subt_nobind m (Pi1_l m v)
+    | Nbsbt_pi1 : forall T, subt_nobind m (Pi1_l T m)
+    | Nbsbt_pi2_T : forall v, subt_nobind m (Pi2_l m v)
+    | Nbsbt_pi2 : forall T, subt_nobind m (Pi2_l T m).
 
   Inductive sublterm (m n : lterm) : Prop :=
     | Sbtrm_bind : forall t, subt_bind t m n -> sublterm m n
@@ -125,18 +127,20 @@ Implicit Type s : sort.
     | mem_sum_r : forall u v, mem_sort s v -> mem_sort s (Sum_l u v)
     | mem_subset_l : forall u v, mem_sort s u -> mem_sort s (Subset_l u v)
     | mem_subset_r : forall u v, mem_sort s v -> mem_sort s (Subset_l u v)
-    | mem_pi1 : forall u, mem_sort s u -> mem_sort s (Pi1_l u)
-    | mem_pi2 : forall u, mem_sort s u -> mem_sort s (Pi2_l u).
+    | mem_pi1_T : forall u v, mem_sort s u -> mem_sort s (Pi1_l u v)
+    | mem_pi1 : forall T u, mem_sort s u -> mem_sort s (Pi1_l T u)
+    | mem_pi2_T : forall u v, mem_sort s u -> mem_sort s (Pi2_l u v)
+    | mem_pi2 : forall T u, mem_sort s u -> mem_sort s (Pi2_l T u).
 
 Hint Resolve db_srt db_ref db_abs db_app db_pair db_prod db_sum db_subset db_pi1 db_pi2 : coc.
 Hint Resolve Bsbt_abs Bsbt_prod Bsbt_sum Bsbt_subset : coc.
 Hint Resolve Nbsbt_abs Nbsbt_app_T Nbsbt_app_l Nbsbt_app_r Nbsbt_pair_T Nbsbt_pair_l
-    Nbsbt_pair_r Nbsbt_pi1 Nbsbt_pi2 Nbsbt_prod Nbsbt_sum Nbsbt_subset
+    Nbsbt_pair_r Nbsbt_pi1_T Nbsbt_pi1 Nbsbt_pi2_T Nbsbt_pi2 Nbsbt_prod Nbsbt_sum Nbsbt_subset
     : coc.
 Hint Resolve Sbtrm_nobind: coc.
   
 Hint Resolve mem_eq mem_prod_l mem_prod_r mem_abs_l mem_abs_r mem_app_T mem_app_l
   mem_app_r mem_pair_T mem_pair_l mem_pair_r : coc.
-Hint Resolve mem_sum_l mem_sum_r mem_subset_l mem_subset_r mem_pi1 mem_pi2 : coc.
+Hint Resolve mem_sum_l mem_sum_r mem_subset_l mem_subset_r mem_pi1_T mem_pi1 mem_pi2_T mem_pi2 : coc.
 
 

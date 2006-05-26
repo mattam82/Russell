@@ -44,9 +44,6 @@ inversion_clear H1.
 inversion_clear H1 ; auto.
 apply Acc_intro.
 assumption.
-
-inversion_clear H0 ; inversion_clear H1 ; auto.
-inversion_clear H0 ; inversion_clear H1 ; auto.
 Qed.
 
 
@@ -85,13 +82,13 @@ Qed.
     | Prod_l T U => Prod_l (norm T) (norm U)
     | Sum_l T U => Sum_l (norm T) (norm U)
     | Subset_l T U => Subset_l (norm T) (norm U)
-    | Pi1_l t => match (norm t) return lterm with
+    | Pi1_l T t => match (norm t) return lterm with
       | Pair_l _ u _ => u
-      | t => Pi1_l t
+      | t => Pi1_l (norm T) t
       end
-    | Pi2_l t => match norm t return lterm with
+    | Pi2_l T t => match norm t return lterm with
       | Pair_l _ _ v => v
-      | t => Pi2_l t
+      | t => Pi2_l (norm T) t
        end
     end.
 
@@ -100,7 +97,7 @@ Qed.
 intros.
 elimtype (Acc ord_norm t).
 clear t H.
-intros [s| n| T t| Typ a b| T a b | T U | T U | T U | t | t] _ norm_rec. 
+intros [s| n| T t| Typ a b| T a b | T U | T U | T U | Typ t | Typ t] _ norm_rec. 
 exists (Srt_l s); auto with coc.
 red in |- *; red in |- *; intros.
 inversion_clear H.
@@ -120,7 +117,7 @@ elim nt with M'; trivial.
 elim norm_rec with b; auto with coc; intros v' lredv nv.
 elim norm_rec with a; auto with coc.
 elim norm_rec with Typ; auto with coc; intros Typ'' lredTyp nTyp.
-intros [s| n| T t| Typ' u v| T u v | T U | T U | T U | t | t] lredu nu. 
+intros [s| n| T t| Typ' u v| T u v | T U | T U | T U | Typpi1 t | Typpi2 t] lredu nu. 
 
 exists (App_l Typ'' (Srt_l s) v'); auto with coc.
 red in |- *; red in |- *; intros.
@@ -180,14 +177,14 @@ elim nTyp with S; trivial.
 elim nu with N1; trivial.
 elim nv with N2; trivial.
 
-exists (App_l Typ'' (Pi1_l t) v'); auto with coc.
+exists (App_l Typ'' (Pi1_l Typpi1 t) v'); auto with coc.
 red in |- *; red in |- *; intros.
 inversion_clear H.
 elim nTyp with S; trivial.
 elim nu with N1; trivial.
 elim nv with N2; trivial.
 
-exists (App_l Typ'' (Pi2_l t) v'); auto with coc.
+exists (App_l Typ'' (Pi2_l Typpi2 t) v'); auto with coc.
 red in |- *; red in |- *; intros.
 inversion_clear H.
 elim nTyp with S; trivial.
@@ -228,94 +225,99 @@ inversion_clear H.
 elim nT with N1; trivial.
 elim nU with N2; trivial.
 
+elim norm_rec with Typ; auto with coc; intros Typ'' lredTyp nTyp.
 elim norm_rec with t; auto with coc.
-intros [s| n| T t'| T u v| T u v | T U | T U | T U | t' | t'] lredu nu. 
+intros [s| n| T t'| T u v| T u v | T U | T U | T U | Typpi1 t' | Typpi2 t'] lredu nu. 
 
-exists (Pi1_l (Srt_l s)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (Srt_l s)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H.
+elim nTyp with N; trivial.
 elim nu with N; trivial.
 
-exists (Pi1_l (Ref_l n)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (Ref_l n)); auto with coc ; red in |- *; red in |- *; intros.
+
+inversion_clear H ; auto with coc core ; elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi1_l (Abs_l T t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (Abs_l T t')); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ; elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi1_l (App_l T u v)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (App_l T u v)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ; elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
 exists u; auto with coc.
-apply trans_lred with (Pi1_l (Pair_l T u v)) ; auto with coc core.
+apply trans_lred with (Pi1_l Typ'' (Pair_l T u v)) ; auto with coc core.
 red in |- *; red in |- *; intros.
 unfold normal in nu.
 elim nu with (Pair_l T u0 v); auto with coc core.
 
-exists (Pi1_l (Prod_l T U)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ''  (Prod_l T U)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi1_l (Sum_l T U)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (Sum_l T U)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi1_l (Subset_l T U)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (Subset_l T U)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi1_l (Pi1_l t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (Pi1_l Typpi1 t')); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi1_l (Pi2_l t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi1_l Typ'' (Pi2_l Typpi2 t')); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
+elim norm_rec with Typ; auto with coc ; intros Typ' lredTyp nTyp.
 elim norm_rec with t; auto with coc.
-intros [s| n| T t'| T u v| T u v | T U | T U | T U | t' | t'] lredu nu. 
 
-exists (Pi2_l (Srt_l s)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+intros [s| n| T t'| T u v| T u v | T U | T U | T U | Tpi t' | Tpi t'] lredu nu. 
+
+exists (Pi2_l Typ' (Srt_l s)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi2_l (Ref_l n)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (Ref_l n)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi2_l (Abs_l T t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (Abs_l T t')); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi2_l (App_l T u v)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (App_l T u v)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
 exists v; auto with coc.
-apply trans_lred with (Pi2_l (Pair_l T u v)) ; auto with coc core.
+apply trans_lred with (Pi2_l Typ' (Pair_l T u v)) ; auto with coc core.
 red in |- *; red in |- *; intros.
 unfold normal in nu.
 elim nu with (Pair_l T u u0); auto with coc core.
 
-exists (Pi2_l (Prod_l T U)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (Prod_l T U)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi2_l (Sum_l T U)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (Sum_l T U)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi2_l (Subset_l T U)); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (Subset_l T U)); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi2_l (Pi1_l t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (Pi1_l Tpi t')); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
-exists (Pi2_l (Pi2_l t')); auto with coc ; red in |- *; red in |- *; intros.
-inversion_clear H ; auto with coc core ;
+exists (Pi2_l Typ' (Pi2_l Tpi t')); auto with coc ; red in |- *; red in |- *; intros.
+inversion_clear H ; auto with coc core ;elim nTyp with N; trivial ;
 elim nu with N; trivial.
 
 apply wf_ord_norm; auto with coc.
