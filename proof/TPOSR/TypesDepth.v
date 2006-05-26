@@ -16,10 +16,7 @@ Set Implicit Arguments.
 
 Reserved Notation "G |-- u -> v : T [ n ]" (at level 70, u, v, T, n at next level).
 
-Require Import Coq.Arith.Max.
-
-Definition max3 n m p := max n (max m p).
-Definition max4 n m p q := max n (max m (max p q)).
+Require Import TPOSR.MaxLemmas.
 
 Inductive tposrd_wf : lenv -> Prop :=
   | wfd_nil : tposrd_wf nil

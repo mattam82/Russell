@@ -34,6 +34,20 @@ Proof.
   intuition ; auto with coc.
 Qed.
 
+Corollary tposr_conv_l : forall e A B s, e |-- A ~= B : s -> 
+  forall M N, e |-- M -> N : A -> e |-- M -> N : B.
+Proof.
+  intros.
+  exact ((proj1 (tposr_conv H M N)) H0).
+Qed.
+
+Corollary tposr_conv_r : forall e A B s, e |-- A ~= B : s -> 
+  forall M N, e |-- M -> N : B -> e |-- M -> N : A.
+Proof.
+  intros.
+  exact ((proj2 (tposr_conv H M N)) H0).
+Qed.
+
 Lemma tposr_lred : forall e M N Z, e |-- M -> N : Z -> lred M N.
 Proof.
   induction 1 ; simpl ; auto with coc.

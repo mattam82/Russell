@@ -7,8 +7,10 @@ Conv_Dec.v
 Env.v
 Unlab.v
 Types.v
-TypesDepth.v
 Basic.v
+MaxLemmas.v
+TypesDepth.v
+#BasicDepth.v
 Thinning.v
 CtxReduction.v
 LeftReflexivity.v
@@ -19,3 +21,5 @@ Generation.v
 Validity.v
 TypesFunctionality.v
 UniquenessOfTypes.v
+#CtxConversionDepth.v
+ChurchRosser.v

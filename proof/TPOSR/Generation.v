@@ -372,7 +372,7 @@ Lemma generation_pair : forall e T M N X C m, e |-- Pair_l T M N -> X : C [m] ->
   sum_sort s1 s2 s3 /\
   exists2 M' q, e |-- M -> M' : A [q] /\ q < m /\
   exists2 N' r, e |-- N -> N' : lsubst M B [r] /\ r < m /\
-  X = Sum_l A' B' /\ equiv e C (Sum_l A B).
+  X = Pair_l (Sum_l A' B') M' N' /\ equiv e C (Sum_l A B).
 Admitted.
 (*
 Proof.
