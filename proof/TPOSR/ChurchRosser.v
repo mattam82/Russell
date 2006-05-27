@@ -909,7 +909,160 @@ Proof.
   rewrite H29.
   clear a a0 a1 P H26 H28 H29 H32.
   intros.
+  pose (generation_pair H30).
+  destruct_exists.
+  inversion H26.
+  generalize dependent G.
+  rewrite <- H42.
+  rewrite <- H43.
+  clear H42 H43 H26 a a0.
+  rewrite H39.
+  rewrite <- H6.
+  rewrite <- H7.
+  intros.
 
+  assert(b1 < x) by rewrite <- H9 ; apply lt_trans with p ; auto with arith.
+  pose (IH _ H26 _ _ _ _ _ H16 _ _ H35) ; destruct_exists.
+  exists x3.
   
+  assert(G |-- u' -> x3 : A).
+  apply tposr_conv_l with A0 s1; auto with coc.
+  
+  assert(conv_in_env (A0 :: G) (b4 :: G)).
+  apply conv_env_hd with c4 ; apply tposr_eq_tposr ; apply (fromd H28).
+
+  pose (conv_refls H3) ; destruct_exists.
+  pose (tposr_unique_sort H47 (fromd H5)).
+  pose (tposr_unique_sort H48 (left_refl (fromd H28))).
+
+  assert(G |-- b ~= b4 : c4).
+  apply tposr_eq_trans with A0 ; auto with coc.
+  apply tposr_eq_trans with A ; auto with coc.
+  apply tposr_eq_sym.
+  apply tposr_eq_tposr.
+  rewrite <- e0.
+  rewrite e ; apply (fromd H5).
+  rewrite <- e0.
+  assumption.
+  apply tposr_eq_tposr ; apply (fromd H28).
+
+  pose (conv_refls H4) ; destruct_exists.
+  assert(c2 = s2).
+  apply (tposr_unique_sort (fromd H20) H50).
+
+  assert(conv_in_env (A0 :: G) (A :: G)).
+  apply conv_env_hd with s1 ; auto with coc.
+  assert(A :: G |-- B -> b5 : Srt_l c5).
+  apply conv_env with (A0 :: G) ; auto.
+  apply (fromd H32).
+
+  assert(c5 = s2).
+  apply (tposr_unique_sort H54 H51).
+  assert(s1 = c1) ; auto.
+  assert(s1 = c4) ; auto.
+  generalize dependent G.
+  rewrite H52.
+  rewrite H55.
+  rewrite <- H56.
+  rewrite <- H57.
+  clear H52 H55 H56 H57.
+  intros.
+
+  assert(A :: G |-- b0 ~= b5 : s2).
+  apply tposr_eq_trans with B ; auto.
+  apply tposr_eq_trans with B'' ; auto with coc.
+  apply tposr_eq_sym.
+  apply tposr_eq_tposr.
+  apply (fromd H20).
+  apply tposr_eq_tposr ; auto.
+
+  assert(G |-- Pi1_l (Sum_l b b0) (Pair_l (Sum_l b4 b5) a1 a2) -> x3 : A).
+  apply tposr_exp with b s1 ; try apply (fromd H5) ; auto with coc.
+  apply tposr_pi1_red with b4 s1 b5 s2 s3 a2 ; auto with coc.
+  apply (right_refl (fromd H28)).
+  apply conv_env with (A0 :: G) ; auto with coc.
+  apply (right_refl (fromd H32)).
+  apply tposr_pair with s1 s2 s3; auto with coc.
+  apply (right_refl (fromd H28)).
+  apply conv_env with (A0 :: G) ; auto with coc.
+  apply (right_refl (fromd H32)).
+  apply tposr_conv_l with A0 s1 ; auto.
+  apply tposr_eq_tposr ; apply (fromd H28).
+  apply tposr_conv_l with (lsubst u B) s2 ; auto with coc.
+  apply tposr_eq_tposr.
+  change (Srt_l s2) with (lsubst u (Srt_l s2)).
+  apply substitution with A0 ; auto with coc.
+  apply (fromd H32).
+  apply (fromd H35).
+  apply (right_refl (fromd H37)).
+  apply conv_env_eq with (A :: G) ; auto with coc.
+  apply conv_env_hd with s1 ; apply tposr_eq_tposr ; apply (fromd H5).
+
+  intuition ; try apply tposr_equiv_r with A ; auto.
+
+  (* Pi1_red, Pi1_red *)
+  rewrite H32.
+  generalize dependent G.
+  rewrite <- H7.
+  clear H23 H27.
+  inversion H26.
+  rewrite <- H0.
+  rewrite <- H2.
+  rewrite <- H3.
+  rewrite <- H4.
+  clear H0 H2 H3 H4 H26.
+  intros.
+  
+  pose (generation_pair H2).
+  pose (generation_pair H30).
+  destruct_exists.
+  generalize dependent G.
+  inversion H26 ; inversion H23.
+  rewrite <- H0.
+  rewrite <- H2.
+  rewrite <- H3.
+  rewrite <- H4.
+  clear H0 H2 H3 H4 H26 H23.
+  inversion H52.
+  rewrite <- H0.
+  rewrite <- H2.
+  rewrite <- H3.
+  rewrite <- H4.
+  clear H0 H2 H3 H4 H52.
+  inversion H41.
+  rewrite <- H0.
+  rewrite <- H2.
+  rewrite <- H3.
+  rewrite <- H4.
+  clear H0 H2 H3 H4 H41.
+  intros.
+
+  assert(b1 < x) by rewrite <- H9 ; apply lt_trans with p ; auto with arith.
+  pose (IH _ H23 _ _ _ _ _ H16 _ _ H37) ; destruct_exists.
+  exists x4.
+
+  assert(equiv G A A0).
+  right ; exists s1 ; auto.
+
+  assert(equiv G B0 A0).
+  destruct H55 ; destruct_exists.
+  rewrite <- H55 ; auto.
+  pose (tposr_eq_sym H55).
+  assert(equiv G A0 A) by right ; exists x5 ; auto.
+  apply (equiv_trans H25 H56).
+
+  intuition ; try apply tposr_equiv_r with A0 ; auto.
+
+  (* Pi2 *)
+
+
+
+
+
+
+
+
+
+
 
 
