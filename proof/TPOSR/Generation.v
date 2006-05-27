@@ -416,17 +416,19 @@ Lemma generation_pi1 : forall e T M X C m, e |-- Pi1_l T M -> X : C [m] ->
   exists s3,
   e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
   A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
-  T = (Sum_l A B) /\
-  sum_sort s1 s2 s3 /\ equiv e C A /\
+  exists2 A'' B'', T = Sum_l A'' B'' /\
+  sum_sort s1 s2 s3 /\ equiv e C A'' /\
   ((exists3 T' M' r,
+  A = A'' /\ B = B'' /\
   T' = (Sum_l A' B') /\
   e |-- M -> M' : Sum_l A B [r] /\ r < m /\
   X = Pi1_l T' M') \/
   (exists3 u u' r,
-  exists3 v v' o,
+  exists2 v v',
   M = Pair_l (Sum_l A B) u v /\
-  e |-- u -> u' : A [r] /\ r < m /\
-  e |-- v -> v' : lsubst u B [o] /\ o < m /\
+  e |-- A'' ~= A : s1 /\
+  A'' :: e |-- B'' ~= B : s2/\
+  e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [r] /\ r < m /\
   X = u')).
 Admitted.
 (*

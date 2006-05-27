@@ -100,11 +100,20 @@ Proof.
   right ; exists T x0 ; auto.
 
   pose (generation_pi1 H0) ; destruct_exists.
+  destruct H8 ; destruct_exists.
   destruct H7 ; destruct_exists.
+  rewrite H7.
   right.
   exists b c.
-  rewrite H7.
+  rewrite <- H8.
   apply tposrd_tposr_type with d ; auto.
+  right ; exists T x1.
+  destruct (conv_refls H7) ; assumption.
+
+  destruct H7 ; destruct_exists.
+  rewrite H7.
+  destruct (conv_refls H9).
+  right ; exists a1 c ; auto.
   right ; exists T x1.
   destruct (conv_refls H7) ; assumption.
 

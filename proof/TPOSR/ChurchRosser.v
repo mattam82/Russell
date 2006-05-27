@@ -699,29 +699,14 @@ Proof.
   intros.
   pose (generation_pi1 H8) ; destruct_exists.
   inversion H13.
-  rewrite <- H18 in H9.
-  rewrite <- H18 in H11.
-  rewrite <- H18 in H16.
   rewrite <- H18 in H15.
+  rewrite <- H18 in H16.
   rewrite <- H18.
-  rewrite <- H19 in H11.
   rewrite <- H19 in H16.
-
-  clear a a0 H19 H18 H13.
+  clear a1 b1 H19 H18 H13.
   
   assert(n0 < x) by rewrite <- H7 ; auto with arith.
-  pose (IH _ H13 _ _ _ _ _ H _ _ H9) ; destruct_exists ; clear H13.
-  assert(m0 < x) by rewrite <- H7 ; auto with arith.
-  pose (IH _ H13 _ _ _ _ _ H0 _ _ H11) ; destruct_exists ; clear H13.
-  assert(p < x) by rewrite <- H7 ; auto with arith.
 
-
-  assert(conv_in_env (A :: G) (A' :: G)).
-  apply conv_env_hd with s1 ; auto with coc.
-  apply tposr_eq_tposr ; apply (fromd H).
-  assert(conv_in_env (A :: G) (b :: G)).
-  apply conv_env_hd with c ; auto with coc.
-  apply tposr_eq_tposr ; apply (fromd H9).
   pose (fromd H).
   pose (fromd H0).
   pose (fromd H2).
@@ -731,8 +716,30 @@ Proof.
   destruct H16 ; destruct_exists.
 
   (* Pi1, Pi1 *)
-  rewrite H29.
-  pose (IH _ H13 _ _ _ _ _ H2 _ _ H27) ; destruct_exists ; clear H13.
+  rewrite H16 in H9.
+  rewrite H17 in H11.
+  rewrite H16 in H11.
+  rewrite H16 in H19.
+  rewrite H18 in H21.
+  rewrite H16 in t3.
+  rewrite H16 in t4.
+  rewrite H17 in t4.
+  rewrite H17 in H19.
+  rewrite H17 in H24.
+  rewrite H16 in H23.
+  clear a a0 H16 H17 H9 H11.
+
+  pose (IH _ H13 _ _ _ _ _ H _ _ H22) ; destruct_exists ; clear H13.
+  assert(m0 < x) by rewrite <- H7 ; auto with arith.
+  pose (IH _ H13 _ _ _ _ _ H0 _ _ H23) ; destruct_exists ; clear H13.
+  clear H24.
+  assert(p < x) by rewrite <- H7 ; auto with arith.
+  pose (IH _ H13 _ _ _ _ _ H2 _ _ H19) ; destruct_exists ; clear H13.
+
+  assert(conv_in_env (A :: G) (A' :: G)).
+  apply conv_env_hd with s1 ; auto with coc.
+  assert(conv_in_env (A :: G) (b :: G)).
+  apply conv_env_hd with c ; auto with coc.
 
   exists (Pi1_l (Sum_l x1 x2) x3).
   assert(G |-- Pi1_l (Sum_l A' B') t' -> Pi1_l (Sum_l x1 x2) x3 : A).
@@ -741,7 +748,7 @@ Proof.
   apply tposr_red with (Sum_l A B) s3 ; auto with coc.
   apply tposr_sum with s1 s2 ; auto with coc.
   
-  rewrite H16.
+  rewrite H21.
   assert(G |-- Pi1_l (Sum_l b b0) b1 -> Pi1_l (Sum_l x1 x2) x3 : A).
   apply tposr_conv_r with b c ; auto with coc ; try apply tposr_pi1 with c c0 x0 ; auto with coc.
   apply conv_env with (A :: G) ; auto with coc.
@@ -751,25 +758,158 @@ Proof.
   intuition ; try apply tposr_equiv_r with A ; auto.
   
   (* Pi1, Pi1_red *)
-  rewrite H29.
-  pose (IH _ H13 _ _ _ _ _ H2 _ _ H27) ; destruct_exists ; clear H13.
+  rewrite H21.
+  rewrite H16 in H2.
+  pose (generation_pair H22) ; destruct_exists.
+  rewrite H33.
+  inversion H23.
+  rewrite <- H36 in H24.
+  rewrite <- H36 in H26.
+  rewrite <- H36 in H29.
+  rewrite <- H36 in H34.
+  rewrite <- H37 in H26.
+  rewrite <- H37 in H31.
+  rewrite <- H37 in H34.
+  clear H36 H37 a3 a4 H23.
+  rewrite H16 in H19.
+  pose (generation_pair H19) ; destruct_exists.
+  inversion H23.
+  rewrite <- H47 in H35.
+  rewrite <- H47 in H37.
+  rewrite <- H47 in H40.
+  rewrite <- H47 in H45.
+  rewrite <- H48 in H37.
+  rewrite <- H48 in H42.
+  rewrite <- H48 in H45.
+  clear H47 H48 a3 a4 H23.
+ 
+  assert(d1 < x) by rewrite <- H7 ; apply lt_trans with p ;  auto with arith.
+  pose (IH _ H23 _ _ _ _ _ H24 _ _ H35) ; destruct_exists ; clear H23.
+  assert(d2 < x) by rewrite <- H7 ; apply lt_trans with p ; auto with arith.
+  pose (IH _ H23 _ _ _ _ _ H26 _ _ H37) ; destruct_exists ; clear H23.
+  assert(b5 < x) by rewrite <- H7 ; apply lt_trans with p ; auto with arith.
+  pose (IH _ H23 _ _ _ _ _ H29 _ _ H40) ; destruct_exists ; clear H23.
+  assert(b6 < x) by rewrite <- H7 ; apply lt_trans with p ; auto with arith.
+  pose (IH _ H23 _ _ _ _ _ H31 _ _ H42) ; destruct_exists ; clear H23.
 
-  exists (Pi1_l (Sum_l x1 x2) x3).
-  assert(G |-- Pi1_l (Sum_l A' B') t' -> Pi1_l (Sum_l x1 x2) x3 : A).
-  apply tposr_conv_r with A' s1 ; auto with coc ; try apply tposr_pi1 with s1 s2 s3 ; auto with coc.
+  pose (fromd H24).
+  assert(conv_in_env (a :: G) (b3 :: G)).
+  apply conv_env_hd with c2 ; apply tposr_eq_tposr ; apply t5.
+  assert(conv_in_env (a :: G) (A :: G)).
+  apply conv_env_hd with c ; auto with coc.
+  assert(convAA':conv_in_env (A :: G) (A' :: G)).
+  apply conv_env_hd with s1 ; auto with coc.
+
+  destruct (conv_refls H17).
+  destruct (conv_refls H18).
+  assert(s1 = c).
+  apply (tposr_unique_sort t0 H63).
+  pose (tposr_unique_sort t5 H64).
+  assert(s2 = c0).
+  pose (fromd H0).
+  apply (tposr_unique_sort t6 H65).
+
+  exists x5.
+  assert(G |-- Pi1_l (Sum_l A' B') (Pair_l (Sum_l b3 b4) a5 a6) -> x5 : A).
+  apply tposr_conv_r with A' s1 ; auto with coc.
+  apply tposr_pi1_red with x3 c2 x4 c3 x1 x6 ; auto with coc.
+  apply conv_env with (a :: G) ; auto with coc.
+  apply tposr_pair with c2 c3 x1 ; auto with coc.
+  apply conv_env with (a :: G) ; auto with coc.
+  apply tposr_red with a c2 ; auto.
+  apply tposr_conv_l with (lsubst a1 a0) c3; auto with coc.
+  apply tposr_eq_tposr.
+  change (Srt_l c3) with (lsubst a1 (Srt_l c3)).
+  apply substitution with a ; auto with coc.
+  apply (fromd H26).
+  apply (fromd H29).
+
+  apply tposr_eq_trans with A.
+  apply tposr_eq_sym.
+  apply tposr_eq_tposr.
+  rewrite e0.
+  rewrite <- H67 ; auto.
+  apply tposr_eq_trans with a ; auto with coc.
+  rewrite e0 ; auto.
+
+  apply tposr_eq_trans with B.
+  apply tposr_eq_sym.
+  apply tposr_eq_tposr.
+  assert(c0 = c3).
+  pose(fromd H26).
+  assert(A :: G |-- a0 -> b4 : Srt_l c3).
+  apply conv_env with (a :: G) ; auto with coc.
+  apply (tposr_unique_sort H66 H69).
+  rewrite <- H69.
+  rewrite <- H68 ; auto.
   apply conv_env with (A :: G) ; auto with coc.
-  apply tposr_red with (Sum_l A B) s3 ; auto with coc.
-  apply tposr_sum with s1 s2 ; auto with coc.
+  apply tposr_eq_trans with a0 ; auto with coc.
+  assert(c3 = c0).
+  assert(A :: G |-- a0 -> b4 : Srt_l c3).
+  apply conv_env with (a :: G) ; auto with coc.
+  apply (fromd H26).
+  apply (tposr_unique_sort H69 H66).
+  rewrite H69.
+  apply conv_env_eq with (A :: G) ; auto with coc.
+  apply tposr_eq_tposr.
+  apply conv_env with (a :: G) ; auto with coc.
+  apply (fromd H26).
+  apply conv_env_hd with c ; auto with coc.
+  apply tposr_eq_trans with A ; auto with coc.
+  rewrite <- H67.
+  apply tposr_eq_tposr.
+  apply (fromd H).
   
-  rewrite H16.
-  assert(G |-- Pi1_l (Sum_l b b0) b1 -> Pi1_l (Sum_l x1 x2) x3 : A).
-  apply tposr_conv_r with b c ; auto with coc ; try apply tposr_pi1 with c c0 x0 ; auto with coc.
-  apply conv_env with (A :: G) ; auto with coc.
-  apply tposr_red with (Sum_l A B) x0 ; auto with coc.
-  apply tposr_sum with c c0 ; auto with coc.
-   
+  assert(G |-- b1 -> x5 : A).
+  inversion H44.
+  apply tposr_conv_l with a c ; auto with coc.
+
   intuition ; try apply tposr_equiv_r with A ; auto.
 
+  (* Pi1_red *)
+  intros.
+  rewrite <- H7.
+  rewrite H8 in H6.
+  clear H8 A''.
+  pose (generation_pair H2) ; destruct_exists.
+  inversion H8.
+  generalize dependent G.
+  rewrite <- H23 ; rewrite <- H24.
+  inversion H20.
+  rewrite <- H0 ; rewrite <- H2.
+  rewrite <- H3 ; rewrite <- H4.
+  clear a a0 H8 H23 H24 H0 H2 H3 H4 b b0 a1 a2 H20 ; intros.
+  clear e H5.
 
+  pose (generation_pi1 H10) ; destruct_exists.
+  inversion H23.
+  generalize dependent G.
+  rewrite <- H28.
+  rewrite <- H29.
+  clear H23 H29 H28 a1 b3.
+  intros.
+
+  assert(s1 = c).
+  apply (tposr_unique_sort (fromd H) (fromd H11)).
+  
+  assert(s2 = c0).
+  apply (tposr_unique_sort (fromd H0) (fromd H13)).
+  generalize dependent G.
+  rewrite <- H23.
+  rewrite <- H27.
+  intros.
+  
+  destruct H26 ; destruct_exists.
+  
+  (* Pi1_red, Pi1 *)
+  generalize dependent G.
+  rewrite H26.
+  rewrite H28.
+  rewrite H32.
+  rewrite H29.
+  clear a a0 a1 P H26 H28 H29 H32.
+  intros.
+
+  
 
 

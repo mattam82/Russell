@@ -53,6 +53,8 @@ Proof.
   induction 1 ; simpl ; auto with coc.
 
   apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
+  apply trans_lred with (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
+  apply trans_lred with (Pi2_l (Sum_l A B) (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
 Qed.
 
 Lemma tposr_eq_conv : forall e M N Z, e |-- M ~= N : Z -> conv M N.

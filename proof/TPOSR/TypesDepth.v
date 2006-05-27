@@ -84,7 +84,9 @@ with tposrd : lenv -> lterm -> lterm -> lterm -> nat -> Prop :=
   forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
   forall s3, sum_sort s1 s2 s3 ->
   forall u u' v v' p, e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [p] ->
-  e |-- Pi1_l (Sum_l A B) (Pair_l (Sum_l A B) u v) -> u : A [S (max3 n m p)]
+  forall A'', e |-- A'' ~= A : s1 ->
+  forall B'', A'' :: e |-- B'' ~= B : s2 ->
+  e |-- Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v) -> u' : A'' [S (max3 n m p)]
 
   | tposrd_pi2 : forall e A A' s1 n, e |-- A -> A' : Srt_l s1 [n] ->
   forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
@@ -97,7 +99,7 @@ with tposrd : lenv -> lterm -> lterm -> lterm -> nat -> Prop :=
   forall s3, sum_sort s1 s2 s3 ->
   forall u u' v v' p, 
   e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [p] ->
-  e |-- Pi2_l (Sum_l A B) (Pair_l (Sum_l A B) u v) -> v : lsubst (Pi1_l (Sum_l A B) (Pair_l (Sum_l A B) u v)) B
+  e |-- Pi2_l (Sum_l A B) (Pair_l (Sum_l A B) u v) -> v' : lsubst (Pi1_l (Sum_l A B) (Pair_l (Sum_l A B) u v)) B
   [S (max3 n m p)]
 
 where "G |-- T -> U : s [ n ]" := (tposrd G T U s n).
@@ -147,11 +149,11 @@ Proof.
 
   exists (S (max3 x1 x0 x)) ; apply tposrd_pi1 with s1 s2 s3 ; auto with coc.
 
-  exists (S (max3 x1 x0 x)) ; apply tposrd_pi1_red with A' s1 B' s2 s3 u' v' ; auto with coc.
+  exists (S (max3 x1 x0 x)) ; apply tposrd_pi1_red with A' s1 B' s2 s3 v' ; auto with coc.
 
   exists (S (max3 x1 x0 x)) ; apply tposrd_pi2 with s1 s2 s3 ; auto with coc.
 
-  exists (S (max3 x1 x0 x)) ; apply tposrd_pi2_red with A' s1 B' s2 s3 u' v' ; auto with coc.
+  exists (S (max3 x1 x0 x)) ; apply tposrd_pi2_red with A' s1 B' s2 s3 u' ; auto with coc.
 
   apply wfd_cons with A' s x; auto with coc.
 Qed.
@@ -286,8 +288,10 @@ forall
                 : Sum_l A B [p]),
         P e (Pair_l (Sum_l A B) u v) (Pair_l (Sum_l A' B') u' v') (Sum_l A B)
           p t1 ->
-        P e (Pi1_l (Sum_l A B) (Pair_l (Sum_l A B) u v)) u A (S (max3 n m p))
-          (tposrd_pi1_red t t0 s t1)) ->
+        forall (A'' : lterm) (t2 : e |-- A'' ~= A : s1) (B'' : lterm)
+          (t3 : A'' :: e |-- B'' ~= B : s2),
+        P e (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)) u' A''
+          (S (max3 n m p)) (tposrd_pi1_red t t0 s t1 t2 t3)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort) (n : nat)
           (t : e |-- A -> A' : Srt_l s1 [n]),
         P e A A' (Srt_l s1) n t ->
@@ -312,14 +316,13 @@ forall
                 : Sum_l A B [p]),
         P e (Pair_l (Sum_l A B) u v) (Pair_l (Sum_l A' B') u' v') (Sum_l A B)
           p t1 ->
-        P e (Pi2_l (Sum_l A B) (Pair_l (Sum_l A B) u v)) v
+        P e (Pi2_l (Sum_l A B) (Pair_l (Sum_l A B) u v)) v'
           (lsubst (Pi1_l (Sum_l A B) (Pair_l (Sum_l A B) u v)) B)
           (S (max3 n m p)) (tposrd_pi2_red t t0 s t1)) ->
        P0 nil wfd_nil ->
        (forall (G : lenv) (A A' : lterm) (s : sort) (n : nat)
           (t : G |-- A -> A' : Srt_l s [n]),
         P G A A' (Srt_l s) n t -> P0 (A :: G) (wfd_cons t)) ->
-
        (forall (l : lenv) (l0 l1 l2 : lterm) (n : nat)
          (t : l |-- l0 -> l1 : l2 [n]), P l l0 l1 l2 n t)
       /\ (forall (l : lenv) (t : tposrd_wf l), P0 l t).
@@ -362,11 +365,11 @@ Proof.
 
   apply tposr_pi1 with s1 s2 s3 ; auto with coc.
 
-  apply tposr_pi1_red with A' s1 B' s2 s3 u' v' ; auto with coc.
+  apply tposr_pi1_red with A' s1 B' s2 s3 v' ; auto with coc.
 
   apply tposr_pi2 with s1 s2 s3; auto with coc.
 
-  apply tposr_pi2_red with A' s1 B' s2 s3 u' v'; auto with coc.
+  apply tposr_pi2_red with A' s1 B' s2 s3 u'; auto with coc.
 
   apply wf_cons with A' s ; auto with coc.
 Qed.

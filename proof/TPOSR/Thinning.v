@@ -16,8 +16,12 @@ Implicit Types e f g : lenv.
 Lemma weak_weak : forall A,
   (forall e u v T, e |-- u -> v : T ->
    forall n f, ins_in_lenv A n e f -> tposr_wf f -> 
-   f |-- (llift_rec 1 u n) -> (llift_rec 1 v n) : (llift_rec 1 T n)).
-Proof.
+   f |-- (llift_rec 1 u n) -> (llift_rec 1 v n) : (llift_rec 1 T n)) /\
+  (forall e u v s, e |-- u ~= v : s ->
+   forall n f, ins_in_lenv A n e f -> tposr_wf f -> 
+   f |-- (llift_rec 1 u n) ~= (llift_rec 1 v n) : s).
+Admitted.
+(*Proof.
 intros A.
 induction 1 using ind_tposr with 
  (P := fun e u v T => fun IH : e |-- u -> v : T =>
@@ -29,6 +33,7 @@ induction 1 using ind_tposr with
    try simpl in IHtposr2 ; 
    try simpl in IHtposr3 ; 
    try simpl in IHtposr4 ; 
+   try simpl in IHtposr5 ; 
    intros; auto with coc core arith datatypes.
 
 elim (le_gt_dec n0 n); intros; apply tposr_var;
@@ -78,7 +83,8 @@ assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' 
 apply tposr_pi1 with s1 s2 s3 ; auto with coc.
 
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc.
-apply tposr_pi1_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 u' n) (llift_rec 1 v' n); auto with coc.
+assert (tposr_wf (llift_rec 1 A'' n :: f)) by apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc.
+apply tposr_pi1_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 v' n); auto with coc.
 
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc.
 rewrite distr_llift_lsubst.
@@ -88,9 +94,9 @@ apply tposr_pi2 with s1 s2 s3 ; auto with coc.
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc.
 rewrite distr_llift_lsubst.
 simpl.
-apply tposr_pi2_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 u' n) (llift_rec 1 v' n); auto with coc.
+apply tposr_pi2_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 u' n); auto with coc.
 Qed.
-
+*)
   Theorem thinning :
    forall e t t' T,
    e |-- t -> t' : T -> forall A, tposr_wf (A :: e) -> (A :: e) |-- (llift 1 t) -> llift 1 t' : (llift 1 T).
@@ -98,7 +104,7 @@ Proof.
 unfold llift in |- *.
 intros.
 inversion_clear H0.
-apply weak_weak with A e ; auto with coc.
+apply (proj1 (weak_weak A)) with e ; auto with coc.
 apply wf_cons with A' s; auto with coc core arith datatypes.
 Qed.
 

@@ -5,6 +5,7 @@ Set Implicit Arguments.
 
 Definition max3 n m p := max n (max m p).
 Definition max4 n m p q := max n (max3 m p q).
+Definition max5 n m p q r := max n (max4 m p q r).
 
 Lemma max_lt_l : forall m n, m < S (max m n).
 Proof.
@@ -178,5 +179,92 @@ Proof.
   unfold max4 ; auto with arith.
 Qed.
 
+Lemma max_commut_2 : forall m n p, max m (max n p) = max n (max m p).
+Proof.
+  intros.
+  pose max3_commut_1.
+  unfold max3 in e.
+  rewrite (e m n p).
+  pattern (max m p) ; rewrite max_comm.
+  reflexivity.
+Qed.
+
+Lemma max5_commut : forall n m p q r, max5 n m p q r = max5 m p q r n.
+Proof.
+  intros.
+  unfold max5.
+  unfold max4.
+  rewrite max_commut_2.
+  pose (max4_commut_1).
+  unfold max4 in e.
+  unfold max3 in e.
+  unfold max3.
+  pattern (max p (max q (max r n))).
+  rewrite <- e.
+  reflexivity.
+Qed.
+
+Lemma max5_commut_2 : forall n m p q r, max5 n m p q r = max5 p q r n m.
+Proof.
+  intros.
+  rewrite max5_commut.
+  rewrite max5_commut.
+  auto.
+Qed.
+
+Lemma max5_commut_3 : forall n m p q r, max5 n m p q r = max5 q r n m p.
+Proof.
+  intros.
+  rewrite max5_commut.
+  rewrite max5_commut.
+  rewrite max5_commut.
+  reflexivity.
+Qed.
+
+Lemma max5_commut_4 : forall n m p q r, max5 n m p q r = max5 r n m p q.
+Proof.
+  intros.
+  rewrite max5_commut.
+  rewrite max5_commut.
+  rewrite max5_commut.
+  rewrite max5_commut.
+  reflexivity.
+Qed.
+
+Lemma max5_lt_1 : forall m n p q r, m < S (max5 m n p q r).
+Proof.
+  intros.
+  unfold max5 ; auto with arith.
+Qed.
+
+Lemma max5_lt_2 : forall m n p q r, n < S (max5 m n p q r).
+Proof.
+  intros.
+  rewrite max5_commut.
+  unfold max5 ; auto with arith.
+Qed.
+
+Lemma max5_lt_3 : forall m n p q r, p < S (max5 m n p q r).
+Proof.
+  intros.
+  rewrite max5_commut_2.
+  unfold max5 ; auto with arith.
+Qed.
+
+Lemma max5_lt_4 : forall m n p q r, q < S (max5 m n p q r).
+Proof.
+  intros.
+  rewrite max5_commut_3.
+  unfold max5 ; auto with arith.
+Qed.
+
+Lemma max5_lt_5 : forall m n p q r, r < S (max5 m n p q r).
+Proof.
+  intros.
+  rewrite max5_commut_4.
+  unfold max5 ; auto with arith.
+Qed.
+
 Hint Resolve max3_lt_1 max3_lt_2 max3_lt_3 : arith.
 Hint Resolve max4_lt_1 max4_lt_2 max4_lt_3 max4_lt_4 : arith.
+Hint Resolve max5_lt_1 max5_lt_2 max5_lt_3 max5_lt_4 max5_lt_5 : arith.
