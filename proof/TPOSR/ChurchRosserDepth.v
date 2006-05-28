@@ -226,7 +226,7 @@ Proof.
   rewrite H24 in H22.
   rewrite H24 in H14.
 
-  assert(m0 < x) by rewrite <- H7 ; auto with arith. 
+  assert(m0 < x) by (rewrite <- H7 ; auto with arith). 
   pose (tod H22) ; destruct_exists.
   pose (IH _ H25 _ _ _ _ _ H0 _ _ H26) ; destruct_exists.
 
@@ -402,7 +402,7 @@ Proof.
   rewrite H24 in H22.
   rewrite H24 in H14.
 
-  assert(m0 < x) by rewrite <- H7 ; auto with arith. 
+  assert(m0 < x) by (rewrite <- H7 ; auto with arith). 
   pose (tod H22) ; destruct_exists.
   pose (IH _ H25 _ _ _ _ _ H0 _ _ H26) ; destruct_exists.
 
@@ -539,7 +539,7 @@ Proof.
 
   (* Red *)
   intros.
-  assert(n0 < x) by rewrite <- H5 ; auto with arith.
+  assert(n0 < x) by (rewrite <- H5 ; auto with arith).
   pose (IH _ H7 _ _ _ _ _ H _ _ H6) ; destruct_exists.
   exists x0 ; intuition.
   apply tposr_red with A0 s ; auto with coc.
@@ -549,7 +549,7 @@ Proof.
 
   (* Exp *)
   intros.
-  assert(n0 < x) by rewrite <- H5 ; auto with arith.
+  assert(n0 < x) by (rewrite <- H5 ; auto with arith).
   pose (IH _ H7 _ _ _ _ _ H _ _ H6) ; destruct_exists.
   exists x0 ; intuition.
   apply tposr_exp with B s ; auto with coc.
@@ -562,8 +562,8 @@ Proof.
   pose (generation_subset H6) ; destruct_exists.
   rewrite H11.
 
-  assert(n0 < x) by rewrite <- H5 ; auto with arith.
-  assert(m0 < x) by rewrite <- H5 ; auto with arith.
+  assert(n0 < x) by (rewrite <- H5 ; auto with arith).
+  assert(m0 < x) by (rewrite <- H5 ; auto with arith).
   pose (IH _ H13 _ _ _ _ _ H _ _ H7) ; destruct_exists.
   pose (IH _ H14 _ _ _ _ _ H0 _ _ H9) ; destruct_exists.
 
@@ -596,9 +596,9 @@ Proof.
   pose (generation_sum Hr) ; destruct_exists.
   rewrite H12.
 
-  assert(n0 < x) by rewrite <- H6 ; auto with arith.
+  assert(n0 < x) by (rewrite <- H6 ; auto with arith).
   pose (IH _ H14 _ _ _ _ _ H _ _ H7) ; destruct_exists.
-  assert(m0 < x) by rewrite <- H6 ; auto with arith.
+  assert(m0 < x) by (rewrite <- H6 ; auto with arith).
   pose (IH _ H19 _ _ _ _ _ H0 _ _ H9) ; destruct_exists.
 
   assert(conv_in_env (A0 :: G) (A' :: G)).
@@ -643,13 +643,13 @@ Proof.
   rewrite <- H22 in H15.
   clear H22 H23 H9 a a0.
 
-  assert(n0 < x) by rewrite <- H8 ; auto with arith.
+  assert(n0 < x) by (rewrite <- H8 ; auto with arith).
   pose (IH _ H9 _ _ _ _ _ H _ _ H10) ; destruct_exists ; clear H9.
-  assert(m0 < x) by rewrite <- H8 ; auto with arith.
+  assert(m0 < x) by (rewrite <- H8 ; auto with arith).
   pose (IH _ H9 _ _ _ _ _ H0 _ _ H12) ; destruct_exists ; clear H9.
-  assert(p < x) by rewrite <- H8 ; auto with arith.
+  assert(p < x) by (rewrite <- H8 ; auto with arith).
   pose (IH _ H9 _ _ _ _ _ H2 _ _ H15) ; destruct_exists ; clear H9.
-  assert(q < x) by rewrite <- H8 ; auto with arith.
+  assert(q < x) by (rewrite <- H8 ; auto with arith).
   pose (IH _ H9 _ _ _ _ _ H3 _ _ H17) ; destruct_exists ; clear H9.
 
   exists (Pair_l (Sum_l x1 x2) x3 x4).
@@ -703,7 +703,7 @@ Proof.
   rewrite <- H19 in H16.
   clear a1 b1 H19 H18 H13.
   
-  assert(n0 < x) by rewrite <- H7 ; auto with arith.
+  assert(n0 < x) by (rewrite <- H7 ; auto with arith).
 
   pose (fromd H).
   pose (fromd H0).
@@ -728,10 +728,10 @@ Proof.
   clear a a0 H16 H17 H9 H11.
 
   pose (IH _ H13 _ _ _ _ _ H _ _ H22) ; destruct_exists ; clear H13.
-  assert(m0 < x) by rewrite <- H7 ; auto with arith.
+  assert(m0 < x) by (rewrite <- H7 ; auto with arith).
   pose (IH _ H13 _ _ _ _ _ H0 _ _ H23) ; destruct_exists ; clear H13.
   clear H24.
-  assert(p < x) by rewrite <- H7 ; auto with arith.
+  assert(p < x) by (rewrite <- H7 ; auto with arith).
   pose (IH _ H13 _ _ _ _ _ H2 _ _ H19) ; destruct_exists ; clear H13.
 
   assert(conv_in_env (A :: G) (A' :: G)).
@@ -781,13 +781,13 @@ Proof.
   rewrite <- H48 in H45.
   clear H47 H48 a3 a4 H23.
  
-  assert(d1 < x) by rewrite <- H7 ; apply lt_trans with p ;  auto with arith.
+  assert(d1 < x) by (rewrite <- H7 ; apply lt_trans with p ;  auto with arith).
   pose (IH _ H23 _ _ _ _ _ H24 _ _ H35) ; destruct_exists ; clear H23.
-  assert(d2 < x) by rewrite <- H7 ; apply lt_trans with p ; auto with arith.
+  assert(d2 < x) by (rewrite <- H7 ; apply lt_trans with p ; auto with arith).
   pose (IH _ H23 _ _ _ _ _ H26 _ _ H37) ; destruct_exists ; clear H23.
-  assert(b5 < x) by rewrite <- H7 ; apply lt_trans with p ; auto with arith.
+  assert(b5 < x) by (rewrite <- H7 ; apply lt_trans with p ; auto with arith).
   pose (IH _ H23 _ _ _ _ _ H29 _ _ H40) ; destruct_exists ; clear H23.
-  assert(b6 < x) by rewrite <- H7 ; apply lt_trans with p ; auto with arith.
+  assert(b6 < x) by (rewrite <- H7 ; apply lt_trans with p ; auto with arith).
   pose (IH _ H23 _ _ _ _ _ H31 _ _ H42) ; destruct_exists ; clear H23.
 
   pose (fromd H24).
@@ -919,7 +919,7 @@ Proof.
   rewrite <- H7.
   intros.
 
-  assert(b1 < x) by rewrite <- H9 ; apply lt_trans with p ; auto with arith.
+  assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
   pose (IH _ H26 _ _ _ _ _ H16 _ _ H35) ; destruct_exists.
   exists x3.
   
@@ -1035,7 +1035,7 @@ Proof.
   clear H0 H2 H3 H4 H41.
   intros.
 
-  assert(b1 < x) by rewrite <- H9 ; apply lt_trans with p ; auto with arith.
+  assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
   pose (IH _ H23 _ _ _ _ _ H16 _ _ H37) ; destruct_exists.
   exists x4.
 
@@ -1046,7 +1046,7 @@ Proof.
   destruct H55 ; destruct_exists.
   rewrite <- H55 ; auto.
   pose (tposr_eq_sym H55).
-  assert(equiv G A0 A) by right ; exists x5 ; auto.
+  assert(equiv G A0 A) by (right ; exists x5 ; auto).
   apply (equiv_trans H25 H56).
 
   intuition ; try apply tposr_equiv_r with A0 ; auto.

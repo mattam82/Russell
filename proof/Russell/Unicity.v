@@ -176,7 +176,7 @@ destruct (IHtyp _ H2) ; try discriminate.
 destruct H4.
 apply coerce_trans with (subst (Pi1 t) V0) ; auto with coc.
 pose (inv_sub_sum_r H4).
-assert(e |-- Pi1 t : U) by apply type_pi1 with V ; auto.
+assert(e |-- Pi1 t : U) by (apply type_pi1 with V ; auto).
 apply substitution_coerce with U ; auto.
 pose (coerce_sort_r c).
 pose (substitution t0 H5).

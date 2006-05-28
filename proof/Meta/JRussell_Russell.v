@@ -90,7 +90,7 @@ Proof.
   intuition.
   apply coerce_trans with B ; auto.
 
-  assert(wf (B :: e)) by (apply wf_var with s) ; assumption.
+  assert(wf (B :: e)) by (apply wf_var with s ; assumption).
   intuition ; try apply thinning ; auto.
   unfold lift ; apply conv_conv_lift ; assumption.
 
@@ -102,7 +102,7 @@ Proof.
   intuition ; try apply type_abs with s1 s2 ; auto.
   assert(coerce_in_env (A :: e) (A' :: e)).
   apply coerce_env_hd with s1 ; auto with coc.
-  assert(wf (A' :: e)) by apply wf_var with s1 ; assumption.
+  assert(wf (A' :: e)) by (apply wf_var with s1 ; assumption).
   apply type_conv with (Prod A' B) s2 ; auto with coc.
   apply type_abs with s1 s2 ; auto with coc.
   apply typ_conv_env with (A :: e) ; auto with coc.
@@ -194,8 +194,8 @@ Proof.
   destruct H1.
   destruct (generation_sum2 H1).
   intuition.
-  assert(e |-- Pi1 t : A) by apply type_pi1 with B ; auto with coc.
-  assert(e |-- Pi1 t' : A) by apply type_pi1 with B ; auto with coc.
+  assert(e |-- Pi1 t : A) by (apply type_pi1 with B ; auto with coc).
+  assert(e |-- Pi1 t' : A) by (apply type_pi1 with B ; auto with coc).
   pose (substitution H5 H4).
   pose (substitution H5 H7).
 
@@ -205,8 +205,8 @@ Proof.
   unfold subst ; apply conv_conv_subst ; auto with coc.
   
   intuition ; try apply type_pi2 with A ; auto with coc.
-  assert(e |-- Pair (Sum A B) u v : Sum A B) by  apply type_pair with s1 s2 s3 ; auto with coc.
-  assert(e |-- Pi1 (Pair (Sum A B) u v) : A) by apply type_pi1 with B ; auto.
+  assert(e |-- Pair (Sum A B) u v : Sum A B) by (apply type_pair with s1 s2 s3 ; auto with coc).
+  assert(e |-- Pi1 (Pair (Sum A B) u v) : A) by (apply type_pi1 with B ; auto).
   pose (substitution H0 H1).
   apply type_conv with (subst (Pi1 (Pair (Sum A B) u v)) B) s2 ; auto with coc.
   apply type_pi2 with A ; auto with coc.
