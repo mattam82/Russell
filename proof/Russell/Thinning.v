@@ -2,7 +2,7 @@ Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import Russell.Types.
+Require Import Lambda.Russell.Types.
 Require Import Lambda.Conv.
 
 Set Implicit Arguments.

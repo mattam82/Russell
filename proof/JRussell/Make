@@ -1,4 +1,4 @@
--R .. Lambda -R . JRussell
+-R .. Lambda 
 # List of vernac files to compile
 Types.v
 Freevars.v

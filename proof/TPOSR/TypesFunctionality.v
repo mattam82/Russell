@@ -1,19 +1,19 @@
 Require Import Lambda.Utils.
 Require Import Lambda.Tactics.
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
-Require Import TPOSR.LiftSubst.
-Require Import TPOSR.Env.
-Require Import TPOSR.Types.
-Require Import TPOSR.Basic.
-Require Import TPOSR.Thinning.
-Require Import TPOSR.LeftReflexivity.
-Require Import TPOSR.Substitution.
-Require Import TPOSR.CtxConversion.
-Require Import TPOSR.RightReflexivity.
-Require Import TPOSR.Generation.
-Require Import TPOSR.TypesDepth.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
+Require Import Lambda.TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Env.
+Require Import Lambda.TPOSR.Types.
+Require Import Lambda.TPOSR.Basic.
+Require Import Lambda.TPOSR.Thinning.
+Require Import Lambda.TPOSR.LeftReflexivity.
+Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.CtxConversion.
+Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.Generation.
+Require Import Lambda.TPOSR.TypesDepth.
 
 Set Implicit Arguments.
 

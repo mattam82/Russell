@@ -1,9 +1,9 @@
 Require Import Peano_dec.
 Require Import Transitive_Closure.
 Require Import Union.
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
 
   Definition ord_norm1 := union _ sublterm (transp _ lred1).
   Definition ord_norm := clos_trans _ ord_norm1.

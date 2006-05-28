@@ -3,9 +3,9 @@ Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import Russell.Types.
-Require Import Russell.Thinning.
-Require Import Russell.Substitution.
+Require Import Lambda.Russell.Types.
+Require Import Lambda.Russell.Thinning.
+Require Import Lambda.Russell.Substitution.
 Require Import Coq.Arith.Max.
 Set Implicit Arguments.
 

@@ -1,15 +1,15 @@
-Require Import JRussell.Types.
-Require Import JRussell.Validity.
+Require Import Lambda.JRussell.Types.
+Require Import Lambda.JRussell.Validity.
 
-Require Import Russell.Types.
-Require Import Russell.Thinning.
-Require Import Russell.Coercion.
-Require Import Russell.Substitution.
-Require Import Russell.Inversion.
-Require Import Russell.Generation.
-Require Import Russell.GenerationRange.
-Require Import Russell.UnicityOfSorting.
-Require Import Russell.Transitivity.
+Require Import Lambda.Russell.Types.
+Require Import Lambda.Russell.Thinning.
+Require Import Lambda.Russell.Coercion.
+Require Import Lambda.Russell.Substitution.
+Require Import Lambda.Russell.Inversion.
+Require Import Lambda.Russell.Generation.
+Require Import Lambda.Russell.GenerationRange.
+Require Import Lambda.Russell.UnicityOfSorting.
+Require Import Lambda.Russell.Transitivity.
 
 Require Import Lambda.Terms.
 Require Import Lambda.Conv.
@@ -29,8 +29,8 @@ Theorem jrussell_to_russell :
   conv u v).
 Proof. 
   apply typ_coerce_jeq_ind with
-  (P := fun G t T => fun H : JRussell.Types.typ G t T => G |-- t : T)
-  (P0 := fun G U V s => fun H : JRussell.Types.coerce G U V s => 
+  (P := fun G t T => fun H : Lambda.JRussell.Types.typ G t T => G |-- t : T)
+  (P0 := fun G U V s => fun H : Lambda.JRussell.Types.coerce G U V s => 
   G |-- U : Srt s /\ G |-- V : Srt s /\ 
   G |-- U >> V : s)
   (P1 := fun G u v T => fun H : G |-= u = v : T => G |-- u : T /\ G |-- v : T /\ 
@@ -233,11 +233,11 @@ Proof.
   apply type_conv with A s ; auto.
 Qed.
 
-Corollary type_jrussell_to_russell : forall G t T, JRussell.Types.typ G t T -> G |-- t : T.
+Corollary type_jrussell_to_russell : forall G t T, Lambda.JRussell.Types.typ G t T -> G |-- t : T.
 Proof (proj1 (jrussell_to_russell)).
 
 Corollary coerce_jrussell_to_russell : forall G U V s, 
-   JRussell.Types.coerce G U V s -> G |-- U >> V : s.
+   Lambda.JRussell.Types.coerce G U V s -> G |-- U >> V : s.
 Proof.
   intros.
   destruct (jrussell_to_russell).

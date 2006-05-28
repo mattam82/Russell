@@ -2,8 +2,8 @@ Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import Russell.Types.
-Require Import Russell.Thinning.
+Require Import Lambda.Russell.Types.
+Require Import Lambda.Russell.Thinning.
 
 Set Implicit Arguments.
 

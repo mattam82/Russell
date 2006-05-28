@@ -2,9 +2,9 @@ Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import JRussell.Types.
-Require Import JRussell.Coercion.
-Require Import JRussell.Substitution.
+Require Import Lambda.JRussell.Types.
+Require Import Lambda.JRussell.Coercion.
+Require Import Lambda.JRussell.Substitution.
 
 Require Import Coq.Arith.Arith.
 

@@ -1,4 +1,4 @@
--R .. Lambda -R ../JRussell JRussell -R ../Russell Russell -R ../Meta Meta -R . TPOSR
+-R .. Lambda 
 Terms.v
 LiftSubst.v
 Reduction.v

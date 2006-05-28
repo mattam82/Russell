@@ -1,4 +1,4 @@
--R .. Lambda -R . Russell
+-R .. Lambda
 # List of vernac files to compile
 Types.v
 Coercion.v

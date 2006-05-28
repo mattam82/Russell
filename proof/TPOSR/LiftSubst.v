@@ -1,4 +1,4 @@
-Require Import TPOSR.Terms.
+Require Import Lambda.TPOSR.Terms.
 
   Lemma llift_ref_ge :
    forall k n p, p <= n -> llift_rec k (Ref_l n) p = Ref_l (k + n).

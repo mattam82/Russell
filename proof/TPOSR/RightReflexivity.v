@@ -1,12 +1,12 @@
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
-Require Import TPOSR.LiftSubst.
-Require Import TPOSR.Env.
-Require Import TPOSR.Types.
-Require Import TPOSR.Basic.
-Require Import TPOSR.CtxReduction.
-Require Import TPOSR.Substitution.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
+Require Import Lambda.TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Env.
+Require Import Lambda.TPOSR.Types.
+Require Import Lambda.TPOSR.Basic.
+Require Import Lambda.TPOSR.CtxReduction.
+Require Import Lambda.TPOSR.Substitution.
 
 Set Implicit Arguments.
 

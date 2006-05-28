@@ -4,14 +4,14 @@ Require Import Lambda.Conv.
 Require Import Lambda.Conv_Dec.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import JRussell.Types.
-Require Import JRussell.Basic.
-Require Import JRussell.Conversion.
-Require Import JRussell.Coercion.
-Require Import JRussell.Thinning.
-Require Import JRussell.Substitution.
-Require Import JRussell.PreFunctionality.
-Require Import JRussell.Generation.
+Require Import Lambda.JRussell.Types.
+Require Import Lambda.JRussell.Basic.
+Require Import Lambda.JRussell.Conversion.
+Require Import Lambda.JRussell.Coercion.
+Require Import Lambda.JRussell.Thinning.
+Require Import Lambda.JRussell.Substitution.
+Require Import Lambda.JRussell.PreFunctionality.
+Require Import Lambda.JRussell.Generation.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.

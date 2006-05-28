@@ -1,13 +1,13 @@
 Require Import Lambda.Utils.
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
-Require Import TPOSR.LiftSubst.
-Require Import TPOSR.Env.
-Require Import TPOSR.Types.
-Require Import TPOSR.Basic.
-Require Import TPOSR.Substitution.
-Require Import TPOSR.CtxConversion.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
+Require Import Lambda.TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Env.
+Require Import Lambda.TPOSR.Types.
+Require Import Lambda.TPOSR.Basic.
+Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.CtxConversion.
 
 Set Implicit Arguments.
 
@@ -139,7 +139,7 @@ Proof.
 Qed.
 *)
 
-Require Import TPOSR.TypesDepth.
+Require Import Lambda.TPOSR.TypesDepth.
 
 Lemma generation_prod : forall e U V X A n, e |-- Prod_l U V -> X : A [n] -> 
   exists3 U' s1 m, exists3 V' s2 p, 

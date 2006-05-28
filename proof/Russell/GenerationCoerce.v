@@ -4,11 +4,11 @@ Require Import Lambda.Conv.
 Require Import Lambda.Conv_Dec.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import Russell.Types.
-Require Import Russell.Thinning.
-Require Import Russell.Substitution.
-Require Import Russell.Coercion.
-Require Import Russell.GenerationNotKind.
+Require Import Lambda.Russell.Types.
+Require Import Lambda.Russell.Thinning.
+Require Import Lambda.Russell.Substitution.
+Require Import Lambda.Russell.Coercion.
+Require Import Lambda.Russell.GenerationNotKind.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.

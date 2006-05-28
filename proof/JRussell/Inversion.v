@@ -4,16 +4,16 @@ Require Import Lambda.Conv.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
 Require Import Lambda.Reduction.
-Require Import JRussell.Types.
-Require Import JRussell.Thinning.
-Require Import JRussell.Substitution.
-Require Import JRussell.Coercion.
-Require Import JRussell.GenerationNotKind.
-Require Import JRussell.Generation.
-Require Import JRussell.GenerationCoerce.
-Require Import JRussell.GenerationRange.
-Require Import JRussell.UnicityOfSorting.
-Require Import JRussell.Transitivity.
+Require Import Lambda.JRussell.Types.
+Require Import Lambda.JRussell.Thinning.
+Require Import Lambda.JRussell.Substitution.
+Require Import Lambda.JRussell.Coercion.
+Require Import Lambda.JRussell.GenerationNotKind.
+Require Import Lambda.JRussell.Generation.
+Require Import Lambda.JRussell.GenerationCoerce.
+Require Import Lambda.JRussell.GenerationRange.
+Require Import Lambda.JRussell.UnicityOfSorting.
+Require Import Lambda.JRussell.Transitivity.
 
 Set Implicit Arguments.
 

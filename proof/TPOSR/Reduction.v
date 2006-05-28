@@ -1,5 +1,5 @@
-Require Import TPOSR.Terms.
-Require Import TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.LiftSubst.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.

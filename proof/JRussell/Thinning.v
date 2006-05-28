@@ -3,7 +3,7 @@ Require Import Lambda.Reduction.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
 Require Import Lambda.Conv.
-Require Import JRussell.Types.
+Require Import Lambda.JRussell.Types.
 
 Set Implicit Arguments.
 

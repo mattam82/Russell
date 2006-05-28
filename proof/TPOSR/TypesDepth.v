@@ -1,22 +1,22 @@
 Require Import Lambda.Tactics.
 
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
-Require Import TPOSR.LiftSubst.
-Require Import TPOSR.Env.
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
-Require Import TPOSR.LiftSubst.
-Require Import TPOSR.Env.
-Require Import TPOSR.Types.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
+Require Import Lambda.TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Env.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
+Require Import Lambda.TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Env.
+Require Import Lambda.TPOSR.Types.
 
 Set Implicit Arguments.
 
 Reserved Notation "G |-- u -> v : T [ n ]" (at level 70, u, v, T, n at next level).
 
-Require Import TPOSR.MaxLemmas.
+Require Import Lambda.TPOSR.MaxLemmas.
 
 Inductive tposrd_wf : lenv -> Prop :=
   | wfd_nil : tposrd_wf nil
@@ -112,7 +112,7 @@ Scheme ind_tposr := Induction for tposrd Sort Prop.
 Scheme tposrd_wf_mutind := Induction for tposrd Sort Prop
 with wf_tposrd_mutind :=  Induction for tposrd_wf Sort Prop.
 
-Require Import TPOSR.Types.
+Require Import Lambda.TPOSR.Types.
 
 Lemma tposr_tposrd : 
   (forall e t u T, tposr e t u T -> 

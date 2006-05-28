@@ -3,16 +3,16 @@ Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import Russell.Types.
-Require Import Russell.Thinning.
-Require Import Russell.Coercion.
-Require Import Russell.Substitution.
-Require Import Russell.Transitivity.
-Require Import Russell.Inversion.
-Require Import Russell.Generation.
-Require Import Russell.GenerationRange.
-Require Import Russell.UnicityOfSorting.
-Require Import Russell.Axioms.
+Require Import Lambda.Russell.Types.
+Require Import Lambda.Russell.Thinning.
+Require Import Lambda.Russell.Coercion.
+Require Import Lambda.Russell.Substitution.
+Require Import Lambda.Russell.Transitivity.
+Require Import Lambda.Russell.Inversion.
+Require Import Lambda.Russell.Generation.
+Require Import Lambda.Russell.GenerationRange.
+Require Import Lambda.Russell.UnicityOfSorting.
+Require Import Lambda.Russell.Axioms.
 
 Set Implicit Arguments.
 

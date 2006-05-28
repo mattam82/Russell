@@ -3,11 +3,11 @@ Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
-Require Import TPOSR.LiftSubst.
-Require Import TPOSR.Env.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
+Require Import Lambda.TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Env.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.

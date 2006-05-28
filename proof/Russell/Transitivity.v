@@ -4,13 +4,13 @@ Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
-Require Import Russell.Types.
-Require Import Russell.Thinning.
-Require Import Russell.Substitution.
-Require Import Russell.Generation.
-Require Import Russell.UnicityOfSorting.
-Require Import Russell.Narrowing.
-Require Import Russell.Axioms.
+Require Import Lambda.Russell.Types.
+Require Import Lambda.Russell.Thinning.
+Require Import Lambda.Russell.Substitution.
+Require Import Lambda.Russell.Generation.
+Require Import Lambda.Russell.UnicityOfSorting.
+Require Import Lambda.Russell.Narrowing.
+Require Import Lambda.Russell.Axioms.
 
 Set Implicit Arguments.
 
@@ -1063,7 +1063,7 @@ Proof.
   reflexivity.
 Qed.
 
-Require Import Russell.Depth.
+Require Import Lambda.Russell.Depth.
 
 Theorem coerces_db_depth : forall e T U s n1, Depth.coerces_db e T U s n1 -> 
   exists d : (Narrowing.coerces_db e T U s), depth d = n1.

@@ -4,25 +4,25 @@ Require Import Lambda.Conv.
 Require Import Lambda.LiftSubst.
 Require Import Lambda.Env.
 
-Require Import JRussell.Types.
-Require Import JRussell.Basic.
-Require Import JRussell.Generation.
-Require Import JRussell.Thinning.
-Require Import JRussell.Validity.
+Require Import Lambda.JRussell.Types.
+Require Import Lambda.JRussell.Basic.
+Require Import Lambda.JRussell.Generation.
+Require Import Lambda.JRussell.Thinning.
+Require Import Lambda.JRussell.Validity.
 
-Require Import Russell.Types.
-Require Import Russell.UnicityOfSorting.
+Require Import Lambda.Russell.Types.
+Require Import Lambda.Russell.UnicityOfSorting.
 
-Require Import TPOSR.Terms.
-Require Import TPOSR.Reduction.
-Require Import TPOSR.Conv.
-Require Import TPOSR.LiftSubst.
-Require Import TPOSR.Env.
-Require Import TPOSR.Types.
-Require Import TPOSR.Unlab.
+Require Import Lambda.TPOSR.Terms.
+Require Import Lambda.TPOSR.Reduction.
+Require Import Lambda.TPOSR.Conv.
+Require Import Lambda.TPOSR.LiftSubst.
+Require Import Lambda.TPOSR.Env.
+Require Import Lambda.TPOSR.Types.
+Require Import Lambda.TPOSR.Unlab.
 
-Require Import Meta.JRussell_Russell.
-Require Import Meta.TPOSR_JRussell.
+Require Import Lambda.Meta.JRussell_Russell.
+Require Import Lambda.Meta.TPOSR_JRussell.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
