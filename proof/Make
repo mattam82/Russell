@@ -11,33 +11,62 @@ Reduction.v
 Conv.v
 Conv_Dec.v
 Env.v
-#Class.v
-#Can.v
-#Int_term.v
-#Int_typ.v
-#Int_stab.v
-#Strong_Norm.v
-#Consistency.v
-#Infer.v
-#Expr.v
-#Machine.v
-#Ered.v
-#ETypes.v
-#Equiv.v
-# ML files
-#CAML = "$(CAMLOPTC) -pp camlp4o"
-#-custom "$(CAML) top.ml" "top.ml core.cmx" top.cmx
-#-custom "$(CAMLOPTC) core.mli" "core.ml" core.cmi
-#-custom "$(CAMLOPTC) core.ml" "core.cmi" core.cmx
-# COQE is used for building core.ml : we do not want an Extract.vo
-# to be produced
-#COQE = "$(COQBIN)coqtop $(COQFLAGS) -batch -load-vernac-source"
-#-custom "$(COQE) Extract.v" Machine.vo core.ml
-# building coc
-#-custom "$(CAMLOPTLINK) -o $@ core.cmx top.cmx" "core.cmx top.cmx" coc
-# the test :
-#-custom
-#       "@echo '***** test: checking the proof of the Newman lemma *****'
-#	./coc < newman.coc
-#	@echo '******************** End of test ***********************'"
-#  "" test
+# Russell
+Russell/Types.v
+Russell/Coercion.v
+Russell/Inversion.v
+Russell/Thinning.v
+Russell/Substitution.v
+Russell/GenerationNotKind.v
+Russell/GenerationCoerce.v
+Russell/Generation.v
+Russell/GenerationRange.v
+Russell/UnicityOfSortingRange.v
+Russell/UnicityOfSorting.v
+Russell/Axioms.v
+Russell/Depth.v
+Russell/Narrowing.v
+Russell/Transitivity.v
+Russell/Inversion.v
+Russell/SubjectReduction.v
+Russell/TypeCase.v
+Russell/Unicity.v
+# JRussell
+JRussell/Types.v
+JRussell/Freevars.v
+JRussell/Basic.v
+JRussell/Conversion.v
+JRussell/Coercion.v
+JRussell/Thinning.v
+JRussell/Substitution.v
+JRussell/PreFunctionality.v
+JRussell/Generation.v
+JRussell/Validity.v
+# TPOSR
+TPOSR/Terms.v
+TPOSR/LiftSubst.v
+TPOSR/Reduction.v
+TPOSR/Conv.v
+TPOSR/Conv_Dec.v
+TPOSR/Env.v
+TPOSR/Unlab.v
+TPOSR/Types.v
+TPOSR/Basic.v
+TPOSR/MaxLemmas.v
+TPOSR/TypesDepth.v
+TPOSR/Thinning.v
+TPOSR/CtxReduction.v
+TPOSR/LeftReflexivity.v
+TPOSR/Substitution.v
+TPOSR/RightReflexivity.v
+TPOSR/CtxConversion.v
+TPOSR/Generation.v
+TPOSR/Validity.v
+TPOSR/TypesFunctionality.v
+TPOSR/UniquenessOfTypes.v
+TPOSR/ChurchRosserDepth.v
+TPOSR/ChurchRosser.v
+# Meta
+Meta/JRussell_Russell.v
+Meta/TPOSR_JRussell.v
+Meta/TPOSR_Russell.v
