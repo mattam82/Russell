@@ -1,4 +1,3 @@
-
 Require Import Lambda.Utils.
 Require Import Lambda.Tactics.
 Require Import Lambda.MyList.
@@ -282,3 +281,89 @@ Proof.
   apply conv_env_eq with (A' :: e) ; auto with coc.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
+ 
+Lemma tposrp_sum_aux : forall e T T' Ts, tposrp e T T' Ts -> 
+  forall A B, T = Sum_l A B -> forall s, Ts  = Srt_l s -> 
+  exists4 A' B' s1 s2, T' = Sum_l A' B' /\
+  tposrp e A A' (Srt_l s1) /\ tposrp (A :: e) B B' (Srt_l s2) /\ 
+  sum_sort s1 s2 s.
+Proof.
+  induction 1 ; simpl ; intros.
+  
+  rewrite H0 in H.
+  rewrite H1 in H.
+  pose (tod H) ; destruct_exists.
+  pose (generation_sum H2) ; destruct_exists.
+  exists a a0 b b0 ; intuition ; try apply tposrp_tposr ; auto.
+  apply (fromd H3).
+  apply (fromd H5).
+  rewrite (equiv_sort_eq H9).
+  assumption.
+
+  pose (IHtposrp1 _ _ H1 _ H2) ; destruct_exists.
+  pose (IHtposrp2 _ _ H3 _ H2) ; destruct_exists.
+  exists a0 b0 c0 d0.
+  assert(conv_in_env (a :: e) (A :: e)).
+  apply conv_env_hd with c ; auto with coc.
+  pose (tposrp_tposr_eq H4) ; auto with coc.
+  intuition ; auto with coc.
+  apply tposrp_trans with a ; auto with coc.
+  pose (tposrp_left_refl H8).
+  pose (tposrp_right_refl H4).
+  rewrite (tposr_unique_sort t t0).
+  assumption.
+  apply tposrp_trans with b ; auto with coc.
+  pose (tposrp_left_refl H9).
+  pose (tposrp_right_refl H5).
+  assert(tposr (A :: e) b b (Srt_l d0)).
+  apply conv_env with (a :: e) ; auto with coc.
+  rewrite (tposr_unique_sort H12 t0) ; auto.
+  apply tposrp_conv_env with (a :: e) ; auto with coc.
+Qed.  
+
+Lemma tposrp_sum : forall e A B T s, tposrp e (Sum_l A B) T (Srt_l s) -> 
+  exists4 A' B' s1 s2, T = Sum_l A' B' /\
+  tposrp e A A' (Srt_l s1) /\ tposrp (A :: e) B B' (Srt_l s2) /\
+  sum_sort s1 s2 s.
+Proof.
+  intros ; apply tposrp_sum_aux with (Sum_l A B) (Srt_l s) ; auto with coc.
+Qed.
+
+Corollary injectivity_of_sum : forall e A A' B B' s, e |-- Sum_l A B ~= Sum_l A' B' : s ->
+  exists2 s1 s2, e |-- A ~= A' : s1 /\ A :: e |-- B ~= B' : s2 /\ sum_sort s1 s2 s.
+Proof.
+  intros.
+  pose (tposr_eq_cr H) ; destruct_exists.
+  pose (tposrp_sum H0).
+  pose (tposrp_sum H1).
+  destruct_exists.
+  rewrite H2 in H3.
+  generalize dependent e.
+  inversion_clear H3.
+  intros.
+  pose (tposrp_right_refl H7).
+  pose (tposrp_right_refl H4).
+  pose (tposr_unique_sort t t0).
+  rewrite <- e0 in H4.
+  pose (tposrp_tposr_eq H3).
+  pose (tposrp_tposr_eq H7).
+  pose (tposrp_tposr_eq H8).
+  pose (tposrp_tposr_eq H5).
+  exists c0 d0.
+  assert(e |-- A ~= A' : c0).
+  apply tposr_eq_trans with a0 ; auto with coc.
+  intuition.
+  apply tposr_eq_trans with b0 ; auto with coc.
+  apply conv_env_eq with (A' :: e) ; auto with coc.
+  apply tposr_eq_sym.
+  pose (tposrp_right_refl H8).
+  pose (tposrp_right_refl H5).
+  assert(tposr (A :: e) b0 b0 (Srt_l d)).
+  apply conv_env with (A' :: e) ; auto with coc.
+  apply conv_env_hd with c0 ; auto with coc.
+  rewrite (tposr_unique_sort t5 H11).
+  assumption.
+  apply conv_env_hd with c0 ; auto with coc.
+Qed.
+
+
