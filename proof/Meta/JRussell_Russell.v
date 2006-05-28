@@ -136,13 +136,13 @@ Proof.
   apply type_abs with s1 s2 ; auto with coc.
   apply substitution with A ; auto.
 
-  intuition.
+(*  intuition.
   apply type_conv with A s ; auto with coc.
   apply type_conv with A s ; auto with coc.
 
   intuition ; auto with coc.
   apply type_conv with B s ; auto with coc.
-  apply type_conv with B s ; auto with coc.
+  apply type_conv with B s ; auto with coc.*)
 
   intuition ; try apply type_sum with s1 s2 ; auto with coc.
   apply typ_conv_env with (A :: e) ; auto with coc.

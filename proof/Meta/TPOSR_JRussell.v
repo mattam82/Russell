@@ -87,9 +87,9 @@ Proof.
   
   apply jeq_subst_par with (|A|); auto with coc.
 
-  apply jeq_red with (|A|) s ; auto with coc.
+  apply jeq_conv with (|A|) s ; auto with coc.
 
-  apply jeq_exp with (|B|) s ; auto with coc.
+  apply jeq_conv with (|B|) s ; auto with coc.
 
   apply jeq_subset ; auto with coc.
 

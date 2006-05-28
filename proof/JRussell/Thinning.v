@@ -215,13 +215,13 @@ simpl ; apply jeq_app with (lift_rec 1 A0 n) ; auto with coc.
 (* Beta *)
 do 2 rewrite distr_lift_subst.
 simpl ; apply jeq_beta with s1 s2 ; auto with coc.
-
+(*
 (* Red *)
 apply jeq_red with (lift_rec 1 A0 n) s ; auto with coc.
 
 (* Exp *)
 apply jeq_exp with (lift_rec 1 B n) s ; auto with coc.
-
+*)
 (* Sum *)
 simpl ; apply jeq_sum with s1 s2 ; auto with coc.
 

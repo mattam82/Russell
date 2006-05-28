@@ -99,10 +99,6 @@ apply jeq_app with A ; auto with coc.
 
 apply jeq_beta with s1 s2 ; auto with coc.
 
-apply jeq_red with A s ; auto with coc.
-
-apply jeq_exp with B s ; auto with coc.
-
 apply jeq_sum with s1 s2 ; auto with coc.
 
 apply jeq_pair with s1 s2 s3; auto with coc.

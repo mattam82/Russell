@@ -459,5 +459,4 @@ Inductive tposrp : lenv -> lterm -> lterm -> lterm -> Prop :=
   | tposrp_trans : forall e W X Y Z, tposrp e W X Z -> tposrp e X Y Z ->
   tposrp e W Y Z.
 
-
-Hint Resolve tposr_eq_tposr tposr_eq_sym : coc.
+Hint Resolve tposr_eq_tposr tposr_eq_sym tposrp_tposr : coc.

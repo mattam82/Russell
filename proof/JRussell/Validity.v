@@ -273,7 +273,7 @@ Proof.
   exists s2.
   change (Srt s2) with (subst N (Srt s2)).
   apply substitution with A ; auto with coc.
-
+(*
   (* Red *)
   do 2 destruct H0.
   do 2 destruct H.
@@ -291,7 +291,7 @@ Proof.
 
   right.
   exists s ; auto.
-
+*)
   (* Sum *)
   do 2 destruct H.
   do 2 destruct H0.

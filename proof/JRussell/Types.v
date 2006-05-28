@@ -82,14 +82,6 @@ with jeq : env -> term -> term -> term -> Prop :=
   forall N, e |-= N : A ->
   e |-= App (Abs A M) N = subst N M : subst N B
 
-  | jeq_red : forall e M N A, e |-= M = N : A -> 
-  forall B s, e |-= A = B : Srt s ->
-  e |-= M = N : B
-  
-  | jeq_exp : forall e M N B, e |-= M = N : B -> 
-  forall A s, e |-= A = B : Srt s ->
-  e |-= M = N : A
-
   | jeq_sum : forall e A A' s1, e |-= A = A' : Srt s1 ->
   forall B B' s2, (A :: e) |-= B = B' : Srt s2 ->
   forall s3, sum_sort s1 s2 s3 ->
@@ -211,6 +203,9 @@ Hint Resolve consistent_nil consistent_cons : coc.
 
 Scheme typ_dep := Induction for typ Sort Prop.
 
+Scheme typ_coerce_mutind := Induction for typ Sort Prop
+with coerce_typ_mutind := Induction for coerce Sort Prop.
+
 Scheme typ_coerce_jeq_mutind := Induction for typ Sort Prop
 with coerce_typ_jeq_mutind := Induction for coerce Sort Prop
 with jeq_typ_coerce_mutind := Induction for jeq Sort Prop.
@@ -218,6 +213,7 @@ with jeq_typ_coerce_mutind := Induction for jeq Sort Prop.
 Check typ_coerce_jeq_mutind.
 
 Lemma typ_coerce_jeq_ind :
+
 forall (P : forall (e : env) t t0, e |-= t : t0 -> Prop)
          (P0 : forall (e : env) t t0 s, e |-= t >> t0 : s -> Prop)
          (P1 : forall (e : env) t t0 t1, e |-= t = t0 : t1 -> Prop),
@@ -362,14 +358,6 @@ forall (P : forall (e : env) t t0, e |-= t : t0 -> Prop)
         forall N (t2 : e |-= N : A),
         P e N A t2 ->
         P1 e (App (Abs A M) N) (subst N M) (subst N B) (jeq_beta t t0 t1 t2)) ->
-       (forall (e : env) M N A (j : e |-= M = N : A),
-        P1 e M N A j ->
-        forall B s (j0 : e |-= A = B : Srt s),
-        P1 e A B (Srt s) j0 -> P1 e M N B (jeq_red j j0)) ->
-       (forall (e : env) M N B (j : e |-= M = N : B),
-        P1 e M N B j ->
-        forall A s (j0 : e |-= A = B : Srt s),
-        P1 e A B (Srt s) j0 -> P1 e M N A (jeq_exp j j0)) ->
        (forall (e : env) A A' s1 (j : e |-= A = A' : Srt s1),
         P1 e A A' (Srt s1) j ->
         forall B B' s2 (j0 : A :: e |-= B = B' : Srt s2),
@@ -424,9 +412,8 @@ forall (P : forall (e : env) t t0, e |-= t : t0 -> Prop)
         P1 e N P2 A j0 -> P1 e M P2 A (jeq_trans j j0)) ->
        (forall (e : env) M N A B s (j : e |-= M = N : A),
         P1 e M N A j ->
-        forall c : e |-= A >> B : s, P0 e A B s c -> P1 e M N B (jeq_conv j c)) ->
-
-
+        forall c : e |-= A >> B : s,
+        P0 e A B s c -> P1 e M N B (jeq_conv j c)) ->
        (forall (e : env) t t0 (c : e |-= t : t0 ), P e t t0 c)
        /\ (forall (e : env) t t0 s (c : e |-= t >> t0 : s), P0 e t t0 s c)
        /\ (forall (e : env) t t0 T (c : e |-= t = t0 : T), P1 e t t0 T c).
