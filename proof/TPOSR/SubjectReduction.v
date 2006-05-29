@@ -25,15 +25,15 @@ Require Import Lambda.Meta.TPOSR_Russell.
 
 Set Implicit Arguments.
 
-Theorem subject_reduction : forall t t', par_lred1 t t' -> forall e T, tposr_term e t T ->
+Theorem subject_reduction : forall t t', par_lred1 t t' -> forall e T, tposr_term_depth e t T ->
   tposr e t t' T.
 Proof.
-  unfold tposr_term ; induction 1 ; simpl ; intros ; destruct_exists. 
+  unfold tposr_term_depth ; induction 1 ; simpl ; intros ; destruct_exists. 
 
   (* Beta *)
   pose (generation_app H1) ; destruct_exists.
-  assert(exists E, and (tposr_term (T :: e) M E) (tposr_eq e (Prod_l T E) (Prod_l a Typ) b0)).
-  assert(tposr e (Prod_l a Typ) (Prod_l a Typ) (Srt_l b0)).
+  assert(exists E, tposr_term_depth (T :: e) M E /\ e |-- Prod_l T E ~= Prod_l a Typ : b0).
+  assert(e |-- (Prod_l a Typ) -> (Prod_l a Typ) : (Srt_l b0)).
   apply tposr_prod with c ; auto with coc.
   apply (left_refl (fromd H2)).
   apply (left_refl (fromd H4)).
@@ -42,10 +42,10 @@ Proof.
   pose (generation_lambda H9) ; destruct_exists.
   exists a5.
   split.
-  exists a4 ; auto.
-  exists c2 ; auto.
+  exists a4 ; exists c2 ;auto.
   apply tposr_eq_sym.
   apply equiv_eq ; auto with coc.
+  right ; exists b4 ; auto.
 
   inversion H9.
   exists Typ.
@@ -67,7 +67,8 @@ Proof.
   apply (fromd H4).
   apply conv_env_hd with x2 ; auto with coc.
   apply tposr_conv_l with x1 b0 ; auto with coc.
-  assert(tposr_term e N a).
+
+  assert(tposr_term_depth e N a).
   exists a1 ; exists  b1 ; auto.
   pose (IHpar_lred1_2 _ _ H14).
   apply tposr_conv_l with a x2 ; auto with coc.
@@ -90,6 +91,17 @@ Proof.
   rewrite H19.
   clear H19 H5 ; intros.
   
+  pose (injectivity_of_sum H20) ; destruct_exists.
+  pose (tposr_unique_sort (conv_refl_r H5) (fromd H8)).
+  pose (tposr_unique_sort (conv_refl_l H19) (fromd H3)).
+  assert(a :: e |-- a2 -> b3 : Srt_l c3).
+  apply conv_env with (a1 :: e) ; auto with coc.
+  apply (fromd H10).
+  apply conv_env_hd with a5 ; auto with coc.
+
+  pose (tposr_unique_sort (conv_refl_r H19) H22).
+
+
   apply tposr_equiv_r with a ; auto with coc.
   apply tposr_pi1_red with b1 c2 b3 c3 x2 a4 ; auto with coc.
   apply (fromd H8).
@@ -97,14 +109,48 @@ Proof.
   apply tposr_pair with c2 c3 x2 ; auto with coc.
   apply (fromd H8).
   apply (fromd H10).
-  assert(tposr_term e M a1).
+
+  assert(tposr_term_depth e M a1).
   exists a3 ; exists b4 ; auto.
-  apply (IHpar_lred1 _ _ H5).
+  apply (IHpar_lred1 _ _ H23).
+
   apply (fromd H17).
-  assert(tposr e (Sum_l a a0) (Sum_l a a0) (Srt_l x1)).
-  apply tposr_sum with c c0 ; auto with coc.
-  apply (left_refl (fromd H1)).
-  apply (left_refl (fromd H3)).
-  pose (injectivity_of_sum_equiv H5 H20) ; destruct_exists.
-  assert(a5 = c2).
-  pose (conv_refl_r H19).
+  
+  rewrite <- e0 ; auto.
+
+  rewrite <- e2 ; auto.
+  
+  pose (generation_pair H11) ; destruct_exists.
+  generalize dependent e.
+  inversion H8.
+  subst.
+  inversion H1 ; subst.
+  intros.
+  clear H1 H8.
+  
+  assert(tposr_term_depth e a2 a).
+  exists a6 ; exists b6 ; auto.
+  pose (IHpar_lred1 _ _ H1).
+
+  pose (tposr_unique_sort (fromd H15) (conv_refl_r H9)).
+  pose (tposr_unique_sort (fromd H5) (fromd H17)).
+
+  apply tposr_equiv_r with a1 ; auto with coc.
+  apply tposr_pi1_red with b4 c2 b5 c3 x2 a7 ; auto with coc.
+  apply (fromd H15).
+  apply (fromd H17).
+  apply tposr_pair with c2 c3 x2 ; auto with coc.
+  apply (fromd H15).
+  apply (fromd H17).
+
+  apply (fromd H22).
+  rewrite e0 ; assumption.
+  rewrite <- e1 ; assumption.
+
+  (* Pi2 *)
+  pose (generation_pi2 H0).
+
+Admitted.
+
+
+

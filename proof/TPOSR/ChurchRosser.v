@@ -174,6 +174,8 @@ Proof.
    intros.
    destruct H.
    inversion H ; auto.
+   inversion H0 ; inversion H1.
+   auto.
    destruct H.
    pose (tposr_eq_cr H) ; destruct_exists.
    pose (tposrp_sort H0).
@@ -364,19 +366,6 @@ Proof.
   rewrite (tposr_unique_sort t5 H11).
   assumption.
   apply conv_env_hd with c0 ; auto with coc.
-Qed.
-
-Lemma equiv_eq : forall e A s, e |-- A -> A : Srt_l s ->
-  forall B, equiv e A B -> e |-- A ~= B : s.
-Proof.
-  intros.
-  destruct H0.
-  rewrite <- H0.
-  apply tposr_eq_tposr ; auto.
-
-  destruct H0.
-  pose (conv_refls H0) ; destruct_exists.
-  rewrite (tposr_unique_sort H H1) ; assumption.
 Qed.
 
 Corollary injectivity_of_sum_equiv : forall e A A' B B' s, 
