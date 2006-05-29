@@ -391,6 +391,21 @@ Proof.
   apply tposrd_tposr_type with n ; auto.
 Qed.
 
+Definition tposr_term_depth G M A := exists M', exists n, G |-- M -> M' : A [n].
 
+Lemma tposr_term_tod : forall G M A, tposr_term G M A  -> tposr_term_depth G M A.
+Proof.
+  intros.
+  unfold tposr_term in H ; destruct_exists.
+  pose (tposr_tposrd_type H) ; destruct_exists.
+  exists x ; exists x0 ; auto.
+Qed.
 
+Lemma tposr_term_fromd : forall G M A, tposr_term_depth G M A  -> tposr_term G M A.
+Proof.
+  intros.
+  unfold tposr_term_depth in H ; destruct_exists.
+  exists x.
+  apply (tposrd_tposr_type H).
+Qed.
 

@@ -81,3 +81,36 @@ Proof.
   apply (IHg t) with k  ; auto.
 Qed.
 
+Lemma tposr_not_kind_aux : forall e t u T, tposr e t u T -> t <> Srt_l kind.
+Proof.
+  induction 1 ; simpl ; red ; intros ; try discriminate.
+  contradiction.
+  contradiction.
+Qed.
+
+Lemma tposr_not_kind : forall e u T, ~ tposr e (Srt_l kind) u T.
+Proof.
+  intros.
+  red ; intros ; apply (tposr_not_kind_aux H) ; auto.
+Qed.
+
+Lemma lsubst_to_sort : forall M N s, lsubst M N = Srt_l s -> or (M = Srt_l s) (N = Srt_l s).
+Proof.
+  induction N ; simpl ; intros ; try discriminate.
+  unfold lsubst in H ; simpl in H.
+  inversion H.
+  right ; auto.
+
+  left.
+  generalize H ; clear H.
+  case n.
+  simpl ; intros.
+  unfold lsubst in H ; simpl in H.
+  rewrite llift0 in H.
+  assumption.
+  intros.
+  unfold lsubst in H ; simpl in H.
+  discriminate.
+Qed.
+
+

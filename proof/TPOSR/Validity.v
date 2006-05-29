@@ -39,114 +39,49 @@ Proof.
   pose (wf_tposr H1).
   pose (wf_sort_lift t H3).
   destruct_exists.
-  destruct H4.
-  right ; exists x2 x1.
-  rewrite H4 ; assumption.
-  destruct_exists.
-  destruct (conv_refls H4).
-  right ; exists T x3 ; assumption.
-  
+  destruct H4 ; destruct_exists.
+  elim (eq_kind_typ_r_l H4 H5).
+
+  right ; exists T x3 ; apply (conv_refl_l H4).  
+
   right.
   pose (generation_lambda H0) ; destruct_exists.
-  pose (H _ H2 _ _ _ _  H1).
-  pose (H _ H4 _ _ _ _ H3).
-  induction H8.
-  rewrite H8.
-  exists (Prod_l a b1) b0.
-  apply tposr_prod with b ; auto with coc.
-  apply tposrd_tposr_type with c ; auto with coc.
-  apply tposrd_tposr_type with c1 ; auto with coc.
-  destruct_exists.
-  exists T x0 ; auto with coc.
-  destruct (conv_refls H8) ; auto.
+  exists T b0.
+  apply (conv_refl_l H8).
 
   pose (generation_app H0) ; destruct_exists.
-  destruct H7.
-  right ; exists Y s ; assumption.
-  destruct (conv_refls H7).
-  right ; exists Y s ; auto.
-  destruct (conv_refls H7_).
-  right ; exists W s ; auto.
+  right ; exists T b0 ; apply (conv_refl_l H7).
 
   pose (generation_pair H0) ; destruct_exists.
-  destruct H12.
-  right.
-  assert(e |-- Sum_l a a0 -> Sum_l b b0 : Srt_l x0) ; auto with coc.
-  apply tposr_sum with c c0 ; auto.
-  apply tposrd_tposr_type with d ; auto.
-  apply tposrd_tposr_type with d0 ; auto.
-  exists (Sum_l b b0) x0.
-  rewrite H12 ; assumption.
-  destruct_exists.
-  right ; exists T x1.
-  destruct (conv_refls H12) ; assumption.
+  right ; exists T x0 ; apply (conv_refl_l H12).
 
   pose (generation_prod H0) ; destruct_exists.
   destruct H6 ; destruct_exists.
   left ; exists b0 ; auto.
-  destruct (conv_refls H6).
-  right ; exists T x0 ; auto.
+  destruct H6.
+  rewrite H6 ; rewrite <- H7 ; auto.
+  right ; exists T x0 ; apply (conv_refl_l H6).
   
   pose (generation_sum H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
   left ; exists x0 ; auto.
-  destruct (conv_refls H7).
-  right ; exists T x1 ; auto.
+  destruct H7.
+  rewrite H7 ; rewrite <- H8 ; auto.
+
+  right ; exists T x1 ; apply (conv_refl_l H7).
 
   pose (generation_subset H0) ; destruct_exists.
-  destruct H6 ; destruct_exists.
-  left ; exists set ; auto.
-  destruct (conv_refls H6).
-  right ; exists T x0 ; auto.
+  right ; exists T kind ; apply (conv_refl_l H6).
 
   pose (generation_pi1 H0) ; destruct_exists.
-  destruct H8 ; destruct_exists.
   destruct H7 ; destruct_exists.
-  rewrite H7.
-  right.
-  exists b c.
-  rewrite <- H8.
-  apply tposrd_tposr_type with d ; auto.
-  right ; exists T x1.
-  destruct (conv_refls H7) ; assumption.
-
-  destruct H7 ; destruct_exists.
-  rewrite H7.
-  destruct (conv_refls H9).
-  right ; exists a1 c ; auto.
-  right ; exists T x1.
-  destruct (conv_refls H7) ; assumption.
+  destruct H7.
+  left ; exists kind ; auto.
+  right ; exists T x1 ; apply (conv_refl_l H7).
 
   pose (generation_pi2 H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
-  right.
-  exists (lsubst (Pi1_l t1 t2) b0) c0.
-  rewrite H7.
-  change (Srt_l c0) with (lsubst (Pi1_l t1 t2) (Srt_l c0)).
-  apply substitution with a ; auto with coc.
-  apply tposrd_tposr_type with d0 ; auto.
-
-  rewrite H5.
-  apply tposr_pi1 with c c0 x0 ; auto with coc.
-  apply left_refl with b ; auto.
-  apply tposrd_tposr_type with d ; auto.
-  apply left_refl with b0 ; auto.
-  apply tposrd_tposr_type with d0 ; auto.
-  pose (tposrd_tposr_type H1) ; auto.
-  pose (tposrd_tposr_type H3) ; auto.
-  destruct H8 ; destruct_exists.
-  pose (tposrd_tposr_type H8) ; auto.
-  apply left_refl with b1 ; auto.
-
-  rewrite H8.
-  pose (tposrd_tposr_type H9) ; auto.
-  pose (tposrd_tposr_type H11) ; auto.
-  apply tposr_pair with c c0 x0 ; auto with coc.
-  apply left_refl with b ; auto.
-  apply left_refl with b0 ; auto.
-  apply left_refl with b1 ; auto.
-  apply left_refl with b2 ; auto.
-  
-  right ; exists T x1.
-  destruct (conv_refls H7) ; assumption.
+  destruct H7.
+  left ; exists kind ; auto.
+  right ; exists T x1 ; apply (conv_refl_l H7).
 Qed.

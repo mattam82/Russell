@@ -8,6 +8,7 @@ Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
+Require Import Lambda.TPOSR.RightReflexivity.
 
 Set Implicit Arguments.
 
@@ -16,8 +17,47 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
-Definition equiv e A B := A = B \/ exists s, e |-- A ~= B : s.
+Definition eq_kind U V := U = Srt_l kind /\ V = Srt_l kind.
+Lemma eq_kind_sym : forall U V, eq_kind U V -> eq_kind V U.
+Proof.
+  unfold eq_kind ; intuition.
+Qed.
+
+Lemma eq_kind_typ_l_l : forall U V, eq_kind U V -> forall e x1 x2, ~ (e |-- U -> x1 : x2).
+Proof.
+  intros.
+  destruct H.
+  rewrite H.
+  red ; intros.
+  apply (tposr_not_kind H1).
+Qed.
+
+Lemma eq_kind_typ_r_l : forall U V, eq_kind U V -> forall e x1 x2, ~ (e |-- V -> x1 : x2).
+Proof.
+  intros.
+  pose (eq_kind_sym H).
+  apply eq_kind_typ_l_l with U ; auto.
+Qed.
+
+Lemma eq_kind_typ_l_r : forall U V, eq_kind U V -> forall e x1 x2, ~ (e |-- x1 -> U : x2).
+Proof.
+  intros.
+  red ; intros.
+  pose (right_refl H0).
+  elim eq_kind_typ_l_l with U V e U x2 ; auto.
+Qed.
+
+Lemma eq_kind_typ_r_r : forall U V, eq_kind U V -> forall e x1 x2, ~ (e |-- x1 -> V : x2).
+Proof.
+  intros.
+  pose (eq_kind_sym H).
+  apply eq_kind_typ_l_r with U ; auto.
+Qed.
+
+Definition equiv e A B := (eq_kind A B \/ exists s, e |-- A ~= B : s).
 Definition equiv_sort e A B s := e |-- A ~= B : s.
+
+Hint Unfold eq_kind equiv : coc.
 
 Lemma generation_sort :  forall e s u T, e |-- Srt_l s -> u : T -> 
   u = Srt_l s /\ T = Srt_l kind.
@@ -151,6 +191,10 @@ Admitted.
 Proof.
   intros ; eapply generation_prod_aux ; auto ; auto.
 Qed.
+*)
+
+(*
+
 
 Lemma generation_sum_aux : forall e T A, e |-- T : A -> forall U V, T = Sum U V ->
   exists s1, exists s2, exists s3,
@@ -191,6 +235,7 @@ Proof.
   right with U s ; auto with coc.
 Qed.
 *)
+
 Lemma generation_sum : forall e U V X A m, e |-- Sum_l U V -> X : A [m] -> 
   exists3 U' s1 n, 
   exists3 V' s2 p, exists s3,
@@ -250,7 +295,7 @@ Lemma generation_lambda : forall e T M X A m, e |-- Abs_l T M -> X : A [m] ->
   e |-- T -> T' : Srt_l s1 [n] /\ n < m /\
   T :: e |-- M -> M' : C [p] /\ p < m /\
   T :: e |-- C -> C' : Srt_l s2 [q] /\ q < m /\
-  X = Abs_l T' M' /\ equiv e A (Prod_l T C).
+  X = Abs_l T' M' /\ equiv_sort e A  (Prod_l T C) s2.
 Admitted.
 (*
 Proof.
@@ -372,7 +417,7 @@ Lemma generation_pair : forall e T M N X C m, e |-- Pair_l T M N -> X : C [m] ->
   sum_sort s1 s2 s3 /\
   exists2 M' q, e |-- M -> M' : A [q] /\ q < m /\
   exists2 N' r, e |-- N -> N' : lsubst M B [r] /\ r < m /\
-  X = Pair_l (Sum_l A' B') M' N' /\ equiv e C (Sum_l A B).
+  X = Pair_l (Sum_l A' B') M' N' /\ equiv_sort e C (Sum_l A B) s3.
 Admitted.
 (*
 Proof.
@@ -500,6 +545,6 @@ Lemma generation_subset : forall e U V X A m, e |-- Subset_l U V -> X : A [m] ->
   exists2 V' p, 
   e |-- U -> U' : Srt_l set [n] /\ n < m /\
   U :: e |-- V -> V' : Srt_l prop [p] /\ p < m /\
-  X = Subset_l U' V' /\ equiv e A (Srt_l set).
+  X = Subset_l U' V' /\ equiv_sort e A (Srt_l set) kind.
 Admitted.
 

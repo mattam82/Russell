@@ -454,6 +454,8 @@ Proof.
   eapply eq_tposr_wf_mutind with (P := P) (P0 := P0) (P1 := P1) ; auto ; auto.
 Qed.
 
+Definition tposr_term G M A := exists M', G |-- M -> M' : A.
+
 Inductive tposrp : lenv -> lterm -> lterm -> lterm -> Prop :=
   | tposrp_tposr : forall e X Y Z, e |-- X -> Y : Z -> tposrp e X Y Z
   | tposrp_trans : forall e W X Y Z, tposrp e W X Z -> tposrp e X Y Z ->

@@ -25,14 +25,12 @@ Require Import Lambda.TPOSR.MaxLemmas.
 
 Set Implicit Arguments.
 
-Definition tod := tposr_tposrd_type.
-Definition fromd := tposrd_tposr_type.
-
 Lemma tposr_equiv_l : forall e A B, equiv e A B -> forall M N, 
   e |-- M -> N : A -> e |-- M -> N : B.
 Proof.
   destruct 1 ; intros.
-  rewrite <- H ; assumption.
+  destruct H.
+  rewrite H in H0 ; rewrite H1 ; assumption.
   destruct H.
   apply tposr_conv_l with A x ; auto.
 Qed. 
@@ -41,7 +39,8 @@ Lemma tposr_equiv_r : forall e A B, equiv e A B -> forall M N,
   e |-- M -> N : B -> e |-- M -> N : A.
 Proof.
   destruct 1 ; intros.
-  rewrite H ; assumption.
+  destruct H.
+  rewrite H ; rewrite H1 in H0 ; assumption.
   destruct H.
   apply tposr_conv_r with B x ; auto.
 Qed. 
@@ -150,7 +149,7 @@ Proof.
   apply (fromd H).
   apply (left_refl (fromd H0)).
 
-  apply tposr_equiv_r with (Prod_l A0 a1) ; auto.
+  apply tposr_conv_r with (Prod_l A0 a1) b0 ; auto.
   apply tposr_exp with (Prod_l A' a1) b0 ; auto with coc.
   apply tposr_abs with b b1 b0 ; auto with coc.
   apply conv_env with (A0 :: G) ; auto with coc.
@@ -169,7 +168,7 @@ Proof.
   apply (fromd H7).
   apply (left_refl (fromd H0)).
 
-  apply tposr_equiv_r with (Prod_l A0 a1) ; auto.
+  apply tposr_conv_r with (Prod_l A0 a1) b0 ; auto.
   apply tposr_exp with (Prod_l a a1) b0 ; auto with coc.
   apply tposr_abs with b b1 b0 ; auto with coc.
   apply conv_env with (A0 :: G) ; auto with coc.
@@ -187,22 +186,18 @@ Proof.
   pose (IH _ H16 _ _ _ _ _ H2 _ _ H12) ; destruct_exists.
   pose (uniqueness_of_types (toq H2) (toq H12)).
   assert(c = s1).
-  destruct e0 ; destruct_exists.
-  rewrite <- H21 in H8.
-  apply (tposrd_unique_sort H8 H).
-  destruct (conv_refls H21).
-  rewrite <- (tposr_unique_sort H22 (fromd H)).
-  rewrite <- (tposr_unique_sort H23 (fromd H8)).
-  reflexivity.
+  destruct e0 ; unfold eq_kind in H21 ; destruct_exists.
+  rewrite H22 in H8 ; clear H21.
+  elim (tposr_not_kind (fromd H8)).
+  rewrite (tposr_unique_sort (fromd H8) (conv_refl_r H21)).
+  apply (tposr_unique_sort (conv_refl_l H21) (fromd H)).
 
   assert(A0 :: G |-- B -> a0 : Srt_l b0).
   apply conv_env with (a :: G) ; auto with coc.
   apply (fromd H10).
   destruct e0.
-  rewrite H22.
-  apply conv_env_hd with c.
-  apply tposr_eq_tposr.
-  apply (left_refl (fromd H8)).
+  destruct H22.
+  rewrite H23 in H8 ; elim (tposr_not_kind (fromd H8)).
   destruct H22.
   apply conv_env_hd with x1 ; auto with coc.
 
@@ -210,10 +205,8 @@ Proof.
   apply conv_env with (A0 :: G) ; auto with coc.
   apply (fromd H0).
   destruct e0.
-  rewrite H23.
-  apply conv_env_hd with c.
-  apply tposr_eq_tposr.
-  apply (left_refl (fromd H8)).
+  destruct H23.
+  rewrite H24 in H8 ; elim (tposr_not_kind (fromd H8)).
   destruct H23.
   apply conv_env_hd with x1 ; auto with coc.
 
@@ -312,7 +305,7 @@ Proof.
 
   assert (conv_in_env (A0 :: G) (a3 :: G)).
   destruct e0.
-  rewrite H55.
+  destruct H55.
   apply H54.
   destruct H55.
   apply conv_env_hd with x5.

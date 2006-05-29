@@ -22,8 +22,6 @@ Require Import Lambda.Meta.TPOSR_Russell.
 
 Set Implicit Arguments.
 
-Definition tposr_term G M A := exists M', exists n, G |-- M -> M' : A [n].
-
 Lemma sum_sort_functional : forall a b c c', sum_sort a b c -> sum_sort a b c' -> c = c'.
 Proof.
   intros.
@@ -38,7 +36,7 @@ Proof.
   rewrite H4 ; rewrite H5 ; auto.
 Qed.
 
-Lemma toq : forall G M M' A n, G |-- M -> M' : A [n] -> tposr_term G M A.
+Lemma toq : forall G M M' A n, G |-- M -> M' : A [n] -> tposr_term_depth G M A.
 Proof.
   intros ; exists M' ; exists n ; auto.
 Qed.
@@ -83,23 +81,37 @@ Proof.
   intros.
   destruct H ; destruct H0 ; intuition ; destruct_exists.
 
-  left ; rewrite H0 ; rewrite H ; reflexivity.
+  destruct H ; destruct H0.
+  rewrite H ; rewrite H0 ; left ; unfold eq_kind ; intuition. 
   
-  right ; exists x ; rewrite H ; auto with coc.
+  destruct H.
+  rewrite H1 in H0.
+  pose (conv_refl_r H0).
+  elim (tposr_not_kind t) ; auto.
 
-  right ; exists x ; rewrite H0 ; auto with coc.
+  destruct H0.
+  rewrite H1 in H.
+  elim (tposr_not_kind (conv_refl_r H)).
+
+  right.
 
   pose (tposr_eq_unique_sort_right H H0).
-  rewrite e in H.
-  right ; exists x ; apply tposr_eq_trans with C ; auto with coc.
+  exists x.
+  apply tposr_eq_trans with C ; auto with coc.
+  rewrite <- e ; auto.
 Qed.
 
+
+Definition tod := tposr_tposrd_type.
+Definition fromd := tposrd_tposr_type.
+
 Theorem uniqueness_of_types : forall e M A B, 
-  tposr_term e M A -> tposr_term e M B -> equiv e A B.
+  tposr_term_depth e M A -> tposr_term_depth e M B -> equiv e A B.
 Proof. 
   intros e M ; generalize e ; clear e.
-  induction M ; unfold tposr_term ; simpl ; intros ; destruct_exists ; auto with coc.
+  induction M ; unfold tposr_term_depth, tposr_term ; simpl ; intros ; destruct_exists ; auto with coc.
 
+  (* Sorts *)
   pose (tposrd_tposr_type H).
   pose (tposrd_tposr_type H0).
   pose (generation_sort t).
@@ -119,15 +131,8 @@ Proof.
   rewrite e0 in H5.
   rewrite <- H2 in H5.
   rewrite H5 in H6.
-  destruct H3 ; destruct_exists.
-  rewrite H3 ; assumption.
-  destruct H6 ; destruct_exists.
-  rewrite <- H6 in H3.
-  right ; exists x7 ; auto with coc.
-  right ; exists x7.
-  apply tposr_eq_trans with x3 ; auto with coc.
-  rewrite (tposr_eq_unique_sort_right H3 H6).
-  assumption.
+  apply (equiv_trans H6 H3).
+
 
   (* Abs *)
   pose (generation_lambda H) ; destruct_exists.
@@ -135,42 +140,29 @@ Proof.
   pose (IHM2 _ _ _ (toq H3) (toq H11)).
   pose (tposrd_unique_sort H1 H9).
   destruct e0.
-  rewrite H17 in H8.
-  apply (equiv_trans H8 H16).
-   
+  destruct H17.
+  rewrite H18 in H13.
+  elim (tposr_not_kind (fromd H13)).
+  right.
+  exists b0.
   assert(tposr_eq e M1 M1 b2).
   apply tposr_eq_tposr.
-  apply left_refl with a2 ; auto.
-  apply tposrd_tposr_type with c2 ; auto.
+  apply (left_refl (fromd H9)).
+  destruct H17.
+  assert(b0 = x3).
+  apply (tposr_unique_sort (fromd H5) (conv_refl_l H17)).
 
-  destruct H8 ; destruct_exists.
-
-  rewrite H8 ; right ; intuition.
-
-  destruct H16 ; destruct_exists.
-  rewrite H16.
-  exists x3.
-  apply pi_functionality with b2 ; auto with coc.
-
-  exists x3.
-  apply tposr_eq_trans with (Prod_l M1 a4) ; auto with coc.
-  apply pi_functionality with b2 ; auto with coc.
-
-  pose (pi_functionality H18 H17).
-  rewrite <- (tposr_eq_unique_sort_right H16 t) ; auto with coc.
-
-  pose (pi_functionality H18 H17).
-  destruct H16 ; destruct_exists.
-  rewrite H16.
-  right ; exists x3.
-  rewrite (tposr_eq_unique_sort (tposr_eq_sym H8) t) in H8 ; auto with coc.
   apply tposr_eq_trans with (Prod_l M1 a1) ; auto with coc.
-
-  right ; exists x3.
-  rewrite (tposr_eq_unique_sort (tposr_eq_sym H8) t) in H8 ; auto with coc.
-  rewrite (tposr_eq_unique_sort_right H16 t) in H16 ; auto with coc.
-  apply tposr_eq_trans with (Prod_l M1 a1) ; auto with coc.
-  apply tposr_eq_trans with (Prod_l M1 a4) ; auto with coc.
+  assert(tposr_eq e (Prod_l M1 a1) (Prod_l M1 a4) b0).
+  rewrite <- H19 in H17.
+  apply (pi_functionality H18 H17).
+  assert(b3 = x3).
+  apply (tposr_unique_sort (fromd H13) (conv_refl_r H17)).
+  apply tposr_eq_trans with (Prod_l M1 a4) ; auto.
+  apply tposr_eq_sym.
+  rewrite H19.
+  rewrite <- H21.
+  apply H16.
 
   (* App *)
   pose (generation_app H) ; destruct_exists.
@@ -184,7 +176,8 @@ Proof.
   pose (generation_pair H) ; destruct_exists.
   rewrite H13 in H1.
   rewrite H1 in H24.
-  apply (equiv_trans H24 H12).
+  right ; exists x4.
+  apply (equiv_sort_trans H24 H12).
 
   (* Prod *)
   pose (generation_prod H) ; destruct_exists.
@@ -207,7 +200,7 @@ Proof.
   (* Subset *)
   pose (generation_subset H) ; destruct_exists.
   pose (generation_subset H0) ; destruct_exists.
-  apply (equiv_trans H6 H12).
+  right ; exists kind ; apply (equiv_sort_trans H6 H12).
 
   (* Pi1 *)
   pose (generation_pi1 H) ; destruct_exists.

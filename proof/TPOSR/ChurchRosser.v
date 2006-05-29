@@ -366,4 +366,26 @@ Proof.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
 
+Lemma equiv_eq : forall e A s, e |-- A -> A : Srt_l s ->
+  forall B, equiv e A B -> e |-- A ~= B : s.
+Proof.
+  intros.
+  destruct H0.
+  rewrite <- H0.
+  apply tposr_eq_tposr ; auto.
 
+  destruct H0.
+  pose (conv_refls H0) ; destruct_exists.
+  rewrite (tposr_unique_sort H H1) ; assumption.
+Qed.
+
+Corollary injectivity_of_sum_equiv : forall e A A' B B' s, 
+  e |-- Sum_l A B -> Sum_l A B : Srt_l s ->
+  equiv e (Sum_l A B) (Sum_l A' B') ->
+  exists2 s1 s2, e |-- A ~= A' : s1 /\ A :: e |-- B ~= B' : s2 /\ sum_sort s1 s2 s.
+Proof.
+  intros.
+  pose (equiv_eq H H0).
+  apply injectivity_of_sum.
+  assumption.
+Qed.

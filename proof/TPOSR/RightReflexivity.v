@@ -22,4 +22,16 @@ Corollary conv_refls : forall e u v s, e |-- u ~= v : s ->
   e |-- u -> u : Srt_l s /\ e |-- v -> v : Srt_l s.
 Admitted.
 
+Corollary conv_refl_l :  forall e u v s, e |-- u ~= v : s -> e |-- u -> u : Srt_l s.
+Proof.
+  intros.
+  apply (proj1 (conv_refls H)).
+Qed.
+
+Corollary conv_refl_r :  forall e u v s, e |-- u ~= v : s -> e |-- v -> v : Srt_l s.
+Proof.
+  intros.
+  apply (proj2 (conv_refls H)).
+Qed.
+
 Hint Resolve right_refl conv_refls : coc.
