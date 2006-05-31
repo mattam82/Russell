@@ -386,7 +386,7 @@ Proof.
   apply substitution_sorted with (Srt_l s) ; auto with coc.
   apply tposr_eq_sym.
   eapply IHtposr_eq ; eauto with coc.
-*)
+
 Lemma tposrp_substitution : forall e d d' t, e |-- d -+> d' : t ->
   forall u U, t :: e |-- u -> u : U -> 
   e |-- (lsubst d u) -+> (lsubst d' u) : (lsubst d U).
@@ -469,4 +469,4 @@ Corollary substitution_eq : forall t e u v s, t :: e |-- u ~= v : s ->
 Proof.
   intros ; eapply substitution_eq_aux ; 
 
-
+*)

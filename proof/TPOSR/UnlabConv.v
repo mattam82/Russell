@@ -154,8 +154,8 @@ Proof.
   unfold eq_kind in H26 ; intuition ; try discriminate.
   pose (injectivity_of_pi H26) ; destruct_exists.
   pose (tposr_eq_cr H28) ; destruct_exists.
-
-  assert(G |-- lsubst N3 N1 ~= lsubst M3 M1 : b0).
+Admitted.
+(*  assert(G |-- lsubst N3 N1 ~= lsubst M3 M1 : b0).
   apply substitution_eq with a1 ; auto with coc.
    
   exists (App_l x7 x x0).
@@ -176,3 +176,4 @@ assert(tposr_term G M2 a1) by eauto with coc.
 
 
 
+*)
