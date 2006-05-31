@@ -343,8 +343,6 @@ Proof.
   (P0 := fun e => fun H : tposrd_wf e => tposr_wf e)
   ; simpl ; intros ; auto with coc  ; intuition  ; destruct_exists ; auto with coc.
 
-  apply tposr_var ; auto with coc.
-
   apply tposr_prod with s1 ; auto with coc.
 
   apply tposr_abs with s1 B' s2 ; auto with coc.
@@ -356,8 +354,6 @@ Proof.
   apply tposr_red with A s ; auto with coc.
 
   apply tposr_exp with B s ; auto with coc.
-
-  apply tposr_subset ; auto with coc.
 
   apply tposr_sum with s1 s2 ; auto with coc.
   
@@ -409,3 +405,5 @@ Proof.
   apply (tposrd_tposr_type H).
 Qed.
 
+Definition tod := tposr_tposrd_type.
+Definition fromd := tposrd_tposr_type.

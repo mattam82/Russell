@@ -52,6 +52,7 @@ TPOSR/Env.v
 TPOSR/Unlab.v
 TPOSR/Types.v
 TPOSR/Basic.v
+TPOSR/UnicityOfSorting.v
 TPOSR/MaxLemmas.v
 TPOSR/TypesDepth.v
 TPOSR/Thinning.v
@@ -60,12 +61,16 @@ TPOSR/LeftReflexivity.v
 TPOSR/Substitution.v
 TPOSR/RightReflexivity.v
 TPOSR/CtxConversion.v
+TPOSR/Equiv.v
 TPOSR/Generation.v
 TPOSR/Validity.v
 TPOSR/TypesFunctionality.v
 TPOSR/UniquenessOfTypes.v
 TPOSR/ChurchRosserDepth.v
 TPOSR/ChurchRosser.v
+TPOSR/SubjectReduction.v
+TPOSR/TPOSR_trans.v
+TPOSR/UnlabConv.v
 # Meta
 Meta/JRussell_Russell.v
 Meta/TPOSR_JRussell.v

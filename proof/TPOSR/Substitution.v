@@ -29,6 +29,44 @@ Theorem substitution : forall e t u v U, (t :: e) |-- u -> v : U ->
   forall d d', e |-- d -> d' : t -> e |-- (lsubst d u) -> (lsubst d' v) : (lsubst d U).
 Admitted.
 
+Corollary tposrp_substitution_aux : forall G u v U, G |-- u -+> v : U -> forall t e, G = (t :: e) ->
+  forall d d', e |-- d -> d' : t -> e |-- (lsubst d u) -+> (lsubst d' v) : (lsubst d U).
+Proof.
+  induction 1 ; simpl ; intros; subst ; eauto with coc.
+  apply tposrp_tposr.
+  apply substitution with t ; auto.
+Qed.
+
+Corollary tposrp_substitution : forall t e u v U, t :: e |-- u -+> v : U -> 
+  forall d d', e |-- d -> d' : t -> e |-- (lsubst d u) -+> (lsubst d' v) : (lsubst d U).
+Proof.
+  intros.
+  eapply tposrp_substitution_aux  ; eauto with coc.
+Qed.
+
+Corollary substitution_sorted : forall e t u v s, (t :: e) |-- u -> v : Srt_l s ->
+  forall d d', e |-- d -> d' : t -> e |-- (lsubst d u) -> (lsubst d' v) : Srt_l s.
+Proof.
+  intros.
+  change (Srt_l s) with (lsubst d (Srt_l s)).
+  apply substitution with t ; auto.
+Qed.
+
+Corollary substitution_eq_aux : forall G u v s, G |-- u ~= v : s -> forall e t, G = (t :: e) ->
+  forall d, e |-- d -> d : t -> e |-- (lsubst d u) ~= (lsubst d v) : s.
+Proof.
+  induction 1 ; simpl ; intros ; eauto with coc.
+  subst.
+  apply tposr_eq_tposr.
+  apply substitution_sorted with t ; auto.
+  apply tposr_eq_trans with (lsubst d X) ; eauto with coc.
+Qed.
+
+Corollary substitution_eq : forall t e u v s, t :: e |-- u ~= v : s -> 
+  forall d, e |-- d -> d : t -> e |-- (lsubst d u) ~= (lsubst d v) : s.
+Proof.
+  intros ; eapply substitution_eq_aux ; eauto with coc.
+Qed.
 (*Lemma ind_sub_weak : forall g (d : term) t, g |-- d : t ->
    (forall e u (U : term), e |-- u : U ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 

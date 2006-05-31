@@ -68,6 +68,12 @@ Proof.
   apply tposr_eq_trans with X ; auto with coc.
 Qed.
 
+Lemma conv_in_env_sym : forall e f, conv_in_env e f -> conv_in_env f e.
+Proof.
+  induction 1 ; eauto with coc.
+Qed.
+
+Hint Resolve conv_in_env_sym : coc.
 (*
 Lemma ind_conv_env :
   (forall e t T, e |-- t : T -> 

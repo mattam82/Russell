@@ -14,7 +14,9 @@ Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
+Require Import Lambda.TPOSR.Validity.
 Require Import Lambda.TPOSR.TypesDepth.
 Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
@@ -152,6 +154,16 @@ Proof.
   apply tposrp_trans with x ; auto with coc.
 Qed.
 
+Lemma tposr_sort_aux : forall e T T' s', tposr e T T' s' -> forall s, T = Srt_l s -> T' = Srt_l s.
+Proof.
+  induction 1 ; intros ; try discriminate ; auto with coc.
+Qed. 
+
+Lemma tposr_sort : forall e s T' s', tposr e (Srt_l s) T' s' -> T' = Srt_l s.
+Proof.
+  intros ; apply tposr_sort_aux with e (Srt_l s) s' ; auto.
+Qed. 
+ 
 Lemma tposrp_sort_aux : forall e T T' s', tposrp e T T' s' -> forall s, T = Srt_l s -> T' = Srt_l s.
 Proof.
   induction 1 ; intros.
@@ -184,18 +196,6 @@ Proof.
    inversion e1 ; auto.
 Qed.   
 
-Lemma tposrp_left_refl : forall e A B T, tposrp e A B T -> e |-- A -> A : T.
-Proof.
-  induction 1 ; auto with coc.
-  apply (left_refl H).
-Qed.
-
-Lemma tposrp_right_refl : forall e A B T, tposrp e A B T -> e |-- B -> B : T.
-Proof.
-  induction 1 ; auto with coc.
-  apply (right_refl H).
-Qed.
-
 Lemma tposrp_conv_env : forall e A B T, tposrp e A B T ->
   forall f, conv_in_env e f -> tposrp f A B T.
 Proof.
@@ -227,7 +227,7 @@ Proof.
   rewrite H0 in H.
   rewrite H1 in H.
   pose (tod H) ; destruct_exists.
-  pose (generation_prod H2) ; destruct_exists.
+  pose (generation_prod_depth H2) ; destruct_exists.
   exists a a0 b ; intuition ; try apply tposrp_tposr ; auto.
   apply (fromd H3).
   rewrite (equiv_sort_eq H8).
@@ -244,8 +244,6 @@ Proof.
   apply tposrp_trans with b ; auto with coc.
   apply tposrp_conv_env with (a :: e) ; auto with coc. 
   apply conv_env_hd with c ; auto with coc.
-  apply tposr_eq_sym.
-  apply (tposrp_tposr_eq H4).
 Qed.  
 
 Lemma tposrp_pi : forall e A B T s, tposrp e (Prod_l A B) T (Srt_l s) -> 
@@ -295,7 +293,7 @@ Proof.
   rewrite H0 in H.
   rewrite H1 in H.
   pose (tod H) ; destruct_exists.
-  pose (generation_sum H2) ; destruct_exists.
+  pose (generation_sum_depth H2) ; destruct_exists.
   exists a a0 b b0 ; intuition ; try apply tposrp_tposr ; auto.
   apply (fromd H3).
   apply (fromd H5).
@@ -307,7 +305,6 @@ Proof.
   exists a0 b0 c0 d0.
   assert(conv_in_env (a :: e) (A :: e)).
   apply conv_env_hd with c ; auto with coc.
-  pose (tposrp_tposr_eq H4) ; auto with coc.
   intuition ; auto with coc.
   apply tposrp_trans with a ; auto with coc.
   pose (tposrp_left_refl H8).
@@ -378,3 +375,98 @@ Proof.
   apply injectivity_of_sum.
   assumption.
 Qed.
+
+(*Lemma conv_substitution : forall G d d' s, G |-- d ~= d' : s -> 
+  forall e, (Srt_l s) :: G = e ->
+  forall u v s', e |-- u -> v : (Srt_l s') ->   
+  G |-- (lsubst d u) ~= (lsubst d' v) : s'.
+Proof.
+  induction 1 ; simpl  ; intros; subst ; eauto with coc.
+  apply tposr_eq_tposr.
+  apply substitution_sorted with (Srt_l s) ; auto with coc.
+  apply tposr_eq_sym.
+  eapply IHtposr_eq ; eauto with coc.
+*)
+Lemma tposrp_substitution : forall e d d' t, e |-- d -+> d' : t ->
+  forall u U, t :: e |-- u -> u : U -> 
+  e |-- (lsubst d u) -+> (lsubst d' u) : (lsubst d U).
+Proof.
+  induction 1 ; simpl ; intros; subst ; eauto with coc.
+  apply tposrp_substitution with Z ; auto.
+  apply tposrp_tpor
+  apply tposrp_trans with (lsubst X u) ; eauto with coc.
+  destruct (validity_tposrp H1) ; destruct_exists.
+  rewrite H2.
+  change (lsubst W (Srt_l x)) with (Srt_l x).
+  rewrite H2 in H1.
+  apply (IHtposrp2 u v (Srt_l x)) ; auto.
+  apply tposrp_conv_l with (lsubst X U) b ; eauto with coc.
+  
+
+  apply IHtposrp1 ; auto.
+  apply tposrp_tposr.
+  apply substitution witht ; auto.
+Qed.
+
+Lemma tposr_eq_substitution : forall G u v s', G |-- u ~= v : s' -> forall s e, (Srt_l s) :: e = G ->
+  forall d d', e |-- d ~= d' : s ->
+  e |-- (lsubst d u) ~= (lsubst d' v) : s'.
+Proof.
+  induction 1 ; simpl ; intros; subst ; eauto with coc.
+  destruct (tposr_eq_cr H1) ; destruct_exists.
+  apply tposr_eq_trans with (lsubst x X) ; eauto with coc.
+  
+  apply tposr_
+
+  pose (substitution_eq).
+  apply tposr_eq_tposr.
+  apply substitution_sorted with (Srt_l s0) ; auto with coc.
+  
+
+Lemma tposrp_substitution : forall e d d' t, e |-- d -+> d' : t ->
+  forall u v U, t :: e |-- u -+> v : U -> 
+  e |-- (lsubst d u) -+> (lsubst d' v) : (lsubst d U).
+Proof.
+  induction 1 ; simpl ; intros; subst ; eauto with coc.
+  apply tposrp_substitution with Z ; auto.
+  apply tposrp_trans with (lsubst X u) ; eauto with coc.
+  destruct (validity_tposrp H1) ; destruct_exists.
+  rewrite H2.
+  change (lsubst W (Srt_l x)) with (Srt_l x).
+  rewrite H2 in H1.
+  apply (IHtposrp2 u v (Srt_l x)) ; auto.
+  apply tposrp_conv_l with (lsubst X U) b ; eauto with coc.
+  
+
+  apply IHtposrp1 ; auto.
+  apply tposrp_tposr.
+  apply substitution witht ; auto.
+Qed.
+
+
+
+Lemma substitution_eq_aux : forall G u v s, G |-- u ~= v : s -> forall e t, G = (t :: e) ->
+  forall d d' s', e |-- d ~= d' : s' -> e |-- (lsubst d u) ~= (lsubst d' v) : s.
+Proof.
+  induction 1 ; simpl ; intros ; eauto with coc.
+  pose (tposr_eq_cr H1) ; destruct_exists.
+  subst.
+
+  apply tposr_eq_trans with (lsubst x X).
+  
+
+
+  apply tposr_eq_tposr.
+  apply substitution_sorted with t ; auto.
+  pose (IHtposr_eq _ _ H0 _ _ H1).
+  apply tposr_eq_trans with (lsubst d' Y) ; auto with coc.
+  apply 
+  apply tposr_eq_trans with (lsubst d X) ; eauto with coc.
+Qed.
+
+Corollary substitution_eq : forall t e u v s, t :: e |-- u ~= v : s -> 
+  forall d, e |-- d -> d : t -> e |-- (lsubst d u) ~= (lsubst d v) : s.
+Proof.
+  intros ; eapply substitution_eq_aux ; 
+
+

@@ -17,4 +17,11 @@ Implicit Types e f g : lenv.
 Lemma left_refl : forall e u v T, e |-- u -> v : T -> e |-- u -> u : T.
 Admitted.
 
-Hint Resolve left_refl : coc.
+Corollary tposrp_left_refl : forall e A B T, tposrp e A B T -> e |-- A -> A : T.
+Proof.
+  induction 1 ; auto with coc.
+  apply (left_refl H).
+Qed.
+
+
+Hint Resolve left_refl tposrp_left_refl : coc.

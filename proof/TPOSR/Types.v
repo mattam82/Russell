@@ -112,9 +112,9 @@ with tposr_eq : lenv -> lterm -> lterm -> sort -> Prop :=
 
 where "G |-- T ~= U : s" := (tposr_eq G T U s).
 
-
-
 Hint Resolve wf_nil tposr_set tposr_prop : coc.
+Hint Resolve tposr_pi2_red tposr_pi2 tposr_pi1_red tposr_pi1 tposr_pair tposr_sum tposr_subset tposr_red : tposr.
+Hint Resolve tposr_beta tposr_app tposr_var tposr_prod tposr_app : tposr.
 
 Scheme ind_tposr := Induction for tposr Sort Prop.
 
@@ -456,9 +456,13 @@ Qed.
 
 Definition tposr_term G M A := exists M', G |-- M -> M' : A.
 
-Inductive tposrp : lenv -> lterm -> lterm -> lterm -> Prop :=
-  | tposrp_tposr : forall e X Y Z, e |-- X -> Y : Z -> tposrp e X Y Z
-  | tposrp_trans : forall e W X Y Z, tposrp e W X Z -> tposrp e X Y Z ->
-  tposrp e W Y Z.
+Reserved Notation "G |-- M -+> N : B" (at level 70, M, N, B at next level). 
 
-Hint Resolve tposr_eq_tposr tposr_eq_sym tposrp_tposr : coc.
+Inductive tposrp : lenv -> lterm -> lterm -> lterm -> Prop :=
+  | tposrp_tposr : forall e X Y Z, e |-- X -> Y : Z -> e |-- X -+> Y : Z
+  | tposrp_trans : forall e W X Y Z, e |-- W -+> X : Z -> e |-- X -+> Y : Z ->
+  e |-- W -+> Y : Z
+
+where "G |-- M -+> N : B" := (tposrp G M N B). 
+
+Hint Resolve tposr_eq_tposr tposr_eq_sym tposrp_tposr tposrp_trans : coc.

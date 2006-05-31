@@ -14,58 +14,16 @@ Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.UnicityOfSorting.
+Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.TypesDepth.
 Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
 
-Require Import Lambda.Meta.TPOSR_Russell.
-
 Require Import Lambda.TPOSR.MaxLemmas.
 
 Set Implicit Arguments.
-
-Lemma tposr_equiv_l : forall e A B, equiv e A B -> forall M N, 
-  e |-- M -> N : A -> e |-- M -> N : B.
-Proof.
-  destruct 1 ; intros.
-  destruct H.
-  rewrite H in H0 ; rewrite H1 ; assumption.
-  destruct H.
-  apply tposr_conv_l with A x ; auto.
-Qed. 
-
-Lemma tposr_equiv_r : forall e A B, equiv e A B -> forall M N, 
-  e |-- M -> N : B -> e |-- M -> N : A.
-Proof.
-  destruct 1 ; intros.
-  destruct H.
-  rewrite H ; rewrite H1 in H0 ; assumption.
-  destruct H.
-  apply tposr_conv_r with B x ; auto.
-Qed. 
-
-Lemma equiv_eq : forall e A s, e |-- A -> A : Srt_l s ->
-  forall B, equiv e A B -> e |-- A ~= B : s.
-Proof.
-  intros.
-  destruct H0.
-  destruct H0.
-  rewrite H0 in H.
-  elim (tposr_not_kind H).
-  destruct H0.
-
-  rewrite (tposr_unique_sort H (conv_refl_l H0)) ; assumption.
-Qed.
-
-Lemma equiv_sym : forall G A B, equiv G A B -> equiv G B A.
-Proof.
-  destruct 1.
-  left ; intuition.
-  destruct H ; intuition.
-  destruct H.
-  right ; exists x ; auto with coc.
-Qed.
 
 Theorem church_rosser_depth : forall n m,
   forall G M N A, G |-- M -> N : A [n] ->
@@ -120,7 +78,7 @@ Proof.
   rewrite <- H3 in Hl2.
   rewrite <- H4 in Hl2.
   intros P B0 Hr.
-  pose (generation_prod Hr) ; destruct_exists.
+  pose (generation_prod_depth Hr) ; destruct_exists.
   rewrite H10.
 
   assert(n0 < x) ; try rewrite <- H5 ; auto with arith.
@@ -147,7 +105,7 @@ Proof.
 
   (* Abs *)
   intros P B0 Hr.
-  pose (generation_lambda Hr) ; destruct_exists.
+  pose (generation_lambda_depth Hr) ; destruct_exists.
   assert(n0 < x) ; try rewrite <- H6 ; auto with arith.
   pose (IH _ H15 _ _ _ _ _ H _ _ H7) ; destruct_exists.
   assert(p < x) ; try rewrite <- H6 ; auto with arith.
@@ -202,7 +160,7 @@ Proof.
 
   (* App *)
   intros P B0 Hr.
-  pose (generation_app Hr) ; destruct_exists.
+  pose (generation_app_depth Hr) ; destruct_exists.
 
   assert(q < x) ; try rewrite <- H7 ; auto with arith.
   pose (IH _ H16 _ _ _ _ _ H2 _ _ H12) ; destruct_exists.
@@ -211,8 +169,8 @@ Proof.
   destruct e0 ; unfold eq_kind in H21 ; destruct_exists.
   rewrite H22 in H8 ; clear H21.
   elim (tposr_not_kind (fromd H8)).
-  rewrite (tposr_unique_sort (fromd H8) (conv_refl_r H21)).
-  apply (tposr_unique_sort (conv_refl_l H21) (fromd H)).
+  rewrite (unique_sort (fromd H8) (conv_refl_r H21)).
+  apply (unique_sort (conv_refl_l H21) (fromd H)).
 
   assert(A0 :: G |-- B -> a0 : Srt_l b0).
   apply conv_env with (a :: G) ; auto with coc.
@@ -235,7 +193,7 @@ Proof.
   assert(b0 = s2).
   pose (left_refl H22).
   pose (left_refl (fromd H0)).
-  apply (tposr_unique_sort t t0).
+  apply (unique_sort t t0).
   rewrite H21 in H8.
   rewrite H24 in H10.
   rewrite H24 in H22.
@@ -309,7 +267,7 @@ Proof.
   (* App, Beta *)
   rewrite H34.
   rewrite H15 in H1.
-  pose (generation_lambda H1) ; destruct_exists.
+  pose (generation_lambda_depth H1) ; destruct_exists.
   assert(c3 < x).
   rewrite <- H7 ; auto with arith.
   apply lt_trans with p ; auto with arith.
@@ -335,7 +293,7 @@ Proof.
   apply tposr_eq_trans with a ; auto with coc.
   apply tposr_eq_tposr.
   destruct (conv_refls H55).
-  pose (tposr_unique_sort H57 (fromd H35)).
+  pose (unique_sort H57 (fromd H35)).
   rewrite e0 ; auto.
   apply (fromd H35).
 
@@ -373,7 +331,7 @@ Proof.
 
   (* Beta *)
   intros P B0 Hr.
-  pose (generation_app Hr) ; destruct_exists.
+  pose (generation_app_depth Hr) ; destruct_exists.
 
   assert(q < x) ; try rewrite <- H7 ; auto with arith.
   pose (IH _ H16 _ _ _ _ _ H2 _ _ H12) ; destruct_exists.
@@ -383,8 +341,8 @@ Proof.
   destruct H21.
   rewrite H22 in H8 ; elim (tposr_not_kind (fromd H8)).
   destruct (conv_refls H21).
-  rewrite <- (tposr_unique_sort H22 (fromd H)).
-  rewrite <- (tposr_unique_sort H23 (fromd H8)).
+  rewrite <- (unique_sort H22 (fromd H)).
+  rewrite <- (unique_sort H23 (fromd H8)).
   reflexivity.
 
   assert(A0 :: G |-- B -> a0 : Srt_l b0).
@@ -408,7 +366,7 @@ Proof.
   assert(b0 = s2).
   pose (left_refl H22).
   pose (left_refl (fromd H0)).
-  apply (tposr_unique_sort t t0).
+  apply (unique_sort t t0).
   rewrite H21 in H8.
   rewrite H24 in H10.
   rewrite H24 in H22.
@@ -441,7 +399,7 @@ Proof.
 
   (* Beta, App *)
   rewrite H33.
-  pose (generation_lambda H15) ; destruct_exists.
+  pose (generation_lambda_depth H15) ; destruct_exists.
   assert(p < x).
   rewrite <- H7 ; auto with arith.
   pose (IH _ H42 _ _ _ _ _ H1 _ _ H36) ; destruct_exists.
@@ -461,7 +419,7 @@ Proof.
   rewrite H55 in H8 ; elim (tposr_not_kind (fromd H8)).
   destruct H54.
   destruct (conv_refls H54).
-  pose (tposr_unique_sort H55 (fromd H34)).
+  pose (unique_sort H55 (fromd H34)).
   apply conv_env_hd with b3 ; auto with coc.
   apply tposr_eq_trans with A0 ; auto with coc.
   rewrite <- e0 ; auto with coc.
@@ -560,7 +518,7 @@ Proof.
   
   (* Subset *)
   intros.
-  pose (generation_subset H6) ; destruct_exists.
+  pose (generation_subset_depth H6) ; destruct_exists.
   rewrite H11.
 
   assert(n0 < x) by (rewrite <- H5 ; auto with arith).
@@ -595,7 +553,7 @@ Proof.
   rewrite <- H3 in Hl2.
   rewrite <- H4 in Hl2.
   intros P B0 Hr.
-  pose (generation_sum Hr) ; destruct_exists.
+  pose (generation_sum_depth Hr) ; destruct_exists.
   rewrite H12.
 
   assert(n0 < x) by (rewrite <- H6 ; auto with arith).
@@ -631,7 +589,7 @@ Proof.
   rewrite <- H6 in Hl2.
   rewrite <- H7 in Hl2.
   intros P B0 Hr.
-  pose (generation_pair Hr) ; destruct_exists.
+  pose (generation_pair_depth Hr) ; destruct_exists.
   rewrite H19.
   inversion H9.
   rewrite <- H22 in H10.
@@ -697,7 +655,7 @@ Proof.
 
   (* Pi1 *)
   intros.
-  pose (generation_pi1 H8) ; destruct_exists.
+  pose (generation_pi1_depth H8) ; destruct_exists.
   inversion H13.
   rewrite <- H18 in H15.
   rewrite <- H18 in H16.
@@ -760,7 +718,7 @@ Proof.
   (* Pi1, Pi1_red *)
   rewrite H21.
   rewrite H16 in H2.
-  pose (generation_pair H22) ; destruct_exists.
+  pose (generation_pair_depth H22) ; destruct_exists.
   rewrite H33.
   inversion H23.
   rewrite <- H36 in H24.
@@ -772,7 +730,7 @@ Proof.
   rewrite <- H37 in H34.
   clear H36 H37 a3 a4 H23.
   rewrite H16 in H19.
-  pose (generation_pair H19) ; destruct_exists.
+  pose (generation_pair_depth H19) ; destruct_exists.
   inversion H23.
   rewrite <- H47 in H35.
   rewrite <- H47 in H37.
@@ -803,11 +761,11 @@ Proof.
   destruct (conv_refls H17).
   destruct (conv_refls H18).
   assert(s1 = c).
-  apply (tposr_unique_sort t0 H63).
-  pose (tposr_unique_sort t5 H64).
+  apply (unique_sort t0 H63).
+  pose (unique_sort t5 H64).
   assert(s2 = c0).
   pose (fromd H0).
-  apply (tposr_unique_sort t6 H65).
+  apply (unique_sort t6 H65).
 
   exists x5.
   assert(G |-- Pi1_l (Sum_l A' B') (Pair_l (Sum_l b3 b4) a5 a6) -> x5 : A).
@@ -839,7 +797,7 @@ Proof.
   pose(fromd H26).
   assert(A :: G |-- a0 -> b4 : Srt_l c3).
   apply conv_env with (a :: G) ; auto with coc.
-  apply (tposr_unique_sort H66 H69).
+  apply (unique_sort H66 H69).
   rewrite <- H69.
   rewrite <- H68 ; auto.
   apply conv_env with (A :: G) ; auto with coc.
@@ -848,7 +806,7 @@ Proof.
   assert(A :: G |-- a0 -> b4 : Srt_l c3).
   apply conv_env with (a :: G) ; auto with coc.
   apply (fromd H26).
-  apply (tposr_unique_sort H69 H66).
+  apply (unique_sort H69 H66).
   rewrite H69.
   apply conv_env_eq with (A :: G) ; auto with coc.
   apply tposr_eq_tposr.
@@ -871,7 +829,7 @@ Proof.
   rewrite <- H7.
   rewrite H8 in H6.
   clear H8 A''.
-  pose (generation_pair H2) ; destruct_exists.
+  pose (generation_pair_depth H2) ; destruct_exists.
   inversion H8.
   generalize dependent G.
   rewrite <- H23 ; rewrite <- H24.
@@ -881,7 +839,7 @@ Proof.
   clear a a0 H8 H23 H24 H0 H2 H3 H4 b b0 a1 a2 H20 ; intros.
   clear e H5.
 
-  pose (generation_pi1 H10) ; destruct_exists.
+  pose (generation_pi1_depth H10) ; destruct_exists.
   inversion H23.
   generalize dependent G.
   rewrite <- H28.
@@ -890,10 +848,10 @@ Proof.
   intros.
 
   assert(s1 = c).
-  apply (tposr_unique_sort (fromd H) (fromd H11)).
+  apply (unique_sort (fromd H) (fromd H11)).
   
   assert(s2 = c0).
-  apply (tposr_unique_sort (fromd H0) (fromd H13)).
+  apply (unique_sort (fromd H0) (fromd H13)).
   generalize dependent G.
   rewrite <- H23.
   rewrite <- H27.
@@ -909,7 +867,7 @@ Proof.
   rewrite H29.
   clear a a0 a1 P H26 H28 H29 H32.
   intros.
-  pose (generation_pair H30).
+  pose (generation_pair_depth H30).
   destruct_exists.
   inversion H26.
   generalize dependent G.
@@ -932,8 +890,8 @@ Proof.
   apply conv_env_hd with c4 ; apply tposr_eq_tposr ; apply (fromd H28).
 
   pose (conv_refls H3) ; destruct_exists.
-  pose (tposr_unique_sort H47 (fromd H5)).
-  pose (tposr_unique_sort H48 (left_refl (fromd H28))).
+  pose (unique_sort H47 (fromd H5)).
+  pose (unique_sort H48 (left_refl (fromd H28))).
 
   assert(G |-- b ~= b4 : c4).
   apply tposr_eq_trans with A0 ; auto with coc.
@@ -948,7 +906,7 @@ Proof.
 
   pose (conv_refls H4) ; destruct_exists.
   assert(c2 = s2).
-  apply (tposr_unique_sort (fromd H20) H50).
+  apply (unique_sort (fromd H20) H50).
 
   assert(conv_in_env (A0 :: G) (A :: G)).
   apply conv_env_hd with s1 ; auto with coc.
@@ -957,7 +915,7 @@ Proof.
   apply (fromd H32).
 
   assert(c5 = s2).
-  apply (tposr_unique_sort H54 H51).
+  apply (unique_sort H54 H51).
   assert(s1 = c1) ; auto.
   assert(s1 = c4) ; auto.
   generalize dependent G.
@@ -1013,8 +971,8 @@ Proof.
   clear H0 H2 H3 H4 H26.
   intros.
   
-  pose (generation_pair H2).
-  pose (generation_pair H30).
+  pose (generation_pair_depth H2).
+  pose (generation_pair_depth H30).
   destruct_exists.
   generalize dependent G.
   inversion H26 ; inversion H23.

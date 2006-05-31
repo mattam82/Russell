@@ -34,4 +34,10 @@ Proof.
   apply (proj2 (conv_refls H)).
 Qed.
 
-Hint Resolve right_refl conv_refls : coc.
+Lemma tposrp_right_refl : forall e A B T, tposrp e A B T -> e |-- B -> B : T.
+Proof.
+  induction 1 ; auto with coc.
+  apply (right_refl H).
+Qed.
+
+Hint Resolve right_refl conv_refl_l conv_refl_r tposrp_right_refl : coc.

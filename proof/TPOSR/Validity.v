@@ -12,8 +12,11 @@ Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.TypesDepth.
+
+Set Implicit Arguments.
 
 Theorem ind_validity : forall n,
   forall e t u T, e |-- t -> u : T [n] -> 
@@ -45,24 +48,24 @@ Proof.
   right ; exists T x3 ; apply (conv_refl_l H4).  
 
   right.
-  pose (generation_lambda H0) ; destruct_exists.
+  pose (generation_lambda_depth H0) ; destruct_exists.
   exists T b0.
   apply (conv_refl_l H8).
 
-  pose (generation_app H0) ; destruct_exists.
+  pose (generation_app_depth H0) ; destruct_exists.
   right ; exists T b0 ; apply (conv_refl_l H7).
 
-  pose (generation_pair H0) ; destruct_exists.
+  pose (generation_pair_depth H0) ; destruct_exists.
   right ; exists T x0 ; apply (conv_refl_l H12).
 
-  pose (generation_prod H0) ; destruct_exists.
+  pose (generation_prod_depth H0) ; destruct_exists.
   destruct H6 ; destruct_exists.
   left ; exists b0 ; auto.
   destruct H6.
   rewrite H6 ; rewrite <- H7 ; auto.
   right ; exists T x0 ; apply (conv_refl_l H6).
   
-  pose (generation_sum H0) ; destruct_exists.
+  pose (generation_sum_depth H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
   left ; exists x0 ; auto.
   destruct H7.
@@ -70,18 +73,36 @@ Proof.
 
   right ; exists T x1 ; apply (conv_refl_l H7).
 
-  pose (generation_subset H0) ; destruct_exists.
+  pose (generation_subset_depth H0) ; destruct_exists.
   right ; exists T kind ; apply (conv_refl_l H6).
 
-  pose (generation_pi1 H0) ; destruct_exists.
+  pose (generation_pi1_depth H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
   destruct H7.
   left ; exists kind ; auto.
   right ; exists T x1 ; apply (conv_refl_l H7).
 
-  pose (generation_pi2 H0) ; destruct_exists.
+  pose (generation_pi2_depth H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
   destruct H7.
   left ; exists kind ; auto.
   right ; exists T x1 ; apply (conv_refl_l H7).
+Qed.
+
+Corollary validity : forall e t u T, e |-- t -> u : T -> 
+  (exists s, T = Srt_l s) \/
+  (exists2 T' s, e |-- T -> T' : Srt_l s).
+Proof.
+  intros.
+  pose (tod H) ; destruct_exists.
+  apply (ind_validity H0).
+Qed.
+
+Corollary validity_tposrp : forall e t u T, e |-- t -+> u : T -> 
+  (exists s, T = Srt_l s) \/
+  (exists2 T' s, e |-- T -> T' : Srt_l s).
+Proof.
+  intros.
+  pose (tposrp_left_refl H).
+  apply (validity t0).
 Qed.

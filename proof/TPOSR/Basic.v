@@ -48,6 +48,48 @@ Proof.
   exact ((proj2 (tposr_conv H M N)) H0).
 Qed.
 
+Corollary tposrp_conv_l : forall e A B s, e |-- A ~= B : s -> 
+  forall M N, e |-- M -+> N : A -> e |-- M -+> N : B.
+Proof.
+  intros.
+  induction H0.
+  apply tposrp_tposr.
+  exact ((proj1 (tposr_conv H X Y)) H0).
+
+  pose (IHtposrp1 H).
+  pose (IHtposrp2 H).
+  eauto with coc.
+Qed.
+
+Corollary tposrp_conv_r : forall e A B s, e |-- A ~= B : s -> 
+  forall M N, e |-- M -+> N : B -> e |-- M -+> N : A.
+Proof.
+  intros.
+  induction H0.
+  apply tposrp_tposr.
+  exact ((proj2 (tposr_conv H X Y)) H0).
+
+  eauto with coc.
+Qed.
+
+
+Lemma tposrp_tposr_eq_aux : forall e M N Z, e |-- M -+> N : Z -> forall s, Z = Srt_l s -> e |-- M ~= N : s.
+Proof.
+  induction 1 ; simpl ; intros ; eauto with coc.
+  apply tposr_eq_tposr.
+  rewrite <- H0 ; assumption.
+  pose (IHtposrp1 _ H1).
+  pose (IHtposrp2 _ H1).
+  apply tposr_eq_trans with X ; auto.
+Qed.
+
+Lemma tposrp_tposr_eq : forall e M N s, e |-- M -+> N : Srt_l s -> e |-- M ~= N : s.
+Proof.
+  intros ; eapply tposrp_tposr_eq_aux ; auto ; auto.
+Qed.
+
+Hint Resolve tposrp_tposr_eq : coc.
+
 Lemma tposr_lred : forall e M N Z, e |-- M -> N : Z -> lred M N.
 Proof.
   induction 1 ; simpl ; auto with coc.
@@ -55,6 +97,15 @@ Proof.
   apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
   apply trans_lred with (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
   apply trans_lred with (Pi2_l (Sum_l A B) (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
+Qed.
+
+Lemma tposrp_lred : forall e M N Z, e |-- M -+> N : Z -> lred M N.
+Proof.
+  induction 1 ; simpl ; auto with coc.
+  
+  eapply tposr_lred ; eauto with coc.
+
+  apply trans_lred_lred with X ; auto with coc.
 Qed.
 
 Lemma tposr_eq_conv : forall e M N Z, e |-- M ~= N : Z -> conv M N.
@@ -93,6 +144,8 @@ Proof.
   intros.
   red ; intros ; apply (tposr_not_kind_aux H) ; auto.
 Qed.
+
+Hint Resolve tposr_not_kind : coc.
 
 Lemma lsubst_to_sort : forall M N s, lsubst M N = Srt_l s -> or (M = Srt_l s) (N = Srt_l s).
 Proof.
