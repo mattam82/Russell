@@ -1,0 +1,92 @@
+\documentclass{article}
+\usepackage[latin1]{inputenc}
+\usepackage{xspace} % To get the right spacings in front of : and so on
+\usepackage[english]{babel}
+\usepackage{abbrevs}
+\usepackage{subfigure}
+\usepackage{ifthen}
+\usepackage{coqdoc}
+\usepackage{bussproofs}
+\usepackage{pgf,pgfarrows,pgfnodes}
+\usepackage{amsmath}
+\usepackage{concmath}
+\usepackage{url}
+\usepackage{fullpage}
+
+\def\tactic#1{\texttt{#1}}
+
+\title{\Russell's Metatheoretic Study - Notes}
+\date{\today}
+\author{Matthieu Sozeau \\
+  LRI - Paris Sud - XI University \\
+  sozeau@lri.fr}
+\begin{document}
+\maketitle
+\begin{abstract}
+We are working on the formalization of \Russell{}'s type theory in the
+\Coq{} proof assistant \cite{sozeau:coq/Russell/meta}.  The type system
+of \Russell{} is based on the Calculus of Constructions with
+$\Sigma$-types (dependent sums), extended by an equivalence on types
+which subsumes $\beta$-conversion. The extension permits to identify
+types and subsets based on them in a manner similar to the
+\emph{Predicate Subtyping} feature of \PVS{}.
+
+We are aiming at a complete proof of \Russell{} metatheoretic properties
+(structural properties, Subject Reduction, maybe Strong Normalization),
+the refining steps which led us to the algorithmic system and the
+corresponding typing algorithm and also the correctness of a traduction
+from \Russell{} to the Calculus of Inductive Constructions with
+metavariables.
+
+We started the development using the formalization of the Calculus of
+Constructions by Bruno Barras \cite{Barras96a}.  We kept the standard de
+Bruijn encoding for variable bindings and defined our judgements using
+\emph{dependent} inductive predicates.  This alone causes some problems
+for the faithful formalization of the paper results.  The proofs offer
+several other technical difficulties including:
+\begin{itemize}
+\item Elimination of transitivity in a system with an \emph{untyped} type
+  conversion relation.
+
+\item Subject Reduction, which is \emph{not} directly provable for the
+  declarative system. Here we adapted the technique developped by
+  Robin Adams \cite{adams:PTSEQ}. It includes a new term algebra, with
+  associated reduction operations and a new type system
+  for which we have to prove metatheoretic properties.
+
+\item Correction of the traduction: the target system include
+  metavariables, introducing a second, \emph{unusual} kind of variable binding.
+\end{itemize}
+\end{abstract}
+
+- Works only with $``>=$ coq-v8.2.
+
+\begin{itemize}
+\item Work on a dependency analyser for terms.
+\item Problem of mutual induction, conjunction of goals, generating the
+  principle and applying it.
+\item Problem of induction on partially instanciated goals, see McBride.
+\item Induction on depths:
+  \begin{itemize}
+  \item Adding a parameter on judgements.
+  \item Adding a parameter and going in \Set.
+  \end{itemize}
+\item Useful tactics: \tactic{subst}, \tactic{eauto}, \tactic{generalize dependent}.
+\item Reusability of proofs (multiple systems).
+\end{itemize}
+
+\bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
+cparent,demons,demons2,demons3}
+\bibliographystyle{acm}
+
+%% \renewcommand{\thefootnote}{}
+%% \footnotetext{This article was typeset in \LaTeX~using the
+%%   \texttt{Concrete Math} font}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:../figures:\" ${pdfx}latex"
+%%% TeX-master: t
+%%% End: 
