@@ -1,4 +1,5 @@
 -R . Lambda
+OTHERFLAGS = "-dump-glob globals.dump"
 Utils.v
 Tactics.v
 MyList.v
