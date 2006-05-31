@@ -21,26 +21,26 @@
 \maketitle
 
 We are working on the formalization of \Russell{}'s type theory in the
-\Coq{} proof assistant \cite{sozeau:coq/Russell/meta}.
-The type system of \Russell{} is based on the
-Calculus of Constructions with $\Sigma$-types (dependent sums), extended by an equivalence on types
+\Coq{} proof assistant \cite{sozeau:coq/Russell/meta}.  The type system
+of \Russell{} is based on the Calculus of Constructions with
+$\Sigma$-types (dependent sums), extended by an equivalence on types
 which subsumes $\beta$-conversion. The extension permits to identify
 types and subsets based on them in a manner similar to the
-\emph{Predicate Subtyping} feature of \PVS{}. We are aiming at 
-a complete proof of \Russell{} metatheoretic properties (structural
-properties, Subject Reduction, maybe Strong Normalization), the
-refining steps which
-led us to the algorithmic system and the corresponding typing algorithm and also the correctness of a
-traduction from \Russell{} to the Calculus of Inductive Constructions
-with metavariables.
+\emph{Predicate Subtyping} feature of \PVS{}.
 
-We started the development using the formalization of the
-Calculus of Constructions by Bruno Barras \cite{Barras96a}.
-We kept the standard de Bruijn encoding for variable bindings and
-defined our judgements using \emph{dependent} inductive predicates.
-This alone causes some problems for the faithful formalization of the
-paper results.  
-The proofs offer several other technical difficulties including:
+We are aiming at a complete proof of \Russell{} metatheoretic properties
+(structural properties, Subject Reduction, maybe Strong Normalization),
+the refining steps which led us to the algorithmic system and the
+corresponding typing algorithm and also the correctness of a traduction
+from \Russell{} to the Calculus of Inductive Constructions with
+metavariables.
+
+We started the development using the formalization of the Calculus of
+Constructions by Bruno Barras \cite{Barras96a}.  We kept the standard de
+Bruijn encoding for variable bindings and defined our judgements using
+\emph{dependent} inductive predicates.  This alone causes some problems
+for the faithful formalization of the paper results.  The proofs offer
+several other technical difficulties including:
 \begin{itemize}
 \item Elimination of transitivity in a system with an \emph{untyped} type
   conversion relation.
