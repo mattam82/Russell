@@ -8,14 +8,69 @@
 \usepackage{coqdoc}
 \usepackage{bussproofs}
 \usepackage{pgf,pgfarrows,pgfnodes}
+\usepackage{concmath}
+\usepackage{url}
+\usepackage{fullpage}
 
-\title{\Russell's metatheoretic study}
-\date{}
+\title{\Russell's Metatheoretic Study - Abstract}
+\date{\today}
+\author{Matthieu Sozeau \\
+  LRI - Paris Sud - XI University \\
+  sozeau@lri.fr}
 \begin{document}
 \maketitle
-\abstract
-\input{abstract}
-\myabstract
+
+We are working on the formalization of \Russell{}'s type theory in the
+\Coq{} proof assistant \cite{sozeau:coq/Russell/meta}.
+The type system of \Russell{} is based on the
+Calculus of Constructions with $\Sigma$-types (dependent sums), extended by an equivalence on types
+which subsumes $\beta$-conversion. The extension permits to identify
+types and subsets based on them in a manner similar to the
+\emph{Predicate Subtyping} feature of \PVS{}. We are aiming at 
+a complete proof of \Russell{} metatheoretic properties (structural
+properties, Subject Reduction, maybe Strong Normalization), the
+refining steps which
+led us to the algorithmic system and the corresponding typing algorithm and also the correctness of a
+traduction from \Russell{} to the Calculus of Inductive Constructions
+with metavariables.
+
+We started the development using the formalization of the
+Calculus of Constructions by Bruno Barras \cite{Barras96a}.
+We kept the standard de Bruijn encoding for variable bindings and
+defined our judgements using \emph{dependent} inductive predicates.
+This alone causes some problems for the faithful formalization of the
+paper results.  
+The proofs offer several other technical difficulties including:
+\begin{itemize}
+\item Elimination of transitivity in a system with an \emph{untyped} type
+  conversion relation.
+
+\item Subject Reduction, which is \emph{not} directly provable for the
+  declarative system. Here we adapted the technique developped by
+  Robin Adams \cite{adams:PTSEQ}. It includes a new term algebra, with
+  associated reduction operations and a new type system
+  for which we have to prove metatheoretic properties.
+
+\item Correction of the traduction: the target system include
+  metavariables, introducing a second, \emph{unusual} kind of variable binding.
+\end{itemize}
+
+We will present these difficulties and our recipes for solving them in
+the \Coq environment. Additionaly, we will identify more general problems for
+proving in \Coq and suggest possible solutions. 
+
+{\bf Disclaimer}: this is a work in
+progress ; to this day we have proved elimination of transivity and
+subject reduction should follow soon.
+
+\bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
+cparent,demons,demons2,demons3}
+\bibliographystyle{acm}
+
+%% \renewcommand{\thefootnote}{}
+%% \footnotetext{This article was typeset in \LaTeX~using the
+%%   \texttt{Concrete Math} font}
+
 \end{document}
 
 %%% Local Variables: 
