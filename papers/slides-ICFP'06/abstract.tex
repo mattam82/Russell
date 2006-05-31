@@ -1,0 +1,34 @@
+\def\myabstract{
+  We are working on the formalization of \Russell{}'s type theory in the
+  \Coq{} proof assistant. \Russell{} is a type system based on the
+  Calculus of Constructions which is extended by an equivalence on types
+  which include $\beta$-conversion. The extension permits to identify
+  types and subsets based on them in a manner similar to the
+  \emph{Predicate Subtyping} feature of \PVS{}. We are aiming at 
+  a complete proof of \Russell{} metatheoretic properties (Subject
+  Reduction, maybe Strong Normalization), the refining steps which
+  led us to the typing algorithm and also the correctness of a
+  traduction from \Russell{} to the Calculus of Inductive Constructions.
+  The proof poses several technical difficulties including:
+  \begin{itemize}
+  \item Elimination of transitivity in a system with an untyped type
+    conversion relation ;
+
+  \item Subject Reduction, which is not directly provable for the
+    declarative system. Here we adapted the technique developped by
+    Robin Adams \cite{adamstposr}. It includes a new term algebra, with
+    associated reduction operations and a new type system (actually two)
+    for which we have to prove metatheoretic properties.
+
+  \item Correction of the traduction: the target system include
+    metavariables, introducing a second, unusual kind of variable binding.
+  \end{itemize}
+  
+  We will present these difficulties and our recipes for solving them in
+  the \Coq environment.
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
