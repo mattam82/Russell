@@ -16,9 +16,11 @@ Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
+Require Import Lambda.TPOSR.Validity.
 Require Import Lambda.TPOSR.TypesDepth.
 Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
+Require Import Lambda.TPOSR.ChurchRosser.
 Require Import Lambda.TPOSR.SubjectReduction.
 
 Set Implicit Arguments.
@@ -111,7 +113,7 @@ Proof.
   apply tposr_subset ; eauto with coc.
 Qed.  
 
-Lemma tposrp_sum : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
+Lemma tposrp_sigma : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   e |-- Sum_l A B -+> Sum_l A' B' : Srt_l s3.
@@ -219,3 +221,47 @@ Proof.
   apply sigma_functionality with s1 s2 ; eauto with coc.
   apply conv_env_eq with (A'' :: e) ; eauto with coc.
 Qed.
+
+Lemma tposrp_substitution : forall e d d' t, e |-- d -+> d' : t ->
+  forall u u' U, t :: e |-- u -+>  u' : U -> 
+  e |-- (lsubst d u) -+> (lsubst d' u') : (lsubst d U).
+Proof.
+  induction 1 ; simpl ; intros; subst ; eauto with coc.
+  apply tposrp_substitution with Z ; auto.
+
+  apply tposrp_trans with (lsubst X u) ; eauto with coc.
+  destruct (validity_tposrp H1) ; destruct_exists.
+  rewrite H2.
+  change (lsubst W (Srt_l x)) with (Srt_l x).
+  rewrite H2 in H1.
+  subst.
+  apply (IHtposrp2 u u' (Srt_l x)) ; auto.
+  apply tposrp_conv_l with (lsubst X U) b ; eauto with coc.
+  
+  pose (left_refl H2).
+  pose (tposrp_tposr t).
+  pose (IHtposrp1 _ _ _ t0).
+  apply tposr_eq_sym.
+  apply tposrp_tposr_eq.
+  apply t1.
+Qed.
+
+Lemma conv_substitution :   forall G d d' s, G |-- d ~= d' : s ->  
+  forall u v s', Srt_l s :: G |-- u ~= v : s' ->
+  G |-- (lsubst d u) ~= (lsubst d' v) : s'.
+Proof.
+  intros.
+  pose (tposr_eq_cr H).
+  pose (tposr_eq_cr H0).
+  destruct_exists.  
+  apply tposr_eq_trans with (lsubst x0 x).
+  apply tposrp_tposr_eq.
+  change (Srt_l s') with (lsubst d (Srt_l s')).
+  apply (tposrp_substitution H2 H1).
+ 
+  apply tposr_eq_sym.
+  apply tposrp_tposr_eq.
+  change (Srt_l s') with (lsubst d' (Srt_l s')).
+  apply (tposrp_substitution H4 H3).
+Qed.
+  

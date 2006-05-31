@@ -16,6 +16,7 @@ Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
+Require Import Lambda.TPOSR.UnicityOfSorting.
 Require Import Lambda.TPOSR.TypesDepth.
 Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
@@ -134,46 +135,62 @@ Proof.
 
   (* App *)
   destruct N ; try (simpl in H1 ; try discriminate).
-  pose (generation_app H).
-  pose (generation_app H0).
+  pose (generation_app2 H).
+  pose (generation_app2 H0).
   destruct_exists.
   inversion H1 ; subst.
   
-  destruct H7 ; destruct H11 ; destruct_exists.
-  subst.
-  
-  assert(tposr_term G M2 (Prod_l a1 M1)) by eauto with coc.
+  assert(tposr_term G M2 (Prod_l a2 M1)) by eauto with coc.
   assert(tposr_term G N2 (Prod_l a N1)) by eauto with coc.
-  pose (IHM2 _ _ _ _ H12 H15 H13) ; destruct_exists.
-  assert(tposr_term G M3 a1) by eauto with coc.
+  pose (IHM2 _ _ _ _ H14 H17 H15) ; destruct_exists.
+  assert(tposr_term G M3 a2) by eauto with coc.
   assert(tposr_term G N3 a) by eauto with coc.
-  pose (IHM3 _ _ _ _ H20 H21 H14) ; destruct_exists.
+  pose (IHM3 _ _ _ _ H22 H23 H16) ; destruct_exists.
+  
+  subst.
 
-  pose (tposrp_uniqueness_of_types H16 H17).
+  pose (tposrp_uniqueness_of_types H18 H19).
   destruct e ; destruct_exists.
-  unfold eq_kind in H26 ; intuition ; try discriminate.
-  pose (injectivity_of_pi H26) ; destruct_exists.
-  pose (tposr_eq_cr H28) ; destruct_exists.
+  unfold eq_kind in H28 ; intuition ; try discriminate.
+  pose (injectivity_of_pi H28) ; destruct_exists.
+  pose (tposr_eq_cr H30) ; destruct_exists.
+
+  assert(G |-- lsubst N3 N1 ~= lsubst M3 M1 : x3).
+  apply tposr_eq_trans with (lsubst x2 x5).
+  
+  apply tposrp_tposr_eq.
+  change (Srt_l x3) with (lsubst N3 (Srt_l x3)).
+  apply tposrp_substitution with a2 ; auto with coc.
+  
+  apply tposr_eq_sym.
+  apply tposrp_tposr_eq.
+  change (Srt_l x3) with (lsubst M3 (Srt_l x3)).
+  apply tposrp_substitution with a2 ; auto with coc.
+
+  assert (b3 = x3) by apply (unique_sort (conv_refl_r H12) (conv_refl_r H33)).
+  assert(b0 = x3) by apply (unique_sort (conv_refl_r H7) (conv_refl_l H33)).
+  subst.
+
+  exists (App_l x5 x1 x2).
+  clear H8 H13 ; intuition.
+
+  apply tposrp_conv_l with (lsubst M3 M1) x3 ; auto with coc.
+  apply tposrp_app with a2 b2 c0 x3   ; auto with coc.
+
+  apply tposrp_conv_l with (lsubst M3 M1) x3 ; auto with coc.
+  apply tposr_eq_trans with (lsubst N3 N1) ; auto with coc.
+  apply tposrp_app with a2 b2 c0 x3   ; auto with coc.
+
+  apply tposrp_conv_l with (lsubst N3 N1) x3 ; auto with coc.
+  apply tposr_eq_trans with (lsubst M3 M1) ; auto with coc.
+  apply tposrp_app with a b c x3 ; auto with coc.
+  apply tposrp_conv_env with (a2 :: G) ; eauto with coc.
+
+  apply tposrp_conv_l with (lsubst N3 N1) x3 ; auto with coc.
+  apply tposrp_app with a b c x3   ; auto with coc.
+  apply tposrp_conv_env with (a2 :: G) ; eauto with coc.
+
+  (* Pair *)
+  destruct N ; try (simpl in H1 ; try discriminate).
+
 Admitted.
-(*  assert(G |-- lsubst N3 N1 ~= lsubst M3 M1 : b0).
-  apply substitution_eq with a1 ; auto with coc.
-   
-  exists (App_l x7 x x0).
-  intuition.
-
-  apply tposrp_conv_l with (lsubst M3 M1) b2 ; auto with coc.
-  apply tposrp_app with a1 b1 c0 x5   ; auto with coc.
-
-  apply tposrp_conv_l with (lsubst M3 M1) b2 ; auto with coc.
-  apply tposrp_app with a1 b1 c0 x5   ; auto with coc.
-
-  apply tposrp_conv_l with (lsubst N3 N1) b0 ; auto with coc.
-  apply tposrp_app with a b c x5   ; auto with coc.
-
-
-assert(tposr_term G M2 a1) by eauto with coc.
-
-
-
-
-*)

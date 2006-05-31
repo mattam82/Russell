@@ -395,6 +395,22 @@ Proof.
   right ; exists a2 b2 ; intuition ; eauto with coc.
 Qed.
 
+Lemma generation_app2 : forall e V W X Y Z, e |-- App_l V W X -> Y : Z -> 
+  exists3 U U' s1,
+  exists2 V' s2,
+  exists2 X' W',
+  e |-- U -> U' : Srt_l s1 /\
+  U :: e |-- V -> V' : Srt_l s2 /\
+  e |-- W -> W' : Prod_l U V 	/\
+  e |-- X -> X' : U /\
+  equiv_sort e Z (lsubst X V) s2 /\
+  ((Y = App_l V' W' X') \/
+  (exists2 T T', 
+  W = Abs_l U T /\
+  U :: e |-- T -> T' : V /\ Y = lsubst X' T')).
+Proof.
+Admitted.
+
 (*
 
 Lemma generation_pair_depth_aux : forall e t C, e |-- t : C -> forall T M N, t = Pair T M N ->
