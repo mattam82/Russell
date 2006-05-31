@@ -9,7 +9,7 @@
 \usepackage{bussproofs}
 \usepackage{pgf,pgfarrows,pgfnodes}
 \usepackage{amsmath}
-\usepackage{concmath}
+%\usepackage{concmath}
 \usepackage{url}
 \usepackage{fullpage}
 
@@ -23,6 +23,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
+
 We are working on the formalization of \Russell{}'s type theory in the
 \Coq{} proof assistant \cite{sozeau:coq/Russell/meta}.  The type system
 of \Russell{} is based on the Calculus of Constructions with
@@ -31,10 +32,10 @@ which subsumes $\beta$-conversion. The extension permits to identify
 types and subsets based on them in a manner similar to the
 \emph{Predicate Subtyping} feature of \PVS{}.
 
-We are aiming at a complete proof of \Russell{} metatheoretic properties
+We are aiming at a complete proof of \Russell{}'s metatheoretic properties
 (structural properties, Subject Reduction, maybe Strong Normalization),
 the refining steps which led us to the algorithmic system and the
-corresponding typing algorithm and also the correctness of a traduction
+corresponding typing algorithm and also the correctness of an interpretation
 from \Russell{} to the Calculus of Inductive Constructions with
 metavariables.
 
@@ -49,14 +50,15 @@ several other technical difficulties including:
   conversion relation.
 
 \item Subject Reduction, which is \emph{not} directly provable for the
-  declarative system. Here we adapted the technique developped by
+  declarative system. Here we adapted the technique developed by
   Robin Adams \cite{adams:PTSEQ}. It includes a new term algebra, with
   associated reduction operations and a new type system
   for which we have to prove metatheoretic properties.
 
-\item Correction of the traduction: the target system include
+\item Correction of the interpretation: the target system include
   metavariables, introducing a second, \emph{unusual} kind of variable binding.
 \end{itemize}
+
 \end{abstract}
 
 - Works only with $``>=$ coq-v8.2.

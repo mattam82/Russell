@@ -8,9 +8,10 @@
 \usepackage{coqdoc}
 \usepackage{bussproofs}
 \usepackage{pgf,pgfarrows,pgfnodes}
+%\usepackage{concmath}
+%\usepackage{ccfonts,eulervm}
 \usepackage{concmath}
-\usepackage{url}
-\usepackage{fullpage}
+\usepackage{url} \usepackage{fullpage}
 
 \title{\Russell's Metatheoretic Study - Abstract}
 \date{\today}
@@ -28,10 +29,10 @@ which subsumes $\beta$-conversion. The extension permits to identify
 types and subsets based on them in a manner similar to the
 \emph{Predicate Subtyping} feature of \PVS{}.
 
-We are aiming at a complete proof of \Russell{} metatheoretic properties
+We are aiming at a complete proof of \Russell{}'s metatheoretic properties
 (structural properties, Subject Reduction, maybe Strong Normalization),
 the refining steps which led us to the algorithmic system and the
-corresponding typing algorithm and also the correctness of a traduction
+corresponding typing algorithm and also the correctness of an interpretation
 from \Russell{} to the Calculus of Inductive Constructions with
 metavariables.
 
@@ -46,21 +47,21 @@ several other technical difficulties including:
   conversion relation.
 
 \item Subject Reduction, which is \emph{not} directly provable for the
-  declarative system. Here we adapted the technique developped by
+  declarative system. Here we adapted the technique developed by
   Robin Adams \cite{adams:PTSEQ}. It includes a new term algebra, with
   associated reduction operations and a new type system
   for which we have to prove metatheoretic properties.
 
-\item Correction of the traduction: the target system include
+\item Correction of the interpretation: the target system include
   metavariables, introducing a second, \emph{unusual} kind of variable binding.
 \end{itemize}
 
 We will present these difficulties and our recipes for solving them in
-the \Coq environment. Additionaly, we will identify more general problems for
+the \Coq environment. Additionally, we will identify more general problems for
 proving in \Coq and suggest possible solutions. 
 
 {\bf Disclaimer}: this is a work in
-progress ; to this day we have proved elimination of transivity and
+progress ; to this day we have proved elimination of transitivity and
 subject reduction should follow soon.
 
 \bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
