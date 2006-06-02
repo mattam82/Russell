@@ -1,13 +1,13 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import LiftSubst.
-Require Import CCSum.Types.
-Require Import CCSum.Inversion.
-Require Import CCSum.Thinning.
-Require Import CCSum.Substitution.
-Require Import CCSum.TypeCase.
-Require Import CCSum.SubjectReduction.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.CCSum.Types.
+Require Import Lambda.CCSum.Inversion.
+Require Import Lambda.CCSum.Thinning.
+Require Import Lambda.CCSum.Substitution.
+Require Import Lambda.CCSum.TypeCase.
+Require Import Lambda.CCSum.SubjectReduction.
 
 
 Implicit Types i k m n p : nat.
@@ -65,17 +65,6 @@ apply trans_conv_conv with (subst (Pi1 t) V0); auto with coc core arith datatype
 unfold subst ; apply conv_conv_subst ; auto with coc core arith datatypes.
 pose (IHtyp _ H1).
 apply (inv_conv_sum_r _ _ _ _ c).
-
-apply inv_typ_let_in with e t v U0; auto with coc core arith datatypes;
- intros.
-apply trans_conv_conv with (subst t T'); auto with coc core arith datatypes.
-unfold subst ; apply conv_conv_subst ; auto with coc core arith datatypes.
-pose (IHtyp1 _ H4).
-
-
-apply IHtyp3.
-apply typ_conv_env with (V :: e) ; auto with coc core arith.
-apply (typ_wf _ _ _ H1).
 
 apply trans_conv_conv with U; auto with coc core arith datatypes.
 Qed.

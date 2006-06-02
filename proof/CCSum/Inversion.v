@@ -1,8 +1,8 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import LiftSubst.
-Require Import CCSum.Types.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.CCSum.Types.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -41,13 +41,7 @@ Implicit Types A B M N T t u v : term.
     | Pi2 t =>
         forall U V,
         typ e t (Sum U V) -> conv T (subst (Pi1 t) V) -> P
-    | Let_in t v =>
-        forall U, typ e t U -> 
-	forall s1, typ e U (Srt s1) ->
-        forall M, typ (U :: e) v M -> 
-        forall s2, typ (U :: e) M (Srt s2) ->
-        conv T (subst t M) -> P
-    end.
+   end.
 
   Lemma inv_type_conv :
    forall (P : Prop) e t (U V : term),
@@ -75,7 +69,6 @@ apply H1 with U0 V0; auto with coc core arith datatypes.
 
 apply H1 with U0 V0; auto with coc core arith datatypes.
 
-apply H1 with U0 s1 M s2; auto with coc core arith datatypes.
 
 intros.
 apply trans_conv_conv with V; auto with coc core arith datatypes.
@@ -105,7 +98,6 @@ apply H4; auto with coc core arith datatypes.
 apply H2 with U V; auto with coc core arith datatypes.
 apply H2 with U V; auto with coc core arith datatypes.
 
-apply H8 with U s1 M s2; auto with coc core arith datatypes.
 
 apply H1.
 apply inv_type_conv with V; auto with coc core arith datatypes.
@@ -230,21 +222,6 @@ apply typ_inversion with e (Pi2 t) T; simpl in |- *;
 apply H0 with U V ; auto with coc.
 Qed.
 
-Lemma inv_typ_let_in : 
-  forall (P : Prop) e v t T,
-   typ e (Let_in v t) T ->
-   (forall V, typ e v V -> 
-   forall s1, typ e V (Srt s1) ->
-   forall T', typ (V :: e) t T' ->
-   forall s2, typ (V :: e) T' (Srt s2) ->
-   conv (subst v T')  T -> P) -> P.
-Proof.
-intros.
-apply typ_inversion with e (Let_in v t) T; simpl in |- *;
- auto with coc core arith datatypes; intros.
-apply (H0 U H1 s1 H2 M H3 s2 H4) ; auto with coc.
-Qed.
-
 
   Lemma typ_mem_kind : forall e t T, mem_sort kind t -> ~ typ e t T.
 red in |- *; intros.
@@ -284,9 +261,6 @@ apply typ_inversion with e0 u (Sum U V); auto with coc core arith datatypes.
 
 apply typ_inversion with (e0) u (Sum U V); auto with coc core arith datatypes.
 
-apply typ_inversion with e0 u U; auto with coc core arith datatypes.
-
-apply typ_inversion with (U :: e0) v M; auto with coc core arith datatypes.
 Qed.
 
 

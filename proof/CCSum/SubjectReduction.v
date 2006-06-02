@@ -1,12 +1,12 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import Conv.
-Require Import LiftSubst.
-Require Import CCSum.Types.
-Require Import CCSum.Inversion.
-Require Import CCSum.Thinning.
-Require Import CCSum.Substitution.
-Require Import CCSum.TypeCase.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.CCSum.Types.
+Require Import Lambda.CCSum.Inversion.
+Require Import Lambda.CCSum.Thinning.
+Require Import Lambda.CCSum.Substitution.
+Require Import Lambda.CCSum.TypeCase.
 
 
   Inductive red1_in_env : env -> env -> Prop :=
@@ -132,10 +132,6 @@ apply wf_var with set; auto with coc core arith datatypes.
 apply type_pi1 with V ; auto with coc core arith datatypes.
 
 apply type_pi2 with U ; auto with coc core arith datatypes.
-
-cut (wf (U :: f)); intros.
-apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.
 
 apply type_conv with U s; auto with coc core arith datatypes.
 Qed.
@@ -264,10 +260,6 @@ apply type_pi1 with V ; auto with coc core arith datatypes.
 
 apply type_pi2 with U ; auto with coc core arith datatypes.
 
-cut (wf (U :: f)); intros.
-apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.
-
 apply type_conv with U s; auto with coc core arith datatypes.
 Qed.
 
@@ -393,10 +385,6 @@ apply wf_var with set; auto with coc core arith datatypes.
 apply type_pi1 with V ; auto with coc core arith datatypes.
 
 apply type_pi2 with U ; auto with coc core arith datatypes.
-
-cut (wf (U :: f)); intros.
-apply type_let_in with U s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core.
 
 apply type_conv with U s; auto with coc core arith datatypes.
 Qed.
@@ -577,20 +565,6 @@ replace (Srt s2) with (subst (Pi1 t) (Srt s2)) ;
 assumption.
 apply type_pi1 with V ; auto.
 discriminate.
-
-generalize H IHtyp1 H0 IHtyp2 H1 IHtyp3 H2 IHtyp4.
-clear H IHtyp1 H0 IHtyp2 H1 IHtyp3 H2 IHtyp4.
-inversion_clear H3 ; intros.
-
-pose (IHtyp1 _ H).
-apply type_conv with (subst N1 M) s2 ; auto with coc core.
-apply type_let_in with U s1 s2 ; auto with coc core.
-unfold subst ; apply conv_conv_subst ; auto with coc core arith.
-replace (Srt s2) with (subst t (Srt s2)) ;
-[apply substitution with U ; auto with coc core | unfold subst ; auto].
-
-pose (IHtyp3 _ H).
-apply type_let_in with U s1 s2 ; auto with coc core.
 
 apply type_conv with U s; auto with coc core arith datatypes.
 Qed.

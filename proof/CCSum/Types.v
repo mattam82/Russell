@@ -1,8 +1,8 @@
-Require Import Termes.
-Require Import LiftSubst.
-Require Import Reduction.
-Require Import Conv.
-Require Export MyList.
+Require Import Lambda.Terms.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+Require Export Lambda.MyList.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -66,16 +66,6 @@ with typ : env -> term -> term -> Prop :=
   | type_pi2 :
       forall e t U V,
       typ e t (Sum U V) -> typ e (Pi2 t) (subst (Pi1 t) V)
-
-  | type_let_in :
-      forall e t U,
-      typ e t U ->
-      forall s1, typ e U (Srt s1) -> (* Just for easier induction, derivable from the next 
-	 judgment *)
-      forall v M,
-      typ (U :: e) v M -> 
-      forall s2, typ (U :: e) M (Srt s2) ->
-      typ e (Let_in t v) (subst t M)
 
   | type_conv :
       forall e t (U V : term),

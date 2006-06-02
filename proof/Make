@@ -12,6 +12,14 @@ Reduction.v
 Conv.v
 Conv_Dec.v
 Env.v
+# CCSum
+CCSum/Types.v
+CCSum/Thinning.v
+CCSum/Substitution.v
+CCSum/Inversion.v
+CCSum/TypeCase.v
+CCSum/SubjectReduction.v
+CCSum/Unicity.v
 # Russell
 Russell/Types.v
 Russell/Coercion.v

@@ -1,9 +1,9 @@
-Require Import Termes.
-Require Import Reduction.
-Require Import LiftSubst.
-Require Import CCSum.Types.
-Require Import CCSum.Inversion.
-Require Import CCSum.Thinning.
+Require Import Lambda.Terms.
+Require Import Lambda.Reduction.
+Require Import Lambda.LiftSubst.
+Require Import Lambda.CCSum.Types.
+Require Import Lambda.CCSum.Inversion.
+Require Import Lambda.CCSum.Thinning.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -179,11 +179,6 @@ apply type_pi1 with (subst_rec d V (S n)) ; auto with coc.
 rewrite distr_subst.
 simpl.
 apply type_pi2 with (subst_rec d U0 n) ; auto with coc.
-
-cut (wf (subst_rec d U0 n :: f)).
-intro ; rewrite distr_subst.
-apply type_let_in with (subst_rec d U0 n) s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core arith datatypes.
 
 apply type_conv with (subst_rec d U0 n) s; auto with coc core arith datatypes.
 Qed.
