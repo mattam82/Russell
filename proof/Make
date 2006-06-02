@@ -4,8 +4,6 @@ Utils.v
 Tactics.v
 MyList.v
 ListType.v
-Names.v
-MlTypes.v
 Terms.v
 LiftSubst.v
 Reduction.v

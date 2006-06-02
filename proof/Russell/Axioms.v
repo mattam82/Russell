@@ -73,7 +73,7 @@ Proof.
   apply wf_var with s ; auto with coc.
 Qed.
 
-(* Set versions of the lemmas derived from the axiom *)
+(** Set versions of the lemmas derived from the axiom *)
 Axiom inv_conv_prod_sort_l_set : forall e U V U' V' s, e |-- Prod U V : Srt s -> e |-- Prod U' V' : Srt s ->
   conv (Prod U V) (Prod U' V') -> { s1 : sort | e |-- U : Srt s1 /\ e |-- U' : Srt s1 }.
 
