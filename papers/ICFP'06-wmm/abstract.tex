@@ -3,23 +3,20 @@
 \usepackage{xspace} % To get the right spacings in front of : and so on
 \usepackage[english]{babel}
 \usepackage{abbrevs}
-\usepackage{subfigure}
-\usepackage{ifthen}
-\usepackage{coqdoc}
-\usepackage{bussproofs}
-\usepackage{pgf,pgfarrows,pgfnodes}
-%\usepackage{concmath}
-%\usepackage{ccfonts,eulervm}
- \usepackage{concmath}
-\usepackage{url} \usepackage{fullpage}
+\usepackage{concmath}
+\usepackage{hyperref}
+\usepackage{a4wide}
 
 \title{\Russell's Metatheoretic Study - Abstract}
-\date{\today}
+\date{}
 \author{Matthieu Sozeau \\
   LRI -- Paris Sud XI University \\
-  \url{sozeau@lri.fr} -- \url{http://www.lri.fr/~sozeau}}
+  \url{mailto:sozeau@lri.fr} -- \url{http://www.lri.fr/~sozeau}}
+\setcounter{page}{0}
+
 \begin{document}
 \maketitle
+\thispagestyle{empty}
 
 We are working on the formalization of \Russell{}'s type theory in the
 \Coq{} proof assistant \cite{sozeau:coq/Russell/meta}.  The type system
@@ -68,10 +65,6 @@ subject reduction should follow soon.
 \bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
 \bibliographystyle{acm}
-
-%% \renewcommand{\thefootnote}{}
-%% \footnotetext{This article was typeset in \LaTeX~using the
-%%   \texttt{Concrete Math} font}
 
 \end{document}
 
