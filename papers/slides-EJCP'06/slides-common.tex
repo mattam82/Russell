@@ -69,7 +69,7 @@
 \institute[]
 {
   Université Paris-Sud 11 \\
-  \LRI{} - \'Equipe \Demons{} \& \INRIAFuturs{} - Projet \Proval{} 
+  \LRI{} - Équipe \Demons{} \& \INRIAFuturs{} - Projet \Proval{} 
 }
 
 \date[EJCP'06] % (optional, should be abbreviation of conference name)
@@ -96,17 +96,17 @@
 
 \pgfdeclareimage[height=3cm]{lambda-cube}{../figures/lambda-cube}
 
-\pgfdeclareimage[interpolate=true,height=8cm]{subtac-syntax}{capturesyntax}
-\pgfdeclareimage[interpolate=true,height=8cm]{myhd-proof}{capturemyhd-proof}
-\pgfdeclareimage[interpolate=true,height=8cm]{myhd-extract}{capturemyhd-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytail-extract}{capturemytail-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytest-good}{capturemytest-ok}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytest-good-extract}{capturemytest-ok-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytest-bad}{capturemytest-bad}
+\pgfdeclareimage[interpolate=true,height=9cm]{subtac-syntax}{capturesyntax}
+\pgfdeclareimage[interpolate=true,height=9cm]{myhd-proof}{capturemyhd-proof}
+\pgfdeclareimage[interpolate=true,height=9cm]{myhd-extract}{capturemyhd-extract}
+\pgfdeclareimage[interpolate=true,height=9cm]{mytail-extract}{capturemytail-extract}
+\pgfdeclareimage[interpolate=true,height=9cm]{mytest-good}{capturemytest-ok}
+\pgfdeclareimage[interpolate=true,height=9cm]{mytest-good-extract}{capturemytest-ok-extract}
+\pgfdeclareimage[interpolate=true,height=9cm]{mytest-bad}{capturemytest-bad}
 
-\pgfdeclareimage[interpolate=true,height=8cm]{append-proof}{captureappend-proof}
-\pgfdeclareimage[interpolate=true,height=8cm]{append-extract}{captureappend-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{append-app}{captureappend-app}
+\pgfdeclareimage[interpolate=true,height=9cm]{append-proof}{captureappend-proof}
+\pgfdeclareimage[interpolate=true,height=9cm]{append-extract}{captureappend-extract}
+\pgfdeclareimage[interpolate=true,height=9cm]{append-app}{captureappend-app}
 
 \def\typea{\vdash}
 \def\suba{\rightslice}
@@ -129,7 +129,7 @@
   
   \begin{block}{Definition}
     $\mysubset{x}{T}{P}$ est l'ensemble des objets de l'ensemble $T$
-    verifiant la propriété $P$. 
+    vérifiant la propriété $P$. 
   \end{block}
   
   \alert{Sépare} objet et propriété.
@@ -185,7 +185,7 @@
   \frametitle{\ldots aux coercions de sous-ensembles}
   
   \begin{enumerate}
-  \item<1-> Un langage ``property-irrelevant'' (\lng{}) avec typage \alert{decidable} ;
+  \item<1-> Un langage ``property-irrelevant'' (\lng{}) avec typage \alert{décidable} ;
   \item<2-> Une traduction totale vers \Coq{} (et termes à trous) ;
   \item<3-> Une méthode pour transformer les trous en obligations.
   \end{enumerate}
@@ -252,7 +252,7 @@
     \end{center}
   }
   
-  \only<6>{\begin{theorem}[Decidabilité du typage]
+  \only<6>{\begin{theorem}[Décidabilité du typage]
       $\forall\;`G\;t\;T,`G \type t : T$ est décidable.
   \end{theorem}}
 \end{frame}
@@ -317,7 +317,7 @@
 % \end{frame}
 
 \begin{frame}[t]
-  \frametitle{Traduction: derivation de coercions explicites}
+  \frametitle{Traduction: dérivation de coercions explicites}
 
   \begin{block}{Correction de l'interprétation}
     \begin{center}
@@ -454,7 +454,7 @@
 
 \begin{frame}[t]
   \frametitle{Les listes façon \Program}
-  \vspace{-0.75em}
+  \vspace{-2.75em}
   \begin{center}%
     \only<1>{\pgfuseimage{subtac-syntax}}%
     \only<2>{\pgfuseimage{myhd-proof}}%
@@ -484,7 +484,7 @@
     \item Application à d'autres constructions ((co-)inductifs) et commandes.
     \item Améliorations de \Coq{} (variables existentielles, inférence à
       la ML, proof irrelevance).
-    \item Donner une interprétation relativement complete et utile des
+    \item Donner une interprétation relativement complète et utile des
       langages de la famille \ML{} (interprétation monadique, effets...).
     \end{itemize}
   \end{block}
