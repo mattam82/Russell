@@ -75,6 +75,35 @@ Qed.
 
 Hint Resolve conv_in_env_sym : coc.
 (*
+Inductive conv_in_env_full : lenv -> lenv -> Prop :=
+  | conv_env_full_conv : forall e f t,
+    conv_in_env_full (t :: e) (t :: f) ->
+    forall u s, e |-- t ~= u : s -> f |-- t ~= u : s -> 
+      conv_in_env_full (t :: e) (u :: f)
+  | conv_env_full_eq :
+      forall e f t, tposr_wf e -> conv_in_env_full e e
+  | conv_env_start : 
+    conv_in_env_full nil nil.
+
+Hint Resolve conv_env_full_conv conv_env_full_eq conv_env_start : coc.
+
+Lemma conv_env_full :
+  (forall e t u T, e |-- t -> u : T -> 
+  forall f, conv_in_env_full e f -> f |-- t -> u : T).
+Proof.
+  intros.
+  induction H0.
+  apply conv_env with (t0 :: f) ; auto with coc.
+  apply conv_env_hd with s ; auto.
+
+  
+
+  
+
+
+Admitted.
+*)
+(*
 Lemma ind_conv_env :
   (forall e t T, e |-- t : T -> 
   forall f, conv_in_env e f -> f |-- t : T) /\

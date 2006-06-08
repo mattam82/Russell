@@ -25,3 +25,12 @@ Definition eq_unique_sort := tposr_eq_unique_sort.
 Hint Unfold unique_sort eq_unique_sort : coc.
 
 Hint Resolve unique_sort eq_unique_sort : coc.
+
+Lemma tposrp_unique_sort : forall G A s t, 
+  tposr_term G A (Srt_l s) -> tposr_term G A (Srt_l t) -> s = t.
+Proof.
+  unfold tposr_term ; intros ; destruct_exists.
+  eauto with coc.
+Qed.
+
+Hint Resolve tposrp_unique_sort : coc.

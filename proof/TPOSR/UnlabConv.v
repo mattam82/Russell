@@ -194,3 +194,110 @@ Proof.
   destruct N ; try (simpl in H1 ; try discriminate).
 
 Admitted.
+
+Corollary unlab_conv_sorted : forall G A B s t, tposr_term G A (Srt_l s) ->
+  tposr_term G B (Srt_l t) -> ( | A | ) = ( | B | ) -> s = t /\ G |-- A ~= B : s.
+Proof.
+  intros.
+  pose (tposr_unlab_conv H H0 H1) ; destruct_exists.
+  split.
+
+  pose (tposrp_left_refl H2).
+  pose (tposrp_left_refl H3).
+  apply (unique_sort t0 t1).
+
+  apply tposr_eq_trans with x ; auto.
+  apply tposrp_tposr_eq ; auto.
+  apply tposr_eq_sym ; auto.
+  apply tposrp_tposr_eq ; auto.
+Qed.
+
+
+Inductive conv_in_env_full : lenv -> lenv -> Prop :=
+  | conv_env_trans : forall e f g, conv_in_env_full e f -> conv_in_env_full f g -> conv_in_env_full e g
+  | conv_env_in_env : forall e f, conv_in_env e f -> conv_in_env_full e f
+  | conv_env_nil : conv_in_env_full nil nil.
+
+Hint Resolve conv_env_in_env conv_env_nil : coc.
+
+Lemma conv_env_full :
+  (forall e t u T, e |-- t -> u : T -> 
+  forall f, conv_in_env_full e f -> f |-- t -> u : T).
+Proof.
+  intros.
+  induction H0 ; auto.
+
+  apply conv_env with e ; auto with coc.
+Qed.
+
+Lemma conv_env_full_sym : forall e f, conv_in_env_full e f -> conv_in_env_full f e.
+Proof.
+  induction 1 ; simpl ; intros ; eauto with coc.
+  apply conv_env_trans with f ; auto.
+Qed.
+
+Lemma conv_env_full_cons : forall G D, conv_in_env_full G D -> forall T, tposr_wf (T :: G) ->
+  conv_in_env_full (T :: G) (T :: D).
+Proof.
+  induction 1 ; simpl ; intros.
+  apply conv_env_trans with (T :: f) ; eauto with coc.
+  apply IHconv_in_env_full2.
+  inversion H1.
+  apply wf_cons with A' s.
+  apply conv_env_full with e ; auto with coc.
+
+  apply conv_env_in_env ; auto with coc.
+
+  apply conv_env_in_env ; auto with coc.
+  inversion H.
+  assert(nil |-- T ~= T : s).
+  apply tposr_eq_tposr ; eauto with coc.
+  apply conv_env_hd with s ; auto with coc.
+Qed.
+
+Lemma unlab_conv_ctx_conv : forall G D, tposr_wf G -> tposr_wf D -> 
+  (unlab_ctx D) = (unlab_ctx G) -> conv_in_env_full G D.
+Proof.
+  induction G ; induction D ; simpl ; intros ; try discriminate ; auto.
+
+  apply conv_env_nil.  
+
+  apply conv_env_trans with (a0 :: G) ; auto with coc.
+  apply conv_env_in_env.
+  inversion H.
+  inversion H0.
+  subst.
+  assert(tposr_term G a (Srt_l s)) ;  eauto with coc.
+  inversion H1.
+  pose (conv_env_full_sym (IHG _ (wf_tposr H3) (wf_tposr H6) H7)).
+  pose (conv_env_full H6 c).
+  assert(tposr_term G a0 (Srt_l s0)) ; eauto with coc.
+  pose (unlab_conv_sorted H2 H4 (sym_eq H5)).
+  destruct_exists.
+  apply conv_env_hd with s ; eauto with coc.
+  
+  inversion H1 ; subst.
+  cut (conv_in_env_full G D).
+  intros.
+  apply conv_env_full_cons ; auto.
+  inversion H ; inversion H0 ; subst.
+  assert(G |-- a0 -> A'0 : Srt_l s0).
+  apply conv_env_full with D ; auto.
+  apply conv_env_full_sym ; auto.
+  apply wf_cons with A'0 s0 ; auto.
+
+  inversion H ; inversion H0 ; subst ; 
+  apply IHG ; eauto with coc.
+  apply (wf_tposr H5).
+  apply (wf_tposr H8).
+Qed.
+
+
+Corollary unlab_conv_ctx : forall D, tposr_wf D -> forall G M N A, G |-- M -> N : A -> 
+ (unlab_ctx D) = (unlab_ctx G) -> D |-- M -> N : A.
+Proof.
+  intros.
+  apply conv_env_full with G ; auto with coc.
+  apply unlab_conv_ctx_conv ; auto with coc.
+  apply (wf_tposr H0).
+Qed.
