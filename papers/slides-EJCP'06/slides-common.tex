@@ -56,7 +56,10 @@
 \input{subtyping-impl}
 
 \title %[Short Paper Title] (optional, use only with long paper titles)
-{Coercion de sous-ensembles en \Coq}
+{\emph{Un environnement pour la programmation avec types d\'{e}pendants} \\
+-- Coercion de sous-ensembles en \Coq}
+}
+
 
 \author[Matthieu Sozeau]
 {{\sc Matthieu Sozeau} \\ sous la direction de {\sc Christine Paulin-Mohring}}
@@ -199,7 +202,7 @@
     \vspace{0.5cm}
     \BAX{}{$`G \typea t : T$}
     {$`G, x : T \type P : \Prop$}
-    {$\uncover<2>{(}t\uncover<2>{, ?)} : \mysubset{x}{T}{P}$}
+    {$`G \type \uncover<2>{(}t\uncover<2>{, ?)} : \mysubset{x}{T}{P}$}
     {\uncover<2>{$`G \type ? : P[t/x]$}}\DP
   \end{center}
   }
