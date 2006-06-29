@@ -156,10 +156,7 @@ Corollary subject_reduction : forall t t', par_lred1 t t' -> forall e T, tposr_t
   e |-- t -> t' : T.
 Proof.
   intros.
-  apply subject_reduction_depth ; eauto with coc.
-  destruct H0.
-  destruct (tod H0).
-  exists x ; eauto with coc.
+  apply subject_reduction_depth ; eauto with coc ecoc.
 Qed.
 
 Corollary subject_reduction_p : forall t t', par_lred t t' -> forall e T, tposr_term e t T ->

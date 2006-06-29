@@ -68,6 +68,15 @@ Hint Resolve eq_kind_typ_l_l eq_kind_typ_l_r eq_kind_typ_r_l eq_kind_typ_r_r : c
 Definition equiv e A B := (eq_kind A B \/ exists s, e |-- A ~= B : s).
 Definition equiv_sort e A B s := e |-- A ~= B : s.
 
+Definition tposr_eq_equiv : forall e A B s, e |-- A ~= B : s -> equiv e A B.
+intros.
+right.
+exists s. 
+assumption.
+Defined.
+
+Hint Resolve tposr_eq_equiv : ecoc.
+
 Hint Unfold eq_kind equiv : coc.
 
 Lemma tposr_equiv_l : forall e A B, equiv e A B -> forall M N, 

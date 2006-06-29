@@ -165,6 +165,13 @@ Proof (proj1 tposr_tposrd).
 Corollary tposr_tposrd_wf : forall e, tposr_wf e -> tposrd_wf e.
 Proof (proj2 tposr_tposrd).
 
+Definition tod := tposr_tposrd_type.
+
+Coercion tposr_to_tposrd_wf := fun e => fun d : tposr_wf e =>
+  tposr_tposrd_wf d.
+
+Hint Resolve tposr_tposrd_type tposr_tposrd_wf : coc.
+
 Check tposrd_wf_mutind.
 
 Lemma ind_tposrd_wf :
@@ -374,10 +381,14 @@ Corollary tposrd_tposr_type : forall e t u T n, e |-- t -> u : T [n] ->
   e |-- t -> u : T.
 Proof (proj1 tposrd_tposr).
 
+Definition fromd := tposrd_tposr_type.
+
+Hint Resolve tposrd_tposr_type : ecoc.
+
 Corollary tposrd_tposr_wf : forall e, tposrd_wf e -> tposr_wf e.
 Proof (proj2 tposrd_tposr).
 
-Hint Resolve tposrd_tposr_type tposrd_tposr_wf : coc.
+Hint Resolve tposrd_tposr_wf : coc.
 
 Lemma tposr_to_tposrd : forall (P : Prop) e t u T n, e |-- t -> u : T [n] ->
   (e |-- t -> u : T -> P) -> P.
@@ -387,7 +398,16 @@ Proof.
   apply tposrd_tposr_type with n ; auto.
 Qed.
 
-Definition tposr_term_depth G M A := exists M', exists n, G |-- M -> M' : A [n].
+Definition tposr_term_depth G M A := 
+  exists M', exists n, G |-- M -> M' : A [n].
+
+Lemma tposrd_tposr_term_depth : forall G t u T n, G |-- t -> u : T [n] ->
+  tposr_term_depth G t T.
+Proof.
+  intros ; exists u ; exists n ; auto.
+Qed.
+
+Hint Resolve tposrd_tposr_term_depth : ecoc.
 
 Lemma tposr_term_tod : forall G M A, tposr_term G M A  -> tposr_term_depth G M A.
 Proof.
@@ -397,6 +417,8 @@ Proof.
   exists x ; exists x0 ; auto.
 Qed.
 
+Hint Resolve tposr_term_tod : coc.
+
 Lemma tposr_term_fromd : forall G M A, tposr_term_depth G M A  -> tposr_term G M A.
 Proof.
   intros.
@@ -405,5 +427,4 @@ Proof.
   apply (tposrd_tposr_type H).
 Qed.
 
-Definition tod := tposr_tposrd_type.
-Definition fromd := tposrd_tposr_type.
+Hint Resolve tposr_term_fromd : coc.

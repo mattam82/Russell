@@ -35,7 +35,7 @@ Lemma tposr_term_conv_env : forall e t T, tposr_term e t T ->
   forall f, conv_in_env e f -> tposr_term f t T.
 Proof.
   unfold tposr_term ; intros ; destruct_exists.
-  exists x ; eauto with coc.
+  exists x ; eauto with coc ecoc.
 Qed.
 
 Hint Resolve tposr_term_conv_env : coc.
@@ -82,30 +82,31 @@ Proof.
   subst.
   inversion H1.
   subst.
-  assert(tposr_term G M1 (Srt_l b2)) by eauto with coc.
-  assert(tposr_term G N1 (Srt_l b)) by eauto with coc.
+  assert(tposr_term G M1 (Srt_l b2)) by eauto with coc ecoc.
+  assert(tposr_term G N1 (Srt_l b)) by eauto with coc ecoc.
 
   pose (IHM1 _ _ _ _ H6 H13 H10) ; destruct_exists.
-  assert(conv_in_env (M1 :: G) (x :: G)) by eauto with coc.
-  assert(conv_in_env (N1 :: G) (x :: G)) by eauto with coc.
-  assert(tposr_term (x :: G) M2 a4) by eauto with coc.
-  assert(tposr_term (x :: G) N2 a1) by eauto with coc.
+  assert(conv_in_env (M1 :: G) (x :: G)) by eauto with coc ecoc.
+  assert(conv_in_env (N1 :: G) (x :: G)) by eauto with coc ecoc.
+  assert(tposr_term (x :: G) M2 a4) by eauto with coc ecoc.
+  assert(tposr_term (x :: G) N2 a1) by eauto with coc ecoc.
 
   pose (IHM2 _ _ _ _ H20 H21 H12) ; destruct_exists.
+
   assert(equiv_sort G (Prod_l N1 a1) (Prod_l M1 a4) b0).
   unfold equiv_sort.
-  apply pi_functionality with b2 ; eauto with coc.
-  apply tposr_eq_trans with x ; eauto with coc.
+  apply pi_functionality with b2 ; eauto with coc ecoc.
   apply conv_env_eq with (x :: G) ; auto with coc.
   destruct (tposrp_uniqueness_of_types H22 H23) ; destruct H26.
-  subst ; eauto with coc.
-  apply tposr_eq_sym.
-  assert(x1 = b0) by eauto with coc.
-  rewrite <- H27 ; eauto with coc.
+  subst ; eauto with coc ecoc.
+  
+  assert(x1 = b0) by eauto with coc ecoc.
+  rewrite <- H27 ; auto with coc.
+
   assert(b0 = b3).
   pose (conv_refl_r H11).
   pose (conv_refl_r H26).
-  eauto with coc.
+  eauto with coc ecoc.
   subst.
 
   assert(equiv_sort G B (Prod_l M1 a4) b3).
@@ -116,22 +117,22 @@ Proof.
   
   exists (Abs_l x x0) ; intuition.
 
-  apply tposrp_conv_l with (Prod_l M1 a4) b3 ; eauto with coc.
-  apply tposrp_abs with b b4 b3 ; eauto with coc.
-  apply tposrp_conv_env with (x :: G) ; eauto with coc.
+  apply tposrp_conv_l with (Prod_l M1 a4) b3 ; eauto with coc ecoc.
+  apply tposrp_abs with b b4 b3 ; eauto with coc ecoc.
+  apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
 
  
-  apply tposrp_conv_l with (Prod_l M1 a4) b3 ; eauto with coc.
-  apply tposrp_abs with b b4 b3 ; eauto with coc.
-  apply tposrp_conv_env with (x :: G) ; eauto with coc.
+  apply tposrp_conv_l with (Prod_l M1 a4) b3 ; eauto with coc ecoc.
+  apply tposrp_abs with b b4 b3 ; eauto with coc ecoc.
+  apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
 
-  apply tposrp_conv_l with (Prod_l N1 a1) b3 ; eauto with coc.
-  apply tposrp_abs with b b1 b3 ; eauto with coc.
-  apply tposrp_conv_env with (x :: G) ; eauto with coc.
+  apply tposrp_conv_l with (Prod_l N1 a1) b3 ; eauto with coc ecoc.
+  apply tposrp_abs with b b1 b3 ; eauto with coc ecoc.
+  apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
 
-  apply tposrp_conv_l with (Prod_l N1 a1) b3 ; eauto with coc.
-  apply tposrp_abs with b b1 b3 ; eauto with coc.
-  apply tposrp_conv_env with (x :: G) ; eauto with coc.
+  apply tposrp_conv_l with (Prod_l N1 a1) b3 ; eauto with coc ecoc.
+  apply tposrp_abs with b b1 b3 ; eauto with coc ecoc.
+  apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
 
   (* App *)
   destruct N ; try (simpl in H1 ; try discriminate).
@@ -140,11 +141,11 @@ Proof.
   destruct_exists.
   inversion H1 ; subst.
   
-  assert(tposr_term G M2 (Prod_l a2 M1)) by eauto with coc.
-  assert(tposr_term G N2 (Prod_l a N1)) by eauto with coc.
+  assert(tposr_term G M2 (Prod_l a2 M1)) by eauto with coc ecoc.
+  assert(tposr_term G N2 (Prod_l a N1)) by eauto with coc ecoc.
   pose (IHM2 _ _ _ _ H14 H17 H15) ; destruct_exists.
-  assert(tposr_term G M3 a2) by eauto with coc.
-  assert(tposr_term G N3 a) by eauto with coc.
+  assert(tposr_term G M3 a2) by eauto with coc ecoc.
+  assert(tposr_term G N3 a) by eauto with coc ecoc.
   pose (IHM3 _ _ _ _ H22 H23 H16) ; destruct_exists.
   
   subst.
@@ -184,11 +185,11 @@ Proof.
   apply tposrp_conv_l with (lsubst N3 N1) x3 ; auto with coc.
   apply tposr_eq_trans with (lsubst M3 M1) ; auto with coc.
   apply tposrp_app with a b c x3 ; auto with coc.
-  apply tposrp_conv_env with (a2 :: G) ; eauto with coc.
+  apply tposrp_conv_env with (a2 :: G) ; eauto with coc ecoc.
 
   apply tposrp_conv_l with (lsubst N3 N1) x3 ; auto with coc.
   apply tposrp_app with a b c x3   ; auto with coc.
-  apply tposrp_conv_env with (a2 :: G) ; eauto with coc.
+  apply tposrp_conv_env with (a2 :: G) ; eauto with coc ecoc.
 
   (* Pair *)
   destruct N ; try (simpl in H1 ; try discriminate).
@@ -211,7 +212,6 @@ Proof.
   apply tposr_eq_sym ; auto.
   apply tposrp_tposr_eq ; auto.
 Qed.
-
 
 Inductive conv_in_env_full : lenv -> lenv -> Prop :=
   | conv_env_trans : forall e f g, conv_in_env_full e f -> conv_in_env_full f g -> conv_in_env_full e g

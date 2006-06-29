@@ -17,6 +17,8 @@ Proof.
   induction 1 ; simpl ; auto with coc.
 Qed.
 
+Hint Resolve wf_tposr : ecoc.
+
 Lemma tposr_conv : forall e A B s, e |-- A ~= B : s -> 
   forall M N, (e |-- M -> N : A -> e |-- M -> N : B) /\ (e |-- M -> N : B -> e |-- M -> N : A).
 Proof.
@@ -58,7 +60,7 @@ Proof.
 
   pose (IHtposrp1 H).
   pose (IHtposrp2 H).
-  eauto with coc.
+  eauto with ecoc.
 Qed.
 
 Corollary tposrp_conv_r : forall e A B s, e |-- A ~= B : s -> 
@@ -69,7 +71,7 @@ Proof.
   apply tposrp_tposr.
   exact ((proj2 (tposr_conv H X Y)) H0).
 
-  eauto with coc.
+  eauto with ecoc.
 Qed.
 
 

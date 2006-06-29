@@ -33,9 +33,9 @@ Lemma tposrp_abs :  forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   e |-- Abs_l A M -+> Abs_l A' M' : (Prod_l A B).
 Proof. 
   intros.
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists (Abs_l A M).
-  eapply tposr_abs ; eauto with coc.
+  eapply tposr_abs ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_prod : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -43,9 +43,9 @@ Lemma tposrp_prod : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   e |-- Prod_l A B -+> Prod_l A' B' : Srt_l s2.
 Proof.
   intros.
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists (Prod_l A B).
-  eapply tposr_prod ; eauto with coc.
+  eapply tposr_prod ; eauto with coc ecoc.
 Qed.
   
 Lemma tposrp_app : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -61,7 +61,7 @@ Proof.
   pose (tposrp_lred H2).
   apply subject_reduction_p ; auto with coc.
   exists (App_l B M N).
-  apply tposr_app with A A s1 s2 ; eauto with coc.
+  apply tposr_app with A A s1 s2 ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_beta : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -75,12 +75,12 @@ Proof.
   pose (tposrp_lred H0).
   pose (tposrp_lred H1).
   pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   apply lred_par_lred.
   apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
   exists (App_l B (Abs_l A M) N).
-  apply tposr_app with A A s1 s2 ; eauto with coc.
-  apply tposr_abs with s1 B s2 ; eauto with coc.
+  apply tposr_app with A A s1 s2 ; eauto with coc ecoc.
+  apply tposr_abs with s1 B s2 ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_red : forall e M N A, e |-- M -+> N : A -> 
@@ -88,9 +88,9 @@ Lemma tposrp_red : forall e M N A, e |-- M -+> N : A ->
   e |-- M -+> N : B.
 Proof.
   intros.
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists M.
-  apply tposr_conv_l with A s ; eauto with coc.
+  apply tposr_conv_l with A s ; eauto with coc ecoc.
 Qed.  
 
 Lemma tposrp_exp : forall e M N B, e |-- M -+> N : B -> 
@@ -98,9 +98,9 @@ Lemma tposrp_exp : forall e M N B, e |-- M -+> N : B ->
   e |-- M -+> N : A.
 Proof.
   intros.
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists M.
-  apply tposr_conv_l with B s ; eauto with coc.
+  apply tposr_conv_l with B s ; eauto with coc ecoc.
 Qed. 
 
 Lemma tposrp_subset : forall e A A', e |-- A -+> A' : Srt_l set ->
@@ -108,9 +108,9 @@ Lemma tposrp_subset : forall e A A', e |-- A -+> A' : Srt_l set ->
   e |-- Subset_l A B -+> Subset_l A' B' : Srt_l set.
 Proof.
   intros.
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists (Subset_l A B).
-  apply tposr_subset ; eauto with coc.
+  apply tposr_subset ; eauto with coc ecoc.
 Qed.  
 
 Lemma tposrp_sigma : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -119,9 +119,9 @@ Lemma tposrp_sigma : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   e |-- Sum_l A B -+> Sum_l A' B' : Srt_l s3.
 Proof.
   intros.
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists (Sum_l A B).
-  eapply tposr_sum ; eauto with coc.
+  eapply tposr_sum ; eauto with coc ecoc.
 Qed.
  
 Lemma tposrp_pair : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -136,9 +136,9 @@ Proof.
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).
   pose (tposrp_lred H3).
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists (Pair_l (Sum_l A B) u v).
-  eapply tposr_pair ; eauto with coc.
+  eapply tposr_pair ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_pi1 : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -151,9 +151,9 @@ Proof.
   pose (tposrp_lred H).
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists (Pi1_l (Sum_l A B) t).
-  eapply tposr_pi1 ; eauto with coc.
+  eapply tposr_pi1 ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_pi1_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -168,14 +168,14 @@ Proof.
   pose (tposrp_lred H).
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   apply lred_par_lred.
   apply trans_lred with (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
   exists (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)).
-  apply tposr_pi1 with s1 s2 s3 ; eauto with coc.
-  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc.
-  apply sigma_functionality with s1 s2 ; eauto with coc.
-  apply conv_env_eq with (A'' :: e) ; eauto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
+  apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
+  apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_pi2 : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -188,9 +188,9 @@ Proof.
   pose (tposrp_lred H).
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   exists (Pi2_l (Sum_l A B) t).
-  eapply tposr_pi2 ; eauto with coc.
+  eapply tposr_pi2 ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_pi2_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -206,37 +206,37 @@ Proof.
   pose (tposrp_lred H).
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc.
+  apply subject_reduction_p ; eauto with coc ecoc.
   apply lred_par_lred.
   apply trans_lred with (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
   exists (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)).
   apply tposr_conv_l with (lsubst (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)) B'') s2.
   apply substitution_eq with A''  ; auto with coc.
-  apply tposr_pi1 with s1 s2 s3 ; eauto with coc.
-  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc.
-  apply sigma_functionality with s1 s2 ; eauto with coc.
-  apply conv_env_eq with (A'' :: e) ; eauto with coc.
-  apply tposr_pi2 with s1 s2 s3 ; eauto with coc.
-  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc.
-  apply sigma_functionality with s1 s2 ; eauto with coc.
-  apply conv_env_eq with (A'' :: e) ; eauto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
+  apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
+  apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
+  apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
+  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
+  apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
+  apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
 Qed.
 
 Lemma tposrp_substitution : forall e d d' t, e |-- d -+> d' : t ->
   forall u u' U, t :: e |-- u -+>  u' : U -> 
   e |-- (lsubst d u) -+> (lsubst d' u') : (lsubst d U).
 Proof.
-  induction 1 ; simpl ; intros; subst ; eauto with coc.
+  induction 1 ; simpl ; intros; subst ; eauto with coc ecoc.
   apply tposrp_substitution with Z ; auto.
 
-  apply tposrp_trans with (lsubst X u) ; eauto with coc.
+  apply tposrp_trans with (lsubst X u) ; eauto with coc ecoc.
   destruct (validity_tposrp H1) ; destruct_exists.
   rewrite H2.
   change (lsubst W (Srt_l x)) with (Srt_l x).
   rewrite H2 in H1.
   subst.
   apply (IHtposrp2 u u' (Srt_l x)) ; auto.
-  apply tposrp_conv_l with (lsubst X U) b ; eauto with coc.
+  apply tposrp_conv_l with (lsubst X U) b ; eauto with coc ecoc.
   
   pose (left_refl H2).
   pose (tposrp_tposr t).

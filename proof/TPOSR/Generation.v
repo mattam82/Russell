@@ -162,7 +162,7 @@ Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_prod_depth H0) ; destruct_exists.
-  exists a b ; exists a0 b0 ; intuition ; eauto with coc.
+  exists a b ; exists a0 b0 ; intuition ; eauto with coc ecoc ecoc.
 Qed.
 
 
@@ -234,7 +234,7 @@ Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_sum_depth H0) ; destruct_exists.
-  exists a b ; exists a0 b0 ; exists x0 ; intuition ; eauto with coc.
+  exists a b ; exists a0 b0 ; exists x0 ; intuition ; eauto with coc ecoc.
 Qed.
 
 Lemma generation_lambda_depth_aux : forall e t X A m, e |-- t -> X : A [m] -> forall T M, t = Abs_l T M ->
@@ -303,7 +303,7 @@ Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_lambda_depth H0) ; destruct_exists.
-  exists a b ; exists a0 b0 ; exists a1 b1 ; intuition ; eauto with coc.
+  exists a b ; exists a0 b0 ; exists a1 b1 ; intuition ; eauto with coc ecoc.
 Qed.
 
 Lemma generation_app_depth_aux :
@@ -391,8 +391,8 @@ Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_app_depth H0) ; destruct_exists.
-  exists a b c ; exists a0 b0 ; exists a1 ; intuition ; destruct_exists ; eauto with coc.
-  right ; exists a2 b2 ; intuition ; eauto with coc.
+  exists a b c ; exists a0 b0 ; exists a1 ; intuition ; destruct_exists ; eauto with coc ecoc.
+  right ; exists a2 b2 ; intuition ; eauto with coc ecoc.
 Qed.
 
 Lemma generation_app2 : forall e V W X Y Z, e |-- App_l V W X -> Y : Z -> 
@@ -494,8 +494,8 @@ Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_pair_depth H0) ; destruct_exists.
-  exists a b c ; exists a0 b0 c0 ; exists x0 ; intuition ; destruct_exists ; eauto with coc.
-  exists a1 ; intuition ; eauto with coc.
+  exists a b c ; exists a0 b0 c0 ; exists x0 ; intuition ; destruct_exists ; eauto with coc ecoc.
+  exists a1 ; intuition ; eauto with coc ecoc.
 Qed.
 
 Require Import Lambda.TPOSR.MaxLemmas.
@@ -534,14 +534,14 @@ Proof.
   exists a1 b1 ; intuition.
   apply equiv_trans with A ; auto with coc.
   right ; exists s.
-  apply tposr_eq_sym ; eauto with coc.
+  apply tposr_eq_sym ; eauto with coc ecoc.
 
   destruct_exists.
   left.
   assert(c1 < S (max n m)) by (apply lt_trans with n ; auto with arith).
   exists a2 b2 c1 ; intuition.
   apply equiv_trans with A ; auto with coc.
-  right ; exists s ; eauto with coc.
+  right ; exists s ; eauto with coc ecoc.
 
   destruct_exists.
   right.
@@ -558,14 +558,13 @@ Proof.
   repeat (split ; eauto).
   exists a1 b1 ; intuition.
   apply equiv_trans with B ; auto with coc.
-  right ; exists s ; eauto with coc.
+  right ; exists s ; eauto with coc ecoc.
 
   destruct_exists.
   left.
   assert(c1 < S (max n m)) by (apply lt_trans with n ; auto with arith).
   exists a2 b2 c1 ; intuition.
-  apply equiv_trans with B ; eauto with coc.
-  right ; exists s ; eauto with coc.
+  apply equiv_trans with B ; eauto with coc ecoc.
 
   destruct_exists.
   right.
@@ -580,7 +579,7 @@ Proof.
   exists s3.
   intuition ; auto with arith.
   exists A B ; intuition.
-  right ; exists s1 ; eauto with coc.
+  right ; exists s1 ; eauto with coc ecoc.
   left ; exists (Sum_l A' B') t' p ; intuition.
 
   clear IHtposrd1 IHtposrd2 IHtposrd3.
@@ -591,7 +590,7 @@ Proof.
   exists s3.
   intuition ; auto with arith.
   exists A'' B'' ; intuition.
-  right ; exists s1 ; eauto with coc.
+  right ; exists s1 ; eauto with coc ecoc.
   
   right ; exists u u' p ; exists v v' ; intuition.
 Qed.
@@ -644,11 +643,11 @@ Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_pi1_depth H0) ; destruct_exists.
-  exists a b c ; exists a0 b0 c0 ; exists x0 ; intuition ; destruct_exists ; eauto with coc.
-  exists a1 b1 ; intuition ; eauto with coc.
-  left ; exists a2 b2 ; intuition ; eauto with coc.
-  exists a1 b1 ; intuition ; eauto with coc.
-  right ; exists a2 b2 ; exists a3 b3 ; intuition ; eauto with coc.
+  exists a b c ; exists a0 b0 c0 ; exists x0 ; intuition ; destruct_exists ; eauto with coc ecoc.
+  exists a1 b1 ; intuition ; eauto with coc ecoc.
+  left ; exists a2 b2 ; intuition ; eauto with coc ecoc.
+  exists a1 b1 ; intuition ; eauto with coc ecoc.
+  right ; exists a2 b2 ; exists a3 b3 ; intuition ; eauto with coc ecoc.
 Qed.
 
 (*Lemma generation_pi2_depth_aux : forall e t C, e |-- t : C -> forall M, t = Pi2 M ->
@@ -749,5 +748,5 @@ Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_subset_depth H0) ; destruct_exists.
-  exists a a0 ; intuition ; destruct_exists ; eauto with coc.
+  exists a a0 ; intuition ; destruct_exists ; eauto with coc ecoc.
 Qed.

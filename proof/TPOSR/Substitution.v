@@ -32,7 +32,7 @@ Admitted.
 Corollary tposrp_substitution_aux : forall G u v U, G |-- u -+> v : U -> forall t e, G = (t :: e) ->
   forall d d', e |-- d -> d' : t -> e |-- (lsubst d u) -+> (lsubst d' v) : (lsubst d U).
 Proof.
-  induction 1 ; simpl ; intros; subst ; eauto with coc.
+  induction 1 ; simpl ; intros; subst ; eauto with coc ecoc.
   apply tposrp_tposr.
   apply substitution with t ; auto.
 Qed.

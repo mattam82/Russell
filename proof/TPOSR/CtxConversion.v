@@ -70,7 +70,7 @@ Qed.
 
 Lemma conv_in_env_sym : forall e f, conv_in_env e f -> conv_in_env f e.
 Proof.
-  induction 1 ; eauto with coc.
+  induction 1 ; eauto with coc ecoc.
 Qed.
 
 Hint Resolve conv_in_env_sym : coc.
