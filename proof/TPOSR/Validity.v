@@ -45,25 +45,25 @@ Proof.
   destruct H4 ; destruct_exists.
   elim (eq_kind_typ_r_l H4 H5).
 
-  right ; exists T x3 ; apply (conv_refl_l H4).  
+  right ; exists T x3 ; apply (coerce_refl_l H4).  
 
   right.
   pose (generation_lambda_depth H0) ; destruct_exists.
   exists T b0.
-  apply (conv_refl_l H8).
+  apply (coerce_refl_l H8).
 
   pose (generation_app_depth H0) ; destruct_exists.
-  right ; exists T b0 ; apply (conv_refl_l H7).
+  right ; exists T b0 ; apply (coerce_refl_l H7).
 
   pose (generation_pair_depth H0) ; destruct_exists.
-  right ; exists T x0 ; apply (conv_refl_l H12).
+  right ; exists T x0 ; apply (coerce_refl_l H12).
 
   pose (generation_prod_depth H0) ; destruct_exists.
   destruct H6 ; destruct_exists.
   left ; exists b0 ; auto.
   destruct H6.
   rewrite H6 ; rewrite <- H7 ; auto.
-  right ; exists T x0 ; apply (conv_refl_l H6).
+  right ; exists T x0 ; apply (coerce_refl_l H6).
   
   pose (generation_sum_depth H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
@@ -71,22 +71,22 @@ Proof.
   destruct H7.
   rewrite H7 ; rewrite <- H8 ; auto.
 
-  right ; exists T x1 ; apply (conv_refl_l H7).
+  right ; exists T x1 ; apply (coerce_refl_l H7).
 
   pose (generation_subset_depth H0) ; destruct_exists.
-  right ; exists T kind ; apply (conv_refl_l H6).
+  right ; exists T kind ; apply (coerce_refl_l H6).
 
   pose (generation_pi1_depth H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
   destruct H7.
   left ; exists kind ; auto.
-  right ; exists T x1 ; apply (conv_refl_l H7).
+  right ; exists T x1 ; apply (coerce_refl_l H7).
 
   pose (generation_pi2_depth H0) ; destruct_exists.
   destruct H7 ; destruct_exists.
   destruct H7.
   left ; exists kind ; auto.
-  right ; exists T x1 ; apply (conv_refl_l H7).
+  right ; exists T x1 ; apply (coerce_refl_l H7).
 Qed.
 
 Corollary validity : forall e t u T, e |-- t -> u : T -> 

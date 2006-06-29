@@ -97,8 +97,6 @@ Proof.
 
   apply jeq_conv with (|A|) s ; auto with coc.
 
-  apply jeq_conv with (|B|) s ; auto with coc.
-
   apply jeq_subset ; auto with coc.
 
   apply jeq_sum  with s1 s2 ; auto with coc.

@@ -68,6 +68,11 @@ Proof.
   apply tposr_eq_trans with X ; auto with coc.
 Qed.
 
+Corollary coerce_conv_env : 
+  (forall e t u s, e |-- t >-> u : s -> 
+  forall f, conv_in_env e f -> f |-- t >-> u : s).
+Admitted.
+
 Lemma conv_in_env_sym : forall e f, conv_in_env e f -> conv_in_env f e.
 Proof.
   induction 1 ; eauto with coc ecoc.

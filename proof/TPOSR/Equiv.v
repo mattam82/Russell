@@ -65,17 +65,27 @@ Qed.
 
 Hint Resolve eq_kind_typ_l_l eq_kind_typ_l_r eq_kind_typ_r_l eq_kind_typ_r_r : coc.
 
-Definition equiv e A B := (eq_kind A B \/ exists s, e |-- A ~= B : s).
-Definition equiv_sort e A B s := e |-- A ~= B : s.
+Definition equiv e A B := (eq_kind A B \/ exists s, e |-- A >-> B : s).
+Definition equiv_sort e A B s := e |-- A >-> B : s.
 
 Definition tposr_eq_equiv : forall e A B s, e |-- A ~= B : s -> equiv e A B.
+intros.
+right.
+exists s. 
+apply tposr_coerce_conv.
+assumption.
+Defined.
+
+Hint Resolve tposr_eq_equiv : ecoc.
+
+Definition tposr_coerce_equiv : forall e A B s, e |-- A >-> B : s -> equiv e A B.
 intros.
 right.
 exists s. 
 assumption.
 Defined.
 
-Hint Resolve tposr_eq_equiv : ecoc.
+Hint Resolve tposr_coerce_equiv : ecoc.
 
 Hint Unfold eq_kind equiv : coc.
 
@@ -86,7 +96,7 @@ Proof.
   destruct H.
   rewrite H in H0 ; rewrite H1 ; assumption.
   destruct H.
-  apply tposr_conv_l with A x ; auto.
+  apply tposr_conv with A x  ; auto.
 Qed. 
 
 Lemma tposr_equiv_r : forall e A B, equiv e A B -> forall M N, 
@@ -96,7 +106,7 @@ Proof.
   destruct H.
   rewrite H ; rewrite H1 in H0 ; assumption.
   destruct H.
-  apply tposr_conv_r with B x ; auto.
+  apply tposr_conv with B x ; auto with coc.
 Qed. 
 
 Lemma tposrd_unique_sort : forall G M M' M'' s s' n m, G |-- M -> M' : Srt_l s [n] ->
@@ -124,13 +134,20 @@ Proof.
   apply eq_unique_sort with G C A B ; auto with coc.
 Qed.
 
+Lemma tposr_coerce_unique_sort_right : forall G A B C s s', G |-- A >-> C : s ->
+  G |-- B >-> C : s' -> s = s'.
+Proof.
+  intros.
+  apply coerce_unique_sort with G C A B ; auto with coc.
+Qed.
+
 Lemma equiv_sort_trans : forall G A B C s s', equiv_sort G A C s -> equiv_sort G B C s' -> equiv_sort G A B s.
 Proof.
   unfold equiv_sort.
   intros.
-  pose (tposr_eq_unique_sort_right H H0).
+  pose (tposr_coerce_unique_sort_right H H0).
   rewrite <- e in H0.
-  apply tposr_eq_trans with C ; auto with coc.
+  apply tposr_coerce_trans with C ; auto with coc.
 Qed.
 
 Lemma equiv_trans : forall G A B C, equiv G A C -> equiv G B C -> equiv G A B.
@@ -144,23 +161,23 @@ Proof.
   
   destruct H.
   rewrite H1 in H0.
-  pose (conv_refl_r H0).
+  pose (coerce_refl_r H0).
   elim (tposr_not_kind t) ; auto.
 
   destruct H0.
   rewrite H1 in H.
-  elim (tposr_not_kind (conv_refl_r H)).
+  elim (tposr_not_kind (coerce_refl_r H)).
 
   right.
 
-  pose (tposr_eq_unique_sort_right H H0).
+  pose (tposr_coerce_unique_sort_right H H0).
   exists x.
-  apply tposr_eq_trans with C ; auto with coc.
+  apply tposr_coerce_trans with C ; auto with coc.
   rewrite <- e ; auto.
 Qed.
 
-Lemma equiv_eq : forall e A s, e |-- A -> A : Srt_l s ->
-  forall B, equiv e A B -> e |-- A ~= B : s.
+Lemma equiv_coerce : forall e A s, e |-- A -> A : Srt_l s ->
+  forall B, equiv e A B -> e |-- A >-> B : s.
 Proof.
   intros.
   destruct H0.
@@ -169,7 +186,7 @@ Proof.
   elim (tposr_not_kind H).
   destruct H0.
 
-  rewrite (unique_sort H (conv_refl_l H0)) ; assumption.
+  rewrite (unique_sort H (coerce_refl_l H0)) ; assumption.
 Qed.
 
 Lemma equiv_sym : forall G A B, equiv G A B -> equiv G B A.

@@ -71,6 +71,7 @@ TPOSR/LeftReflexivity.v
 TPOSR/Substitution.v
 TPOSR/RightReflexivity.v
 TPOSR/CtxConversion.v
+TPOSR/Coercion.v
 TPOSR/Equiv.v
 TPOSR/Generation.v
 TPOSR/Validity.v

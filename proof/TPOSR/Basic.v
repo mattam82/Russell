@@ -19,14 +19,14 @@ Qed.
 
 Hint Resolve wf_tposr : ecoc.
 
-Lemma tposr_conv : forall e A B s, e |-- A ~= B : s -> 
+Lemma tposr_conv_eq : forall e A B s, e |-- A ~= B : s -> 
   forall M N, (e |-- M -> N : A -> e |-- M -> N : B) /\ (e |-- M -> N : B -> e |-- M -> N : A).
 Proof.
   induction 1 ; simpl ; intros.
   
   split ; intros.
-  apply tposr_red with X s ; auto.
-  apply tposr_exp with Y s ; auto.
+  apply tposr_conv with X s ; auto with coc.
+  apply tposr_conv with Y s ; auto with coc.
 
   pose (IHtposr_eq M N).
   intuition ; auto with coc.
@@ -40,14 +40,14 @@ Corollary tposr_conv_l : forall e A B s, e |-- A ~= B : s ->
   forall M N, e |-- M -> N : A -> e |-- M -> N : B.
 Proof.
   intros.
-  exact ((proj1 (tposr_conv H M N)) H0).
+  exact ((proj1 (tposr_conv_eq H M N)) H0).
 Qed.
 
 Corollary tposr_conv_r : forall e A B s, e |-- A ~= B : s -> 
   forall M N, e |-- M -> N : B -> e |-- M -> N : A.
 Proof.
   intros.
-  exact ((proj2 (tposr_conv H M N)) H0).
+  exact ((proj2 (tposr_conv_eq H M N)) H0).
 Qed.
 
 Corollary tposrp_conv_l : forall e A B s, e |-- A ~= B : s -> 
@@ -56,7 +56,7 @@ Proof.
   intros.
   induction H0.
   apply tposrp_tposr.
-  exact ((proj1 (tposr_conv H X Y)) H0).
+  exact ((proj1 (tposr_conv_eq H X Y)) H0).
 
   pose (IHtposrp1 H).
   pose (IHtposrp2 H).
@@ -69,7 +69,7 @@ Proof.
   intros.
   induction H0.
   apply tposrp_tposr.
-  exact ((proj2 (tposr_conv H X Y)) H0).
+  exact ((proj2 (tposr_conv_eq H X Y)) H0).
 
   eauto with ecoc.
 Qed.
@@ -137,7 +137,6 @@ Qed.
 Lemma tposr_not_kind_aux : forall e t u T, tposr e t u T -> t <> Srt_l kind.
 Proof.
   induction 1 ; simpl ; red ; intros ; try discriminate.
-  contradiction.
   contradiction.
 Qed.
 

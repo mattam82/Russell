@@ -181,20 +181,64 @@ Proof.
   apply (tposrp_sort_aux H) ; auto.
 Qed.
 
-Lemma equiv_sort_eq : forall e s s0, equiv e (Srt_l s) (Srt_l s0) -> s = s0.
+Lemma tposr_eq_sort : forall e s s0 s', tposr_eq e (Srt_l s) (Srt_l s0) s' -> s = s0.
 Proof.
    intros.
-   destruct H.
-   inversion H ; auto.
-   inversion H0 ; inversion H1.
-   auto.
-   destruct H.
    pose (tposr_eq_cr H) ; destruct_exists.
    pose (tposrp_sort H0).
    pose (tposrp_sort H1).
    rewrite e0 in e1.
    inversion e1 ; auto.
-Qed.   
+Qed.  
+(*
+Lemma in_set_not_sort : forall e T T' s, e |-- T -> T' : s ->
+  s = set -> forall s, T' <> Srt_l s.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+
+
+Lemma tposr_coerce_sorts : forall e T U s', tposr_coerce e T U s' ->
+  forall s, (T = (Srt_l s) -> e |-- U ~= (Srt_l s) : s') /\
+  (U = (Srt_l s) -> e |-- T ~= (Srt_l s) : s').
+Proof.
+  induction 1 ; simpl ; split ; intros ; try discriminate.
+  subst ; auto with coc.
+  subst ; auto with coc.
+
+  destruct (IHtposr_coerce s).
+  pose (H5 H3).
+  
+
+Lemma tposr_coerce_eq_sort : forall e T U s', tposr_coerce e T U s' ->
+  forall s s0, T = (Srt_l s) -> U = (Srt_l s0) -> s = s0.
+Proof.
+   induction 1 ; simpl ; intros ; try discriminate.
+   subst.
+   apply (tposr_eq_sort H).
+   
+   pose (IHtposr_coerce _ _ H1 H0) ; auto.
+   subst.
+
+Qed.  
+*)
+
+(*Lemma equiv_eq_sort : forall e s s0, equiv e (Srt_l s) (Srt_l s0) -> s = s0.
+Proof.
+   intros.
+   destruct H.
+   destruct H ; destruct_exists.
+   inversion H ; inversion H0 ; auto .
+
+   destruct H.
+   inversion H.
+
+   pose (tposr_eq_cr H0) ; destruct_exists.
+   pose (tposrp_sort H0).
+   pose (tposrp_sort H1).
+   rewrite e0 in e1.
+   inversion e1 ; auto.
+Qed.  
+*)
 
 Lemma tposrp_conv_env : forall e A B T, tposrp e A B T ->
   forall f, conv_in_env e f -> tposrp f A B T.
@@ -230,9 +274,18 @@ Proof.
   pose (generation_prod_depth H2) ; destruct_exists.
   exists a a0 b ; intuition ; try apply tposrp_tposr ; auto.
   apply (fromd H3).
-  rewrite (equiv_sort_eq H8).
+  destruct H8.
+  destruct H8 ; subst ; auto with coc.
+  rewrite H8 ; rewrite H9 in H5.
   apply (fromd H5).
-    
+  destruct H8.
+  apply tposr_conv with b0 x0 ; auto with coc.
+  apply (fromd H5).
+  
+  pose (thinning_coerce H8 (wf_tposr (fromd H5))). 
+  unfold llift in t ; simpl in t.
+  auto with coc.
+
   pose (IHtposrp1 _ _ H1 _ H2) ; destruct_exists.
   pose (IHtposrp2 _ _ H3 _ H2) ; destruct_exists.
   exists a0 b0 c0 ; intuition ; auto with coc.
@@ -297,6 +350,13 @@ Proof.
   exists a a0 b b0 ; intuition ; try apply tposrp_tposr ; auto.
   apply (fromd H3).
   apply (fromd H5).
+  destruct H9.
+  destruct H9.
+  subst.
+  injection H9 ; injection H10 ; intros ; subst. 
+  assumption.
+  destruct H9.
+  rewrite H10 in H7.
   rewrite (equiv_sort_eq H9).
   assumption.
 

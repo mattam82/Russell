@@ -56,13 +56,9 @@ with tposr : lenv -> lterm -> lterm -> lterm -> Prop :=
   forall N N', e |-- N -> N' : A ->
   e |-- App_l B (Abs_l A M) N -> lsubst N' M' : lsubst N B
 
-  | tposr_red : forall e M N A, e |-- M -> N : A -> 
-  forall B s, e |-- A -> B : s ->
+  | tposr_conv : forall e M N A, e |-- M -> N : A -> 
+  forall B s, e |-- A >-> B : s ->
   e |-- M -> N : B
-  
-  | tposr_exp : forall e M N B, e |-- M -> N : B -> 
-  forall A s, e |-- A -> B : s ->
-  e |-- M -> N : A
   
   | tposr_subset : forall e A A', e |-- A -> A' : set ->
   forall B B', (A :: e) |-- B -> B' : prop ->
@@ -157,7 +153,7 @@ with tposr_coerce : lenv -> lterm -> lterm -> sort -> Prop :=
 where "G |-- T >-> U : s" := (tposr_coerce G T U s).
 
 Hint Resolve wf_nil tposr_set tposr_prop : coc.
-Hint Resolve tposr_pi2_red tposr_pi2 tposr_pi1_red tposr_pi1 tposr_pair tposr_sum tposr_subset tposr_red : coc.
+Hint Resolve tposr_pi2_red tposr_pi2 tposr_pi1_red tposr_pi1 tposr_pair tposr_sum tposr_subset tposr_conv : coc.
 Hint Resolve tposr_beta tposr_app tposr_var tposr_prod tposr_app : coc.
 
 Hint Resolve tposr_eq_tposr tposr_eq_sym : coc.
@@ -220,12 +216,8 @@ forall
           (tposr_beta t t0 t1 t2)) ->
        (forall (e : lenv) (M N A : lterm) (t : e |-- M -> N : A),
         P e M N A t ->
-        forall (B : lterm) s (t0 : e |-- A -> B : s),
-        P e A B s t0 -> P e M N B (tposr_red t t0)) ->
-       (forall (e : lenv) (M N B : lterm) (t : e |-- M -> N : B),
-        P e M N B t ->
-        forall (A : lterm) s (t0 : e |-- A -> B : s),
-        P e A B s t0 -> P e M N A (tposr_exp t t0)) ->
+        forall (B : lterm) s (t0 : e |-- A >-> B : s),
+        P e M N B (tposr_conv t t0)) ->
        (forall (e : lenv) (A A' : lterm) (t : e |-- A -> A' : set),
         P e A A' set t ->
         forall (B B' : lterm) (t0 : A :: e |-- B -> B' : prop),
@@ -296,6 +288,10 @@ forall
        P0 nil wf_nil ->
        (forall (G : lenv) (A A' : lterm) s (t : G |-- A -> A' : s),
         P G A A' s t -> P0 (A :: G) (wf_cons t)) ->
+
+
+       (forall (G : lenv) (A A' : lterm) s (t : G |-- A -> A' : s),
+        P G A A' s t -> P0 (A :: G) (wf_cons t)) ->
        (forall (l : lenv) (l0 l1 l2 : lterm) (t : l |-- l0 -> l1 : l2),
        P l l0 l1 l2 t) /\
        (forall (l : lenv) (t : tposr_wf l), P0 l t).
@@ -316,7 +312,6 @@ with coerce_mutind :=  Induction for tposr_coerce Sort Prop.
 Check tposr_mutind.
 
 Lemma ind_tposr_wf_eq :
-
 forall
          (P : forall (l : lenv) (l0 l1 l2 : lterm),
               l |-- l0 -> l1 : l2 -> Prop)
@@ -367,12 +362,8 @@ forall
           (tposr_beta t t0 t1 t2)) ->
        (forall (e : lenv) (M N A : lterm) (t : e |-- M -> N : A),
         P e M N A t ->
-        forall (B : lterm) s (t0 : e |-- A -> B : s),
-        P e A B s t0 -> P e M N B (tposr_red t t0)) ->
-       (forall (e : lenv) (M N B : lterm) (t : e |-- M -> N : B),
-        P e M N B t ->
-        forall (A : lterm) s (t0 : e |-- A -> B : s),
-        P e A B s t0 -> P e M N A (tposr_exp t t0)) ->
+        forall (B : lterm) s (t0 : e |-- A >-> B : s),
+        P2 e A B s t0 -> P e M N B (tposr_conv t t0)) ->
        (forall (e : lenv) (A A' : lterm) (t : e |-- A -> A' : set),
         P e A A' set t ->
         forall (B B' : lterm) (t0 : A :: e |-- B -> B' : prop),
@@ -510,7 +501,6 @@ forall
         P2 e A B s t ->
         forall t0 : e |-- B >-> C : s,
         P2 e B C s t0 -> P2 e A C s (tposr_coerce_trans t t0)) ->
-
        (forall (l : lenv) (l0 l1 l2 : lterm) (t : l |-- l0 -> l1 : l2),
        P l l0 l1 l2 t) /\
        (forall (l : lenv) (t : tposr_wf l), P0 l t) /\

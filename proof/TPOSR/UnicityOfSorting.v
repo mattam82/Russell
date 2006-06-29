@@ -21,6 +21,7 @@ Set Implicit Arguments.
 
 Definition unique_sort := tposr_unique_sort.
 Definition eq_unique_sort := tposr_eq_unique_sort.
+Definition coerce_unique_sort := tposr_coerce_unique_sort.
 
 Hint Unfold unique_sort eq_unique_sort : coc.
 

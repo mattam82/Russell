@@ -86,20 +86,25 @@ Proof.
   apply (left_refl (fromd H9)).
   destruct H17.
   assert(b0 = x3).
-  apply (unique_sort (fromd H5) (conv_refl_l H17)).
+  apply (unique_sort (fromd H5) (coerce_refl_l H17)).
 
-  apply tposr_eq_trans with (Prod_l M1 a1) ; auto with coc.
-  assert(tposr_eq e (Prod_l M1 a1) (Prod_l M1 a4) b0).
+  apply tposr_coerce_trans with (Prod_l M1 a1) ; auto with coc.
+  assert(tposr_coerce e (Prod_l M1 a1) (Prod_l M1 a4) b0).
   rewrite <- H19 in H17.
-  apply (pi_functionality H18 H17).
-  assert(b3 = x3).
-  apply (unique_sort (fromd H13) (conv_refl_r H17)).
-  apply tposr_eq_trans with (Prod_l M1 a4) ; auto.
-  apply tposr_eq_sym.
-  rewrite H19.
-  rewrite <- H21.
-  apply H16.
+  apply tposr_coerce_prod with b2 ; auto with coc ecoc.
+  eauto with coc.
+  eauto with coc.
+  apply (left_refl (fromd H5)).
+  pose (unique_sort (fromd H13) (coerce_refl_r H17)).
+  rewrite <- e0.
+  apply (left_refl (fromd H13)).
 
+  apply tposr_coerce_trans with (Prod_l M1 a4) ; auto.
+  rewrite H19.
+  rewrite <- (unique_sort (fromd H13) (coerce_refl_r H17)).
+  apply tposr_coerce_sym.
+  apply H16.
+  
   (* App *)
   pose (generation_app_depth H) ; destruct_exists.
   pose (generation_app_depth H0) ; destruct_exists.

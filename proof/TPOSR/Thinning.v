@@ -108,6 +108,12 @@ apply (proj1 (weak_weak A)) with e ; auto with coc.
 apply wf_cons with A' s; auto with coc core arith datatypes.
 Qed.
 
+Lemma thinning_coerce :
+   forall e t t' s,
+   e |-- t >-> t' : s -> 
+   forall A, tposr_wf (A :: e) -> (A :: e) |-- (llift 1 t) >-> llift 1 t' : s.
+Admitted.
+
 Lemma thinning_n :
    forall n e f,
    trunc _ n e f ->

@@ -22,6 +22,10 @@ Corollary conv_refls : forall e u v s, e |-- u ~= v : s ->
   e |-- u -> u : Srt_l s /\ e |-- v -> v : Srt_l s.
 Admitted.
 
+Corollary coerce_refls : forall e u v s, e |-- u >-> v : s -> 
+  e |-- u -> u : Srt_l s /\ e |-- v -> v : Srt_l s.
+Admitted.
+
 Corollary conv_refl_l :  forall e u v s, e |-- u ~= v : s -> e |-- u -> u : Srt_l s.
 Proof.
   intros.
@@ -32,6 +36,18 @@ Corollary conv_refl_r :  forall e u v s, e |-- u ~= v : s -> e |-- v -> v : Srt_
 Proof.
   intros.
   apply (proj2 (conv_refls H)).
+Qed.
+
+Corollary coerce_refl_l :  forall e u v s, e |-- u >-> v : s -> e |-- u -> u : Srt_l s.
+Proof.
+  intros.
+  apply (proj1 (coerce_refls H)).
+Qed.
+
+Corollary coerce_refl_r :  forall e u v s, e |-- u >-> v : s -> e |-- v -> v : Srt_l s.
+Proof.
+  intros.
+  apply (proj2 (coerce_refls H)).
 Qed.
 
 Lemma tposrp_right_refl : forall e A B T, tposrp e A B T -> e |-- B -> B : T.

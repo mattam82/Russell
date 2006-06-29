@@ -516,60 +516,38 @@ Lemma generation_pi1_depth_aux : forall e t X C m, e |-- t -> X : C [m] -> foral
   (exists3 u u' r,
   exists2 v v',
   M = Pair_l (Sum_l A B) u v /\
-  e |-- A'' ~= A : s1 /\
-  A'' :: e |-- B'' ~= B : s2/\
+  e |-- A'' >-> A : s1 /\
+  A'' :: e |-- B'' >-> B : s2/\
   e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [r] /\ r < m /\
   X = u')).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-  pose (IHtposrd1 _ _ H1).
+  pose (IHtposrd _ _ H1).
   destruct_exists.
   
   exists a b c d.
   exists a0 b0 c0 d0.
   exists x.
-  assert(d < S (max n m)) by (apply lt_trans with n ; auto with arith).
-  assert(d0 < S (max n m)) by (apply lt_trans with n ; auto with arith).
+  assert(d < S n) by (apply lt_trans with n ; auto with arith).
+  assert(d0 < S n) by (apply lt_trans with n ; auto with arith).
   repeat (split ; eauto).
   exists a1 b1 ; intuition.
   apply equiv_trans with A ; auto with coc.
   right ; exists s.
-  apply tposr_eq_sym ; eauto with coc ecoc.
+  apply tposr_coerce_sym ; eauto with coc ecoc.
 
   destruct_exists.
   left.
-  assert(c1 < S (max n m)) by (apply lt_trans with n ; auto with arith).
+  assert(c1 < S n) by (apply lt_trans with n ; auto with arith).
   exists a2 b2 c1 ; intuition.
   apply equiv_trans with A ; auto with coc.
   right ; exists s ; eauto with coc ecoc.
 
   destruct_exists.
   right.
-  assert(c1 < S (max n m)) by (apply lt_trans with n ; auto with arith).
+  assert(c1 < S n) by (apply lt_trans with n ; auto with arith).
   exists a2 b2 c1 ; exists a3 b3 ; intuition.
 
-  pose (IHtposrd1 _ _ H1).
-  destruct_exists.
-  exists a b c d.
-  exists a0 b0 c0 d0.
-  exists x.
-  assert(d < S (max n m)) by (apply lt_trans with n ; auto with arith).
-  assert(d0 < S (max n m)) by (apply lt_trans with n ; auto with arith).
-  repeat (split ; eauto).
-  exists a1 b1 ; intuition.
-  apply equiv_trans with B ; auto with coc.
-  right ; exists s ; eauto with coc ecoc.
-
-  destruct_exists.
-  left.
-  assert(c1 < S (max n m)) by (apply lt_trans with n ; auto with arith).
-  exists a2 b2 c1 ; intuition.
-  apply equiv_trans with B ; eauto with coc ecoc.
-
-  destruct_exists.
-  right.
-  assert(c1 < S (max n m)) by (apply lt_trans with n ; auto with arith).
-  exists a2 b2 c1 ; exists a3 b3 ; intuition.
   
   clear IHtposrd1 IHtposrd2 IHtposrd3.
   inversion H3.
@@ -611,8 +589,8 @@ Lemma generation_pi1_depth : forall e T M X C m, e |-- Pi1_l T M -> X : C [m] ->
   (exists3 u u' r,
   exists2 v v',
   M = Pair_l (Sum_l A B) u v /\
-  e |-- A'' ~= A : s1 /\
-  A'' :: e |-- B'' ~= B : s2/\
+  e |-- A'' >-> A : s1 /\
+  A'' :: e |-- B'' >-> B : s2 /\
   e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [r] /\ r < m /\
   X = u')).
 Proof.
@@ -635,8 +613,8 @@ Lemma generation_pi1 : forall e T M X C, e |-- Pi1_l T M -> X : C ->
   (exists2 u u',
   exists2 v v',
   M = Pair_l (Sum_l A B) u v /\
-  e |-- A'' ~= A : s1 /\
-  A'' :: e |-- B'' ~= B : s2 /\
+  e |-- A'' >-> A : s1 /\
+  A'' :: e |-- B'' >-> B : s2 /\
   e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B /\
   X = u')).
 Proof.

@@ -220,9 +220,6 @@ Lemma subset_conv_left :
 Proof.
   induction 1 ; simpl ; intros ; try rewrite H0 in H ; auto with coc.
 
-  apply tposr_eq_tposr ; auto with coc.
-  apply tposr_subset ; auto.
-  
   apply tposr_eq_sym.
   apply IHtposr_eq ; auto.
   apply conv_env with (Y :: e) ; auto.
