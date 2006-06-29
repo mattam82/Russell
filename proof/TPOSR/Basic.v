@@ -98,7 +98,7 @@ Proof.
 
   apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
   apply trans_lred with (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
-  apply trans_lred with (Pi2_l (Sum_l A B) (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
+  apply trans_lred with (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
 Qed.
 
 Lemma tposrp_lred : forall e M N Z, e |-- M -+> N : Z -> lred M N.

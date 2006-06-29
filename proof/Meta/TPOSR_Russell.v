@@ -53,6 +53,34 @@ Proof.
   intuition.
 Qed.
 
+Theorem tposr_coerce_russell : forall G M N s, G |-- M >-> N : s ->
+  (unlab_ctx G) |-- (|M|) : Srt s /\ (unlab_ctx G) |-- (|N|) : Srt s.
+Proof.
+  induction 1 ; simpl ; intros ; try solve [ intuition ; intros ; auto with coc].
+  
+  apply (tposr_eq_russell H).
+
+  intuition.
+  apply type_prod with s ; auto with coc.
+  destruct (tposr_russell H3).
+  auto.
+  apply type_prod with s ; auto with coc.
+
+  intuition.
+  apply type_sum with s s' ; auto with coc.
+  apply type_sum with s s' ; auto with coc.
+  destruct (tposr_russell H4).
+  auto.
+
+  intuition.
+  apply type_subset ; auto with coc.
+  destruct (tposr_russell H2) ; auto.
+
+  intuition.
+  apply type_subset ; auto with coc.
+  destruct (tposr_russell H2) ; auto.
+Qed.
+
 Theorem tposr_unique_sort : forall G A B C s s', G |-- A -> B : Srt_l s -> G |-- A -> C : Srt_l s' ->
   s = s'.
 Proof.
@@ -70,5 +98,15 @@ Proof.
 
   destruct (tposr_eq_russell H).
   destruct (tposr_eq_russell H0).
+  apply (unique_sort H1 H3).
+Qed.
+
+Theorem tposr_coerce_unique_sort : forall G A B C s s', G |-- A >-> B : s -> G |-- A >-> C : s' ->
+  s = s'.
+Proof.
+  simpl ; intros.
+
+  destruct (tposr_coerce_russell H).
+  destruct (tposr_coerce_russell H0).
   apply (unique_sort H1 H3).
 Qed.

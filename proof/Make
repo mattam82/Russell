@@ -49,6 +49,9 @@ JRussell/Substitution.v
 JRussell/PreFunctionality.v
 JRussell/Generation.v
 JRussell/Validity.v
+#JRussell/GenerationRange.v
+#JRussell/GenerationNotKind.v
+#JRussell/UnicityOfSortingRange.v
 # TPOSR
 TPOSR/Terms.v
 TPOSR/LiftSubst.v

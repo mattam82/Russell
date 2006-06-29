@@ -255,3 +255,11 @@ Proof.
   pose (H2 _ _ _ _ H).
   intuition.
 Qed.
+
+Corollary jeq_unique_sort : forall G u s s', G |-= u : Srt s -> G |-= u : Srt s' -> s = s'.
+Proof.
+  intros.
+  pose (type_jrussell_to_russell _ _ _ H).
+  pose (type_jrussell_to_russell _ _ _ H0).
+  apply (unique_sort t t0).
+Qed.  
