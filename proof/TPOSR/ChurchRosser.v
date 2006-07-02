@@ -190,39 +190,172 @@ Proof.
    rewrite e0 in e1.
    inversion e1 ; auto.
 Qed.  
-(*
-Lemma in_set_not_sort : forall e T T' s, e |-- T -> T' : s ->
-  s = set -> forall s, T' <> Srt_l s.
+
+Lemma inv_llift_sort : forall t s n, llift n t = Srt_l s -> t = Srt_l s.
+Proof.
+intros.
+induction t ; simpl ; try discriminate.
+unfold llift in H ; simpl in H.
+auto.
+Qed.
+
+Lemma inv_subst_sort : forall t t' n s, lsubst_rec t t' n = Srt_l s -> 
+  t = Srt_l s \/ t' = Srt_l s.
+Proof.
+  induction t' ;  simpl ; intros ;
+  auto with coc core arith datatypes ; try discriminate.
+  generalize H.
+  elim (lt_eq_lt_dec n0 n).
+  intros a ; case a ; clear a ; intros ; try discriminate ; auto.
+  left.
+  exact (inv_llift_sort _ _ H0).
+
+  intros.
+  discriminate.
+Qed.
+
+Lemma tposr_sort_kinded : forall e T U, e |-- T -> T : U ->
+  forall s, T = Srt_l s -> U = kind.
+Proof.
+  induction 1 ; simpl ; intros; try discriminate ; auto with coc.
+  
+  unfold lsubst in H3.
+  destruct (inv_subst_sort _ _ _ H3).
+  
+  pose (IHtposr4 _ H4).
+  rewrite e0 in H.
+  elim (tposr_not_kind H).
+
+  pose (IHtposr3 _ H4).
+  rewrite e0 in H0.
+  elim (tposr_not_kind H0).
+
+  pose (IHtposr _ H1).
+  rewrite e0 in H0.
+  pose (coerce_refl_l H0).
+  elim (tposr_not_kind t).
+
+  pose (generation_pair H2) ; destruct_exists.
+  inversion H12 ; subst.
+  inversion H6 ; subst.
+Admitted. 
+
+Lemma in_set_not_sort : forall e T s, e |-- T -> T : s ->
+  s = set -> forall s, T <> Srt_l s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
+  red ; intros.
+  destruct (inv_subst_sort _ _ _ H3).
+  rewrite H5 in H2.
+  pose (tposr_sort_kinded (left_refl H2) (refl_equal (Srt_l set))).
+  rewrite e0 in H.
+  elim (tposr_not_kind H).
+  pose (IHtposr3 H5).
+  destruct (inv_subst_sort _ _ _ H4).
+  rewrite H6 in H2.
+  pose (tposr_sort_kinded (right_refl H2) (refl_equal (Srt_l s))).
+  rewrite e0 in H.
+  elim (tposr_not_kind H).
+  pose (n s) ; contradiction.
+  red ; intros.
+  rewrite H2 in H.
+  pose (tposr_sort_kinded (right_refl H) (refl_equal (Srt_l s0))).
+  rewrite e0 in H0.
+  elim (tposr_not_kind (coerce_refl_l H0)).
+
+  rewrite H5 in H3.
+  pose (tposr_sort_kinded (coerce_refl_l H3) (refl_equal (Srt_l set))).
+  injection e0 ; intros.
+  rewrite H6 in H1.
+  destruct H1 ; intuition ; try discriminate.
+  destruct (inv_subst_sort _ _ _ H5) ; try discriminate.
+  rewrite H6 in H4.
+  pose (tposr_sort_kinded (coerce_refl_l H4) (refl_equal (Srt_l set))).
+  injection e0 ; intros.
+  rewrite H7 in H1.
+  destruct H1 ; intuition ; try discriminate.
+Qed.
+
+Lemma tposr_eq_sort_red : forall G T s s', G |-- T ~= (Srt_l s) : s' ->
+  lred T (Srt_l s).
+Proof.
+  intros.
+  pose (tposr_eq_cr H) ; destruct_exists.
+  pose (tposrp_sort H1).
+  rewrite e in H0.
+  apply (tposrp_lred H0).
+Qed.
 
 Lemma tposr_coerce_sorts : forall e T U s', tposr_coerce e T U s' ->
-  forall s, (T = (Srt_l s) -> e |-- U ~= (Srt_l s) : s') /\
-  (U = (Srt_l s) -> e |-- T ~= (Srt_l s) : s').
+  forall s, (e |-- T ~= (Srt_l s) : s' -> e |-- U ~= (Srt_l s) : s') /\
+  (e |-- U ~= (Srt_l s) : s' -> e |-- T ~= (Srt_l s) : s').
 Proof.
   induction 1 ; simpl ; split ; intros ; try discriminate.
-  subst ; auto with coc.
-  subst ; auto with coc.
+  apply tposr_eq_trans with A ; auto with coc.
+  apply tposr_eq_trans with B ; auto with coc.
 
-  destruct (IHtposr_coerce s).
-  pose (H5 H3).
-  
+  pose (tposr_eq_conv H5).
+  elim conv_sort_prod with s0 A B ; auto with coc.
+  pose (tposr_eq_conv H5).
+  elim conv_sort_prod with s0 A' B' ; auto with coc.
 
-Lemma tposr_coerce_eq_sort : forall e T U s', tposr_coerce e T U s' ->
+  pose (tposr_eq_conv H7).
+  elim conv_sort_sum with s0 A B ; auto with coc.
+  pose (tposr_eq_conv H7).
+  elim conv_sort_sum with s0 A' B' ; auto with coc.
+
+  pose (tposr_eq_conv H3).
+  elim conv_sort_subset with s U P ; auto with coc.
+  pose (conv_refl_r H3).
+  elim (in_set_not_sort t (refl_equal (Srt_l set))) with s.
+  auto.
+  pose (conv_refl_r H3).
+  elim (in_set_not_sort t (refl_equal (Srt_l set))) with s.
+  auto.
+  pose (tposr_eq_conv H3).
+  elim conv_sort_subset with s U' P ; auto with coc.
+
+  destruct (IHtposr_coerce s0).
+  apply (H2 H0).
+  destruct (IHtposr_coerce s0).
+  apply (H1 H0).
+
+  destruct (IHtposr_coerce1 s0).
+  pose (H2 H1).
+  destruct (IHtposr_coerce2 s0).
+  apply (H4 t).
+
+  destruct (IHtposr_coerce1 s0).
+  destruct (IHtposr_coerce2 s0).
+  apply (H3 (H5 H1)).
+Qed.
+
+Lemma tposr_coerce_eq_sort_aux : forall e T U s', tposr_coerce e T U s' ->
   forall s s0, T = (Srt_l s) -> U = (Srt_l s0) -> s = s0.
 Proof.
-   induction 1 ; simpl ; intros ; try discriminate.
-   subst.
-   apply (tposr_eq_sort H).
-   
-   pose (IHtposr_coerce _ _ H1 H0) ; auto.
-   subst.
-
+  intros.
+  pose (tposr_coerce_sorts H).
+  destruct (a s).
+  rewrite H0 in H2.
+  assert(e |-- s ~= s : s').
+  rewrite H0 in H.
+  pose (coerce_refl_l H4).
+  auto with coc.
+  pose (H2 H4).
+  rewrite H1 in t.
+  pose (tposr_eq_sort t).
+  auto.
 Qed.  
-*)
 
-(*Lemma equiv_eq_sort : forall e s s0, equiv e (Srt_l s) (Srt_l s0) -> s = s0.
+Lemma tposr_coerce_eq_sort : forall e s s0 s', e |-- (Srt_l s) >-> (Srt_l s0) : s' ->
+  s = s0.
+Proof.
+  intros.
+  eapply tposr_coerce_eq_sort_aux ; eauto with coc.
+Qed.
+
+Lemma equiv_eq_sort : forall e s s0, equiv e (Srt_l s) (Srt_l s0) -> s = s0.
 Proof.
    intros.
    destruct H.
@@ -230,15 +363,8 @@ Proof.
    inversion H ; inversion H0 ; auto .
 
    destruct H.
-   inversion H.
-
-   pose (tposr_eq_cr H0) ; destruct_exists.
-   pose (tposrp_sort H0).
-   pose (tposrp_sort H1).
-   rewrite e0 in e1.
-   inversion e1 ; auto.
+   apply (tposr_coerce_eq_sort H).
 Qed.  
-*)
 
 Lemma tposrp_conv_env : forall e A B T, tposrp e A B T ->
   forall f, conv_in_env e f -> tposrp f A B T.
@@ -334,6 +460,41 @@ Proof.
   apply conv_env_eq with (A' :: e) ; auto with coc.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
+(*
+Require Import Lambda.TPOSR.Coercion.
+
+Corollary injectivity_of_pi_coerce_aux : forall e T U s,
+  e |-- T >-> U : s ->
+  forall A A' B B', T = Prod_l A B -> U = Prod_l A' B' ->
+  exists s1, e |-- A' >-> A : s1 /\ A' :: e |-- B >-> B' : s.
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc ; try discriminate.
+  subst.
+  pose (injectivity_of_pi H) ; destruct_exists.
+  exists x.
+  split ; auto with coc.
+  apply coerce_conv_env with (A0 :: e) ; auto with coc.
+  apply conv_env_hd with x ; auto with coc.
+
+  inversion H5 ; inversion H6 ; subst.
+  exists s ; split ; auto with coc.
+
+  subst.
+  destruct (IHtposr_coerce A' A B' B) ; auto with coc.
+  destruct_exists.
+  exists x ; split ; auto with coc.
+  apply coerce_coerce_env with (A :: e) ; auto with coc.
+  apply coerce_env_hd with x ; auto with coc.
+  subst.
+  destruct (IHtposr_coerce 
+
+  
+Corollary injectivity_of_pi_coerce : forall e A A' B B' s,
+  e |-- Prod_l A B >-> Prod_l A' B' : s ->
+  exists s1, e |-- A' >-> A : s1 /\ A' :: e |-- B >-> B' : s.
+Proof.
+  intros ; induction 
+*)
  
 Lemma tposrp_sum_aux : forall e T T' Ts, tposrp e T T' Ts -> 
   forall A B, T = Sum_l A B -> forall s, Ts  = Srt_l s -> 
@@ -350,14 +511,7 @@ Proof.
   exists a a0 b b0 ; intuition ; try apply tposrp_tposr ; auto.
   apply (fromd H3).
   apply (fromd H5).
-  destruct H9.
-  destruct H9.
-  subst.
-  injection H9 ; injection H10 ; intros ; subst. 
-  assumption.
-  destruct H9.
-  rewrite H10 in H7.
-  rewrite (equiv_sort_eq H9).
+  rewrite (equiv_eq_sort H9).
   assumption.
 
   pose (IHtposrp1 _ _ H1 _ H2) ; destruct_exists.
@@ -424,14 +578,17 @@ Proof.
   assumption.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
-
+(*
 Corollary injectivity_of_sum_equiv : forall e A A' B B' s, 
   e |-- Sum_l A B -> Sum_l A B : Srt_l s ->
   equiv e (Sum_l A B) (Sum_l A' B') ->
-  exists2 s1 s2, e |-- A ~= A' : s1 /\ A :: e |-- B ~= B' : s2 /\ sum_sort s1 s2 s.
+  exists2 s1 s2, e |-- A >-> A' : s1 /\ A :: e |-- B >-> B' : s2 /\ sum_sort s1 s2 s.
 Proof.
   intros.
+  destruct H0.
+  destruct H0 ; try discriminate.
   pose (equiv_eq H H0).
   apply injectivity_of_sum.
   assumption.
 Qed.
+*)

@@ -297,6 +297,13 @@ Proof.
   exists (Pi2_l M1 x) ; simpl ; intuition ; rewrite H4 ; auto with coc.
 Qed.
 
-
-
-
+Lemma conv_unlab_conv : forall U V, conv U V -> Lambda.Reduction.conv (unlab U) (unlab V).
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+  pose (unlab_lred H0).
+  pose (red_conv _ _ r).
+  apply Lambda.Reduction.trans_conv_conv with (|P|) ; auto.
+  pose (unlab_lred H0).
+  pose (Lambda.Reduction.sym_conv _ _ (red_conv _ _ r)).
+  apply Lambda.Reduction.trans_conv_conv with (|P|) ; auto.
+Qed.
