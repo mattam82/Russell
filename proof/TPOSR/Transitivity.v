@@ -885,57 +885,75 @@ Proof.
 
   (* conv_r < sum, sum *)
   simpl in H0.
-  induction (inv_conv_sum_sort_l_set t0 t1 c0).
-  intuition.
-  pose (unique_sort t6 H2).
-  pose (unique_sort t3 H3).
+  destruct (inv_eq_sum_l_set t2).
+  rewrite <- (unique_sort t4 (conv_refl_r t11)) in t11.
+  destruct (inv_eq_sum_r_set t2).
+  rewrite <- (unique_sort t10 (conv_refl_l t12)) in t12.
+  clear x0 x1.
+  assert(s = s2).
+  apply (unique_sort (conv_refl_l t11) t7).
   generalize dependent A ; generalize dependent A'0.
-  rewrite <- e1.
-  intros.
   generalize dependent A' ; generalize dependent A0.
-  generalize dependent c1 ; generalize dependent t7 ; rewrite e0.
-  intros.
-  clear e0 ; clear e1.
-  assert(s' = s'0).
-  inversion s0 ; inversion s3 ; intuition ; try discriminate.
-  rewrite H5 ; rewrite H7 ; auto.
-  rewrite H10 in H9 ; discriminate.
-  rewrite H10 in H9 ; discriminate.
-  rewrite H5 ; rewrite H7 ; auto.
+  generalize dependent s'0.
+  generalize dependent s'.
+  rewrite <- H2.
+  clear s2 H2 ; intros.
+  
+  pose (coerces_conv_r t8 t7 t4 c1 t11).
 
-  pose (inv_conv_sum_l _ _ _ _ c0).
-  pose (coerces_conv_r t7 H2 t3 c1 c).
+  assert(coerce_in_env (A0 :: e) (A :: e)).
+  apply coerce_env_hd with s ; auto with coc.
+
+  assert(coerce_in_env (A'0 :: e) (A :: e)).
+  apply coerce_env_hd with s ; auto with coc.
+
+  assert(s' = s'0).
+  assert(A'0 :: e |-- B0 -> B0 : s').
+  apply typ_conv_env with (A0 ::e) ; auto with coc.
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerces_conv_r with A'0 ; auto with coc.
+  apply wf_cons with A'0 s ; auto with coc.
+  apply (unique_sort H4 (conv_refl_r t12)).
+  generalize dependent A ;   generalize dependent A' ;
+  generalize dependent A'0 ;   generalize dependent A0 ;
+  generalize dependent s. 
+  rewrite <- H4.
+  clear s'0 H4.
+  intros.
   
   apply coerces_sum with s s' ; auto with coc core.
 
-  apply (IH (depth c3 + depth d2_1)) with A0 c3 d2_1.
+  apply (IH (depth c + depth d2_1)) with A0 c d2_1.
   rewrite H0 ; simpl.
   apply depth_conv_sum.
   auto.
 
-  cut(coerce_in_env (A0 :: e) (A :: e)) ; intros.
-  assert(wf (A :: e)).
-  apply wf_var with s ; auto with coc.
-
-  pose (inv_conv_sum_r _ _ _ _ c0).
-  destruct (coerce_conv_env d2_2 H5 H6).
-  generalize dependent e.
-  rewrite <- H4.
-  intros.
-  pose (coerces_conv_l (coerces_sort_r c2) (coerces_sort_l x1)  (coerces_sort_r x1)  c4 x1).
+  assert(tposr_wf (A'0 :: e)).
+  apply wf_cons with A'0 s ; auto with coc.
   
-  apply (IH (depth c2 + depth c5)) with B'0 c2 c5.
+  assert(coerce_in_env (A0 :: e) (A'0 :: e)).
+  apply coerce_env_hd with s ; auto with coc.
+  apply coerces_conv_r with A'0 ; auto with coc.
+
+  destruct (coerce_conv_env d2_2 H5 H4).
+
+  pose (coerces_conv_l (conv_refl_l t12) (conv_refl_r t12) (coerces_sort_r x0) t12 x0).
+
+  assert(tposr_wf (A :: e)).
+  apply wf_cons with A s ; auto with coc.
+  destruct (coerce_conv_env c0 H3 H6).
+
+  apply (IH (depth c2 + depth x1)) with B'0 c2 x1.
   rewrite H0 ; simpl.
+  rewrite e1.
+  simpl.
   rewrite e0. apply depth_conv_sum2 .
   auto.
-  apply coerce_env_hd with s ; auto with coc core.
-  rewrite H4.
-  assumption.
-
+  
   (* conv_r  < sub_l, sum *)
   apply coerces_sub_l ; auto with coc core.
-  pose (coerces_conv_r (coerces_sort_l c) t0 t1 c c0).
-  apply (IH (depth c1 + depth H1)) with (Sum_l A0 B0) c1 H1 ; auto.
+  pose (coerces_conv_r (coerces_sort_l c) t0 t1 c t2).
+  apply (IH (depth c0 + depth H1)) with (Sum_l A0 B0) c0 H1 ; auto.
   simpl.
   rewrite H0.
   simpl.
@@ -943,25 +961,26 @@ Proof.
   
   (* conv_r < sub_r, sum *)
   elim conv_subset_sum with U' P A0 B0 ; auto with coc.
+  apply (tposr_eq_conv t2).
 
   (* conv_r < conv_l, sum *)
   apply coerces_conv_l with B ; auto with coc core.
   
-  pose (coerces_conv_r t7 t8 t1 c1 c0).
-  apply (IH (depth c2 + depth H1)) with (Sum_l A0 B0) c2 H1.
+  pose (coerces_conv_r t8 t9 t1 c t2).
+  apply (IH (depth c0 + depth H1)) with (Sum_l A0 B0) c0 H1.
   rewrite H0 ; simpl ; auto ; omega.
   auto.
 
   (* conv_r < conv_r, sum *)
-  assert(conv B (Sum_l A0 B0)).
-  apply trans_conv_conv with C ; auto with coc.
-  pose (coerces_conv_r t6 t7 t1 c H2).
-  apply (IH (depth c2 + depth H1)) with (Sum_l A0 B0) c2 H1.
+  assert(e |-- B ~= Sum_l A0 B0 : s2).
+  apply tposr_eq_trans with C ; auto with coc.
+  pose (coerces_conv_r t7 t8 t1 c H2).
+  apply (IH (depth c0 + depth H1)) with (Sum_l A0 B0) c0 H1.
   rewrite H0 ; simpl ; auto.
   auto.
   
   (* conv_r, sub_l *)
-  pose (coerces_sub_l d2 t2).
+  pose (coerces_sub_l d2 t3).
   
   generalize H0 ; clear H0.  
   apply (coerces_db_dep (fun e1 T0 C0 s0 => fun d : (e1 |-- T0 >>> C0 : s0) =>
@@ -971,21 +990,22 @@ Proof.
   (* conv_r < refl, sub_l *)
   rewrite <- H0.
   rewrite H1.
-  apply (coerces_conv_l t0 t1 (coerces_sort_r d2) c0 c1).
+  apply (coerces_conv_l t0 t1 (coerces_sort_r d2) t2 c0).
 
   (* conv_r < prod, sub_l *)
-  rewrite <- H3 in c0.
+  rewrite <- H3 in t2.
   elim conv_prod_subset with A' B' U P ; auto.
+  apply (tposr_eq_conv t2).
 
   (* conv_r < sum, sub_l *)
-  rewrite <- H3 in c0.
+  rewrite <- H3 in t2.
   elim conv_subset_sum with U P A' B' ; auto with coc.
+  pose (tposr_eq_conv t2) ; auto with coc.
 
   (* conv_r < sub_l, sub_l *)
   clear H.
   generalize dependent e.
   generalize dependent e0.
-  generalize dependent c0.
   rewrite H2.
   rewrite <- H1.
   intros.
@@ -995,8 +1015,8 @@ Proof.
   intros.
   apply coerces_sub_l ; auto.
   
-  pose (coerces_conv_l t0 t1 (coerces_sort_r c1) c0 c1).
-  apply (IH (depth c2 + depth c3)) with B c2 c3 ; auto.
+  pose (coerces_conv_l t0 t1 (coerces_sort_r c0) t2 c0).
+  apply (IH (depth c1 + depth c2)) with B c1 c2 ; auto.
   rewrite H4 ; simpl.
   omega.
   
@@ -1004,7 +1024,6 @@ Proof.
   clear H.
   generalize dependent e.
   generalize dependent e0.
-  generalize dependent c0.
   rewrite <- H2.
   rewrite <- H1.
   intros.
@@ -1012,9 +1031,10 @@ Proof.
   generalize dependent U'0.
   rewrite H0.
   intros.
-  pose (inv_conv_subset_l _ _ _ _ c0).
-  pose (coerces_conv_r t (coerces_sort_r c2) (coerces_sort_l d2) c2 c3). 
-  apply (IH (depth c4 + depth d2)) with U c4 d2 ; auto.
+  pose (inv_eq_subset_l_set t2).
+
+  pose (coerces_conv_r (coerces_sort_l c1) (coerces_sort_r c1) (conv_refl_r t5) c1 t5). 
+  apply (IH (depth c2 + depth d2)) with U c2 d2 ; auto.
   rewrite H4 ; simpl.
   omega.
   
@@ -1028,12 +1048,14 @@ Proof.
   rewrite <- H3 ; auto.
   rewrite <- H3 ; auto.
   apply (coerces_sort_r d2).
+  rewrite H3 in t7.
+  assumption.
   generalize dependent e.
   rewrite H2.
   rewrite H3.
   intros.
-  pose (coerces_conv_r t4 t5 t1 c3 c0).
-  apply (IH (depth c4 + depth c1)) with (Subset U P) c4 c1 ; auto.
+  pose (coerces_conv_r t5 t6 t1 c1 t2).
+  apply (IH (depth c2 + depth c0)) with (Subset_l U P) c2 c0 ; auto.
   rewrite H4 ; simpl.
   omega.
   
@@ -1044,39 +1066,40 @@ Proof.
   rewrite H3.
   intros.
   
-  assert(conv B0 (Subset U P)).
-  apply trans_conv_conv with C ; auto.
-  rewrite H2 ; assumption.
+  assert(e |-- B0 ~= (Subset_l U P) : set).
+  apply tposr_eq_trans with C ; auto.
+  rewrite <- H0 ; assumption.
+  rewrite H2 ; auto with coc.
   
   generalize dependent A.
   generalize dependent B0.
-  generalize dependent t5.
+  generalize dependent t6.
   rewrite H0.
   intros.
-  pose (coerces_conv_r t3 t4 t1 c2 H).
-  apply (IH (depth c4 + depth c1)) with (Subset U P) c4 c1 ; auto.
+  pose (coerces_conv_r t4 t5 t1 c1 H).
+  apply (IH (depth c2 + depth c0)) with (Subset_l U P) c2 c0 ; auto.
   rewrite H4 ; simpl.
   omega.
 
   (* conv_r, sub_r *)
   apply coerces_sub_r ; auto with coc.
-  pose (coerces_conv_r t t0 t1 c c0).
-  apply (IH (depth c1 + depth d2)) with U c1 d2.
+  pose (coerces_conv_r t t0 t1 c t2).
+  apply (IH (depth c0 + depth d2)) with U c0 d2.
   rewrite H0 ; simpl ; try omega ; auto.
   auto.
 
   (* conv_r, conv_l *)
-  assert (conv B B0).
-  apply trans_conv_conv with A0 ; auto with coc.
-  pose (coerces_conv_r t t0 t3 c H).
-  apply (IH (depth c2 + depth d2)) with B0 c2 d2.
+  assert (e |-- B ~= B0 : s).
+  apply tposr_eq_trans with A0 ; auto with coc.
+  pose (coerces_conv_r t t0 t4 c H).
+  apply (IH (depth c0 + depth d2)) with B0 c0 d2.
   rewrite H0 ; simpl ; try omega ; auto.
   auto.
 
-   (* conv_r, conv_r *)
-   apply coerces_conv_r with B0 ; auto with coc.
-   pose (coerces_conv_r t t0 t1 c c0).
-  apply (IH (depth c2 + depth d2)) with A0 c2 d2.
+  (* conv_r, conv_r *)
+  apply coerces_conv_r with B0 ; auto with coc.
+  pose (coerces_conv_r t t0 t1 c t2).
+  apply (IH (depth c0 + depth d2)) with A0 c0 d2.
   rewrite H0 ; simpl ; try omega ; auto.
   auto.
 Qed.
@@ -1093,7 +1116,7 @@ Proof.
   reflexivity.
 Qed.
 
-Require Import Lambda.Russell.Depth.
+Require Import Lambda.TPOSR.TypesDepth.
 
 Theorem coerces_db_depth : forall e T U s n1, Depth.coerces_db e T U s n1 -> 
   exists d : (Narrowing.coerces_db e T U s), depth d = n1.
