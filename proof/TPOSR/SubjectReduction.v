@@ -32,7 +32,7 @@ Proof.
 
   (* Beta *)
   pose (generation_app_depth H1) ; destruct_exists.
-  assert(exists E, tposr_term_depth (T :: e) M E /\ e |-- Prod_l T E ~= Prod_l a Typ : b0).
+  assert(exists E, tposr_term_depth (T :: e) M E /\ e |-- Prod_l T E >-> Prod_l a Typ : b0).
   assert(e |-- (Prod_l a Typ) -> (Prod_l a Typ) : (Srt_l b0)).
   apply tposr_prod with c ; auto with coc.
   apply (left_refl (fromd H2)).
@@ -43,17 +43,17 @@ Proof.
   exists a5.
   split.
   exists a4 ; exists c2 ;auto.
-  apply tposr_eq_sym.
-  apply equiv_eq ; auto with coc.
-  right ; exists b4 ; auto.
-
+  apply tposr_coerce_sym.
+  pose (coerce_refl_l H20).
+  rewrite (unique_sort H10 t).
+  assumption.
+  
   inversion H9.
   exists Typ.
   split.
   exists b2 ; exists c1.
   assumption.
-  apply tposr_eq_tposr.
-  assumption.
+  auto with coc.
 
   destruct_exists.
   pose (injectivity_of_pi H11).
