@@ -15,6 +15,7 @@ Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.UnicityOfSorting.
+Require Import Lambda.TPOSR.Coercion.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.TypesDepth.
@@ -22,6 +23,7 @@ Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
 Require Import Lambda.TPOSR.ChurchRosserDepth.
 Require Import Lambda.TPOSR.ChurchRosser.
+Require Import Lambda.TPOSR.Injectivity.
 
 Set Implicit Arguments.
 
@@ -56,22 +58,23 @@ Proof.
   auto with coc.
 
   destruct_exists.
-  pose (injectivity_of_pi H11).
+  pose (injectivity_of_pi_coerce H11).
   destruct_exists.
-  apply tposr_conv_r with (lsubst N Typ) b0 ; auto with coc.
+  apply tposr_conv with (lsubst N Typ) b0 ; auto with coc.
   pose (IHpar_lred1_1 _ _ H10).
   apply tposr_beta with T x2 a0 b0 ; auto with coc.
-  destruct (conv_refls H12).
-  apply H14.
-  apply conv_env with (a :: e) ; auto with coc.
+  apply (coerce_refl_r H12).
+  apply type_coerce_env with (a :: e) ; auto with coc.
   apply (fromd H4).
-  apply conv_env_hd with x2 ; auto with coc.
-  apply tposr_conv_l with x1 b0 ; auto with coc.
+  apply coerce_env_hd with x2 ; auto with coc.
+  apply tposr_conv with x1 b0 ; auto with coc.
+  apply coerce_coerce_env with (a :: e) ; auto with coc.
+  apply coerce_env_hd with x2 ; auto with coc.
 
   assert(tposr_term_depth e N a).
   exists a1 ; exists  b1 ; auto.
   pose (IHpar_lred1_2 _ _ H14).
-  apply tposr_conv_l with a x2 ; auto with coc.
+  apply tposr_conv with a x2 ; auto with coc.
 
   (* Pi1 *)
   pose (generation_pi1_depth H0) ; destruct_exists.

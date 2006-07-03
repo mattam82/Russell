@@ -1049,7 +1049,7 @@ Proof.
   auto.
 Qed.
 
-Theorem coerce_trans_db_set : forall e A B C s, e |-- A >>> B : s -> e |-- B >>> C : s ->
+Theorem coerces_trans : forall e A B C s, e |-- A >>> B : s -> e |-- B >>> C : s ->
   e |-- A >>> C : s.
 Proof.
   intros.
@@ -1063,27 +1063,13 @@ Qed.
 
 Require Import Lambda.TPOSR.CoerceDepth.
 
-Theorem coerce_trans_d : forall e A B C s n1 n2, e |-- A >-> B : s [n1] -> e |-- B >-> C : s [n2]->
+Theorem coerce_rc_depth_trans : forall e A B C s n1 n2, e |-- A >-> B : s [n1] -> e |-- B >-> C : s [n2]->
   exists m, e |-- A >-> C : s [m].
 Proof.
   intros.
   destruct (coerce_rc_depth_coerces H).
   destruct (coerce_rc_depth_coerces H0).
-  pose (coerce_trans_db_set x x0).
+  pose (coerces_trans x x0).
   exact (coerces_coerce_rc_depth c).
 Qed.
-
-Theorem coerce_trans : forall e A B s, e |-- A >-> B : s -> exists n, e |-- A >-> B : s [n].
-Proof.
-  induction 1 ; simpl ; intros ; auto with coc.
-  
-  exists 0 ; auto with coc.
-  apply coerce_rc_depth_refl.
-
-  destruct (coerce_coerces_db H).
-  destruct (coerce_coerces_db H0).
-  destruct (coerce_trans_d H1 H2).
-  exact (coerces_db_coerce H3).
-Qed.
-
 

@@ -171,6 +171,28 @@ Axiom coerce_conv_env :
   tposr_wf f -> 
 	{ d' : f |-- T >>> U : s | (depth d') = depth d }.
 
+Inductive coerce_rc_depth_in_env : lenv -> lenv -> Prop :=
+  | coerce_rc_depth_env_hd : forall e t u s n, e |-- t >-> u : s [n] -> 
+	coerce_rc_depth_in_env (u :: e) (t :: e)
+  | coerce_rc_depth_env_tl :
+        forall e f t, tposr_wf (t :: f) -> coerce_rc_depth_in_env e f -> coerce_rc_depth_in_env (t :: e) (t :: f).
+
+Hint Resolve coerce_env_hd coerce_env_tl: coc.
+
+Axiom type_rc_depth_conv_env :
+  forall e t T, forall d : (e |-- t -> t : T),
+  forall f, coerce_rc_depth_in_env e f -> 
+  f |-- t -> t : T.
+
+Axiom eq_rc_depth_conv_env :
+  forall e t u s, forall d : (e |-- t ~= u : s),
+  forall f, coerce_rc_depth_in_env e f -> 
+  f |-- t ~= u : s.
+
+Axiom coerce_rc_depth_conv_env :
+  forall e T U s n, e |-- T >-> U : s [n] -> 
+  forall f, coerce_rc_depth_in_env e f -> f |-- T >-> U : s [n].
+
 Require Import Lambda.TPOSR.ChurchRosser.
 Require Import Lambda.TPOSR.UnicityOfSorting.
 Require Import Lambda.TPOSR.RightReflexivity.

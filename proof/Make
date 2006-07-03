@@ -82,7 +82,9 @@ TPOSR/ChurchRosser.v
 TPOSR/CoerceDepth.v
 #TPOSR/TransitivityDepth.v
 TPOSR/CoerceNoTrans.v
+TPOSR/TransitivitySet.v
 TPOSR/Transitivity.v
+TPOSR/Injectivity.v
 TPOSR/SubjectReduction.v
 TPOSR/TPOSR_trans.v
 TPOSR/UnlabConv.v

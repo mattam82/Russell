@@ -198,3 +198,21 @@ Proof.
 Qed.
 
 Hint Resolve equiv_sym : coc.
+
+Require Import Lambda.TPOSR.Thinning.
+
+Lemma equiv_sort_weak : forall G s s', equiv G s s' -> forall a, tposr_wf (a :: G) -> equiv (a :: G) s s'.
+Proof.
+  induction 1.
+  intros.
+  left.
+  assumption.
+
+  intros.
+  destruct_exists.
+  right.
+  exists x.
+  change (Srt_l s) with (llift 1 (Srt_l s)).
+  change (Srt_l s') with (llift 1 (Srt_l s')).
+  apply thinning_coerce ; auto.
+Qed.
