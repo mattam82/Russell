@@ -234,10 +234,13 @@ Proof.
   rewrite e0 in H0.
   pose (coerce_refl_l H0).
   elim (tposr_not_kind t).
+  
+  subst.
+  pose (right_refl H2).
+  pose (generation_pair t) ; destruct_exists.
+  inversion H5 ; subst.
+  inversion H11 ; subst.
 
-  pose (generation_pair H2) ; destruct_exists.
-  inversion H12 ; subst.
-  inversion H6 ; subst.
 Admitted. 
 
 Lemma in_set_not_sort : forall e T s, e |-- T -> T : s ->
