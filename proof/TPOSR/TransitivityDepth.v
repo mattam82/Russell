@@ -1,4 +1,5 @@
 Require Import Lambda.Utils.
+Require Import Lambda.Tactics.
 Require Import Lambda.TPOSR.Terms.
 Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
@@ -164,108 +165,77 @@ Proof.
   intros.
   exists p ; auto.
 
-  clear e A B s m d1; intros ; clear H0 H4.
-  generalize H7 ; clear H7.
-  apply (coerces_db_dep (fun e1 T0 C0 s0 p0 => fun d : (e1 |-- T0 >>> C0 : s0 [p0]) =>
-     e1 = e -> T0 = Prod_l A' B' -> C0 = C -> s0 = s' -> p0 = p ->
-     (x = S (max n0 m) + p0) ->
-     exists q, e |-- Prod_l A B >>> C0 : s' [q])) ; intros ; auto with coc ; try discriminate.
+  clear e A B s m d1.
+  intros ; clear H0 H4.
+  set(dleft := S (max n0 m)).
+  assert(Hleft:e |-- Prod_l A B >>> Prod_l A' B' : s' [S (max n0 m)]).
+  apply coerces_prod with s ; auto with coc.
+
+    apply (coerces_db_dep
+  ( fun e1 T0 C0 s0 p0 => fun _ : (e1 |-- T0 >>> C0 : s0 [p0]) =>
+   e1 = e -> T0 = Prod_l A' B' -> C0 = C -> s0 = s' -> p0 = p ->
+   exists q, e1 |-- Prod_l A B >>> C0 : s' [q])) 
+   with (Prod_l A' B') s' p ; intros ; subst ; auto with coc ; try discriminate.
+  simpl in IH.
 
   (* prod, refl *)
-  rewrite H0 ;
+  exists (S (max n0 m)).
   apply coerces_prod with s ; auto with coc.
   
   (* prod, prod *)
-  clear H ; clear H0.
-  simpl in H5.
-  inversion H2.
-  generalize dependent c1.
-  generalize dependent t3 ; generalize dependent t4.
-  generalize dependent c2 ; generalize dependent t5 ; generalize dependent t6.
-  rewrite H1.
-  clear H1.
-  generalize dependent e.
-  rewrite H0.
-  rewrite H6.
-  rewrite H4.
-  intros.
-
-  generalize dependent c1 ; generalize dependent t3 ; generalize dependent t4.
-  intros t4.
-  pose (unique_sort t t4).
-  rewrite <- e1.
-  intros.
-
-  assert(e |-- A'0 >>> A : s).
-  apply (IH (depth c1 + depth c)) with A' c1 c ; auto.
-  rewrite H5.
+  clear H0 ; clear H4.
+  inversion H9 ; subst.
+  assert(eq:=unique_sort t0 H1).
+  rewrite eq in c.
+  rewrite eq in t0.
+  rewrite eq in t.
+  clear s0 eq.
+  
+  assert(exists q, e |-- A'0 >>> A : s [q]).
+  apply (IH (n1 + n0)) with A' n1 n0 ; auto.
   simpl.
   apply depth_prod_prod_l.
+  destruct_exists.
 
-  cut(coerce_in_env (A' :: e) (A'0 :: e)) ; intros.
+  assert(exists q, A'0 :: e |-- B >>> B'0 : s' [q]) ; destruct_exists.
+  assert(coerce_in_env (A' :: e) (A'0 :: e)) ; intros.
+  apply coerce_env_hd with s n1 ; auto with coc.
   assert(tposr_wf (A'0 :: e)).
-  apply wf_cons with A'0 s0 ; auto with coc.
-  rewrite <- e1  ; auto.
-  destruct (coerce_conv_env c0 H1 H7).
-  
-  apply coerces_prod with s ; auto with coc.
-  
-  apply (IH (depth x0 + depth c2)) with B' x0 c2 ; auto.
-  rewrite e2.
-  rewrite H5.
+  apply wf_cons with A'0 s ; auto with coc.
+  pose (coerce_conv_env H3 H4 H7).
+  apply IH with (m + m0) B' m m0 ; auto with coc.
   simpl.
   apply depth_prod_prod_r.
-  apply coerce_env_hd with s ; auto with coc.
+    
+  exists (S (max x x0)).
+  apply coerces_prod with s ; auto with coc.
 
   (* prod, subset *)
-  clear H.
-  simpl in H4.
-  rewrite <- H3.
-  apply coerces_sub_r.
-  generalize dependent c1.
-  rewrite H1 ; rewrite H0.
-  intros.
-  generalize dependent e.
-  rewrite <- H3.
-  intros.
-  pose (coerces_prod c t t0 c0 t1 t2).
-  set (dc2 := depth c2).
-  apply (IH (depth c2 + depth c1)) with (Prod_l A' B') c2 c1 ; auto.
-  rewrite H4.
+  clear H0.
+  assert(exists q, e |-- Prod_l A B >>> U' : set [q]) ; destruct_exists.
+  apply IH with (S (max n0 m) + n1) (Prod_l A' B') (S (max n0 m)) n1 ; auto with coc.
   simpl.
   omega.
-  
-  rewrite <- H0 ; auto.
+  exists (S x) ; apply coerces_sub_r ; auto with coc.
 
   (* prod, conv_l *)
-  clear H.
-  simpl in H4.
-  rename t6 into c2.
-  generalize dependent c1 ; generalize dependent c2.
-  generalize dependent t3 ; generalize dependent t4 ; generalize dependent t5.
-  rewrite H0.
-  rewrite H1.
-  rewrite H2.
-  rewrite H3.
-  clear H0 H1 H2 H3.
-  intros.
-  clear d2.
+  clear H0.
 
   assert(e |-- Prod_l A B -> Prod_l A B : s').
   apply tposr_prod with s ; auto with coc.
-  assert(e |-- Prod_l A B >>> Prod_l A' B' : s').
-  apply coerces_prod with s ; auto with coc.
+  assert(e |-- Prod_l A' B' -> Prod_l A' B' : s').
+  apply tposr_prod with s ; auto with coc.
 
-  destruct c1.
+  destruct c.
 
   (* prod, conv_l < refl *) 
+  exists (S (S (max n0 m))).
   apply coerces_conv_r with (Prod_l A' B') ; auto with coc.
 
   (* prod, conv_l < prod *)
-  simpl in H4.
-  destruct (inv_conv_prod_sort_l_set t3 t4 c2).
-  intuition.
-  pose (unique_sort t7 H2).
+  destruct (injectivity_of_pi t2) ; destruct_exists.
+  rewrite <- (unique_sort H8 (conv_refl_r H11)) in H11 ; clear x.
+  
   rewrite <- e1 in H1.
   pose (unique_sort H1 t).
   generalize dependent A'0.

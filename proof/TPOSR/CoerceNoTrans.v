@@ -1,3 +1,5 @@
+Require Import Lambda.Utils.
+Require Import Lambda.Tactics.
 Require Import Lambda.TPOSR.Terms.
 Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
@@ -163,6 +165,58 @@ Axiom coerce_conv_env :
   tposr_wf f -> 
 	{ d' : f |-- T >>> U : s | (depth d') = depth d }.
 
+Require Import Lambda.TPOSR.ChurchRosser.
+Require Import Lambda.TPOSR.UnicityOfSorting.
+Require Import Lambda.TPOSR.RightReflexivity.
+
+Lemma inv_eq_prod_l : forall e U V U' V' s, 
+  e |-- Prod_l U V ~= Prod_l U' V' : s -> forall s1, e |-- U -> U : s1 -> e |-- U ~= U' : s1.
+Proof.
+  intros.
+  destruct (injectivity_of_pi H) ; destruct_exists.
+  rewrite (unique_sort (conv_refl_l H1) H0) in H1.
+  assumption.
+Qed.
+
+Lemma inv_eq_prod_r : forall e U V U' V' s, 
+  e |-- Prod_l U V ~= Prod_l U' V' : s -> 
+  U' :: e |-- V ~= V' : s.
+Proof.
+  intros.
+  destruct (injectivity_of_pi H) ; destruct_exists.
+  apply eq_conv_env with (U :: e) ; auto with coc.
+  apply coerce_env_hd with x ; auto with coc.
+  apply coerces_conv_r with U' ; eauto with coc ecoc.
+  apply wf_cons with U' x ; eauto with coc ecoc.
+Qed.
+
+Lemma inv_eq_sum_l : forall e U V U' V' s, 
+  e |-- Sum_l U V ~= Sum_l U' V' : s -> 
+  forall s1 : sort, e |-- U -> U : s1 -> e |-- U ~= U' : s1.
+Proof.
+  intros.
+  destruct (injectivity_of_sum H) ; destruct_exists.
+  rewrite (unique_sort (conv_refl_l H1) H0) in H1.
+  assumption.
+Qed.
+
+Lemma inv_eq_sum_r : forall e U V U' V' s, 
+  e |-- Sum_l U V ~= Sum_l U' V' : s -> 
+  forall s2 : sort, U :: e |-- V -> V : s2 -> U :: e |-- V ~= V' : s2.
+Proof.
+  intros.
+  destruct (injectivity_of_sum H) ; destruct_exists.
+  rewrite (unique_sort (conv_refl_l H2) H0) in H2.
+  assumption.
+Qed.
+
+Lemma inv_eq_subset_l_set : forall e U V U' V' s, 
+  e |-- Subset_l U V ~= Subset_l U' V' : s -> e |-- U ~= U' : set.
+Proof.
+  intros.
+  destruct (injectivity_of_subset H) ; destruct_exists.
+  assumption.
+Qed.
 
 (*
 Lemma conv_item :

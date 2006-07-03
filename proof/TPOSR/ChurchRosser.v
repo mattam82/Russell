@@ -544,52 +544,50 @@ Proof.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
 
-Implicit Types s : sort.
+Lemma tposrp_subset_aux : forall e T T' Ts, tposrp e T T' Ts -> 
+  forall A B, T = Subset_l A B -> forall s, Ts  = Srt_l s -> 
+  exists2 A' B', T' = Subset_l A' B' /\
+  tposrp e A A' (Srt_l set) /\ tposrp (A :: e) B B' (Srt_l prop).
+Proof.
+  induction 1 ; simpl ; intros.
 
-Axiom inv_eq_prod_l_set : forall e U V U' V' s, 
-  e |-- Prod_l U V ~= Prod_l U' V' : s -> 
-  { s1 : sort | e |-- U ~= U' : s1 }.
+  subst.
+  pose (generation_subset H) ; destruct_exists.
+  exists a b ; split ; auto with coc.
 
-Axiom inv_eq_prod_r_set : forall e U V U' V' s, 
-  e |-- Prod_l U V ~= Prod_l U' V' : s -> 
-  U' :: e |-- V ~= V' : s.
+  pose (IHtposrp1 A B H1 s H2).
+  destruct_exists.
+  pose (IHtposrp2 a b H3 s H2).
+  destruct_exists.
+  exists a0 b0 ; subst ; intuition ; auto with coc.
+  apply tposrp_trans with a ; auto with coc.
+  apply tposrp_trans with b ; auto with coc.
+  apply tposrp_conv_env with (a :: e) ; auto with coc.
+  apply conv_env_hd with set ; auto with coc.
+Qed.
 
-Axiom inv_eq_sum_l_set : forall e U V U' V' s, 
-  e |-- Sum_l U V ~= Sum_l U' V' : s -> 
-  { s1 : sort | e |-- U ~= U' : s1 }.
+Lemma tposrp_subset : forall e  U P T' (s : sort), e |-- Subset_l U P -+> T' : s -> 
+  exists2 U' P', T' = Subset_l U' P' /\
+  e |-- U -+> U' : set /\ (U :: e) |-- P -+> P' : prop.
+Proof.
+  intros.
+  apply (tposrp_subset_aux H) with s ; auto with coc.
+Qed.
 
-Axiom inv_eq_sum_r_set : forall e U V U' V' s, 
-  e |-- Sum_l U V ~= Sum_l U' V' : s -> 
-  { s2 : sort | U :: e |-- V ~= V' : s2 }.
-
-Axiom inv_eq_subset_l_set : forall e U V U' V' s, 
-  e |-- Subset_l U V ~= Subset_l U' V' : s -> e |-- U ~= U' : set.
-
-
-(** Set versions of the lemmas *)
-Axiom inv_conv_prod_sort_l_set : forall e U V U' V' s, 
-  e |-- Prod_l U V -> Prod_l U V : s -> e |-- Prod_l U' V' -> Prod_l U' V' : s ->
-  e |-- Prod_l U V ~= Prod_l U' V' : s -> { s1 : sort | e |-- U -> U : s1 /\ e |-- U' -> U' : s1 }.
-
-Axiom inv_conv_prod_sort_r_set : forall e U V U' V' s, 
-  e |-- Prod_l U V -> Prod_l U V : s -> e |-- Prod_l U' V' -> Prod_l U' V' : s ->
-  e |-- Prod_l U V ~= Prod_l U' V' : s ->
-  U' :: e |-- V -> V : s /\ U' :: e |-- V' -> V' : s. 
-
-Axiom inv_conv_sum_sort_set : forall e U V U' V' s, 
-  e |-- Sum_l U V -> Sum_l U V : s -> e |-- Sum_l U' V' -> Sum_l U' V' : s ->
-  e |-- Sum_l U V ~= Sum_l U' V' : s -> 
-  { s1 : sort & { s2 : sort | e |-- U -> U : s1 /\ e |-- U' -> U' : s1 /\ 
-  U :: e |-- V -> V : s2 /\ U :: e |-- V' -> V' : s2
-  /\ sum_sort s1 s2 s}}.	
-
-Axiom inv_conv_sum_sort_l_set : forall e U V U' V' s,
-  e |-- Sum_l U V -> Sum_l U V : s -> e |-- Sum_l U' V' -> Sum_l U' V' : s ->
-  e |-- Sum_l U V ~= Sum_l U' V' : s -> 
-  { s1 : sort | e |-- U -> U : s1 /\ e |-- U' -> U' : s1 }.
-
-Axiom inv_conv_sum_sort_r_set : forall e U V U' V' s,
-  e |-- Sum_l U V -> Sum_l U V : s -> e |-- Sum_l U' V' -> Sum_l U' V' : s ->
-  e |-- Sum_l U V ~= Sum_l U' V' : s -> 
-  { s2 : sort | U :: e |-- V -> V : s2 /\ U :: e |-- V' -> V' : s2 }.
-
+Corollary injectivity_of_subset : forall e U P U' P' s, e |-- Subset_l U P ~= Subset_l U' P' : s ->
+  e |-- U ~= U' : set /\ U :: e |-- P ~= P' : prop.
+Proof.
+  intros.
+  pose (tposr_eq_cr H) ; destruct_exists.
+  pose (tposrp_subset H0).
+  pose (tposrp_subset H1).
+  destruct_exists.
+  subst.
+  inversion H2 ; subst.
+  split.
+  apply tposr_eq_trans with a ; auto with coc.
+  apply tposr_eq_trans with b ; auto with coc.
+  apply conv_env_eq with (U' :: e) ; auto with coc.
+  apply conv_env_hd with set ; auto with coc.
+  eauto with coc ecoc.
+Qed.
