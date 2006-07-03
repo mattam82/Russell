@@ -79,6 +79,8 @@ TPOSR/TypesFunctionality.v
 TPOSR/UniquenessOfTypes.v
 TPOSR/ChurchRosserDepth.v
 TPOSR/ChurchRosser.v
+TPOSR/CoerceDepth.v
+TPOSR/TransitivityDepth.v
 TPOSR/CoerceNoTrans.v
 TPOSR/SubjectReduction.v
 TPOSR/TPOSR_trans.v
