@@ -94,16 +94,15 @@ Proof.
   rewrite H19.
   clear H19 H5 ; intros.
   
-  pose (injectivity_of_sum H20) ; destruct_exists.
-  pose (unique_sort (conv_refl_r H5) (fromd H8)).
-  pose (unique_sort (conv_refl_l H19) (fromd H3)).
+  pose (injectivity_of_sum_coerce H20) ; destruct_exists.
+  pose (unique_sort (coerce_refl_r H5) (fromd H8)).
+  pose (unique_sort (coerce_refl_l H19) (fromd H3)).
   assert(a :: e |-- a2 -> b3 : Srt_l c3).
-  apply conv_env with (a1 :: e) ; auto with coc.
+  apply type_coerce_env with (a1 :: e) ; auto with coc.
   apply (fromd H10).
-  apply conv_env_hd with a5 ; auto with coc.
+  apply coerce_env_hd with a5 ; auto with coc.
 
-  pose (unique_sort (conv_refl_r H19) H22).
-
+  pose (unique_sort (coerce_refl_r H19) H22).
 
   apply tposr_equiv_r with a ; auto with coc.
   apply tposr_pi1_red with b1 c2 b3 c3 x2 a4 ; auto with coc.
@@ -135,7 +134,7 @@ Proof.
   exists a6 ; exists b6 ; auto.
   pose (IHpar_lred1 _ _ H1).
 
-  pose (unique_sort (fromd H15) (conv_refl_r H9)).
+  pose (unique_sort (fromd H15) (coerce_refl_r H9)).
   pose (unique_sort (fromd H5) (fromd H17)).
 
   apply tposr_equiv_r with a1 ; auto with coc.

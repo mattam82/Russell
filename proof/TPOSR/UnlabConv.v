@@ -22,6 +22,7 @@ Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
 Require Import Lambda.TPOSR.ChurchRosserDepth.
 Require Import Lambda.TPOSR.ChurchRosser.
+Require Import Lambda.TPOSR.Injectivity.
 Require Import Lambda.TPOSR.SubjectReduction.
 Require Import Lambda.TPOSR.Unlab.
 Require Import Lambda.TPOSR.TPOSR_trans.
@@ -93,46 +94,54 @@ Proof.
 
   pose (IHM2 _ _ _ _ H20 H21 H12) ; destruct_exists.
 
-  assert(equiv_sort G (Prod_l N1 a1) (Prod_l M1 a4) b0).
-  unfold equiv_sort.
-  apply pi_functionality with b2 ; eauto with coc ecoc.
-  apply conv_env_eq with (x :: G) ; auto with coc.
-  destruct (tposrp_uniqueness_of_types H22 H23) ; destruct H26.
-  subst ; eauto with coc ecoc.
-  
-  assert(x1 = b0) by eauto with coc ecoc.
-  rewrite <- H27 ; auto with coc.
+  destruct (tposrp_uniqueness_of_types H23 H22) ; destruct H26.
+  subst.
+  elim (tposr_not_kind (left_refl H5)).
 
-  assert(b0 = b3).
-  pose (conv_refl_r H11).
-  pose (conv_refl_r H26).
-  eauto with coc ecoc.
+  assert(x :: G |-- a1 -> b1 : b0).
+  apply conv_env with (N1 :: G) ; auto with coc.
+  assert(Heq:= (unique_sort (left_refl H27) (coerce_refl_l H26))).
   subst.
 
-  assert(equiv_sort G B (Prod_l M1 a4) b3).
-  unfold equiv_sort ; apply tposr_eq_trans with (Prod_l N1 a1) ; auto with coc.
+  assert(equiv_sort G (Prod_l N1 a1) (Prod_l M1 a4) x1).
+  unfold equiv_sort.
+  apply tposr_coerce_prod with b ; auto with coc.
+  apply tposr_coerce_conv.
+  apply tposr_eq_trans with x ; auto with coc.
+  eauto with coc.
+  eauto with coc.
+  apply coerce_conv_env with (x :: G) ; auto with coc.
+  apply conv_env with (x :: G) ; auto with coc.
+  eauto with coc.
 
-  assert(equiv_sort G A (Prod_l N1 a1) b3).
-  unfold equiv_sort ; apply tposr_eq_trans with (Prod_l M1 a4) ; auto with coc.
+  apply conv_env with (x :: G) ; auto with coc.
+  apply (coerce_refl_r H26).
   
-  exists (Abs_l x x0) ; intuition.
+  assert(equiv_sort G B (Prod_l M1 a4) x1).
+  unfold equiv_sort ; apply tposr_coerce_trans with (Prod_l N1 a1) ; auto with coc.
 
-  apply tposrp_conv_l with (Prod_l M1 a4) b3 ; eauto with coc ecoc.
-  apply tposrp_abs with b b4 b3 ; eauto with coc ecoc.
+  assert(Heq:=unique_sort (coerce_refl_r H28) (coerce_refl_r H11)).
+  subst.
+  assert(equiv_sort G A (Prod_l N1 a1) b3).
+  unfold equiv_sort ; apply tposr_coerce_trans with (Prod_l M1 a4) ; auto with coc.
+
+  exists (Abs_l x x0).
+  assert(G |-- Abs_l M1 M2 -+> Abs_l x x0 : A ).
+  apply tposrp_conv with (Prod_l M1 a4) b3 ; auto with coc ecoc.
+  apply tposrp_abs with b b4 b3 ; auto with coc ecoc.
   apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
 
- 
-  apply tposrp_conv_l with (Prod_l M1 a4) b3 ; eauto with coc ecoc.
-  apply tposrp_abs with b b4 b3 ; eauto with coc ecoc.
+  assert(G |-- Abs_l N1 N2 -+> Abs_l x x0 : A ).
+  apply tposrp_conv with (Prod_l N1 a1) b3 ; auto with coc ecoc.
+  apply tposrp_abs with b b1 b3 ; auto with coc ecoc.
   apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
 
-  apply tposrp_conv_l with (Prod_l N1 a1) b3 ; eauto with coc ecoc.
-  apply tposrp_abs with b b1 b3 ; eauto with coc ecoc.
-  apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
-
-  apply tposrp_conv_l with (Prod_l N1 a1) b3 ; eauto with coc ecoc.
-  apply tposrp_abs with b b1 b3 ; eauto with coc ecoc.
-  apply tposrp_conv_env with (x :: G) ; eauto with coc ecoc.
+  assert(G |-- A >-> B : b3).
+  apply tposr_coerce_trans with (Prod_l N1 a1) ; auto with coc.
+  
+  intuition ; auto with coc.
+  apply tposrp_conv with A b3 ; eauto with coc ecoc.
+  apply tposrp_conv with A b3 ; eauto with coc ecoc.
 
   (* App *)
   destruct N ; try (simpl in H1 ; try discriminate).
@@ -153,11 +162,21 @@ Proof.
   pose (tposrp_uniqueness_of_types H18 H19).
   destruct e ; destruct_exists.
   unfold eq_kind in H28 ; intuition ; try discriminate.
-  pose (injectivity_of_pi H28) ; destruct_exists.
-  pose (tposr_eq_cr H30) ; destruct_exists.
+  pose (injectivity_of_pi_coerce H28) ; destruct_exists.
 
-  assert(G |-- lsubst N3 N1 ~= lsubst M3 M1 : x3).
-  apply tposr_eq_trans with (lsubst x2 x5).
+  destruct H13.
+  destruct H8.
+  destruct x0 ; try discriminate. 
+  destruct x ;  try discriminate. 
+  inversion H13.
+  inversion H8.
+  subst.
+  
+
+  assert(G |-- lsubst N3 N1 >-> lsubst M3 M1 : x3).
+  apply substitution_coerce with a2.
+
+  apply tposr_coerce_trans with (lsubst x2 x5).
   
   apply tposrp_tposr_eq.
   change (Srt_l x3) with (lsubst N3 (Srt_l x3)).

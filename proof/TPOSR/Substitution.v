@@ -67,6 +67,11 @@ Corollary substitution_eq : forall t e u v s, t :: e |-- u ~= v : s ->
 Proof.
   intros ; eapply substitution_eq_aux ; eauto with coc.
 Qed.
+
+Corollary substitution_coerce : forall t e u v s, t :: e |-- u >-> v : s -> 
+  forall d, e |-- d -> d : t -> e |-- (lsubst d u) >-> (lsubst d v) : s.
+Admitted.
+
 (*Lemma ind_sub_weak : forall g (d : term) t, g |-- d : t ->
    (forall e u (U : term), e |-- u : U ->
    forall f n, sub_in_env d t n e f -> trunc _ n f g -> 

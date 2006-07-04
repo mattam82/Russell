@@ -74,6 +74,19 @@ Proof.
   eauto with ecoc.
 Qed.
 
+Lemma tposrp_conv : forall e A B s, e |-- A >-> B : s -> 
+  forall M N, e |-- M -+> N : A -> e |-- M -+> N : B.
+Proof.
+  intros.
+  induction H0.
+  apply tposrp_tposr.
+  apply tposr_conv with Z s ; auto with coc.
+
+  pose (IHtposrp1 H).
+  pose (IHtposrp2 H).
+  eauto with ecoc.
+Qed.
+
 
 Lemma tposrp_tposr_eq_aux : forall e M N Z, e |-- M -+> N : Z -> forall s, Z = Srt_l s -> e |-- M ~= N : s.
 Proof.

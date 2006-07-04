@@ -44,8 +44,6 @@ Lemma tposrp_prod : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
 Proof.
   intros.
   apply subject_reduction_p ; eauto with coc ecoc.
-  exists (Prod_l A B).
-  eapply tposr_prod ; eauto with coc ecoc.
 Qed.
   
 Lemma tposrp_app : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -75,12 +73,15 @@ Proof.
   pose (tposrp_lred H0).
   pose (tposrp_lred H1).
   pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc ecoc.
+  apply subject_reduction_p ; auto with coc ecoc.
   apply lred_par_lred.
   apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
   exists (App_l B (Abs_l A M) N).
-  apply tposr_app with A A s1 s2 ; eauto with coc ecoc.
+  apply tposr_app with A A s1 s2 ; auto with coc ecoc.
+  eauto with coc.
+  eauto with coc.
   apply tposr_abs with s1 B s2 ; eauto with coc ecoc.
+  eauto with coc.
 Qed.
 
 Lemma tposrp_red : forall e M N A, e |-- M -+> N : A -> 
@@ -109,8 +110,6 @@ Lemma tposrp_subset : forall e A A', e |-- A -+> A' : Srt_l set ->
 Proof.
   intros.
   apply subject_reduction_p ; eauto with coc ecoc.
-  exists (Subset_l A B).
-  apply tposr_subset ; eauto with coc ecoc.
 Qed.  
 
 Lemma tposrp_sigma : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -120,8 +119,6 @@ Lemma tposrp_sigma : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
 Proof.
   intros.
   apply subject_reduction_p ; eauto with coc ecoc.
-  exists (Sum_l A B).
-  eapply tposr_sum ; eauto with coc ecoc.
 Qed.
  
 Lemma tposrp_pair : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -206,17 +203,22 @@ Proof.
   pose (tposrp_lred H).
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc ecoc.
+  apply subject_reduction_p ; auto with coc ecoc.
   apply lred_par_lred.
   apply trans_lred with (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
   exists (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)).
   apply tposr_conv_l with (lsubst (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)) B'') s2.
   apply substitution_eq with A''  ; auto with coc.
-  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc ecoc.
+  eauto with coc.
+  eauto with coc.
   apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
   apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
   apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
-  apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
+
+  apply tposr_pi2 with s1 s2 s3 ; auto with coc ecoc.
+  eauto with coc.
+  eauto with coc.
   apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
   apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
   apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
@@ -264,4 +266,60 @@ Proof.
   change (Srt_l s') with (lsubst d' (Srt_l s')).
   apply (tposrp_substitution H4 H3).
 Qed.
+(*
+Lemma coerce_conv_substitution :   forall G d d' s, G |-- d >-> d' : s ->  
+  forall u v s', Srt_l s :: G |-- u ~= v : s' ->
+  G |-- (lsubst d u) >-> (lsubst d' v) : s'.
+Proof.
+  intros.
+  pose (tposr_eq_cr H0).
+  destruct_exists.  
+
+  apply tposr_coerce_trans with (lsubst d x).
+  apply substitution_coerce with s.
+  auto with coc.
+  pose (coerce_refl_l H).
+  auto with coc.
+
+  induction H.
+  apply tposr_coerce_conv.
+  apply conv_substitution with s ; auto with coc.
   
+  
+  
+ 
+  apply tposr_eq_sym.
+  apply tposrp_tposr_eq.
+  change (Srt_l s') with (lsubst d' (Srt_l s')).
+  apply (tposrp_substitution H4 H3).
+Qed.
+
+Lemma coerce_substitution_aux :   forall G d d' s, G |-- d >-> d' : s ->  
+  forall e u v s', e |-- u >-> v : s' -> e = Srt_l s :: G ->
+  G |-- (lsubst d u) >-> (lsubst d' v) : s'.
+Proof.
+  induction 2 ; simpl ; intros ; subst ; auto with coc.
+  
+  pose (conv_substitution 
+
+Lemma coerce_substitution :   forall G d d' s, G |-- d >-> d' : s ->  
+  forall u v s', Srt_l s :: G |-- u >-> v : s' ->
+  G |-- (lsubst d u) >-> (lsubst d' v) : s'.
+Proof.
+  intros.
+  pose (tposr_eq_cr H).
+  pose (tposr_eq_cr H0).
+  destruct_exists.  
+  apply tposr_eq_trans with (lsubst x0 x).
+  apply tposrp_tposr_eq.
+  change (Srt_l s') with (lsubst d (Srt_l s')).
+  apply (tposrp_substitution H2 H1).
+ 
+  apply tposr_eq_sym.
+  apply tposrp_tposr_eq.
+  change (Srt_l s') with (lsubst d' (Srt_l s')).
+  apply (tposrp_substitution H4 H3).
+Qed.
+
+  
+*)
