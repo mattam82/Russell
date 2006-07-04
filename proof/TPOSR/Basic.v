@@ -105,32 +105,6 @@ Qed.
 
 Hint Resolve tposrp_tposr_eq : coc.
 
-Lemma tposr_lred : forall e M N Z, e |-- M -> N : Z -> lred M N.
-Proof.
-  induction 1 ; simpl ; auto with coc.
-
-  apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
-  apply trans_lred with (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
-  apply trans_lred with (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
-Qed.
-
-Lemma tposrp_lred : forall e M N Z, e |-- M -+> N : Z -> lred M N.
-Proof.
-  induction 1 ; simpl ; auto with coc.
-  
-  eapply tposr_lred ; eauto with coc.
-
-  apply trans_lred_lred with X ; auto with coc.
-Qed.
-
-Lemma tposr_eq_conv : forall e M N Z, e |-- M ~= N : Z -> conv M N.
-Proof.
-  induction 1 ; simpl ; auto with coc.
-  
-  pose (tposr_lred H) ; auto with coc.
-  apply trans_conv_conv with X ; auto with coc.
-Qed.
-
 Lemma context_validity : forall g, tposr_wf g -> forall n d, trunc _ n g d -> tposr_wf d.
 Proof.
   induction g  ; simpl ; auto with coc.

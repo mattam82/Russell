@@ -39,10 +39,10 @@ with tposrd : lenv -> lterm -> lterm -> lterm -> nat -> Prop :=
   e |-- Abs_l A M -> Abs_l A' M' : (Prod_l A B) [S (max3 n m p)]
   
   | tposrd_app : forall e A A' s1 n, e |-- A -> A' : Srt_l s1 [n] ->
-  forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
+  forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall M M' p, e |-- M -> M' : (Prod_l A B) [p] -> 
   forall N N' q, e |-- N -> N' : A [q] ->
-  e |-- App_l B M N -> App_l B' M' N' : lsubst N B [S (max4 n m p q)]
+  e |-- App_l B M N -> App_l B' M' N' : lsubst N B [S (max3 n p q)]
 
   | tposrd_beta : forall e A A' s1 n, e |-- A -> A' : Srt_l s1 [n] ->
   forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
@@ -70,11 +70,11 @@ with tposrd : lenv -> lterm -> lterm -> lterm -> nat -> Prop :=
   forall v v' q, e |-- v -> v' : lsubst u B [q] ->
   e |-- Pair_l (Sum_l A B) u v -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [S (max4 n m p q)]
 
-  | tposrd_pi1 : forall e A A' s1 n, e |-- A -> A' : Srt_l s1 [n] ->
-  forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
+  | tposrd_pi1 : forall e A A' s1, e |-- A >-> A' : s1 ->
+  forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   forall t t' p, e |-- t -> t' : Sum_l A B [p] ->
-  e |-- Pi1_l (Sum_l A B) t -> Pi1_l (Sum_l A' B') t' : A [S (max3 n m p)]
+  e |-- Pi1_l (Sum_l A B) t -> Pi1_l (Sum_l A' B') t' : A [S p]
 
   | tposrd_pi1_red : forall e A A' s1 n, e |-- A -> A' : Srt_l s1 [n] ->
   forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
@@ -84,11 +84,11 @@ with tposrd : lenv -> lterm -> lterm -> lterm -> nat -> Prop :=
   forall B'', A'' :: e |-- B'' >-> B : s2 ->
   e |-- Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v) -> u' : A'' [S (max3 n m p)]
 
-  | tposrd_pi2 : forall e A A' s1 n, e |-- A -> A' : Srt_l s1 [n] ->
-  forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
+  | tposrd_pi2 : forall e A A' s1, e |-- A >-> A' : s1 ->
+  forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   forall t t' p, e |-- t -> t' : Sum_l A B [p] ->
-  e |-- Pi2_l (Sum_l A B) t -> Pi2_l (Sum_l A' B') t' : lsubst (Pi1_l (Sum_l A B) t) B [S (max3 n m p)]
+  e |-- Pi2_l (Sum_l A B) t -> Pi2_l (Sum_l A' B') t' : lsubst (Pi1_l (Sum_l A B) t) B [S p]
 
   | tposrd_pi2_red : forall e A A' s1 n, e |-- A -> A' : Srt_l s1 [n] ->
   forall B B' s2 m, (A :: e) |-- B -> B' : Srt_l s2 [m] ->
@@ -131,7 +131,7 @@ Proof.
 
   exists (S (max3 x1 x0 x)) ; apply tposrd_abs with s1 B' s2 ; auto with coc.
 
-  exists (S (max4 x2 x1 x0 x)) ; apply tposrd_app with A A' s1 s2 ; auto with coc.
+  exists (S (max3 x1 x0 x)) ; apply tposrd_app with A A' s1 s2 ; auto with coc.
 
   exists (S (max4 x2 x1 x0 x)) ; apply tposrd_beta with A' s1 B' s2 ; auto with coc.
 
@@ -143,11 +143,11 @@ Proof.
 
   exists (S (max4 x2 x1 x0 x)) ; apply tposrd_pair with s1 s2 s3 ; auto with coc.
 
-  exists (S (max3 x1 x0 x)) ; apply tposrd_pi1 with s1 s2 s3 ; auto with coc.
+  exists (S x) ; apply tposrd_pi1 with s1 s2 s3 ; auto with coc.
 
   exists (S (max3 x1 x0 x)) ; apply tposrd_pi1_red with A' s1 B' s2 s3 v' ; auto with coc.
 
-  exists (S (max3 x1 x0 x)) ; apply tposrd_pi2 with s1 s2 s3 ; auto with coc.
+  exists (S x) ; apply tposrd_pi2 with s1 s2 s3 ; auto with coc.
 
   exists (S (max3 x1 x0 x)) ; apply tposrd_pi2_red with A' s1 B' s2 s3 u' ; auto with coc.
 
@@ -204,14 +204,12 @@ forall
        (forall (e : lenv) (A A' : lterm) (s1 : sort) (n : nat)
           (t : e |-- A -> A' : s1 [n]),
         P e A A' s1 n t ->
-        forall (B B' : lterm) (s2 : sort) (m : nat)
-          (t0 : A :: e |-- B -> B' : s2 [m]),
-        P (A :: e) B B' s2 m t0 ->
-        forall (M M' : lterm) (p : nat) (t1 : e |-- M -> M' : Prod_l A B [p]),
+        forall (B B' : lterm) (s2 : sort) (t0 : A :: e |-- B >-> B' : s2)
+          (M M' : lterm) (p : nat) (t1 : e |-- M -> M' : Prod_l A B [p]),
         P e M M' (Prod_l A B) p t1 ->
         forall (N N' : lterm) (q : nat) (t2 : e |-- N -> N' : A [q]),
         P e N N' A q t2 ->
-        P e (App_l B M N) (App_l B' M' N') (lsubst N B) (S (max4 n m p q))
+        P e (App_l B M N) (App_l B' M' N') (lsubst N B) (S (max3 n p q))
           (tposrd_app t t0 t1 t2)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort) (n : nat)
           (t : e |-- A -> A' : s1 [n]),
@@ -258,17 +256,13 @@ forall
         P e v v' (lsubst u B) q t2 ->
         P e (Pair_l (Sum_l A B) u v) (Pair_l (Sum_l A' B') u' v') (Sum_l A B)
           (S (max4 n m p q)) (tposrd_pair t t0 s t1 t2)) ->
-       (forall (e : lenv) (A A' : lterm) (s1 : sort) (n : nat)
-          (t : e |-- A -> A' : s1 [n]),
-        P e A A' s1 n t ->
-        forall (B B' : lterm) (s2 : sort) (m : nat)
-          (t0 : A :: e |-- B -> B' : s2 [m]),
-        P (A :: e) B B' s2 m t0 ->
-        forall (s3 : sort) (s : sum_sort s1 s2 s3) (t1 t' : lterm) (p : nat)
-          (t2 : e |-- t1 -> t' : Sum_l A B [p]),
+       (forall (e : lenv) (A A' : lterm) (s1 : sort)
+          (t : e |-- A >-> A' : s1) (B B' : lterm) (s2 : sort)
+          (t0 : A :: e |-- B >-> B' : s2) (s3 : sort) (s : sum_sort s1 s2 s3)
+          (t1 t' : lterm) (p : nat) (t2 : e |-- t1 -> t' : Sum_l A B [p]),
         P e t1 t' (Sum_l A B) p t2 ->
-        P e (Pi1_l (Sum_l A B) t1) (Pi1_l (Sum_l A' B') t') A
-          (S (max3 n m p)) (tposrd_pi1 t t0 s t2)) ->
+        P e (Pi1_l (Sum_l A B) t1) (Pi1_l (Sum_l A' B') t') A (S p)
+          (tposrd_pi1 t t0 s t2)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort) (n : nat)
           (t : e |-- A -> A' : s1 [n]),
         P e A A' s1 n t ->
@@ -285,18 +279,13 @@ forall
           (t3 : A'' :: e |-- B'' >-> B : s2),
         P e (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)) u' A''
           (S (max3 n m p)) (tposrd_pi1_red t t0 s t1 t2 t3)) ->
-       (forall (e : lenv) (A A' : lterm) (s1 : sort) (n : nat)
-          (t : e |-- A -> A' : s1 [n]),
-        P e A A' s1 n t ->
-        forall (B B' : lterm) (s2 : sort) (m : nat)
-          (t0 : A :: e |-- B -> B' : s2 [m]),
-        P (A :: e) B B' s2 m t0 ->
-        forall (s3 : sort) (s : sum_sort s1 s2 s3) (t1 t' : lterm) (p : nat)
-          (t2 : e |-- t1 -> t' : Sum_l A B [p]),
+       (forall (e : lenv) (A A' : lterm) (s1 : sort)
+          (t : e |-- A >-> A' : s1) (B B' : lterm) (s2 : sort)
+          (t0 : A :: e |-- B >-> B' : s2) (s3 : sort) (s : sum_sort s1 s2 s3)
+          (t1 t' : lterm) (p : nat) (t2 : e |-- t1 -> t' : Sum_l A B [p]),
         P e t1 t' (Sum_l A B) p t2 ->
         P e (Pi2_l (Sum_l A B) t1) (Pi2_l (Sum_l A' B') t')
-          (lsubst (Pi1_l (Sum_l A B) t1) B) (S (max3 n m p))
-          (tposrd_pi2 t t0 s t2)) ->
+          (lsubst (Pi1_l (Sum_l A B) t1) B) (S p) (tposrd_pi2 t t0 s t2)) ->
        (forall (e : lenv) (A A' : lterm) (s1 : sort) (n : nat)
           (t : e |-- A -> A' : s1 [n]),
         P e A A' s1 n t ->

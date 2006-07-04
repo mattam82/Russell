@@ -25,6 +25,12 @@ Theorem tposr_wf_sub : forall g d d' t, g |-- d -> d' : t ->
    forall e, tposr_wf e -> forall f n, sub_in_lenv d t n e f -> tposr_wf f.
 Admitted.
 
+Theorem tposr_coerce_sub : forall g d d' t, g |-- d -> d' : t ->
+   forall e u v s, e |-- u >-> v : s ->
+   forall f n, sub_in_lenv d t n e f -> trunc _ n f g -> 
+   f |-- (lsubst_rec d u n) >-> (lsubst_rec d' v n) : s.
+Admitted.
+
 Theorem substitution : forall e t u v U, (t :: e) |-- u -> v : U ->
   forall d d', e |-- d -> d' : t -> e |-- (lsubst d u) -> (lsubst d' v) : (lsubst d U).
 Admitted.
@@ -69,8 +75,13 @@ Proof.
 Qed.
 
 Corollary substitution_coerce : forall t e u v s, t :: e |-- u >-> v : s -> 
-  forall d, e |-- d -> d : t -> e |-- (lsubst d u) >-> (lsubst d v) : s.
-Admitted.
+  forall d d', e |-- d -> d' : t -> e |-- (lsubst d u) >-> (lsubst d' v) : s.
+Proof.
+  intros.
+  unfold lsubst ; eapply tposr_coerce_sub ; auto with coc.
+  apply H0.
+  apply H.
+Qed.
 
 (*Lemma ind_sub_weak : forall g (d : term) t, g |-- d : t ->
    (forall e u (U : term), e |-- u : U ->

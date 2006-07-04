@@ -53,7 +53,7 @@ Proof.
   apply (coerce_refl_l H8).
 
   pose (generation_app_depth H0) ; destruct_exists.
-  right ; exists T b0 ; apply (coerce_refl_l H7).
+  right ; exists T b0 ; apply (coerce_refl_l H6).
 
   pose (generation_pair_depth H0) ; destruct_exists.
   right ; exists T x0 ; apply (coerce_refl_l H12).

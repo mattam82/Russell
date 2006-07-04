@@ -108,7 +108,7 @@ Proof.
   (* App *)
   pose (generation_app_depth H) ; destruct_exists.
   pose (generation_app_depth H0) ; destruct_exists.
-  pose (equiv_sort_trans H7 H15).
+  pose (equiv_sort_trans H6 H13).
   right.
   exists b0 ; auto.
 

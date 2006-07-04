@@ -207,14 +207,14 @@ Proof.
   pose (generation_app_depth Hr) ; destruct_exists.
 
   assert(q < x) ; try rewrite <- H7 ; auto with arith.
-  pose (IH _ H16 _ _ _ _ _ H2 _ _ H12) ; destruct_exists.
-  pose (uniqueness_of_types (toq H2) (toq H12)).
+  pose (IH _ H15 _ _ _ _ _ H2 _ _ H11) ; destruct_exists.
+  pose (uniqueness_of_types (toq H2) (toq H11)).
   assert(c = s1).
-  destruct e0 ; unfold eq_kind in H21 ; destruct_exists.
-  rewrite H22 in H8 ; clear H21.
+  destruct e0 ; unfold eq_kind in H20 ; destruct_exists.
+  rewrite H21 in H8 ; clear H21.
   elim (tposr_not_kind (fromd H8)).
-  rewrite (unique_sort (fromd H8) (coerce_refl_r H21)).
-  apply (unique_sort (coerce_refl_l H21) (fromd H)).
+  rewrite (unique_sort (fromd H8) (coerce_refl_r H20)).
+  apply (unique_sort (coerce_refl_l H20) (fromd H)).
   
   assert(coerce_in_env (a :: G) (A0 :: G)).
   apply equiv_coerce_in_env with c ; auto with coc.
@@ -225,32 +225,30 @@ Proof.
   apply (left_refl (fromd H)).
   
   assert(tposr_wf (A0 :: G)).
-  apply (wf_tposr (fromd H0)).
+  apply (wf_tposr (coerce_refl_l H0)).
 
   assert(tposr_wf (a :: G)).
-  apply (wf_tposr (fromd H10)).
+  apply (wf_tposr (coerce_refl_l H10)).
 
-  assert(A0 :: G |-- B -> a0 : Srt_l b0).
-  apply type_coerce_env with (a :: G) ; auto with coc.
-  apply (fromd H10).
+  assert(A0 :: G |-- B >-> a0 : b0).
+  apply coerce_coerce_env with (a :: G) ; auto with coc.
 
-  assert(a :: G |-- B -> B' : Srt_l s2).
-  apply type_coerce_env with (A0 :: G) ; auto with coc.
-  apply (fromd H0).
+  assert(a :: G |-- B >-> B' : s2).
+  apply coerce_coerce_env with (A0 :: G) ; auto with coc.
 
   assert(b0 = s2).
-  pose (left_refl H26).
-  pose (left_refl (fromd H0)).
+  pose (coerce_refl_l H25).
+  pose (coerce_refl_l H0).
   apply (unique_sort t t0).
-  rewrite H21 in H8.
-  rewrite H28 in H10.
-  rewrite H28 in H26.
-  rewrite H28 in H14.
-  clear H28 b0.
+  rewrite H20 in H8.
+  rewrite H27 in H10.
+  rewrite H27 in H25.
+  rewrite H27 in H13.
+  clear H27 b0.
 
-  assert(m0 < x) by (rewrite <- H7 ; auto with arith). 
-  pose (tod H26) ; destruct_exists.
-  pose (IH _ H28 _ _ _ _ _ H0 _ _ H29) ; destruct_exists.
+(*  assert(n0 < x) by (rewrite <- H7 ; auto with arith). 
+  pose (tod H25) ; destruct_exists.
+  pose (IH _ H27 _ _ _ _ _ H _ _ H2) ; destruct_exists.
 
   assert(G |-- lsubst x0 x2 ~= lsubst N0 B : s2).
   apply tposr_eq_sym.
@@ -266,115 +264,113 @@ Proof.
 
   apply tposr_eq_tposr.
   change (Srt_l s2) with (lsubst a1 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
+  apply substitution with A0 ; auto with coc.*)
 
   assert(HeqB: equiv G B0 (lsubst N0 B)).
   right ; exists s2 ; assumption.
 
-  destruct H15 ; destruct_exists.
+  destruct H14 ; destruct_exists.
 
   (* App, App *)
-  rewrite H36.
+  rewrite H28.
   assert(p < x) ; try rewrite <- H7 ; auto with arith.
-  pose (IH _ H37 _ _ _ _ _ H1 _ _ H15) ; destruct_exists.
-  
-  assert(G |-- App_l B' M' N' -> App_l x2 x3 x0 : lsubst N0 B).
+  pose (IH _ H29 _ _ _ _ _ H1 _ _ H14) ; destruct_exists.
 
-  apply tposr_conv_l with (lsubst N' B') s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst N' (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
+  exists (App_l B x1 x0).
 
+  assert(G |-- App_l B' M' N' -> App_l B x1 x0 : lsubst N0 B).
+  apply tposr_conv with (lsubst N' B') s2 ; auto with coc.
   apply tposr_app with A0 A' s1 s2 ; auto with coc.
   apply (fromd H).
-  apply tposr_conv_l with (Prod_l A0 B) s2 ; auto with coc.
-  apply tposr_eq_tposr.
-  apply tposr_prod with s1 ; auto with coc.
+  apply tposr_conv with (Prod_l A0 B) s2 ; auto with coc.
+  assert(G |-- A0 -> A0 : s1).
   apply (left_refl (fromd H)).
-  apply (fromd H0).
+  assert(G |-- A0 >-> A0 : s1).
+  auto with coc.
+  apply tposr_coerce_prod with s1 ; auto with coc.
+  apply (coerce_refl_l H25).
+  apply (coerce_refl_r H0).
+  apply tposr_coerce_sym.
+  apply substitution_coerce with A0 ; auto with coc.
+  apply (fromd H2).
 
-  assert(G |-- App_l a0 a2 a1 -> App_l x2 x3 x0 : lsubst N0 B).
-
-  apply tposr_conv_l with (lsubst a1 a0) s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst a1 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
-
+  assert(G |-- App_l a0 a2 a1 -> App_l B x1 x0 : lsubst N0 B).
+  apply tposr_conv with (lsubst a1 a0) s2 ; auto with coc.
   apply tposr_app with A0 A' s1 s2 ; auto with coc.
   apply (fromd H).
-  apply tposr_conv_l with (Prod_l A0 B) s2 ; auto with coc.
-  apply tposr_eq_tposr.
-  apply tposr_prod with s1 ; auto with coc.
-  apply (left_refl (fromd H)).
+  apply tposr_conv with (Prod_l A0 B) s2 ; auto with coc.
 
-  exists (App_l x2 x3 x0) ; intuition ; auto with coc.
+  assert(G |-- A0 -> A0 : s1).
+  apply (left_refl (fromd H)).
+  assert(G |-- A0 >-> A0 : s1).
+  auto with coc.
+  apply tposr_coerce_prod with s1 ; auto with coc.
+  apply (coerce_refl_l H25).
+  apply (coerce_refl_r H25).
+  apply tposr_coerce_sym.
+  apply substitution_coerce with a ; auto with coc.
+  apply (fromd H11).
+
+  intuition ; auto with coc.
   apply tposr_equiv_r with (lsubst N0 B) ; auto with coc.
   apply tposr_equiv_r with (lsubst N0 B) ; auto with coc.
 
   (* App, Beta *)
-  rewrite H37.
-  rewrite H15 in H1.
+  rewrite H29.
+  rewrite H14 in H1.
   pose (generation_lambda_depth H1) ; destruct_exists.
-  assert(c3 < x).
-  rewrite <- H7 ; auto with arith.
-  apply lt_trans with p ; auto with arith.
-  pose (IH _ H46 _ _ _ _ _ H40 _ _ H35) ; destruct_exists.
   assert(c2 < x).
   rewrite <- H7 ; auto with arith.
   apply lt_trans with p ; auto with arith.
-  pose (IH _ H51 _ _ _ _ _ H38 _ _ H8) ; destruct_exists.
+  pose (IH _ H38 _ _ _ _ _ H32 _ _ H27) ; destruct_exists.
+
+  exists (lsubst x0 x1).
 
   assert(G |-- a ~= a3 : b2).
   apply tposr_eq_tposr ; auto with coc.
-  apply (fromd H38).
+  apply (fromd H30).
 
   assert (conv_in_env (a :: G) (a3 :: G)).
   apply conv_env_hd with b2 ; auto.
 
   assert (coerce_in_env (A0 :: G) (a3 :: G)).
   destruct e0.
-  destruct H58.
-  rewrite H59 in H38.
-  elim (tposr_not_kind (fromd H38)).
-  destruct H58.
-  apply coerce_env_hd with x5.
+  destruct H45.
+  rewrite H46 in H30.
+  elim (tposr_not_kind (fromd H30)).
+  destruct H45.
+  apply coerce_env_hd with x2.
   apply tposr_coerce_trans with a ; auto with coc.
-  destruct (coerce_refls H58).
-  pose (unique_sort H60 (fromd H38)).
-  rewrite e0 ; auto.
-  apply tposr_coerce_sym.
-  apply tposr_tposr_coerce.
-  apply (fromd H38).
+  destruct (conv_refls H43).
+  pose (unique_sort H46 (coerce_refl_r H45)).
+  rewrite <- e0 ; auto ; auto with coc.
 
-  exists (lsubst x0 x3).
+  assert(G |-- App_l B' M' N' -> lsubst x0 x1 : lsubst N0 B).
+  apply tposr_conv with (lsubst N' B') s2 ; auto with coc.
 
-  assert(G |-- App_l B' M' N' -> lsubst x0 x3 : lsubst N0 B).
-
-  apply tposr_conv_l with (lsubst N' B') s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst N' (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
-  
-  rewrite H44.
-  apply tposr_beta with x4 s1 x2 s2 ; auto with coc.
+  rewrite H36.
+  apply tposr_beta with a3 b2 B' s2 ; auto with coc.
+  apply (conv_refl_r H43).
   apply type_coerce_env with (A0 :: G) ; auto with coc.
+  apply (coerce_refl_r H0).
   apply conv_env with (a :: G) ; auto with coc.
   apply tposr_conv with B s2 ; auto with coc.
   apply tposr_conv_l with a b2 ; auto with coc.
 
-  assert(G |-- lsubst a1 b0 -> lsubst x0 x3 : lsubst N0 B).
+  apply tposr_coerce_sym.
+  apply substitution_coerce with A0 ; auto with coc.
+  apply (fromd H2).
 
-  apply tposr_conv_l with (lsubst a1 B') s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst a1 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
+  assert(G |-- lsubst a1 b0 -> lsubst x0 x1 : lsubst N0 B).
+  apply tposr_conv with (lsubst a1 B') s2 ; auto with coc.
+
   apply substitution with a ; auto with coc.
   apply tposr_conv with B s2 ; auto with coc.
 
+  apply tposr_coerce_sym.   
+  apply substitution_coerce with a ; auto with coc.
+  apply (fromd H11).
+  
   intuition ; auto with coc.
 
   apply tposr_equiv_r with (lsubst N0 B) ; auto.

@@ -309,10 +309,10 @@ Qed.
 Lemma generation_app_depth_aux :
 forall e t Y Z m, e |-- t -> Y : Z [m] -> forall V W X, t = App_l V W X ->
   exists4 U U' s1 n,
-  exists3 V' s2 p,
+  exists2 V' s2,
   exists2 X' q,
   e |-- U -> U' : Srt_l s1 [n] /\ n < m /\
-  U :: e |-- V -> V' : Srt_l s2 [p] /\ p < m /\
+  U :: e |-- V >-> V' : s2 /\
   e |-- X -> X' : U [q] /\ q < m /\
   equiv_sort e Z (lsubst X V) s2 /\
   ((exists2 W' r, e |-- W -> W' : Prod_l U V [r] /\ r < m /\
@@ -355,10 +355,10 @@ Qed.
 
 Lemma generation_app_depth : forall e V W X Y Z m, e |-- App_l V W X -> Y : Z [m] -> 
   exists4 U U' s1 n,
-  exists3 V' s2 p,
+  exists2 V' s2,
   exists2 X' q,
   e |-- U -> U' : Srt_l s1 [n] /\ n < m /\
-  U :: e |-- V -> V' : Srt_l s2 [p] /\ p < m /\
+  U :: e |-- V >-> V' : s2 /\
   e |-- X -> X' : U [q] /\ q < m /\
   equiv_sort e Z (lsubst X V) s2 /\
   ((exists2 W' r, e |-- W -> W' : Prod_l U V [r] /\ r < m /\
@@ -379,7 +379,7 @@ Lemma generation_app : forall e V W X Y Z, e |-- App_l V W X -> Y : Z ->
   exists2 V' s2,
   exists X',
   e |-- U -> U' : Srt_l s1 /\
-  U :: e |-- V -> V' : Srt_l s2 /\
+  U :: e |-- V >-> V' : s2 /\
   e |-- X -> X' : U /\
   equiv_sort e Z (lsubst X V) s2 /\
   ((exists W', e |-- W -> W' : Prod_l U V /\
@@ -400,7 +400,7 @@ Lemma generation_app2 : forall e V W X Y Z, e |-- App_l V W X -> Y : Z ->
   exists2 V' s2,
   exists2 X' W',
   e |-- U -> U' : Srt_l s1 /\
-  U :: e |-- V -> V' : Srt_l s2 /\
+  U :: e |-- V >-> V' : s2 /\
   e |-- W -> W' : Prod_l U V 	/\
   e |-- X -> X' : U /\
   equiv_sort e Z (lsubst X V) s2 /\
@@ -521,7 +521,8 @@ Lemma generation_pi1_depth_aux : forall e t X C m, e |-- t -> X : C [m] -> foral
   e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [r] /\ r < m /\
   X = u')).
 Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+Admitted.
+(*  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
   pose (IHtposrd _ _ H1).
   destruct_exists.
   
@@ -549,7 +550,7 @@ Proof.
   exists a2 b2 c1 ; exists a3 b3 ; intuition.
 
   
-  clear IHtposrd1 IHtposrd2 IHtposrd3.
+  clear IHtposrd.
   inversion H3.
   subst.
   exists A A' s1 n.
@@ -572,7 +573,7 @@ Proof.
   
   right ; exists u u' p ; exists v v' ; intuition.
 Qed.
-
+*)
 Lemma generation_pi1_depth : forall e T M X C m, e |-- Pi1_l T M -> X : C [m] ->
   exists4 A A' s1 n,
   exists4 B B' s2 p,
