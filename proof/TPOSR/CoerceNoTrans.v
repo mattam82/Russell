@@ -202,7 +202,7 @@ Lemma inv_eq_prod_l : forall e U V U' V' s,
 Proof.
   intros.
   destruct (injectivity_of_pi H) ; destruct_exists.
-  rewrite (unique_sort (conv_refl_l H1) H0) in H1.
+  rewrite (unique_sort (eq_refl_l H1) H0) in H1.
   assumption.
 Qed.
 
@@ -224,7 +224,7 @@ Lemma inv_eq_sum_l : forall e U V U' V' s,
 Proof.
   intros.
   destruct (injectivity_of_sum H) ; destruct_exists.
-  rewrite (unique_sort (conv_refl_l H1) H0) in H1.
+  rewrite (unique_sort (eq_refl_l H1) H0) in H1.
   assumption.
 Qed.
 
@@ -234,7 +234,7 @@ Lemma inv_eq_sum_r : forall e U V U' V' s,
 Proof.
   intros.
   destruct (injectivity_of_sum H) ; destruct_exists.
-  rewrite (unique_sort (conv_refl_l H2) H0) in H2.
+  rewrite (unique_sort (eq_refl_l H2) H0) in H2.
   assumption.
 Qed.
 

@@ -341,7 +341,7 @@ Proof.
   destruct H45.
   apply coerce_env_hd with x2.
   apply tposr_coerce_trans with a ; auto with coc.
-  destruct (conv_refls H43).
+  destruct (eq_refls H43).
   pose (unique_sort H46 (coerce_refl_r H45)).
   rewrite <- e0 ; auto ; auto with coc.
 
@@ -350,7 +350,7 @@ Proof.
 
   rewrite H36.
   apply tposr_beta with a3 b2 B' s2 ; auto with coc.
-  apply (conv_refl_r H43).
+  apply (eq_refl_r H43).
   apply type_coerce_env with (A0 :: G) ; auto with coc.
   apply (coerce_refl_r H0).
   apply conv_env with (a :: G) ; auto with coc.

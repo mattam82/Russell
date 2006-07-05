@@ -11,3 +11,15 @@ end.
 
 Ltac destruct_exists := repeat (destruct_one_pair) .
 
+Ltac induction_with_subterm c H :=
+  (set(x := c) ; assert(y:x = c) by reflexivity ;
+  rewrite <- y in H ; 
+  induction H ; subst).
+
+Ltac induction_with_subterms c c' H :=
+  (set(x := c) ; assert(y:x = c) by reflexivity ;
+  set(z := c') ; assert(w:z = c') by reflexivity ;
+  rewrite <- y in H ; rewrite <- w in H ; 
+  induction H ; subst).
+
+

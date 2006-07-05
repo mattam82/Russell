@@ -116,18 +116,6 @@ Proof.
   eauto with coc ecoc.
 Qed.
 
-Ltac induction_with_subterm c H :=
-  (set(x := c) ; assert(y:x = c) by reflexivity ;
-  rewrite <- y in H ; 
-  induction H ; subst).
-
-Ltac induction_with_subterms c c' H :=
-  (set(x := c) ; assert(y:x = c) by reflexivity ;
-  set(z := c') ; assert(w:z = c') by reflexivity ;
-  rewrite <- y in H ; rewrite <- w in H ; 
-  induction H ; subst).
-
-
 Lemma tposrp_prod : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
   e |-- Prod_l A B -+> Prod_l A' B' : Srt_l s2.

@@ -235,6 +235,13 @@ Inductive conv_in_env_full : lenv -> lenv -> Prop :=
 
 Hint Resolve conv_env_in_env conv_env_nil : coc.
 
+
+Lemma conv_env_full_sym : forall e f, conv_in_env_full e f -> conv_in_env_full f e.
+Proof.
+  induction 1 ; simpl ; intros ; eauto with coc.
+  apply conv_env_trans with f ; auto.
+Qed.
+
 Lemma conv_env_full :
   (forall e t u T, e |-- t -> u : T -> 
   forall f, conv_in_env_full e f -> f |-- t -> u : T).
@@ -243,12 +250,6 @@ Proof.
   induction H0 ; auto.
 
   apply conv_env with e ; auto with coc.
-Qed.
-
-Lemma conv_env_full_sym : forall e f, conv_in_env_full e f -> conv_in_env_full f e.
-Proof.
-  induction 1 ; simpl ; intros ; eauto with coc.
-  apply conv_env_trans with f ; auto.
 Qed.
 
 Lemma conv_env_full_cons : forall G D, conv_in_env_full G D -> forall T, tposr_wf (T :: G) ->
@@ -268,6 +269,62 @@ Proof.
   assert(nil |-- T ~= T : s).
   apply tposr_eq_tposr ; eauto with coc.
   apply conv_env_hd with s ; auto with coc.
+Qed.
+
+
+Corollary tposrp_conv_env_full : 
+  (forall e t u T, e |-- t -+> u : T -> 
+  forall f, conv_in_env_full e f -> f |-- t -+> u : T).
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+  apply tposrp_tposr ; eapply conv_env_full ; eauto with coc.
+  apply tposrp_trans with X ; auto with coc.
+Qed.
+
+Corollary eq_conv_env_full : 
+  (forall e t u s, e |-- t ~= u : s -> 
+  forall f, conv_in_env_full e f -> f |-- t ~= u : s).
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+  apply tposr_eq_tposr ; eapply conv_env_full ; eauto with coc.
+  apply tposr_eq_trans with X ; auto with coc.
+Qed.
+
+Hint Resolve conv_env_full eq_conv_env_full : ecoc.
+
+Corollary coerce_conv_env_full : 
+  (forall e t u s, e |-- t >-> u : s -> 
+  forall f, conv_in_env_full e f -> f |-- t >-> u : s).
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+  apply tposr_coerce_conv ; eapply eq_conv_env_full ; eauto with coc.
+
+  assert(conv_in_env_full (A' :: e) (A' :: f)) by
+  (apply conv_env_full_cons ; auto with coc;
+  eauto with coc ecoc).
+  assert(conv_in_env_full (A :: e) (A :: f)) by
+  (apply conv_env_full_cons ; auto with coc;
+  eauto with coc ecoc).
+  apply tposr_coerce_prod with s ; eauto with coc ecoc.
+
+  assert(conv_in_env_full (A' :: e) (A' :: f)) by
+  (apply conv_env_full_cons ; auto with coc;
+  eauto with coc ecoc).
+  assert(conv_in_env_full (A :: e) (A :: f)) by
+  (apply conv_env_full_cons ; auto with coc;
+  eauto with coc ecoc).
+  apply tposr_coerce_sum with s s' ; eauto with coc ecoc.
+
+  assert(conv_in_env_full (U :: e) (U :: f)) by
+  (apply conv_env_full_cons ; auto with coc;
+  eauto with coc ecoc).
+  apply tposr_coerce_sub_l ; eauto with coc ecoc.
+
+  assert(conv_in_env_full (U' :: e) (U' :: f)) by
+  (apply conv_env_full_cons ; auto with coc ; eauto with coc ecoc).
+  apply tposr_coerce_sub_r ; eauto with coc ecoc.
+  
+  apply tposr_coerce_trans with B ; auto.
 Qed.
 
 Lemma unlab_conv_ctx_conv : forall G D, tposr_wf G -> tposr_wf D -> 
@@ -315,4 +372,20 @@ Proof.
   apply conv_env_full with G ; auto with coc.
   apply unlab_conv_ctx_conv ; auto with coc.
   apply (wf_tposr H0).
+Qed.
+
+Corollary eq_unlab_conv_ctx : forall D, tposr_wf D -> forall G M N s, G |-- M ~= N : s -> 
+ (unlab_ctx D) = (unlab_ctx G) -> D |-- M ~= N : s.
+Proof.
+  intros.
+  pose (unlab_conv_ctx_conv (wf_tposr (eq_refl_l H0)) H H1).
+  apply eq_conv_env_full with G ; auto with coc.
+Qed.
+
+Corollary coerce_unlab_conv_ctx : forall D, tposr_wf D -> forall G M N s, G |-- M >-> N : s -> 
+ (unlab_ctx D) = (unlab_ctx G) -> D |-- M >-> N : s.
+Proof.
+  intros.
+  pose (unlab_conv_ctx_conv (wf_tposr (coerce_refl_l H0)) H H1).
+  apply coerce_conv_env_full with G ; auto with coc.
 Qed.

@@ -47,8 +47,8 @@ Proof.
   destruct_exists.
   pose (coerce_rc_depth_coerce H).
   pose (coerce_rc_depth_coerce H2).
-  rewrite <- (unique_sort (coerce_refl_r t) (conv_refl_l H8)) in H8.
-  rewrite <- (unique_sort (coerce_refl_l t) (conv_refl_l H7)) in H7.
+  rewrite <- (unique_sort (coerce_refl_r t) (eq_refl_l H8)) in H8.
+  rewrite <- (unique_sort (coerce_refl_l t) (eq_refl_l H7)) in H7.
   exists s ; split.
   apply tposr_coerce_trans with A' ; auto with coc.
   apply tposr_coerce_trans with A ; auto with coc.
@@ -105,14 +105,14 @@ Proof.
   destruct_exists.
   pose (coerce_rc_depth_coerce H).
   pose (coerce_rc_depth_coerce H2).
-  rewrite <- (unique_sort (coerce_refl_l t) (conv_refl_l H10)) in H10.
-  rewrite <- (unique_sort (coerce_refl_r t) (conv_refl_l H9)) in H9.
-  rewrite <- (unique_sort (coerce_refl_l t0) (conv_refl_l H13)) in H13.
+  rewrite <- (unique_sort (coerce_refl_l t) (eq_refl_l H10)) in H10.
+  rewrite <- (unique_sort (coerce_refl_r t) (eq_refl_l H9)) in H9.
+  rewrite <- (unique_sort (coerce_refl_l t0) (eq_refl_l H13)) in H13.
   assert(A :: e |-- B' ~= B'0 : b).
   apply eq_coerce_env with (A' :: e) ; auto with coc.
   eauto with coc.
-  rewrite <- (unique_sort (coerce_refl_r t0) (conv_refl_l H15)) in H11.
-  rewrite <- (unique_sort (coerce_refl_r t0) (conv_refl_l H15)) in H15.
+  rewrite <- (unique_sort (coerce_refl_r t0) (eq_refl_l H15)) in H11.
+  rewrite <- (unique_sort (coerce_refl_r t0) (eq_refl_l H15)) in H15.
 
   exists s s' ; intuition ; auto with coc.
   apply tposr_coerce_trans with A' ; auto with coc.

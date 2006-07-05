@@ -490,10 +490,10 @@ Proof.
 
   elim tposr_eq_sort_subset with e s U P set ; auto with coc.
 
-  pose (conv_refl_r H3).
+  pose (eq_refl_r H3).
   elim (in_set_not_sort t (refl_equal (Srt_l set))) with s.
   auto.
-  pose (conv_refl_r H3).
+  pose (eq_refl_r H3).
   elim (in_set_not_sort t (refl_equal (Srt_l set))) with s.
   auto.
 
@@ -512,6 +512,21 @@ Proof.
   destruct (IHtposr_coerce1 s0).
   destruct (IHtposr_coerce2 s0).
   apply (H3 (H5 H1)).
+Qed.
+
+Lemma tposr_coerce_sort_l : forall e s u s', e |-- s >-> u : s' -> e |-- u -+> s : s'.
+Proof.
+  intros e s u s' H.
+  destruct (tposr_coerce_sorts H s).
+  apply tposr_eq_sort_tposrp.
+  assert(e |-- s ~= s : s') by eauto with coc ecoc.
+  pose (H0 H2) ; auto with coc.
+Qed.
+
+Lemma tposr_coerce_sort_r : forall e s u s', e |-- u >-> s : s' -> e |-- u -+> s : s'.
+Proof.
+  intros e s u s' H.
+  apply tposr_coerce_sort_l ; auto with coc.
 Qed.
 
 Lemma tposr_coerce_eq_sort_aux : forall e T U s', tposr_coerce e T U s' ->

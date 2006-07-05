@@ -75,7 +75,7 @@ Proof.
   induction 1 ; simpl ; intros ; auto with coc.
 
   apply tposr_eq_trans with (Prod_l Y Y0) ; auto.
-  destruct (conv_refls H0).
+  destruct (eq_refls H0).
   apply pi_conv_left with s ; auto with coc.
   apply pi_conv_right with s ; auto with coc.
   apply (refl_r H).
@@ -89,7 +89,7 @@ Proof.
 
   apply tposr_eq_trans with (Prod_l X Y0) ; auto with coc.
   apply IHtposr_eq1.
-  destruct(conv_refls H1).
+  destruct(eq_refls H1).
   auto with coc.
 
   apply IHtposr_eq2.
@@ -162,7 +162,7 @@ Proof.
   induction 1 ; simpl ; intros ; auto with coc.
 
   apply tposr_eq_trans with (Sum_l Y Y0) ; auto.
-  destruct (conv_refls H0).
+  destruct (eq_refls H0).
   apply sum_conv_left with s s2 ; auto with coc.
   apply sum_conv_right with s s2 ; auto with coc.
   apply (refl_r H).
@@ -177,7 +177,7 @@ Proof.
 
   apply tposr_eq_trans with (Sum_l X Y0) ; auto with coc.
   apply IHtposr_eq1 with s2.
-  destruct(conv_refls H1).
+  destruct(eq_refls H1).
   auto with coc.
 
   assumption.
@@ -240,7 +240,7 @@ Proof.
   induction 1 ; simpl ; intros ; auto with coc.
 
   apply tposr_eq_trans with (Subset_l Y Y0) ; auto.
-  destruct (conv_refls H1).
+  destruct (eq_refls H1).
   apply subset_conv_left with s ; auto with coc.
   apply subset_conv_right ; auto with coc.
   rewrite <- H0.
@@ -255,7 +255,7 @@ Proof.
 
   apply tposr_eq_trans with (Subset_l X Y0) ; auto with coc.
   apply IHtposr_eq1 ; auto.
-  destruct(conv_refls H2) ; auto with coc.
+  destruct(eq_refls H2) ; auto with coc.
 
   apply IHtposr_eq2 ; auto.
   apply conv_env_eq with (W :: e) ; auto with coc.

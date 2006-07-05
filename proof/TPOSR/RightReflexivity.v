@@ -18,7 +18,7 @@ Implicit Types e f g : lenv.
 Lemma refl_r : forall e u v T, e |-- u -> v : T -> e |-- v -> v : T.
 Admitted.
 
-Corollary conv_refls : forall e u v s, e |-- u ~= v : s -> 
+Corollary eq_refls : forall e u v s, e |-- u ~= v : s -> 
   e |-- u -> u : Srt_l s /\ e |-- v -> v : Srt_l s.
 Admitted.
 
@@ -26,16 +26,16 @@ Corollary coerce_refls : forall e u v s, e |-- u >-> v : s ->
   e |-- u -> u : Srt_l s /\ e |-- v -> v : Srt_l s.
 Admitted.
 
-Corollary conv_refl_l :  forall e u v s, e |-- u ~= v : s -> e |-- u -> u : Srt_l s.
+Corollary eq_refl_l :  forall e u v s, e |-- u ~= v : s -> e |-- u -> u : Srt_l s.
 Proof.
   intros.
-  apply (proj1 (conv_refls H)).
+  apply (proj1 (eq_refls H)).
 Qed.
 
-Corollary conv_refl_r :  forall e u v s, e |-- u ~= v : s -> e |-- v -> v : Srt_l s.
+Corollary eq_refl_r :  forall e u v s, e |-- u ~= v : s -> e |-- v -> v : Srt_l s.
 Proof.
   intros.
-  apply (proj2 (conv_refls H)).
+  apply (proj2 (eq_refls H)).
 Qed.
 
 Corollary coerce_refl_l :  forall e u v s, e |-- u >-> v : s -> e |-- u -> u : Srt_l s.
@@ -56,6 +56,6 @@ Proof.
   apply (refl_r H).
 Qed.
 
-Hint Resolve refl_r conv_refl_l conv_refl_r tposrp_refl_r : ecoc.
+Hint Resolve refl_r eq_refl_l eq_refl_r tposrp_refl_r : ecoc.
 Hint Resolve coerce_refl_r coerce_refl_l tposrp_refl_r : ecoc.
 

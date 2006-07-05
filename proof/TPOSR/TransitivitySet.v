@@ -262,7 +262,7 @@ Proof.
   (* prod, conv_l < prod *)
   simpl in H4.
   pose (H2:=inv_eq_prod_l c2 t).
-  assert (e1 := unique_sort t7 (conv_refl_r H2)).
+  assert (e1 := unique_sort t7 (eq_refl_r H2)).
   generalize dependent A'0 ;   generalize dependent A1.
   rewrite e1.
   intros.
@@ -474,7 +474,7 @@ Proof.
   (* sum, conv_l < sum *)
   simpl in H4.
   pose (inv_eq_sum_l  c2 t).
-  assert (Heq:=unique_sort (conv_refl_r t10) t7).
+  assert (Heq:=unique_sort (eq_refl_r t10) t7).
   generalize dependent A'0 ; generalize dependent t7 ; generalize dependent s'0.
   rewrite <- Heq.
   intros.
@@ -494,7 +494,7 @@ Proof.
   apply coerces_conv_l with A1 ; auto with coc.
   apply wf_cons with A' s ; auto with coc.
 
-  assert (Heq:=unique_sort H3 (conv_refl_r t11)).
+  assert (Heq:=unique_sort H3 (eq_refl_r t11)).
     generalize dependent A1 ; generalize dependent A'0 ; generalize dependent A' ; generalize dependent s''.
   rewrite Heq.
   clear s'0 Heq.
@@ -505,7 +505,7 @@ Proof.
   assert(A1 :: e |-- B' ~= B0 : s').
   apply eq_conv_env with (A' :: e) ; eauto with coc ecoc.
   
-  set (d := coerces_conv_l (conv_refl_l H5) (conv_refl_r H5) (coerces_sort_r c1_2) H5 c1_2).
+  set (d := coerces_conv_l (eq_refl_l H5) (eq_refl_r H5) (coerces_sort_r c1_2) H5 c1_2).
   assert(coerce_in_env (A1 :: e) (A :: e)).
   apply coerce_env_hd with s ; auto with coc.
   apply coerces_conv_r with A' ; auto with coc.
@@ -662,7 +662,7 @@ Proof.
   (* sub_r, conv_l < sub_l *)
   pose (inv_eq_subset_l_set t3).
   
-  pose (coerces_conv_r (coerces_sort_l c) (coerces_sort_r c) (conv_refl_r t5) c t5).
+  pose (coerces_conv_r (coerces_sort_l c) (coerces_sort_r c) (eq_refl_r t5) c t5).
   apply (IH (depth c1 + depth c0)) with U0 c1 c0.
   rewrite H5 ; simpl.
   omega.
@@ -746,7 +746,7 @@ Proof.
   (* conv_r < prod, prod *)
   simpl in H0.
   pose (inv_eq_prod_l t2 t7).
-  assert(e0:= unique_sort (conv_refl_r t11) t4).
+  assert(e0:= unique_sort (eq_refl_r t11) t4).
   generalize dependent A ; generalize dependent A'0.
   generalize dependent A' ; generalize dependent A0.
   rewrite e0.
@@ -771,7 +771,7 @@ Proof.
   pose (inv_eq_prod_r t2 ).
   apply eq_conv_env with (A0 :: e) ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
-  pose (coerces_conv_r (coerces_sort_l x0) (coerces_sort_r x0) (conv_refl_r H4) x0 H4).
+  pose (coerces_conv_r (coerces_sort_l x0) (coerces_sort_r x0) (eq_refl_r H4) x0 H4).
  
   apply (IH (depth c0 + depth d2_2)) with B0 c0 d2_2.
   rewrite H0 ; simpl.
@@ -827,7 +827,7 @@ Proof.
   (* conv_r < sum, sum *)
   simpl in H0.
   pose (inv_eq_sum_l t2 t7).
-  assert(Heq:=unique_sort t4 (conv_refl_r t11)).
+  assert(Heq:=unique_sort t4 (eq_refl_r t11)).
   generalize dependent A ; generalize dependent A'0.
   generalize dependent A' ; generalize dependent A0.
   generalize dependent s'0.
@@ -849,7 +849,7 @@ Proof.
   apply coerce_env_hd with s ; auto with coc.
   apply coerces_conv_r with A'0 ; auto with coc.
   apply wf_cons with A'0 s ; auto with coc.
-  assert(Heq:= unique_sort (conv_refl_r t12) H4).
+  assert(Heq:= unique_sort (eq_refl_r t12) H4).
   generalize dependent A ;   generalize dependent A' ;
   generalize dependent A'0 ;   generalize dependent A0 ;
   generalize dependent s. 
@@ -873,7 +873,7 @@ Proof.
 
   destruct (coerce_conv_env d2_2 H6 H5).
 
-  pose (coerces_conv_l (conv_refl_l t12) (conv_refl_r t12) (coerces_sort_r x0) t12 x0).
+  pose (coerces_conv_l (eq_refl_l t12) (eq_refl_r t12) (coerces_sort_r x0) t12 x0).
 
   assert(tposr_wf (A :: e)).
   apply wf_cons with A s ; auto with coc.
@@ -966,7 +966,7 @@ Proof.
   intros.
   pose (inv_eq_subset_l_set t2).
 
-  pose (coerces_conv_r (coerces_sort_l c1) (coerces_sort_r c1) (conv_refl_r t5) c1 t5). 
+  pose (coerces_conv_r (coerces_sort_l c1) (coerces_sort_r c1) (eq_refl_r t5) c1 t5). 
   apply (IH (depth c2 + depth d2)) with U c2 d2 ; auto.
   rewrite H4 ; simpl.
   omega.
