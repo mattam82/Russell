@@ -93,3 +93,5 @@ Meta/JRussell_Russell.v
 Meta/TPOSR_JRussell.v
 Meta/TPOSR_Russell.v
 Meta/Russell_TPOSR.v
+Meta/Russell_JRussell.v
+Meta/SubjectReduction.v

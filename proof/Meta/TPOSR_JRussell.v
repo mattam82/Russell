@@ -257,6 +257,14 @@ Corollary unlab_sound_type : forall e u v T, e |-- u -> v : T ->
   (unlab_ctx e) |-= (|u|) = (|v|) : (|T|).
 Proof (proj1 (unlab_sound)).
 
+Corollary unlab_sound_tposrp : forall e u v T, e |-- u -+> v : T -> 
+  (unlab_ctx e) |-= (|u|) = (|v|) : (|T|).
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+  apply unlab_sound_type ; auto.
+  apply jeq_trans with (|X|) ; auto with coc.
+Qed.
+
 Corollary unlab_sound_wf :
   (forall e, tposr_wf e -> 
   (unlab_ctx e) |-= Srt prop : Srt kind /\

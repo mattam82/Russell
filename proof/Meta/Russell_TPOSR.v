@@ -179,4 +179,23 @@ Proof.
   eauto with coc ecoc.
 Admitted.  
 
+Corollary type_russell_tposr :
+  forall G M T, G |-- M : T ->
+  exists3 G' M' T', unlab_ctx G' = G /\ (|M'|) = M /\ (|T'|) = T /\
+  G' |-- M' -> M' : T'.
+Proof (proj1 russell_to_tposr).
 
+Corollary coerce_russell_tposr :
+  forall G t u s, G |-- t >> u : s -> 
+  exists3 G' t' u', unlab_ctx G' = G /\ (| t' |) = t /\ (| u' |) = u /\
+  G' |-- t' >-> u' : s.
+Proof (proj1 (proj2 russell_to_tposr)).
+
+Corollary wf_russell_tposr :
+  forall G, wf G -> exists G', unlab_ctx G' = G /\ tposr_wf G'.
+Proof.
+  destruct (russell_to_tposr) ; destruct_exists.
+  intros.
+  pose (H1 G H2) ; destruct_exists ; auto.
+  exists x ; intuition.
+Qed.

@@ -161,6 +161,8 @@ Proof.
   apply subject_reduction_depth ; eauto with coc ecoc.
 Qed.
 
+
+
 Corollary subject_reduction_p : forall t t', par_lred t t' -> 
   forall e T, tposr_term e t T ->
   tposrp e t t' T.

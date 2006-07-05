@@ -12,7 +12,7 @@ Require Import Lambda.JRussell.Inversion.
 Require Import Lambda.JRussell.Generation.
 Require Import Lambda.JRussell.GenerationRange.
 Require Import Lambda.JRussell.UnicityOfSorting.
-Require Import Lambda.JRussell.Axioms.
+Require Import Lambda.JRussell.Injectivity.
 
 Set Implicit Arguments.
 
