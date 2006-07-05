@@ -203,6 +203,8 @@ Lemma coerce_coerce_env : forall e T U s, e |-- T >-> U : s ->
   forall f, coerce_in_env e f -> f |-- T >-> U : s.
 Proof (proj2 (proj2 (proj2 ind_conv_env))).
 
+Hint Resolve type_coerce_env eq_coerce_env coerce_coerce_env : ecoc.
+
 Lemma coerce_in_env_sym : forall e f, coerce_in_env e f -> coerce_in_env f e.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc.
@@ -215,3 +217,20 @@ Proof.
 Qed.
 
 Hint Resolve coerce_in_env_sym : coc.
+
+Require Import Lambda.TPOSR.Substitution.
+
+Lemma substitution_coerce_tposrp : 
+  forall e d d' t, e |-- d -+> d' : t -> 
+  forall u v s, t :: e |-- u >-> v : s -> e |-- (lsubst d u) >-> (lsubst d' v) : s.
+Proof.
+  induction 1 ; intros.
+  
+  apply substitution_coerce with Z ; auto.
+  apply tposr_coerce_trans with (lsubst X u) ; auto.
+  apply IHtposrp1.
+  apply tposr_coerce_conv ; apply tposr_eq_tposr ; auto.
+  apply (coerce_refl_l H1).
+Qed.
+
+

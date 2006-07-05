@@ -14,6 +14,7 @@ Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.Coercion.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.UnicityOfSorting.
@@ -40,6 +41,19 @@ Proof.
 Qed.
 
 Hint Resolve tposr_term_conv_env : coc.
+
+Lemma substitution_coerce_eq : forall e u v s, e |-- u ~= v : s ->
+  forall U V s', Srt_l s :: e |-- U >-> V : s' -> e |-- lsubst u U >-> lsubst v V : s'.
+Proof.
+  intros.
+  destruct (tposr_eq_cr H) ; destruct_exists.
+  apply tposr_coerce_trans with (lsubst x U).
+  apply substitution_coerce_tposrp with s ; auto with coc.
+  apply tposr_coerce_conv ; apply tposr_eq_tposr.
+  apply (coerce_refl_l H0).
+  apply tposr_coerce_sym.
+  apply substitution_coerce_tposrp with s ; auto with coc.
+Qed.  
 
 Lemma tposr_unlab_conv : forall M G N A B, tposr_term G M A -> tposr_term G N B ->
   (|M|) = (|N|) ->
@@ -171,10 +185,10 @@ Proof.
   inversion H13.
   inversion H8.
   subst.
-  
 
   assert(G |-- lsubst N3 N1 >-> lsubst M3 M1 : x3).
-  apply substitution_coerce with a2.
+  apply substitution_coerce_eq with a2.
+  pose (injectivity_of_pi_coerce H28).
 
   apply tposr_coerce_trans with (lsubst x2 x5).
   

@@ -375,8 +375,8 @@ Proof.
 
   apply tposr_equiv_r with (lsubst N0 B) ; auto.
   apply tposr_equiv_r with (lsubst N0 B) ; auto.
-
-  (* Beta *)
+Admitted.
+(*  (* Beta *)
   intros P B0 Hr.
   pose (generation_app_depth Hr) ; destruct_exists.
 
@@ -1070,3 +1070,4 @@ Proof.
   intuition ; try apply tposr_equiv_r with A0 ; auto.
   (* Pi2 *)
 Admitted.
+*)

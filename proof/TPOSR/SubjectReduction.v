@@ -38,34 +38,34 @@ Proof.
   assert(e |-- (Prod_l a Typ) -> (Prod_l a Typ) : (Srt_l b0)).
   apply tposr_prod with c ; auto with coc.
   apply (left_refl (fromd H2)).
-  apply (left_refl (fromd H4)).
+  apply (coerce_refl_l H4).
 
-  destruct H9 ; destruct_exists.
-  pose (generation_lambda_depth H9) ; destruct_exists.
+  destruct H8 ; destruct_exists.
+  pose (generation_lambda_depth H8) ; destruct_exists.
   exists a5.
   split.
-  exists a4 ; exists c2 ;auto.
+  exists a4 ; exists c1 ;auto.
   apply tposr_coerce_sym.
-  pose (coerce_refl_l H20).
-  rewrite (unique_sort H10 t).
+  pose (coerce_refl_l H19).
+  rewrite (unique_sort H9 t).
   assumption.
   
-  inversion H9.
+  inversion H8.
   exists Typ.
   split.
-  exists b2 ; exists c1.
+  exists b2 ; exists c0.
   assumption.
   auto with coc.
 
   destruct_exists.
-  pose (injectivity_of_pi_coerce H11).
+  pose (injectivity_of_pi_coerce H10).
   destruct_exists.
   apply tposr_conv with (lsubst N Typ) b0 ; auto with coc.
-  pose (IHpar_lred1_1 _ _ H10).
-  apply tposr_beta with T x2 a0 b0 ; auto with coc.
-  apply (coerce_refl_r H12).
+  pose (IHpar_lred1_1 _ _ H9).
+  apply tposr_beta with T x2 Typ b0 ; auto with coc.
+  apply (coerce_refl_r H11).
   apply type_coerce_env with (a :: e) ; auto with coc.
-  apply (fromd H4).
+  apply (coerce_refl_l H4).
   apply coerce_env_hd with x2 ; auto with coc.
   apply tposr_conv with x1 b0 ; auto with coc.
   apply coerce_coerce_env with (a :: e) ; auto with coc.
@@ -73,7 +73,7 @@ Proof.
 
   assert(tposr_term_depth e N a).
   exists a1 ; exists  b1 ; auto.
-  pose (IHpar_lred1_2 _ _ H14).
+  pose (IHpar_lred1_2 _ _ H13).
   apply tposr_conv with a x2 ; auto with coc.
 
   (* Pi1 *)
@@ -161,7 +161,8 @@ Proof.
   apply subject_reduction_depth ; eauto with coc ecoc.
 Qed.
 
-Corollary subject_reduction_p : forall t t', par_lred t t' -> forall e T, tposr_term e t T ->
+Corollary subject_reduction_p : forall t t', par_lred t t' -> 
+  forall e T, tposr_term e t T ->
   tposrp e t t' T.
 Proof.
   induction 1.

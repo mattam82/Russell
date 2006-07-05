@@ -14,6 +14,7 @@ Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.Coercion.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.Validity.
@@ -25,6 +26,10 @@ Require Import Lambda.TPOSR.ChurchRosserDepth.
 Require Import Lambda.Meta.TPOSR_Russell.
 
 Set Implicit Arguments.
+
+Implicit Types i k m n p : nat.
+Implicit Type s : sort.
+Implicit Types A B M N T t u v : lterm.
 
 Corollary church_rosser : forall G M N A, G |-- M -> N : A -> forall P B, G |-- M -> P : B ->
   exists Q, 
@@ -45,7 +50,7 @@ Inductive tposrp_n : lenv -> lterm -> lterm -> lterm -> nat -> Prop :=
   | tposrp_n_trans : forall e W X Z, e |-- W -> X : Z -> forall Y m, tposrp_n e X Y Z m ->
   tposrp_n e W Y Z (S m).
 
-Lemma tposrp_n_tposrp :  forall e T U s n, tposrp_n e T U s n -> tposrp e T U s.
+Lemma tposrp_n_tposrp :  forall e t u T n, tposrp_n e t u T n -> tposrp e t u T.
 Proof.
   induction 1.
   apply tposrp_tposr ; auto.
@@ -102,19 +107,20 @@ Proof.
   inversion_clear H19.
 Qed.
 
-Lemma tposrp_n_transitive : forall e T U s n, tposrp_n e T U s n -> forall V m, tposrp_n e U V s m ->
-  tposrp_n e T V s (n + m).
+Lemma tposrp_n_transitive : forall e t u T n, tposrp_n e t u T n -> 
+  forall v m, tposrp_n e u v T m ->
+  tposrp_n e t v T (n + m).
 Proof.
   induction 1 ; intros.
   simpl.
   apply tposrp_n_trans with Y ; auto.
-  pose (IHtposrp_n V m0 H1).
+  pose (IHtposrp_n v m0 H1).
   change (S m + m0) with (S (m + m0)).
   apply tposrp_n_trans with X ; auto with coc.
 Qed.
 
-
-Lemma tposrp_tposrp_n : forall e T U s, tposrp e T U s -> exists n, tposrp_n e T U s n.
+Lemma tposrp_tposrp_n : forall e t u T, tposrp e t u T -> 
+  exists n, tposrp_n e t u T n.
 Proof.
   induction 1.
   exists 1 ; apply tposrp_n_tposr ; auto.
@@ -154,17 +160,17 @@ Proof.
   apply tposrp_trans with x ; auto with coc.
 Qed.
 
-Lemma tposr_sort_aux : forall e T T' s', tposr e T T' s' -> forall s, T = Srt_l s -> T' = Srt_l s.
+Lemma tposr_sort_aux : forall e T T' Ts', tposr e T T' Ts' -> forall s, T = Srt_l s -> T' = Srt_l s.
 Proof.
   induction 1 ; intros ; try discriminate ; auto with coc.
 Qed. 
 
-Lemma tposr_sort : forall e s T' s', tposr e (Srt_l s) T' s' -> T' = Srt_l s.
+Lemma tposr_sort : forall e s T' Ts', tposr e (Srt_l s) T' Ts' -> T' = Srt_l s.
 Proof.
-  intros ; apply tposr_sort_aux with e (Srt_l s) s' ; auto.
+  intros ; apply tposr_sort_aux with e (Srt_l s) Ts' ; auto.
 Qed. 
  
-Lemma tposrp_sort_aux : forall e T T' s', tposrp e T T' s' -> forall s, T = Srt_l s -> T' = Srt_l s.
+Lemma tposrp_sort_aux : forall e T T' Ts', tposrp e T T' Ts' -> forall s, T = Srt_l s -> T' = Srt_l s.
 Proof.
   induction 1 ; intros.
   rewrite H0 in H.
@@ -175,7 +181,7 @@ Proof.
   apply (IHtposrp2 _ e0).
 Qed.
 
-Lemma tposrp_sort : forall e s T' s', tposrp e (Srt_l s) T' s' -> T' = Srt_l s.
+Lemma tposrp_sort : forall e s T' Ts', tposrp e (Srt_l s) T' Ts' -> T' = Srt_l s.
 Proof.
   intros.
   apply (tposrp_sort_aux H) ; auto.
@@ -243,8 +249,8 @@ Proof.
 
 Admitted. 
 
-Lemma in_set_not_sort : forall e T s, e |-- T -> T : s ->
-  s = set -> forall s, T <> Srt_l s.
+Lemma in_set_not_sort : forall e t T, e |-- t -> t : T ->
+  T = Srt_l set -> forall s, t <> Srt_l s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate.
 
@@ -279,7 +285,7 @@ Proof.
   rewrite H7 in H1.
   destruct H1 ; intuition ; try discriminate.
 Qed.
-
+(*
 Lemma tposr_eq_sort_red : forall G T s s', G |-- T ~= (Srt_l s) : s' ->
   lred T (Srt_l s).
 Proof.
@@ -289,6 +295,184 @@ Proof.
   rewrite e in H0.
   apply (tposrp_lred H0).
 Qed.
+*)
+
+Lemma tposr_sort_eq_aux : forall e t u T, e |-- t -> u : T ->
+  forall s, t = Srt_l s -> u = Srt_l s.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+Qed.
+
+Lemma tposr_sort_eq : forall e s u T, e |-- s -> u : T -> u = s.
+Proof.
+  intros ; eapply tposr_sort_eq_aux with e s T ; auto.
+Qed.
+
+Lemma tposrp_sort_eq_aux : forall e t u T, e |-- t -+> u : T ->
+  forall s, t = Srt_l s -> u = Srt_l s.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+  apply tposr_sort_eq with e Z ; auto with coc.
+  subst ; auto.
+Qed.
+
+Lemma tposrp_sort_eq : forall e s u T, e |-- s -+> u : T -> u = s.
+Proof.
+  intros ; eapply tposrp_sort_eq_aux with e s T ; auto.
+Qed.
+
+Lemma tposr_eq_sort_tposrp_aux : forall e t u s, e |-- t ~= u : s ->
+  forall s', t = Srt_l s' -> e |-- u -+> Srt_l s' : s.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+  subst.
+  rewrite (tposr_sort_eq H).
+  rewrite (tposr_sort_eq H) in H ; auto with coc.
+
+  subst.
+  pose (tposr_eq_cr H) ; destruct_exists.
+  assert (Heq:=tposrp_sort_eq H1).
+  subst.
+  assumption.
+
+  subst.
+  pose (tposr_eq_trans H H0).
+  pose (tposr_eq_cr t) ; destruct_exists.
+  pose (tposrp_sort_eq H1).
+  rewrite e0 in H2.
+  assumption.
+Qed.
+
+Lemma tposr_eq_sort_tposrp : forall e s u s', e |-- s ~= u : s' -> 
+  e |-- u -+> s : s'.
+Proof.
+  intros ; eapply tposr_eq_sort_tposrp_aux with s ; auto.
+Qed.
+
+Lemma tposr_prod_prod : forall e t u T, e |-- t -> u : T ->
+  forall A B, t = Prod_l A B -> exists2 A' B', u = Prod_l A' B'.
+Proof. 
+  induction 1 ; simpl ; intros ; try discriminate.
+  exists A' B' ; auto.
+  apply IHtposr with A0 B0 ; auto.
+Qed. 
+
+Lemma tposr_sum_sum : forall e t u T, e |-- t -> u : T ->
+  forall A B, t = Sum_l A B -> exists2 A' B', u = Sum_l A' B'.
+Proof. 
+  induction 1 ; simpl ; intros ; try discriminate.
+  apply IHtposr with A0 B0 ; auto.
+  exists A' B' ; auto.
+Qed. 
+
+Lemma tposr_subset_subset : forall e t u T, e |-- t -> u : T ->
+  forall A B, t = Subset_l A B -> exists2 A' B', u = Subset_l A' B'.
+Proof. 
+  induction 1 ; simpl ; intros ; try discriminate.
+  apply IHtposr with A0 B0 ; auto.
+  exists A' B' ; auto.
+Qed. 
+
+Lemma tposrp_prod_prod_aux : forall e t u T, e |-- t -+> u : T ->
+  forall A B, t = Prod_l A B -> exists2 A' B', u = Prod_l A' B'.
+Proof. 
+  induction 1 ; simpl ; intros ; try discriminate.
+  eapply tposr_prod_prod with e X Z A B ; auto.
+  subst.
+  destruct (IHtposrp1 A B) ; auto.
+  eapply IHtposrp2 ; eauto with coc.
+Qed. 
+
+Lemma tposrp_sum_sum_aux : forall e t u T, e |-- t -+> u : T ->
+  forall A B, t = Sum_l A B -> exists2 A' B', u = Sum_l A' B'.
+Proof. 
+  induction 1 ; simpl ; intros ; try discriminate.
+  eapply tposr_sum_sum with e X Z A B ; auto.
+  subst.
+  destruct (IHtposrp1 A B) ; auto.
+  eapply IHtposrp2 ; eauto with coc.
+Qed. 
+
+Lemma tposrp_subset_subset_aux : forall e t u T, e |-- t -+> u : T ->
+  forall A B, t = Subset_l A B -> exists2 A' B', u = Subset_l A' B'.
+Proof. 
+  induction 1 ; simpl ; intros ; try discriminate.
+  eapply tposr_subset_subset with e X Z A B ; auto.
+  subst.
+  destruct (IHtposrp1 A B) ; auto.
+  eapply IHtposrp2 ; eauto with coc.
+Qed. 
+
+Lemma tposrp_prod_prod : forall e A B u T, e |-- Prod_l A B -+> u : T ->
+  exists2 A' B', u = Prod_l A' B'.
+Proof. 
+  intros ; eapply tposrp_prod_prod_aux ; auto with coc.
+  apply H.
+Qed. 
+
+Lemma tposrp_sum_sum : forall e A B u T, e |-- Sum_l A B -+> u : T ->
+  exists2 A' B', u = Sum_l A' B'.
+Proof. 
+  intros ; eapply tposrp_sum_sum_aux ; auto with coc.
+  apply H.
+Qed. 
+
+Lemma tposrp_subset_subset : forall e A B u T, e |-- Subset_l A B -+> u : T ->
+  exists2 A' B', u = Subset_l A' B'.
+Proof. 
+  intros ; eapply tposrp_subset_subset_aux ; auto with coc.
+  apply H.
+Qed. 
+
+Lemma tposr_eq_sort_prod : forall e s t u s', ~ e |-- s ~= Prod_l t u : s'.
+Proof.
+  red ; intros.
+  pose (tposr_eq_sort_tposrp H).
+  destruct (tposrp_prod_prod t0) ; discriminate.
+Qed.
+
+Lemma tposr_eq_sort_sum : forall e s t u s', ~ e |-- s ~= Sum_l t u : s'.
+Proof.
+  red ; intros.
+  pose (tposr_eq_sort_tposrp H).
+  destruct (tposrp_sum_sum t0) ; discriminate.
+Qed.
+
+Lemma tposr_eq_sort_subset : forall e s t u s', ~ e |-- s ~= Subset_l t u : s'.
+Proof.
+  red ; intros.
+  pose (tposr_eq_sort_tposrp H).
+  destruct (tposrp_subset_subset t0) ; discriminate.
+Qed.
+
+Lemma tposr_eq_prod_sum : forall e t u t' u' s', ~ e |-- Prod_l t u ~= Sum_l t' u' : s'.
+Proof.
+  red ; intros.
+  pose (tposr_eq_cr H) ; destruct_exists.
+  destruct (tposrp_sum_sum H1).
+  destruct (tposrp_prod_prod H0).
+  subst ; discriminate.
+Qed.
+
+Lemma tposr_eq_prod_subset : forall e t u t' u' s', ~ e |-- Prod_l t u ~= Subset_l t' u' : s'.
+Proof.
+  red ; intros.
+  pose (tposr_eq_cr H) ; destruct_exists.
+  destruct (tposrp_prod_prod H0).
+  destruct (tposrp_subset_subset H1).
+  subst ; discriminate.
+Qed.
+
+Lemma tposr_eq_sum_subset : forall e t u t' u' s', ~ e |-- Sum_l t u ~= Subset_l t' u' : s'.
+Proof.
+  red ; intros.
+  pose (tposr_eq_cr H) ; destruct_exists.
+  destruct (tposrp_sum_sum H0).
+  destruct (tposrp_subset_subset H1).
+  subst ; discriminate.
+Qed.
+
+
 
 Lemma tposr_coerce_sorts : forall e T U s', tposr_coerce e T U s' ->
   forall s, (e |-- T ~= (Srt_l s) : s' -> e |-- U ~= (Srt_l s) : s') /\
@@ -298,26 +482,22 @@ Proof.
   apply tposr_eq_trans with A ; auto with coc.
   apply tposr_eq_trans with B ; auto with coc.
 
-  pose (tposr_eq_conv H5).
-  elim conv_sort_prod with s0 A B ; auto with coc.
-  pose (tposr_eq_conv H5).
-  elim conv_sort_prod with s0 A' B' ; auto with coc.
+  elim tposr_eq_sort_prod with e s0 A B s' ; auto with coc.
+  elim tposr_eq_sort_prod with e s0 A' B' s' ; auto with coc.
 
-  pose (tposr_eq_conv H7).
-  elim conv_sort_sum with s0 A B ; auto with coc.
-  pose (tposr_eq_conv H7).
-  elim conv_sort_sum with s0 A' B' ; auto with coc.
+  elim tposr_eq_sort_sum with e s0 A B s'' ; auto with coc.
+  elim tposr_eq_sort_sum with e s0 A' B' s'' ; auto with coc.
 
-  pose (tposr_eq_conv H3).
-  elim conv_sort_subset with s U P ; auto with coc.
+  elim tposr_eq_sort_subset with e s U P set ; auto with coc.
+
   pose (conv_refl_r H3).
   elim (in_set_not_sort t (refl_equal (Srt_l set))) with s.
   auto.
   pose (conv_refl_r H3).
   elim (in_set_not_sort t (refl_equal (Srt_l set))) with s.
   auto.
-  pose (tposr_eq_conv H3).
-  elim conv_sort_subset with s U' P ; auto with coc.
+
+  elim tposr_eq_sort_subset with e s U' P set ; auto with coc.
 
   destruct (IHtposr_coerce s0).
   apply (H2 H0).

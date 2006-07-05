@@ -60,14 +60,11 @@ Proof.
   apply tposr_coerce_trans with B' ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
 
-  elim conv_prod_sum with A0 B0 A B.
-  pose (tposr_eq_conv H7) ; auto with coc.
+  elim tposr_eq_prod_sum with e A0 B0 A B s'' ; auto with coc.
 
-  elim conv_prod_subset with A B U P.
-  pose (tposr_eq_conv H1) ; auto with coc.
+  elim tposr_eq_prod_subset with e A B U P set ; auto with coc.
 
-  elim conv_prod_subset with A' B' U' P.
-  pose (tposr_eq_conv H2) ; auto with coc.
+  elim tposr_eq_prod_subset with e A' B' U' P set ; auto with coc.
 
   apply IHcoerce_rc_depth ; auto.
   apply tposr_eq_trans with A ; auto with coc.
@@ -101,8 +98,7 @@ Proof.
   exists a b.
   intuition ; auto with coc.
 
-  elim conv_prod_sum with A B A0 B0.
-  pose (tposr_eq_conv H5) ; auto with coc.
+  elim tposr_eq_prod_sum with e A B A0 B0 s' ; auto with coc.
 
   pose (injectivity_of_sum H7).
   pose (injectivity_of_sum H8).
@@ -126,11 +122,9 @@ Proof.
   apply tposr_coerce_trans with B' ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
   
-  elim conv_subset_sum with U P A B .
-  pose (tposr_eq_conv H1) ; auto with coc.
+  elim tposr_eq_sum_subset with e A B U P set ; auto with coc.
 
-  elim conv_subset_sum with U' P A' B'.
-  pose (tposr_eq_conv H2) ; auto with coc.
+  elim tposr_eq_sum_subset with e A' B' U' P set ; auto with coc.
 
   apply IHcoerce_rc_depth ; auto.
   apply tposr_eq_trans with A ; auto with coc.

@@ -300,12 +300,10 @@ Proof.
   apply coerces_conv_r with A1 ; auto with coc core.
 
   (* prod, conv_l < sum *)
-  elim conv_prod_sum with A' B' A1 B0 ; auto with coc.
-  apply (tposr_eq_conv c2).
+  elim tposr_eq_prod_sum with e A' B' A1 B0 s'' ; auto with coc.
 
   (* prod, conv_l < sub_l *)
-  elim conv_prod_subset with A' B' U P ; auto with coc.
-  apply (tposr_eq_conv c2).
+  elim tposr_eq_prod_subset with e A' B' U P set ; auto with coc.
   
   (* prod, conv_l < sub_r *)
   apply coerces_sub_r ; auto with coc core.
@@ -471,8 +469,7 @@ Proof.
   apply coerces_conv_r with (Sum_l A' B') ; auto with coc.
 
   (* sum, conv_l < prod *)
-  elim conv_prod_sum with A1 B0 A' B'; auto with coc.
-  pose (tposr_eq_conv c2) ; auto with coc.
+  elim tposr_eq_prod_sum with e A1 B0 A' B' s'0; auto with coc.
 
   (* sum, conv_l < sum *)
   simpl in H4.
@@ -524,8 +521,7 @@ Proof.
   apply depth_prod_conv_prod2.
 
   (* sum, conv_l < sub_l *)
-  elim conv_subset_sum with U P  A' B' ; auto with coc.
-  pose (tposr_eq_conv c2) ; auto with coc.
+  elim tposr_eq_sum_subset with e A' B'  U P set ; auto with coc.
  
   (* sum, conv_l < sub_r *)
   apply coerces_sub_r ; auto with coc core.
@@ -658,12 +654,10 @@ Proof.
   rewrite <- H4 ; auto.
 
   (* sub_r, conv_l < prod *)
-  elim conv_prod_subset with A0 B U' P ; auto with coc.
-  pose (tposr_eq_conv t3) ; auto with coc.
+  elim tposr_eq_prod_subset with e A0 B U' P s' ; auto with coc.
 
   (* sub_r, conv_l < sum *)
-  elim conv_subset_sum with U' P A0 B ; auto with coc.
-  pose (tposr_eq_conv t3) ; auto with coc.
+  elim tposr_eq_sum_subset with e A0 B U' P s'' ; auto with coc.
 
   (* sub_r, conv_l < sub_l *)
   pose (inv_eq_subset_l_set t3).
@@ -787,8 +781,7 @@ Proof.
   apply coerce_env_hd with s ; auto with coc core.
 
   (* conv_r  < sum, prod *)
-  elim conv_prod_sum with A0 B0 A'0 B'0 ; auto with coc.
-  pose (tposr_eq_conv t2) ; auto with coc.
+  elim tposr_eq_prod_sum with e A0 B0 A'0 B'0 s'' ; auto with coc.
 
   (* conv_r < sub_l, prod *)
   apply coerces_sub_l ; auto with coc core.
@@ -800,8 +793,7 @@ Proof.
   omega.
   
   (* conv_r < sub_r, prod *)
-  elim conv_prod_subset with A0 B0 U' P ; auto with coc.
-  pose (tposr_eq_conv t2) ; auto with coc.
+  elim tposr_eq_prod_subset with e A0 B0 U' P set ; auto with coc.
 
   (* conv_r < conv_l, prod *)
   apply coerces_conv_l with B ; auto with coc core.
@@ -830,8 +822,7 @@ Proof.
   apply coerces_conv_l with (Sum_l A0 B0) ; auto with coc.
 
   (* conv_r < prod, sum *)
-  elim conv_prod_sum with A'0 B'0 A0 B0 ; auto with coc.
-  pose (tposr_eq_conv t2) ; auto with coc.
+  elim tposr_eq_prod_sum with e A'0 B'0 A0 B0 s'0 ; auto with coc.
 
   (* conv_r < sum, sum *)
   simpl in H0.
@@ -905,8 +896,7 @@ Proof.
   omega.
   
   (* conv_r < sub_r, sum *)
-  elim conv_subset_sum with U' P A0 B0 ; auto with coc.
-  apply (tposr_eq_conv t2).
+  elim tposr_eq_sum_subset with e A0 B0 U' P set ; auto with coc.
 
   (* conv_r < conv_l, sum *)
   apply coerces_conv_l with B ; auto with coc core.
@@ -939,13 +929,11 @@ Proof.
 
   (* conv_r < prod, sub_l *)
   rewrite <- H3 in t2.
-  elim conv_prod_subset with A' B' U P ; auto.
-  apply (tposr_eq_conv t2).
+  elim tposr_eq_prod_subset with e A' B' U P set ; auto.
 
   (* conv_r < sum, sub_l *)
   rewrite <- H3 in t2.
-  elim conv_subset_sum with U P A' B' ; auto with coc.
-  pose (tposr_eq_conv t2) ; auto with coc.
+  elim tposr_eq_sum_subset with e A' B' U P set ; auto with coc.
 
   (* conv_r < sub_l, sub_l *)
   clear H.
