@@ -42,7 +42,7 @@ Proof.
   apply tposrp_tposr.
   apply tposr_abs with s1 B' s2 ; auto with coc.
 
-  pose (IHtposrp1 s1 (refl_equal (Srt_l s1)) B M M (left_refl H2) B' s2 H3).
+  pose (IHtposrp1 s1 (refl_equal (Srt_l s1)) B M M (refl_l H2) B' s2 H3).
   apply tposrp_trans with (Abs_l X M) ; auto with coc.
   assert(conv_in_env (W :: e) (X :: e)).
   eauto with coc.
@@ -68,7 +68,7 @@ Proof.
 
   apply tposrp_trans with (Abs_l A X) ; auto with coc.
   apply IHtposrp1 with s1 B' s2 ; auto with coc.
-  apply (left_refl H1).
+  apply (refl_l H1).
   apply IHtposrp2 with s1 B' s2 ; auto.
 Qed.
 
@@ -80,8 +80,8 @@ Lemma tposrp_abs :  forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   e |-- Abs_l A M -+> Abs_l A' M' : (Prod_l A B).
 Proof. 
   intros.
-  pose (tposrp_left_refl H0).
-  pose (tposrp_left_refl H1).
+  pose (tposrp_refl_l H0).
+  pose (tposrp_refl_l H1).
   apply tposrp_trans with (Abs_l A' M).
   eapply tposrp_abs_aux ; eauto with coc.
   assert(conv_in_env (A :: e) (A' :: e)) by (apply conv_env_hd with s1 ; auto with coc).
@@ -89,9 +89,9 @@ Proof.
   apply tposr_coerce_prod with s1 ; eauto with coc ecoc.
   eapply tposrp_abs_aux2 ; auto with coc.
   apply tposrp_conv_env with (A :: e) ; auto with coc.
-  eauto with coc.
+  eauto with coc ecoc.
   apply conv_env with (A :: e) ; auto with coc.
-  apply (tposrp_left_refl H1).
+  apply (tposrp_refl_l H1).
 Qed.
 
 Ltac conv_in_env X Y e s :=
@@ -150,32 +150,25 @@ Qed.
 Ltac induction_ws := induction_with_subterm.
 Ltac induction_ws2 := induction_with_subterms.
 
-Lemma tposrp_app_aux : forall e A B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
-  forall A' s1, e |-- A -+> A' : Srt_l s1 ->
+Lemma tposrp_app_aux : 
+  forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall M M', e |-- M -> M' : (Prod_l A B) -> 
   forall N N', e |-- N -> N' : A ->
   e |-- App_l B M N -+> App_l B' M' N' : lsubst N B.
 Proof.
-  intros e A B B' s2 H.
-  induction_ws2 (A :: e) (Srt_l s2) H ; intros.
+  intros e A A' s1 H.
+  induction_ws (Srt_l s1) H ; intros.
 
   apply tposrp_tposr.
-  apply tposr_app with A A s1 s2 ; eauto with coc.
+  apply tposr_app with X Y s1 s2 ; eauto with coc.
   
-  apply tposrp_trans with (App_l X M N).
-  apply IHtposrp1 with A' s1 ; eauto with coc.
-
-  apply tposrp_conv with (lsubst N X) s2 ; auto with coc.
-  apply substitution_coerce with A ; eauto with coc.
-
-  eapply IHtposrp2 ; eauto with coc.
-  apply tposr_conv with (Prod_l A W) s2 ; eauto with coc.
-  apply tposr_coerce_prod with s1 ; eauto with coc.
+  apply IHtposrp1 with s2 ; auto with coc.
 Qed.
 
 Lemma tposrp_app_aux2 :
   forall e M M' A B, e |-- M -+> M' : (Prod_l A B) -> 
-  forall B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall A' s1, e |-- A -> A' : Srt_l s1 ->
   forall N N', e |-- N -> N' : A ->
   e |-- App_l B M N -+> App_l B' M' N' : lsubst N B.
@@ -187,7 +180,7 @@ Proof.
   apply tposr_app with A A s1 s2 ; eauto with coc.
   
   apply tposrp_trans with (App_l B X N).
-  apply IHtposrp1 with s2 A' s1 ; eauto with coc.
+  apply IHtposrp1 with s2 A' s1 ; eauto with coc ecoc.
 
   eapply IHtposrp2 ; eauto with coc.
 Qed.
@@ -195,7 +188,7 @@ Qed.
 Lemma tposrp_app_aux3 :
   forall e N N' A, e |-- N -+> N' : A ->
   forall M M' B, e |-- M -> M' : (Prod_l A B) -> 
-  forall B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall A' s1, e |-- A -> A' : Srt_l s1 ->
   e |-- App_l B M N -+> App_l B' M' N' : lsubst N B.
 Proof.
@@ -206,17 +199,17 @@ Proof.
   apply tposr_app with Z A' s1 s2 ; eauto with coc.
   
   apply tposrp_trans with (App_l B M X).
-  apply IHtposrp1 with s2 A' s1 ; eauto with coc.
+  apply IHtposrp1 with s2 A' s1 ; eauto with coc ecoc.
 
   apply tposrp_conv with (lsubst X B) s2 ; auto with coc.
   apply tposr_coerce_sym.
-  apply substitution_coerce_tposrp with Z ; eauto with coc.
+  apply substitution_coerce_tposrp with Z ; eauto with coc ecoc.
   
   eapply IHtposrp2 ; eauto with coc.
 Qed.
 
 Lemma tposrp_app : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
+  forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall M M', e |-- M -+> M' : (Prod_l A B) -> 
   forall N N', e |-- N -+> N' : A ->
   e |-- App_l B M N -+> App_l B' M' N' : lsubst N B.
@@ -231,15 +224,15 @@ Proof.
 
   apply tposrp_trans with (App_l B' M' N) ; auto with coc.
 
-  eapply tposrp_app_aux2 ; eauto with coc.
+  eapply tposrp_app_aux2 ; eauto with coc ecoc.
   apply tposrp_conv with (Prod_l A B) s2 ; auto with coc.
-  apply tposr_coerce_prod with s1 ; eauto with coc.
+  apply tposr_coerce_prod with s1 ; eauto with coc ecoc.
 
-  eapply tposrp_app_aux3 with A s2 A s1 ; auto with coc.
-  apply tposr_conv with (Prod_l A B) s2 ; eauto with coc.
-  apply tposr_coerce_prod with s1 ; eauto with coc.
-  eauto with coc.  
-  eauto with coc. 
+  eapply tposrp_app_aux3 with A s2 A s1 ; auto with coc ecoc.
+  apply tposr_conv with (Prod_l A B) s2 ; eauto with coc ecoc.
+  apply tposr_coerce_prod with s1 ; eauto with coc ecoc.
+  eauto with coc ecoc.  
+  eauto with coc ecoc. 
 Qed.
 
 Lemma tposrp_beta : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -433,7 +426,7 @@ Admitted.
   apply (IHtposrp2 u u' (Srt_l x)) ; auto.
   apply tposrp_conv_l with (lsubst X U) b ; eauto with coc ecoc.
   
-  pose (left_refl H2).
+  pose (refl_l H2).
   pose (tposrp_tposr t).
   pose (IHtposrp1 _ _ _ t0).
   apply tposr_eq_sym.

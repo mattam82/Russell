@@ -14,14 +14,14 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
-Lemma left_refl : forall e u v T, e |-- u -> v : T -> e |-- u -> u : T.
+Lemma refl_l : forall e u v T, e |-- u -> v : T -> e |-- u -> u : T.
 Admitted.
 
-Corollary tposrp_left_refl : forall e A B T, tposrp e A B T -> e |-- A -> A : T.
+Corollary tposrp_refl_l : forall e A B T, tposrp e A B T -> e |-- A -> A : T.
 Proof.
   induction 1 ; auto with coc.
-  apply (left_refl H).
+  apply (refl_l H).
 Qed.
 
 
-Hint Resolve left_refl tposrp_left_refl : coc.
+Hint Resolve refl_l tposrp_refl_l : coc.

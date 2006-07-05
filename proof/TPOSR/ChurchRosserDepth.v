@@ -157,15 +157,15 @@ Proof.
   assert(x = s2).
   assert(G |-- Prod_l A0 B -> Prod_l A0 B : s2).
   apply tposr_prod with s1 ; auto with coc.
-  apply (left_refl (fromd H)).
-  apply (left_refl (fromd H0)).
-  apply (unique_sort (coerce_refl_l H2) (left_refl H4)).
+  apply (refl_l (fromd H)).
+  apply (refl_l (fromd H0)).
+  apply (unique_sort (coerce_refl_l H2) (refl_l H4)).
   subst.
   rewrite <- H4 in H0.
   clear H4 s2.
 
   assert(s1 = b).
-  apply (unique_sort (left_refl H16) (left_refl H17)).
+  apply (unique_sort (refl_l H16) (refl_l H17)).
   subst.
 
   assert(G |-- Abs_l A' M' -> Abs_l x0 x1 : Prod_l A0 B).
@@ -176,12 +176,12 @@ Proof.
   apply conv_env with (A0 :: G) ; auto with coc.
   apply tposr_coerce_prod with b ; auto with coc.
   eauto with ecoc.
-  apply (left_refl (fromd H)).
-  apply (right_refl (fromd H)).
-  pose (left_refl (fromd H0)) ; auto with coc.
+  apply (refl_l (fromd H)).
+  apply (refl_r (fromd H)).
+  pose (refl_l (fromd H0)) ; auto with coc.
   apply conv_env with (A0 :: G) ; auto with coc.
-  pose (left_refl (fromd H0)) ; auto with coc.
-  pose (left_refl (fromd H0)) ; auto with coc.
+  pose (refl_l (fromd H0)) ; auto with coc.
+  pose (refl_l (fromd H0)) ; auto with coc.
 
   assert(G |-- Abs_l a a0 -> Abs_l x0 x1 : Prod_l A0 B).
   apply tposr_conv with (Prod_l a B) b0 ; auto with coc.
@@ -191,12 +191,12 @@ Proof.
   apply conv_env with (A0 :: G) ; auto with coc.
   apply tposr_coerce_prod with b ; auto with coc.
   eauto with ecoc.
-  apply (left_refl (fromd H)).
-  apply (right_refl (fromd H7)).
-  pose (left_refl (fromd H0)) ; auto with coc.
+  apply (refl_l (fromd H)).
+  apply (refl_r (fromd H7)).
+  pose (refl_l (fromd H0)) ; auto with coc.
   apply conv_env with (A0 :: G) ; auto with coc.
-  pose (left_refl (fromd H0)) ; auto with coc.
-  pose (left_refl (fromd H0)) ; auto with coc.
+  pose (refl_l (fromd H0)) ; auto with coc.
+  pose (refl_l (fromd H0)) ; auto with coc.
 
   exists (Abs_l x0 x1) ; intuition ; auto with coc.
   apply tposr_conv with (Prod_l A0 B) b0 ; auto.
@@ -218,11 +218,11 @@ Proof.
   
   assert(coerce_in_env (a :: G) (A0 :: G)).
   apply equiv_coerce_in_env with c ; auto with coc.
-  apply (left_refl (fromd H8)).
+  apply (refl_l (fromd H8)).
 
   assert(coerce_in_env (A0 :: G) (a :: G)).
   apply equiv_coerce_in_env with s1 ; auto with coc.
-  apply (left_refl (fromd H)).
+  apply (refl_l (fromd H)).
   
   assert(tposr_wf (A0 :: G)).
   apply (wf_tposr (coerce_refl_l H0)).
@@ -256,8 +256,8 @@ Proof.
   apply tposr_eq_tposr.
   change (Srt_l s2) with (lsubst N0 (Srt_l s2)).
   apply substitution with A0 ; auto with coc.
-  pose (right_refl (fromd H12)).
-  pose (left_refl H19).
+  pose (refl_r (fromd H12)).
+  pose (refl_l H19).
   pose (tposr_uniqueness_of_types t t0).
   apply tposr_equiv_l with a ; auto with coc.
   apply (fromd H12).
@@ -284,7 +284,7 @@ Proof.
   apply (fromd H).
   apply tposr_conv with (Prod_l A0 B) s2 ; auto with coc.
   assert(G |-- A0 -> A0 : s1).
-  apply (left_refl (fromd H)).
+  apply (refl_l (fromd H)).
   assert(G |-- A0 >-> A0 : s1).
   auto with coc.
   apply tposr_coerce_prod with s1 ; auto with coc.
@@ -301,7 +301,7 @@ Proof.
   apply tposr_conv with (Prod_l A0 B) s2 ; auto with coc.
 
   assert(G |-- A0 -> A0 : s1).
-  apply (left_refl (fromd H)).
+  apply (refl_l (fromd H)).
   assert(G |-- A0 >-> A0 : s1).
   auto with coc.
   apply tposr_coerce_prod with s1 ; auto with coc.
@@ -408,8 +408,8 @@ Admitted.
   apply (fromd H0).
 
   assert(b0 = s2).
-  pose (left_refl H24).
-  pose (left_refl (fromd H10)).
+  pose (refl_l H24).
+  pose (refl_l (fromd H10)).
   apply (unique_sort t0 t).
 
   rewrite H21 in H8.
@@ -429,8 +429,8 @@ Admitted.
   apply tposr_eq_tposr.
   change (Srt_l s2) with (lsubst N0 (Srt_l s2)).
   apply substitution with A0 ; auto with coc.
-  pose (right_refl (fromd H12)).
-  pose (left_refl H19).
+  pose (refl_r (fromd H12)).
+  pose (refl_l H19).
   pose (tposr_uniqueness_of_types t t0).
   apply tposr_equiv_l with a ; auto with coc.
   apply (fromd H12).
@@ -843,7 +843,7 @@ Admitted.
   pose(fromd H26).
   assert(A :: G |-- a0 -> a0 : Srt_l c3).
   apply type_coerce_env with (a :: G) ; auto with coc.
-  apply (left_refl t6).
+  apply (refl_l t6).
   apply (unique_sort H66 H69).
   rewrite <- H69.
   rewrite <- H68 ; auto.
@@ -947,7 +947,7 @@ Admitted.
 
   pose (coerce_refls H3) ; destruct_exists.
   pose (unique_sort H47 (fromd H5)).
-  pose (unique_sort H48 (left_refl (fromd H28))).
+  pose (unique_sort H48 (refl_l (fromd H28))).
 
   assert(G |-- b >-> b4 : c4).
   apply tposr_coerce_trans with A0 ; auto with coc.
@@ -995,13 +995,13 @@ Admitted.
   assert(G |-- Pi1_l (Sum_l b b0) (Pair_l (Sum_l b4 b5) a1 a2) -> x3 : A).
   apply tposr_conv with b s1 ; try apply (fromd H5) ; auto with coc.
   apply tposr_pi1_red with b4 s1 b5 s2 s3 a2 ; auto with coc.
-  apply (right_refl (fromd H28)).
+  apply (refl_r (fromd H28)).
   apply conv_env with (A0 :: G) ; auto with coc.
-  apply (right_refl (fromd H32)).
+  apply (refl_r (fromd H32)).
   apply tposr_pair with s1 s2 s3; auto with coc.
-  apply (right_refl (fromd H28)).
+  apply (refl_r (fromd H28)).
   apply conv_env with (A0 :: G) ; auto with coc.
-  apply (right_refl (fromd H32)).
+  apply (refl_r (fromd H32)).
   apply tposr_conv_l with A0 s1 ; auto.
   apply tposr_eq_tposr ; apply (fromd H28).
   apply tposr_conv_l with (lsubst u B) s2 ; auto with coc.
@@ -1010,7 +1010,7 @@ Admitted.
   apply substitution with A0 ; auto with coc.
   apply (fromd H32).
   apply (fromd H35).
-  apply (right_refl (fromd H37)).
+  apply (refl_r (fromd H37)).
   apply coerce_conv_env with (A :: G) ; auto with coc.
   apply conv_env_hd with s1 ; apply tposr_eq_tposr ; apply (fromd H5).
   apply tposr_coerce_sym.

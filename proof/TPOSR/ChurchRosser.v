@@ -147,7 +147,7 @@ Corollary tposr_eq_cr : forall e A B s, e |-- A ~= B : s ->
   exists C, tposrp e A C (Srt_l s) /\ tposrp e B C (Srt_l s).
 Proof.
   induction 1.
-  pose (church_rosser H (left_refl H)) ; destruct_exists.
+  pose (church_rosser H (refl_l H)) ; destruct_exists.
   exists x ; intuition ; auto with coc.
 
   destruct_exists.
@@ -242,7 +242,7 @@ Proof.
   elim (tposr_not_kind t).
   
   subst.
-  pose (right_refl H2).
+  pose (refl_r H2).
   pose (generation_pair t) ; destruct_exists.
   inversion H5 ; subst.
   inversion H11 ; subst.
@@ -257,19 +257,19 @@ Proof.
   red ; intros.
   destruct (inv_subst_sort _ _ _ H3).
   rewrite H5 in H2.
-  pose (tposr_sort_kinded (left_refl H2) (refl_equal (Srt_l set))).
+  pose (tposr_sort_kinded (refl_l H2) (refl_equal (Srt_l set))).
   rewrite e0 in H.
   elim (tposr_not_kind H).
   pose (IHtposr3 H5).
   destruct (inv_subst_sort _ _ _ H4).
   rewrite H6 in H2.
-  pose (tposr_sort_kinded (right_refl H2) (refl_equal (Srt_l s))).
+  pose (tposr_sort_kinded (refl_r H2) (refl_equal (Srt_l s))).
   rewrite e0 in H.
   elim (tposr_not_kind H).
   pose (n s) ; contradiction.
   red ; intros.
   rewrite H2 in H.
-  pose (tposr_sort_kinded (right_refl H) (refl_equal (Srt_l s0))).
+  pose (tposr_sort_kinded (refl_r H) (refl_equal (Srt_l s0))).
   rewrite e0 in H0.
   elim (tposr_not_kind (coerce_refl_l H0)).
 
@@ -599,8 +599,8 @@ Proof.
   pose (IHtposrp2 _ _ H3 _ H2) ; destruct_exists.
   exists a0 b0 c0 ; intuition ; auto with coc.
   apply tposrp_trans with a ; auto with coc.
-  pose (tposrp_left_refl H7).
-  pose (tposrp_right_refl H4).
+  pose (tposrp_refl_l H7).
+  pose (tposrp_refl_r H4).
   rewrite (tposr_unique_sort t t0).
   assumption.
   apply tposrp_trans with b ; auto with coc.
@@ -627,8 +627,8 @@ Proof.
   generalize dependent e.
   inversion_clear H3.
   intros.
-  pose (tposrp_right_refl H6).
-  pose (tposrp_right_refl H4).
+  pose (tposrp_refl_r H6).
+  pose (tposrp_refl_r H4).
   pose (tposr_unique_sort t t0).
   rewrite <- e0 in H4.
   pose (tposrp_tposr_eq H3).
@@ -669,13 +669,13 @@ Proof.
   apply conv_env_hd with c ; auto with coc.
   intuition ; auto with coc.
   apply tposrp_trans with a ; auto with coc.
-  pose (tposrp_left_refl H8).
-  pose (tposrp_right_refl H4).
+  pose (tposrp_refl_l H8).
+  pose (tposrp_refl_r H4).
   rewrite (tposr_unique_sort t t0).
   assumption.
   apply tposrp_trans with b ; auto with coc.
-  pose (tposrp_left_refl H9).
-  pose (tposrp_right_refl H5).
+  pose (tposrp_refl_l H9).
+  pose (tposrp_refl_r H5).
   assert(tposr (A :: e) b b (Srt_l d0)).
   apply conv_env with (a :: e) ; auto with coc.
   rewrite (tposr_unique_sort H12 t0) ; auto.
@@ -702,8 +702,8 @@ Proof.
   generalize dependent e.
   inversion_clear H3.
   intros.
-  pose (tposrp_right_refl H7).
-  pose (tposrp_right_refl H4).
+  pose (tposrp_refl_r H7).
+  pose (tposrp_refl_r H4).
   pose (tposr_unique_sort t t0).
   rewrite <- e0 in H4.
   pose (tposrp_tposr_eq H3).
@@ -717,8 +717,8 @@ Proof.
   apply tposr_eq_trans with b0 ; auto with coc.
   apply conv_env_eq with (A' :: e) ; auto with coc.
   apply tposr_eq_sym.
-  pose (tposrp_right_refl H8).
-  pose (tposrp_right_refl H5).
+  pose (tposrp_refl_r H8).
+  pose (tposrp_refl_r H5).
   assert(tposr (A :: e) b0 b0 (Srt_l d)).
   apply conv_env with (A' :: e) ; auto with coc.
   apply conv_env_hd with c0 ; auto with coc.

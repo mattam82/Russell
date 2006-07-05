@@ -83,11 +83,11 @@ Proof.
   inversion H1.
   intuition.
   rewrite <- H3.
-  apply tposrp_tposr ; apply left_refl with x0; auto.
-  apply tposrp_tposr ; apply left_refl with x ; auto.  
+  apply tposrp_tposr ; apply refl_l with x0; auto.
+  apply tposrp_tposr ; apply refl_l with x ; auto.  
   rewrite <- H3.
-  apply tposrp_tposr ; apply left_refl with x0; auto.
-  apply tposrp_tposr ; apply left_refl with x; auto.
+  apply tposrp_tposr ; apply refl_l with x0; auto.
+  apply tposrp_tposr ; apply refl_l with x; auto.
 
   (* Abs *)
   destruct N ; try (simpl in H1 ; try discriminate) ; intros.
@@ -110,11 +110,11 @@ Proof.
 
   destruct (tposrp_uniqueness_of_types H23 H22) ; destruct H26.
   subst.
-  elim (tposr_not_kind (left_refl H5)).
+  elim (tposr_not_kind (refl_l H5)).
 
   assert(x :: G |-- a1 -> b1 : b0).
   apply conv_env with (N1 :: G) ; auto with coc.
-  assert(Heq:= (unique_sort (left_refl H27) (coerce_refl_l H26))).
+  assert(Heq:= (unique_sort (refl_l H27) (coerce_refl_l H26))).
   subst.
 
   assert(equiv_sort G (Prod_l N1 a1) (Prod_l M1 a4) x1).
@@ -178,55 +178,37 @@ Proof.
   unfold eq_kind in H28 ; intuition ; try discriminate.
   pose (injectivity_of_pi_coerce H28) ; destruct_exists.
 
-  destruct H13.
-  destruct H8.
-  destruct x0 ; try discriminate. 
-  destruct x ;  try discriminate. 
-  inversion H13.
-  inversion H8.
-  subst.
-
   assert(G |-- lsubst N3 N1 >-> lsubst M3 M1 : x3).
-  apply substitution_coerce_eq with a2.
-  pose (injectivity_of_pi_coerce H28).
+  apply tposr_coerce_trans with (lsubst x2 N1).
+  apply substitution_coerce_tposrp with a ; eauto with coc ecoc.
+  apply tposr_coerce_sym.
+  apply substitution_coerce_tposrp with a ; eauto with coc ecoc.
 
-  apply tposr_coerce_trans with (lsubst x2 x5).
-  
-  apply tposrp_tposr_eq.
-  change (Srt_l x3) with (lsubst N3 (Srt_l x3)).
-  apply tposrp_substitution with a2 ; auto with coc.
-  
-  apply tposr_eq_sym.
-  apply tposrp_tposr_eq.
-  change (Srt_l x3) with (lsubst M3 (Srt_l x3)).
-  apply tposrp_substitution with a2 ; auto with coc.
-
-  assert (b3 = x3) by apply (unique_sort (conv_refl_r H12) (conv_refl_r H33)).
-  assert(b0 = x3) by apply (unique_sort (conv_refl_r H7) (conv_refl_l H33)).
+  assert (b3 = x3) by apply (unique_sort (coerce_refl_r H12) (coerce_refl_r H31)).
+  assert(b0 = x3) by apply (unique_sort (coerce_refl_r H7) (coerce_refl_l H31)).
   subst.
 
-  exists (App_l x5 x1 x2).
-  clear H8 H13 ; intuition.
+  exists (App_l M1 x1 x2).
+  assert(G |-- A >-> B : x3).
+  apply tposr_coerce_trans with (lsubst M3 M1) ; auto with coc.
+  apply tposr_coerce_trans with (lsubst N3 N1) ; auto with coc.
+  
+  assert(G |-- App_l M1 M2 M3 -+> App_l M1 x1 x2 : A).
+  apply tposrp_conv with (lsubst M3 M1) x3 ; auto with coc.
+  apply tposrp_app with a2 b2 c0 x3 ; auto with coc.
+  apply coerce_coerce_env with (a :: G) ; eauto with coc ecoc.
 
-  apply tposrp_conv_l with (lsubst M3 M1) x3 ; auto with coc.
-  apply tposrp_app with a2 b2 c0 x3   ; auto with coc.
-
-  apply tposrp_conv_l with (lsubst M3 M1) x3 ; auto with coc.
-  apply tposr_eq_trans with (lsubst N3 N1) ; auto with coc.
-  apply tposrp_app with a2 b2 c0 x3   ; auto with coc.
-
-  apply tposrp_conv_l with (lsubst N3 N1) x3 ; auto with coc.
-  apply tposr_eq_trans with (lsubst M3 M1) ; auto with coc.
+  assert(G |-- App_l N1 N2 N3 -+> App_l M1 x1 x2 : B).
+  apply tposrp_conv with (lsubst N3 N1) x3 ; auto with coc.
   apply tposrp_app with a b c x3 ; auto with coc.
-  apply tposrp_conv_env with (a2 :: G) ; eauto with coc ecoc.
-
-  apply tposrp_conv_l with (lsubst N3 N1) x3 ; auto with coc.
-  apply tposrp_app with a b c x3   ; auto with coc.
-  apply tposrp_conv_env with (a2 :: G) ; eauto with coc ecoc.
+  clear H8 ; clear H13.
+  intuition ; auto with coc.
+  apply tposrp_conv with A x3 ; auto.
+  apply tposrp_conv with B x3 ; auto with coc.
 
   (* Pair *)
   destruct N ; try (simpl in H1 ; try discriminate).
-
+  
 Admitted.
 
 Corollary unlab_conv_sorted : forall G A B s t, tposr_term G A (Srt_l s) ->
@@ -236,8 +218,8 @@ Proof.
   pose (tposr_unlab_conv H H0 H1) ; destruct_exists.
   split.
 
-  pose (tposrp_left_refl H2).
-  pose (tposrp_left_refl H3).
+  pose (tposrp_refl_l H2).
+  pose (tposrp_refl_l H3).
   apply (unique_sort t0 t1).
 
   apply tposr_eq_trans with x ; auto.

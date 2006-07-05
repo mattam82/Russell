@@ -203,6 +203,15 @@ Lemma coerce_coerce_env : forall e T U s, e |-- T >-> U : s ->
   forall f, coerce_in_env e f -> f |-- T >-> U : s.
 Proof (proj2 (proj2 (proj2 ind_conv_env))).
 
+Corollary tposrp_coerce_env : forall e t u T, e |-- t -+> u : T -> 
+  forall f, coerce_in_env e f -> f |-- t -+> u : T.
+Proof.
+  induction 1 ; simpl ; intros ; auto with coc.
+  apply tposrp_tposr.
+  eapply type_coerce_env ; eauto with coc.
+  apply tposrp_trans with X ; auto with coc.
+Qed.
+
 Hint Resolve type_coerce_env eq_coerce_env coerce_coerce_env : ecoc.
 
 Lemma coerce_in_env_sym : forall e f, coerce_in_env e f -> coerce_in_env f e.

@@ -15,7 +15,7 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
-Lemma right_refl : forall e u v T, e |-- u -> v : T -> e |-- v -> v : T.
+Lemma refl_r : forall e u v T, e |-- u -> v : T -> e |-- v -> v : T.
 Admitted.
 
 Corollary conv_refls : forall e u v s, e |-- u ~= v : s -> 
@@ -50,10 +50,12 @@ Proof.
   apply (proj2 (coerce_refls H)).
 Qed.
 
-Lemma tposrp_right_refl : forall e A B T, tposrp e A B T -> e |-- B -> B : T.
+Lemma tposrp_refl_r : forall e A B T, tposrp e A B T -> e |-- B -> B : T.
 Proof.
   induction 1 ; auto with coc.
-  apply (right_refl H).
+  apply (refl_r H).
 Qed.
 
-Hint Resolve right_refl conv_refl_l conv_refl_r tposrp_right_refl : coc.
+Hint Resolve refl_r conv_refl_l conv_refl_r tposrp_refl_r : ecoc.
+Hint Resolve coerce_refl_r coerce_refl_l tposrp_refl_r : ecoc.
+

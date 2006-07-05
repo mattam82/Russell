@@ -37,7 +37,7 @@ Proof.
   assert(exists E, tposr_term_depth (T :: e) M E /\ e |-- Prod_l T E >-> Prod_l a Typ : b0).
   assert(e |-- (Prod_l a Typ) -> (Prod_l a Typ) : (Srt_l b0)).
   apply tposr_prod with c ; auto with coc.
-  apply (left_refl (fromd H2)).
+  apply (refl_l (fromd H2)).
   apply (coerce_refl_l H4).
 
   destruct H8 ; destruct_exists.
@@ -171,7 +171,7 @@ Proof.
   apply (subject_reduction H H0).
   intros.
   pose (IHclos_trans1 _ _ H1).
-  pose (tposrp_right_refl t).
+  pose (tposrp_refl_r t).
   assert(tposr_term e y T).
   exists y ; auto.
   pose (IHclos_trans2 _ _ H2).

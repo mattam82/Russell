@@ -78,7 +78,7 @@ Proof.
   destruct (conv_refls H0).
   apply pi_conv_left with s ; auto with coc.
   apply pi_conv_right with s ; auto with coc.
-  apply (right_refl H).
+  apply (refl_r H).
   apply conv_env_eq with (X :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 
@@ -165,7 +165,7 @@ Proof.
   destruct (conv_refls H0).
   apply sum_conv_left with s s2 ; auto with coc.
   apply sum_conv_right with s s2 ; auto with coc.
-  apply (right_refl H).
+  apply (refl_r H).
   apply conv_env_eq with (X :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 
@@ -244,7 +244,7 @@ Proof.
   apply subset_conv_left with s ; auto with coc.
   apply subset_conv_right ; auto with coc.
   rewrite <- H0.
-  apply (right_refl H).
+  apply (refl_r H).
   apply conv_env_eq with (X :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 

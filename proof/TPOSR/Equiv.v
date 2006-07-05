@@ -52,7 +52,7 @@ Lemma eq_kind_typ_l_r : forall U V, eq_kind U V -> forall e x1 x2, ~ (e |-- x1 -
 Proof.
   intros.
   red ; intros.
-  pose (right_refl H0).
+  pose (refl_r H0).
   elim eq_kind_typ_l_l with U V e U x2 ; auto.
 Qed.
 
@@ -122,8 +122,8 @@ Lemma tposr_unique_sort_right : forall G A B C s s', G |-- A -> C : Srt_l s ->
   G |-- B -> C : Srt_l s' -> s = s'.
 Proof.
   intros.
-  pose (right_refl H).
-  pose (right_refl H0).
+  pose (refl_r H).
+  pose (refl_r H0).
   apply unique_sort with G C C C ; auto with coc.
 Qed.
 

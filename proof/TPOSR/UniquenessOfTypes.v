@@ -83,7 +83,7 @@ Proof.
   exists b0.
   assert(tposr_eq e M1 M1 b2).
   apply tposr_eq_tposr.
-  apply (left_refl (fromd H9)).
+  apply (refl_l (fromd H9)).
   destruct H17.
   assert(b0 = x3).
   apply (unique_sort (fromd H5) (coerce_refl_l H17)).
@@ -92,12 +92,11 @@ Proof.
   assert(tposr_coerce e (Prod_l M1 a1) (Prod_l M1 a4) b0).
   rewrite <- H19 in H17.
   apply tposr_coerce_prod with b2 ; auto with coc ecoc.
-  eauto with coc.
-  eauto with coc.
-  apply (left_refl (fromd H5)).
-  pose (unique_sort (fromd H13) (coerce_refl_r H17)).
-  rewrite <- e0.
-  apply (left_refl (fromd H13)).
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  rewrite <- (unique_sort (fromd H13) (coerce_refl_r H17)).
+  eauto with coc ecoc.
 
   apply tposr_coerce_trans with (Prod_l M1 a4) ; auto.
   rewrite H19.
@@ -174,8 +173,8 @@ Corollary tposrp_uniqueness_of_types : forall e M M' M'' A B,
   e |-- M -+> M' : A -> e |-- M -+> M'' : B -> equiv e A B.
 Proof. 
   intros.
-  pose (tposrp_left_refl H).
-  pose (tposrp_left_refl H0).
+  pose (tposrp_refl_l H).
+  pose (tposrp_refl_l H0).
   pose (tposr_tposrd_type t).
   pose (tposr_tposrd_type t0).
   destruct_exists.

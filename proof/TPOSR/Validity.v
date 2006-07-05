@@ -103,6 +103,6 @@ Corollary validity_tposrp : forall e t u T, e |-- t -+> u : T ->
   (exists2 T' s, e |-- T -> T' : Srt_l s).
 Proof.
   intros.
-  pose (tposrp_left_refl H).
+  pose (tposrp_refl_l H).
   apply (validity t0).
 Qed.
