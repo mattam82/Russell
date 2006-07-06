@@ -116,7 +116,7 @@ with tposr_eq : lenv -> lterm -> lterm -> sort -> Prop :=
 where "G |-- T ~= U : s" := (tposr_eq G T U s)
 
 with tposr_coerce : lenv -> lterm -> lterm -> sort -> Prop :=
-  | tposr_coerce_conv : forall e A B s, e |-- A ~= B : s -> e |-- A >-> B : s
+  | tposr_coerce_conv : forall e A B s,  e |-- A -> A : s -> e |-- B -> B : s -> e |-- A ~= B : s -> e |-- A >-> B : s
   
   | tposr_coerce_prod : forall e A B A' B',
   forall s, e |-- A' >-> A : s ->
@@ -284,8 +284,6 @@ forall
        (forall (G : lenv) (A A' : lterm) s (t : G |-- A -> A' : s),
         P G A A' s t -> P0 (A :: G) (wf_cons t)) ->
 
-
-
        (forall (G : lenv) (A A' : lterm) s (t : G |-- A -> A' : s),
         P G A A' s t -> P0 (A :: G) (wf_cons t)) ->
        (forall (l : lenv) (l0 l1 l2 : lterm) (t : l |-- l0 -> l1 : l2),
@@ -307,8 +305,8 @@ with coerce_mutind :=  Induction for tposr_coerce Sort Prop.
 
 Check tposr_mutind.
 
-Lemma ind_tposr_wf_eq :
-forall
+Lemma ind_tposr_wf_eq_coerce :
+ forall
          (P : forall (l : lenv) (l0 l1 l2 : lterm),
               l |-- l0 -> l1 : l2 -> Prop)
          (P0 : forall l : lenv, tposr_wf l -> Prop)
@@ -442,8 +440,12 @@ forall
         P1 e W X s t ->
         forall t0 : e |-- X ~= Y : s,
         P1 e X Y s t0 -> P1 e W Y s (tposr_eq_trans t t0)) ->
-       (forall (e : lenv) (A B : lterm) s (t : e |-- A ~= B : s),
-        P1 e A B s t -> P2 e A B s (tposr_coerce_conv t)) ->
+       (forall (e : lenv) (A B : lterm) s (t : e |-- A -> A : s),
+        P e A A s t ->
+        forall t0 : e |-- B -> B : s,
+        P e B B s t0 ->
+        forall t1 : e |-- A ~= B : s,
+        P1 e A B s t1 -> P2 e A B s (tposr_coerce_conv t t0 t1)) ->
        (forall (e : lenv) (A B A' B' : lterm) s (t : e |-- A' >-> A : s),
         P2 e A' A s t ->
         forall t0 : e |-- A' -> A' : s,
@@ -499,7 +501,6 @@ forall
         P2 e B C s t0 -> P2 e A C s (tposr_coerce_trans t t0)) ->
 
 
-
        (forall (l : lenv) (l0 l1 l2 : lterm) (t : l |-- l0 -> l1 : l2),
        P l l0 l1 l2 t) /\
        (forall (l : lenv) (t : tposr_wf l), P0 l t) /\
@@ -518,6 +519,13 @@ Proof.
   eapply eq_mutind with (P := P) (P0 := P0) (P1 := P1) (P2 := P2) ; auto ; auto.
   eapply coerce_mutind with (P := P) (P0 := P0) (P1 := P1) (P2 := P2) ; auto ; auto.
 Qed.
+
+Lemma wf_tposr : forall e M N T, e |-- M -> N : T -> tposr_wf e.
+Proof.
+  induction 1 ; simpl ; auto with coc.
+Qed.
+
+Hint Resolve wf_tposr : ecoc.
 
 Reserved Notation "G |-- M -+> N : B" (at level 70, M, N, B at next level). 
 

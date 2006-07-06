@@ -9,15 +9,11 @@ Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.Types.
+Require Import Lambda.TPOSR.Thinning.
+Require Import Lambda.TPOSR.CtxReduction.
+Require Import Lambda.TPOSR.Substitution.
 
 Set Implicit Arguments.
-
-Lemma wf_tposr : forall e M N T, e |-- M -> N : T -> tposr_wf e.
-Proof.
-  induction 1 ; simpl ; auto with coc.
-Qed.
-
-Hint Resolve wf_tposr : ecoc.
 
 Lemma tposr_conv_eq : forall e A B s, e |-- A ~= B : s -> 
   forall M N, (e |-- M -> N : A -> e |-- M -> N : B) /\ (e |-- M -> N : B -> e |-- M -> N : A).
@@ -25,7 +21,8 @@ Proof.
   induction 1 ; simpl ; intros.
   
   split ; intros.
-  apply tposr_conv with X s ; auto with coc.
+  apply tposr_conv with X s ; eauto with coc ecoc.
+  apply tposr_coerce_conv.
   apply tposr_conv with Y s ; auto with coc.
 
   pose (IHtposr_eq M N).
