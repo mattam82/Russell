@@ -67,6 +67,7 @@ TPOSR/Thinning.v
 TPOSR/CtxReduction.v
 TPOSR/LeftReflexivity.v
 TPOSR/Substitution.v
+TPOSR/SubstitutionTPOSR.v
 TPOSR/RightReflexivity.v
 TPOSR/CtxConversion.v
 TPOSR/Coercion.v
