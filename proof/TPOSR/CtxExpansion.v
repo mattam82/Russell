@@ -18,23 +18,23 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
-Inductive red_in_env : lenv -> lenv -> Prop :=
-  | red_env_hd : forall e t u s, e |-- t -> u : Srt_l s -> e |-- u -> u : Srt_l s ->
-	red_in_env (t :: e) (u :: e)
-  | red_env_tl :
-      forall e f t, red_in_env e f -> 
+Inductive exp_in_env : lenv -> lenv -> Prop :=
+  | exp_env_hd : forall e t u s, e |-- t -> u : Srt_l s -> e |-- u -> u : Srt_l s ->
+	exp_in_env (u :: e) (t :: e)
+  | exp_env_tl :
+      forall e f t, exp_in_env e f -> 
       tposr_wf (t :: e) ->
-      red_in_env (t :: e) (t :: f).
+      exp_in_env (t :: e) (t :: f).
 
-Hint Resolve red_env_hd red_env_tl: coc.
+Hint Resolve exp_env_hd exp_env_tl: coc.
 
-Lemma red_item :
+Lemma exp_item :
    forall n t e,
    item_llift t e n ->
-   forall f, red_in_env e f ->
+   forall f, exp_in_env e f ->
    item_llift t f n \/
    ((forall g, trunc _ (S n) e g -> trunc _ (S n) f g) /\
-   exists u, item_llift u f n /\ (exists s : sort, tposr_wf f -> f |-- t -> u : s)).
+   exists u, item_llift u f n /\ (exists s : sort, tposr_wf f -> f |-- u -> t : s)).
 simple induction n.
 do 3 intro.
 elim H.
@@ -47,12 +47,12 @@ right.
 split; intros.
 inversion_clear H1; auto with coc core arith datatypes.
 
-exists (llift 1 u).
+exists (llift 1 t0).
 split.
 inversion_clear H.
 
 unfold item_llift.
-exists u; auto with coc core arith datatypes.
+exists t0; auto with coc core arith datatypes.
 
 exists s ; auto with coc core.
 change (Srt_l s) with (llift 1 (Srt_l s)).
@@ -118,29 +118,29 @@ subst.*)
 exists x; auto with coc core arith datatypes.
 Qed.
 
-Lemma ind_red_env :
+Lemma ind_exp_env :
   (forall e t u T, e |-- t -> u : T -> 
-  forall f, red_in_env e f -> f |-- t -> u : T) /\
+  forall f, exp_in_env e f -> f |-- t -> u : T) /\
   (forall e, tposr_wf e -> 
-  forall f, red_in_env e f -> tposr_wf f) /\
+  forall f, exp_in_env e f -> tposr_wf f) /\
   (forall e t u s, e |-- t ~= u : s -> 
-  forall f, red_in_env e f -> f |-- t ~= u : s) /\
+  forall f, exp_in_env e f -> f |-- t ~= u : s) /\
   (forall e t u s, e |-- t >-> u : s -> 
-  forall f, red_in_env e f -> f |-- t >-> u : s).
+  forall f, exp_in_env e f -> f |-- t >-> u : s).
 Proof.
   apply ind_tposr_wf_eq_coerce with
   (P:=fun e t u T => fun H : e |-- t -> u : T => 
-  forall f, red_in_env e f -> f |-- t -> u : T) 
+  forall f, exp_in_env e f -> f |-- t -> u : T) 
   (P0:=fun e => fun H : tposr_wf e => 
-  forall f, red_in_env e f -> tposr_wf f) 
+  forall f, exp_in_env e f -> tposr_wf f) 
   (P1:=fun e t u s => fun H : e |-- t ~= u : s => 
-  forall f, red_in_env e f -> f |-- t ~= u : s) 
+  forall f, exp_in_env e f -> f |-- t ~= u : s) 
   (P2:=fun e t u s => fun H : e |-- t >-> u : s => 
-  forall f, red_in_env e f -> f |-- t >-> u : s) ;
+  forall f, exp_in_env e f -> f |-- t >-> u : s) ;
   intros ; 
 auto with coc core arith datatypes.
 
-destruct (red_item i H0) ; destruct_exists.
+destruct (exp_item i H0) ; destruct_exists.
 apply tposr_var ; auto with coc.
 apply tposr_conv with x x0 ; auto with coc.
 pose (H3 (H _ H0)).
@@ -173,7 +173,7 @@ apply tposr_pi2_red with A' s1 B' s2 s3 u' ; eauto with coc ecoc.
 inversion H.
 inversion H0.
 subst.
-apply wf_cons with u s0 ; auto.
+apply wf_cons with A s0 ; auto.
 subst.
 apply wf_cons with A' s ; eauto with coc ecoc.
 
@@ -190,16 +190,16 @@ apply tposr_coerce_sub_r  ; eauto with coc ecoc.
 apply tposr_coerce_trans with B ; auto with coc ecoc.
 Qed.
 
-Lemma tposr_red_env : forall e t u T, e |-- t -> u : T -> 
-  forall f, red_in_env e f -> f |-- t -> u : T.
-Proof (proj1 ind_red_env).
+Lemma tposr_exp_env : forall e t u T, e |-- t -> u : T -> 
+  forall f, exp_in_env e f -> f |-- t -> u : T.
+Proof (proj1 ind_exp_env).
 
-Lemma eq_red_env : forall e u v s, e |-- u ~= v : s ->
-  forall f, red_in_env e f -> f |-- u ~= v : s.
-Proof (proj1 (proj2 (proj2 ind_red_env))).
+Lemma eq_exp_env : forall e u v s, e |-- u ~= v : s ->
+  forall f, exp_in_env e f -> f |-- u ~= v : s.
+Proof (proj1 (proj2 (proj2 ind_exp_env))).
 
-Lemma coerce_red_env : forall e T U s, e |-- T >-> U : s -> 
-  forall f, red_in_env e f -> f |-- T >-> U : s.
-Proof (proj2 (proj2 (proj2 ind_red_env))).
+Lemma coerce_exp_env : forall e T U s, e |-- T >-> U : s -> 
+  forall f, exp_in_env e f -> f |-- T >-> U : s.
+Proof (proj2 (proj2 (proj2 ind_exp_env))).
 
-Hint Resolve tposr_red_env eq_red_env coerce_red_env : ecoc.
+Hint Resolve tposr_exp_env eq_exp_env coerce_exp_env : ecoc.

@@ -119,6 +119,8 @@ pose (H _ _ _ H3 _ _ H4 H5).
 apply tposr_pi1 with s1 s2 s3 ; eauto with coc.
 
 apply tposr_pi1_red with (lsubst_rec d A' n) s1 (lsubst_rec d B' (S n))  s2 s3 (lsubst_rec d v' n); eauto with coc.
+rewrite <- distr_lsubst.
+eauto with coc.
 
 rewrite distr_lsubst.
 simpl.
@@ -130,11 +132,16 @@ assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
 apply trunc_S ; auto with coc.
 destruct (H0 _ _ _ _ H2 _ _ H7 H8) ; auto with coc.
 *)
+
 rewrite distr_lsubst.
 simpl.
 
-pose (H2 _ _ _ H4 _ _ H5 H6).
 apply tposr_pi2_red with (lsubst_rec d A' n) s1 (lsubst_rec d B' (S n))  s2 s3 (lsubst_rec d u' n); eauto with coc.
+rewrite <- distr_lsubst.
+simpl.
+eauto with coc.
+
+
 (*assert(sub_in_lenv d T (S n) (A'' :: e) (lsubst_rec d A'' n :: f)).
 apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d A'' n :: f) g).
@@ -238,6 +245,17 @@ Corollary substitution_tposrp : forall t e u v U, t :: e |-- u -+> v : U ->
 Proof.
   intros.
   eapply substitution_tposrp_aux  ; eauto with coc.
+Qed.
+
+Corollary substitution_sorted_n : 
+  forall g d t, g |-- d -> d : t ->
+   forall e u v s, e |-- u -> v : s ->
+   forall f n, sub_in_lenv d t n e f -> trunc _ n f g -> 
+   f |-- (lsubst_rec d u n) -> (lsubst_rec d v n) : Srt_l s.
+Proof.
+  intros.
+  change (Srt_l s) with (lsubst_rec d (Srt_l s) n).
+  eapply substitution_tposr_n ; eauto with coc.
 Qed.
 
 Corollary substitution_sorted : forall e t u v s, (t :: e) |-- u -> v : Srt_l s ->

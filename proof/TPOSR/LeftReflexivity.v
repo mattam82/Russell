@@ -5,7 +5,6 @@ Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.TypesNoDerivs.
 Require Import Lambda.TPOSR.Thinning.
-Require Import Lambda.TPOSR.CtxReduction.
 
 Set Implicit Arguments.
 
@@ -77,6 +76,7 @@ Proof.
   apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
 
   apply tposr_pi1 with s1 s2 s3; auto with coc ecoc.
+  apply tposr_pair with s1 s2 s3 ; auto with coc ecoc.
 
   apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
 

@@ -6,8 +6,10 @@ Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
-Require Import Lambda.TPOSR.Types.
+Require Import Lambda.TPOSR.TypesNoDerivs.
 Require Import Lambda.TPOSR.Thinning.
+Require Import Lambda.TPOSR.LeftReflexivity.
+Require Import Lambda.TPOSR.Substitution.
 
 Set Implicit Arguments.
 

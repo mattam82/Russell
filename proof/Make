@@ -65,6 +65,7 @@ TPOSR/MaxLemmas.v
 TPOSR/TypesDepth.v
 TPOSR/Thinning.v
 TPOSR/CtxReduction.v
+TPOSR/CtxExpansion.v
 TPOSR/LeftReflexivity.v
 TPOSR/Substitution.v
 TPOSR/SubstitutionTPOSR.v
