@@ -49,9 +49,6 @@ JRussell/Substitution.v
 JRussell/PreFunctionality.v
 JRussell/Generation.v
 JRussell/Validity.v
-#JRussell/GenerationRange.v
-#JRussell/GenerationNotKind.v
-#JRussell/UnicityOfSortingRange.v
 # TPOSR
 TPOSR/Terms.v
 TPOSR/LiftSubst.v
@@ -61,6 +58,7 @@ TPOSR/Conv_Dec.v
 TPOSR/Env.v
 TPOSR/Unlab.v
 TPOSR/Types.v
+TPOSR/TypesNoDerivs.v
 TPOSR/Basic.v
 TPOSR/UnicityOfSorting.v
 TPOSR/MaxLemmas.v
@@ -80,7 +78,6 @@ TPOSR/UniquenessOfTypes.v
 TPOSR/ChurchRosserDepth.v
 TPOSR/ChurchRosser.v
 TPOSR/CoerceDepth.v
-#TPOSR/TransitivityDepth.v
 TPOSR/CoerceNoTrans.v
 TPOSR/TransitivitySet.v
 TPOSR/Transitivity.v

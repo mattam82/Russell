@@ -6,7 +6,7 @@ Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
-Require Import Lambda.TPOSR.Types.
+Require Import Lambda.TPOSR.TypesNoDerivs.
 Require Import Lambda.TPOSR.Thinning.
 
 Set Implicit Arguments.
@@ -21,7 +21,7 @@ Inductive red_in_env : lenv -> lenv -> Prop :=
 	red_in_env (t :: e) (u :: e)
   | red_env_tl :
       forall e f t, red_in_env e f -> 
-      forall s, f |-- t -> t : Srt_l s ->
+      tposr_wf (t :: e) ->
       red_in_env (t :: e) (t :: f).
 
 Hint Resolve red_env_hd red_env_tl: coc.
@@ -32,7 +32,7 @@ Lemma red_item :
    forall f, red_in_env e f ->
    item_llift t f n \/
    ((forall g, trunc _ (S n) e g -> trunc _ (S n) f g) /\
-   exists u, item_llift u f n /\ (exists s : sort, f |-- t -> u : s /\ f |-- u -> u : s)).
+   exists u, item_llift u f n /\ (exists s : sort, tposr_wf f -> f |-- t -> u : s)).
 simple induction n.
 do 3 intro.
 elim H.
@@ -54,7 +54,7 @@ exists u; auto with coc core arith datatypes.
 
 exists s ; auto with coc core.
 change (Srt_l s) with (llift 1 (Srt_l s)).
-split ; apply thinning_n with l ; auto with coc core ;
+apply thinning_n with l ; auto with coc core ;
 apply wf_cons with u s ; auto.
 
 left.
@@ -103,9 +103,15 @@ auto with coc.
 exists x2.
 pattern (llift (S (S n0)) x) ; rewrite simpl_llift.
 change (Srt_l x2) with (llift 1 (Srt_l x2)).
-destruct H7.
-split ; eapply thinning_n ; auto with coc core ;
-apply wf_cons with y s ; auto.
+destruct H6.
+intros.
+eapply thinning_n ; auto with coc core.
+apply H7.
+inversion H9 ; auto.
+subst.
+apply (wf_tposr H11). 
+(*apply wf_cons with A' s ; auto.
+subst.*)
 
 exists x; auto with coc core arith datatypes.
 Qed.
@@ -135,50 +141,51 @@ auto with coc core arith datatypes.
 destruct (red_item i H0) ; destruct_exists.
 apply tposr_var ; auto with coc.
 apply tposr_conv with x x0 ; auto with coc.
-apply tposr_coerce_sym.
-apply tposr_coerce_conv ; eauto with coc.
+pose (H3 (H _ H0)).
+auto with coc.
 
-apply tposr_prod with s1 ; eauto with coc.
+apply tposr_prod with s1 ; eauto with coc ecoc.
 
-apply tposr_abs with s1 B' s2 ; eauto with coc.
+apply tposr_abs with s1 B' s2 ; eauto with coc ecoc.
 
-apply tposr_app with A A' s1 s2 ; eauto with coc.
+apply tposr_app with A A' s1 s2 ; eauto with coc ecoc.
 
-apply tposr_beta with A' s1 B' s2 ; eauto with coc.
+apply tposr_beta with A' s1 B' s2 ; eauto with coc ecoc.
 
 apply tposr_conv with A s ; auto with coc.
 
-apply tposr_subset ; eauto with coc.
+apply tposr_subset ; eauto with coc ecoc.
 
-apply tposr_sum with s1 s2 ; eauto with coc.
+apply tposr_sum with s1 s2 ; eauto with coc ecoc.
 
-apply tposr_pair with s1 s2 s3 ; eauto with coc.
+apply tposr_pair with s1 s2 s3 ; eauto with coc ecoc.
 
-apply tposr_pi1 with s1 s2 s3 ; eauto with coc.
+apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
 
-apply tposr_pi1_red with A' s1 B' s2 s3 v' ; eauto with coc.
+apply tposr_pi1_red with A' s1 B' s2 s3 v' ; eauto with coc ecoc.
 
-apply tposr_pi2 with s1 s2 s3 ; eauto with coc.
+apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
 
-apply tposr_pi2_red with A' s1 B' s2 s3 u' ; eauto with coc.
+apply tposr_pi2_red with A' s1 B' s2 s3 u' ; eauto with coc ecoc.
 
 inversion H.
 inversion H0.
 subst.
 apply wf_cons with u s0 ; auto.
-apply wf_cons with A s0 ; auto.
+subst.
+apply wf_cons with A' s ; eauto with coc ecoc.
 
 apply tposr_eq_trans with X ; auto with coc.
 
-apply tposr_coerce_prod with s ; eauto with coc.
+apply tposr_coerce_prod with s ; eauto with coc ecoc.
 
-apply tposr_coerce_sum with s s' ; eauto with coc.
+apply tposr_coerce_sum with s s' ; eauto with coc ecoc.
 
-apply tposr_coerce_sub_l  ; eauto with coc.
+apply tposr_coerce_sub_l  ; eauto with coc ecoc.
 
-apply tposr_coerce_sub_r  ; eauto with coc.
+apply tposr_coerce_sub_r  ; eauto with coc ecoc.
 
-apply tposr_coerce_trans with B ; auto with coc.
+apply tposr_coerce_trans with B ; auto with coc ecoc.
 Qed.
 
 Lemma tposr_red_env : forall e t u T, e |-- t -> u : T -> 
@@ -192,3 +199,5 @@ Proof (proj1 (proj2 (proj2 ind_red_env))).
 Lemma coerce_red_env : forall e T U s, e |-- T >-> U : s -> 
   forall f, red_in_env e f -> f |-- T >-> U : s.
 Proof (proj2 (proj2 (proj2 ind_red_env))).
+
+Hint Resolve tposr_red_env eq_red_env coerce_red_env : ecoc.
