@@ -338,50 +338,126 @@ split ; apply tposr_eq_trans with (lsubst_rec d X n) ; eauto with coc.
 
 destruct (H _ _ _ _ H0 H1 _ _ H2 H3) ; auto with coc.
 
-destruct (H _ _ _ _ H3 H4 _ _ H5 H6).
+destruct (H _ _ _ _ H5 H6 _ _ H7 H8) ; auto with coc.
 assert(sub_in_lenv d T (S n) (A' :: e) (lsubst_rec d A' n :: f)).
 apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d A' n :: f) g).
 apply trunc_S ; auto with coc.
-destruct (H2 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
-destruct (H0 _ _ _ _ H3 H4 _ _ H5 H6).
-destruct_exists.
-destruct (H0 _ _ _ _ H4 H4 _ _ H14 H15).
-destruct (H1 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto.
-destruct (H1 _ _ _ _  H3 H4 _ _ H5 H6) ; auto.
-destruct (H1 _ _ _ _  H4 H4 _ _ H14 H15) ; auto.
-split ; apply tposr_coerce_prod with s ; auto with coc.
+assert(sub_in_lenv d T (S n) (A :: e) (lsubst_rec d A n :: f)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
+apply trunc_S ; auto with coc.
+destruct (H2 _ _ _ _ H5 H6 _ _ H11 H12) ; auto with coc.
+destruct (H0 _ _ _ _ H5 H6 _ _ H7 H8) ; destruct_exists.
+assert(sub_in_lenv d' T (S n) (A' :: e) (lsubst_rec d' A' n :: x)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d' A' n :: x) g).
+apply trunc_S ; auto with coc.
+assert(sub_in_lenv d' T (S n) (A :: e) (lsubst_rec d' A n :: x)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d' A n :: x) g).
+apply trunc_S ; auto with coc.
 
+destruct (H0 _ _ _ _ H6 H6 _ _ H18 H19).
+clear H27.
+destruct (H1 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H7 H8).
+clear H28.
+destruct (H3 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H13 H14).
+destruct_exists.
+destruct (H3 _ _ _ _ H6 H6 _ _ H24 H25).
+clear H34.
+destruct (H4 _ _ _ _ H6 H6 _ _ H22 H23).
+clear H35.
+destruct (H0 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H7 H8).
+clear H36.
+destruct (H1 _ _ _ _ H5 H6 _ _ H7 H8) ; auto.
+destruct_exists.
+destruct (H1 _ _ _ _ H6 H6 _ _ H37 H38) ; auto.
+clear H42.
+
+split.
+apply tposr_coerce_prod with s ; auto with coc.
 apply coerce_env_full with x ; auto with coc.
 
 apply coerce_red_env with (lsubst_rec d A' n :: f) ; auto with coc.
 apply red_env_hd with s ; auto.
 apply coerce_env_full with x ; auto with coc.
-eauto with coc.
-apply coerce_env_full with x ; auto with coc.
 
-destruct (H _ _ _ _ H3 H4 _ _ H5 H6).
+apply coerce_env_full with (lsubst_rec d' A' n :: x) ; auto with coc. 
+apply coerce_env_full_cons ; auto with coc.
+apply wf_cons with s ; auto with coc.
+
+apply tposr_coerce_prod with s ; auto with coc.
+apply coerce_env_full with x1 ; auto with coc.
+
+apply coerce_env_full with (lsubst_rec d' A n :: x) ; auto with coc. 
+apply coerce_env_full_cons ; auto with coc.
+apply wf_cons with s ; auto with coc.
+apply coerce_env_full with f ; auto with coc.
+apply coerce_env_full with x1 ; auto with coc.
+destruct (H4 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H11 H12).
+assumption.
+
+destruct (H _ _ _ _ H5 H6 _ _ H7 H8) ; auto with coc.
+assert(sub_in_lenv d T (S n) (A' :: e) (lsubst_rec d A' n :: f)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d A' n :: f) g).
+apply trunc_S ; auto with coc.
 assert(sub_in_lenv d T (S n) (A :: e) (lsubst_rec d A n :: f)).
 apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
 apply trunc_S ; auto with coc.
-destruct (H2 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
-destruct (H0 _ _ _ _ H3 H4 _ _ H5 H6).
-destruct_exists.
-destruct (H0 _ _ _ _ H4 H4 _ _ H14 H15).
-destruct (H1 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto.
-destruct (H0 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto.
-destruct (H1 _ _ _ _  H3 H4 _ _ H5 H6) ; auto.
-destruct (H1 _ _ _ _  H4 H4 _ _ H14 H15) ; auto.
-split ; apply tposr_coerce_sum with s s' ; auto with coc.
+destruct (H2 _ _ _ _ H5 H6 _ _ H13 H14) ; auto with coc.
+destruct (H0 _ _ _ _ H5 H6 _ _ H7 H8) ; destruct_exists.
+assert(sub_in_lenv d' T (S n) (A' :: e) (lsubst_rec d' A' n :: x)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d' A' n :: x) g).
+apply trunc_S ; auto with coc.
+assert(sub_in_lenv d' T (S n) (A :: e) (lsubst_rec d' A n :: x)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d' A n :: x) g).
+apply trunc_S ; auto with coc.
 
+destruct (H0 _ _ _ _ H6 H6 _ _ H18 H19).
+clear H27.
+destruct (H1 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H7 H8).
+clear H28.
+destruct (H3 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H13 H14).
+destruct_exists.
+destruct (H3 _ _ _ _ H6 H6 _ _ H24 H25).
+clear H34.
+destruct (H4 _ _ _ _ H6 H6 _ _ H22 H23).
+clear H35.
+destruct (H0 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H7 H8).
+clear H36.
+destruct (H1 _ _ _ _ H5 H6 _ _ H7 H8) ; auto.
+destruct_exists.
+destruct (H1 _ _ _ _ H6 H6 _ _ H37 H38) ; auto.
+clear H42.
+
+split.
+apply tposr_coerce_sum with s s' ; auto with coc.
 apply coerce_env_full with x ; auto with coc.
-destruct (H0 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto.
-apply coerce_env_full with x ; auto with coc.
+
+apply coerce_env_full with (lsubst_rec d' A' n :: x) ; auto with coc. 
+apply coerce_env_full_cons ; auto with coc.
+apply wf_cons with s ; auto with coc.
+
+apply tposr_coerce_sum with s s' ; auto with coc.
+apply coerce_env_full with x1 ; auto with coc.
 
 apply coerce_red_env with (lsubst_rec d A n :: f) ; auto with coc.
 apply red_env_hd with s ; auto.
-apply coerce_env_full with x ; auto with coc.
+apply coerce_env_full with x1 ; auto with coc.
+
+apply coerce_env_full with (lsubst_rec d' A n :: x) ; auto with coc. 
+apply coerce_env_full_cons ; auto with coc.
+apply wf_cons with s ; auto with coc.
+apply coerce_env_full with f ; auto with coc.
+apply coerce_env_full with x1 ; auto with coc.
+
+destruct (H4 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H11 H12).
+assumption.
 
 destruct (H _ _ _ _ H3 H4 _ _ H5 H6).
 assert(sub_in_lenv d T (S n) (U :: e) (lsubst_rec d U n :: f)).
