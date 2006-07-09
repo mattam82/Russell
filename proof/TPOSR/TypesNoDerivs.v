@@ -26,7 +26,7 @@ Reserved Notation "G |-- T >-> U : s" (at level 70, T, U, s at next level).
 
 Inductive tposr_wf : lenv -> Prop :=
   | wf_nil : tposr_wf nil
-  | wf_cons : forall G A A' s, G |-- A -> A' : s -> tposr_wf (A :: G)
+  | wf_cons : forall G A s, G |-- A -> A : s -> tposr_wf (A :: G)
 
 with tposr : lenv -> lterm -> lterm -> lterm -> Prop :=
   | tposr_var : forall e, tposr_wf e -> 
@@ -117,14 +117,14 @@ with tposr_coerce : lenv -> lterm -> lterm -> sort -> Prop :=
   forall s, e |-- A' >-> A : s ->
   (* derivable *) e |-- A' -> A' :  s -> e |-- A -> A :  s ->
   forall s', (A' :: e) |-- B >-> B' : s' -> 
-  (* derivable *) A :: e |-- B -> B :  s' -> A' :: e |-- B' -> B' :  s' ->
+  (* derivable A :: e |-- B -> B :  s' -> A' :: e |-- B' -> B' :  s' ->*)
   e |-- (Prod_l A B) >-> (Prod_l A' B') : s'
   
   | tposr_coerce_sum : forall e A B A' B',
   forall s, e |-- A >-> A' : s -> 
   (* derivable *) e |-- A' -> A' :  s -> e |-- A -> A :  s ->
   forall s', (A :: e) |-- B >-> B' : s' ->
-  (* derivable *) A :: e |-- B -> B :  s' -> A' :: e |-- B' -> B' :  s' ->
+  (* derivable A :: e |-- B -> B :  s' -> A' :: e |-- B' -> B' :  s' ->*)
   forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
   e |-- (Sum_l A B) >-> (Sum_l A' B') : s''
 
@@ -136,7 +136,7 @@ with tposr_coerce : lenv -> lterm -> lterm -> sort -> Prop :=
 
   | tposr_coerce_sub_r : forall e U U' P,
   e |-- U >-> U' : set -> 
-  (* derivable *) e |-- U -> U :  set -> e |-- U' -> U' :  set -> 
+  (* derivable *) e |-- U -> U :  set -> e |-- U' -> U' :  set ->
   (* derivable *) U' :: e |-- P -> P : prop ->
   e |-- U >-> (Subset_l U' P) : set
 
@@ -422,8 +422,8 @@ forall
           (lsubst (Pi1_l (Sum_l A B) (Pair_l (Sum_l A B) u v)) B)
           (tposr_pi2_red t t0 s t1 t2)) ->
        P0 nil wf_nil ->
-       (forall (G : lenv) (A A' : lterm) s (t : G |-- A -> A' : s),
-        P G A A' s t -> P0 (A :: G) (wf_cons t)) ->
+       (forall (G : lenv) (A : lterm) s (t : G |-- A -> A : s),
+        P G A A s t -> P0 (A :: G) (wf_cons t)) ->
        (forall (e : lenv) (X Y : lterm) s (t : e |-- X -> X : s),
         P e X X s t ->
         forall t0 : e |-- X -> Y : s,

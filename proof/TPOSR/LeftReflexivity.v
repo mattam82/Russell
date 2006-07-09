@@ -4,7 +4,6 @@ Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.TypesNoDerivs.
-Require Import Lambda.TPOSR.Thinning.
 
 Set Implicit Arguments.
 
@@ -41,21 +40,7 @@ Hint Resolve eq_eq_l eq_eq_r coerce_coerce_l coerce_coerce_r : ecoc.
 
 Lemma ind_left_refl : 
   (forall e u v T, e |-- u -> v : T -> e |-- u -> u : T).
-
-(* /\
-  (forall e, tposr_wf e -> True) /\
-  (forall e u v s, e |-- u ~= v : s -> 
-  e |-- u -> u : s /\ e |-- v -> v : s) /\
-  (forall e u v s, e |-- u >-> v : s ->
-  e |-- u -> u : s /\ e |-- v -> v : s).
 Proof.
-  apply ind_tposr_wf_eq_coerce with 
-  (P:=fun e u v T => fun H : e |-- u -> v : T => e |-- u -> u : T) 
-  (P0:=fun e => fun H : tposr_wf e => True) 
-  (P1:=fun e u v s => fun H : e |-- u ~= v : s => 
-  e |-- u -> u : s /\ e |-- v -> v : s)
-  (P2:=fun e u v s => fun H : e |-- u >-> v : s =>
-  e |-- u -> u : s /\ e |-- v -> v : s) *)
   induction 1 ; simpl ; intros ; intuition ; auto with coc.
 
   apply tposr_prod with s1 ; auto with coc.
@@ -82,15 +67,7 @@ Proof.
 
   apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
 Qed.
-(*  apply tposr_prod with s ; auto with coc.
 
-  apply tposr_prod with s ; auto with coc.
-
-  apply tposr_sum with s s' ; auto with coc.
-
-  apply tposr_sum with s s' ; auto with coc.
-Qed.
-*)
 Corollary refl_l : forall e u v T, e |-- u -> v : T -> e |-- u -> u : T.
 Proof (ind_left_refl).
 
@@ -99,33 +76,5 @@ Proof.
   induction 1 ; auto with coc.
   apply (refl_l H).
 Qed.
-(*
-Corollary eq_refl_l : forall e u v s, e |-- u ~= v : s -> e |-- u -> u : s.
-Proof.
-  pose (proj1 (proj2 (proj2 (ind_left_refl)))).
-  intros.
-  destruct (a _ _ _ _ H) ; auto.
-Qed. 
 
-Corollary eq_refl_r : forall e u v s, e |-- u ~= v : s -> e |-- v -> v : s.
-Proof.
-  pose (proj1 (proj2 (proj2 (ind_left_refl)))).
-  intros.
-  destruct (a _ _ _ _ H) ; auto.
-Qed. 
-
-Corollary coerce_refl_l : forall e u v s, e |-- u >-> v : s -> e |-- u -> u : s.
-Proof.
-  pose (proj2 (proj2 (proj2 (ind_left_refl)))).
-  intros.
-  destruct (a _ _ _ _ H) ; auto.
-Qed. 
-
-Corollary coerce_refl_r : forall e u v s, e |-- u >-> v : s -> e |-- v -> v : s.
-Proof.
-  pose (proj2 (proj2 (proj2 (ind_left_refl)))).
-  intros.
-  destruct (a _ _ _ _ H) ; auto.
-Qed. 
-*)
-Hint Resolve refl_l tposrp_refl_l (*eq_refl_l eq_refl_r coerce_refl_l coerce_refl_r *): coc.
+Hint Resolve refl_l tposrp_refl_l : coc.

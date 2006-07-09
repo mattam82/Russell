@@ -126,12 +126,6 @@ rewrite distr_lsubst.
 simpl.
 pose (H _ _ _ H3 _ _ H4 H5).
 apply tposr_pi2 with s1 s2 s3 ; eauto with coc.
-(*assert(sub_in_lenv d T (S n) (A :: e) (lsubst_rec d A n :: f)).
-apply sub_S ; auto with coc.
-assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
-apply trunc_S ; auto with coc.
-destruct (H0 _ _ _ _ H2 _ _ H7 H8) ; auto with coc.
-*)
 
 rewrite distr_lsubst.
 simpl.
@@ -141,18 +135,11 @@ rewrite <- distr_lsubst.
 simpl.
 eauto with coc.
 
-
-(*assert(sub_in_lenv d T (S n) (A'' :: e) (lsubst_rec d A'' n :: f)).
-apply sub_S ; auto with coc.
-assert(trunc lterm (S n) (lsubst_rec d A'' n :: f) g).
-apply trunc_S ; auto with coc.
-destruct (H3 _ _ _ _ (refl_l H4) _ _ H9 H10) ; auto with coc.*)
-
 inversion H0.
 inversion H1 ; subst.
 apply (wf_tposr t).
 inversion H2.
-apply wf_cons with (lsubst_rec d A' n0) s ; apply (H _ _ _ H0 _ _ H7 H8).
+apply wf_cons with s ; apply (H _ _ _ H0 _ _ H7 H8).
 
 apply tposr_eq_tposr ; eauto with coc.
 eauto with coc ecoc.

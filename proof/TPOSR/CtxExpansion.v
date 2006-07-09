@@ -112,8 +112,6 @@ apply H7.
 inversion H9 ; auto.
 subst.
 apply (wf_tposr H11). 
-(*apply wf_cons with A' s ; auto.
-subst.*)
 
 exists x; auto with coc core arith datatypes.
 Qed.
@@ -173,9 +171,9 @@ apply tposr_pi2_red with A' s1 B' s2 s3 u' ; eauto with coc ecoc.
 inversion H.
 inversion H0.
 subst.
-apply wf_cons with A s0 ; auto.
+apply wf_cons with s0 ; eauto with coc.
 subst.
-apply wf_cons with A' s ; eauto with coc ecoc.
+apply wf_cons with s ; eauto with coc ecoc.
 
 apply tposr_eq_trans with X ; auto with coc.
 

@@ -4,7 +4,7 @@ Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.TypesNoDerivs.
-(*Require Import Lambda.TPOSR.LeftReflexivity.*)
+Require Import Lambda.TPOSR.LeftReflexivity.
 
 Set Implicit Arguments.
 
@@ -60,17 +60,17 @@ apply ins_item_ge with A n0 e; auto with coc core arith datatypes.
 
 apply ins_item_lt with A e; auto with coc core arith datatypes.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 apply tposr_prod with s1 ; auto with coc core arith datatypes.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 apply tposr_abs with s1 (llift_rec 1 B' (S n)) s2 ; auto with coc core arith datatypes.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 rewrite distr_llift_lsubst ; auto with coc.
 apply tposr_app with (llift_rec 1 A0 n) (llift_rec 1 A' n) s1 s2; auto with coc core arith datatypes.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 rewrite distr_llift_lsubst ; auto with coc.
 rewrite distr_llift_lsubst ; auto with coc.
 
@@ -78,31 +78,31 @@ apply tposr_beta with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n)) s2; auto with
 
 apply tposr_conv with (llift_rec 1 A0 n) s; auto with coc.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) set ; auto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with set ; eauto with coc).
 apply tposr_subset ; auto with coc.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 apply tposr_sum with s1 s2; auto with coc core arith datatypes.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; auto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 apply tposr_pair with s1 s2 s3 ; auto with coc.
 rewrite <- distr_llift_lsubst ; auto with coc.
 
 apply tposr_pi1 with s1 s2 s3 ; auto with coc.
 apply H1 ; eauto with coc.
-apply wf_cons with (llift_rec 1 A0 n) s1 ; eauto with coc.
+apply wf_cons with s1 ; eauto with coc.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; eauto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 apply tposr_pi1_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 v' n); auto with coc.
 rewrite <- distr_llift_lsubst.
 auto with coc.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A0 n) s1 ; eauto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 rewrite distr_llift_lsubst.
 simpl.
 apply tposr_pi2 with s1 s2 s3 ; auto with coc.
 
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s1 ; eauto with coc).
+assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 rewrite distr_llift_lsubst.
 simpl.
 apply tposr_pi2_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 u' n); auto with coc.
@@ -115,15 +115,11 @@ apply tposr_eq_trans with (llift_rec 1 X n) ; auto with coc.
 apply tposr_coerce_prod with s ; eauto with coc ecoc.
 
 
-assert (tposr_wf (llift_rec 1 A' n :: f)) by (apply wf_cons with (llift_rec 1 A' n) s ; eauto with coc).
-assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with (llift_rec 1 A0 n) s ; eauto with coc).
-apply tposr_coerce_sum with s s' ; auto with coc.
+apply tposr_coerce_sum with s s' ; eauto with coc ecoc.
 
-assert (tposr_wf (llift_rec 1 U n :: f)) by (apply wf_cons with (llift_rec 1 U n) set ; eauto with coc).
-apply tposr_coerce_sub_l ; auto with coc.
+apply tposr_coerce_sub_l ; eauto with coc ecoc.
 
-assert (tposr_wf (llift_rec 1 U' n :: f)) by (apply wf_cons with (llift_rec 1 U' n) set ; eauto with coc).
-apply tposr_coerce_sub_r ; auto with coc.
+apply tposr_coerce_sub_r ; eauto with coc ecoc.
 
 apply tposr_coerce_trans with (llift_rec 1 B n) ; auto with coc.
 Qed.
@@ -181,11 +177,10 @@ intros.
 inversion_clear H2.
 apply thinning; auto with coc core arith datatypes.
 apply H with f; auto with coc core arith datatypes.
-apply wf_tposr with x A' (Srt_l s); auto with coc core arith datatypes.
+apply wf_tposr with x x (Srt_l s); auto with coc core arith datatypes.
 
-apply wf_cons with A' s; auto with coc core arith datatypes.
+apply wf_cons with s; auto with coc core arith datatypes.
 Qed.
-
 
 Lemma thinning_n_eq :
    forall n e f,
@@ -209,9 +204,9 @@ intros.
 inversion_clear H2.
 apply thinning_eq; auto with coc core arith datatypes.
 apply H with f; auto with coc core arith datatypes.
-apply wf_tposr with x A' (Srt_l s0); auto with coc core arith datatypes.
+apply wf_tposr with x x (Srt_l s0); auto with coc core arith datatypes.
 
-apply wf_cons with A' s0; auto with coc core arith datatypes.
+apply wf_cons with s0; auto with coc core arith datatypes.
 Qed.
 
 Lemma thinning_n_coerce :
@@ -236,9 +231,9 @@ intros.
 inversion_clear H2.
 apply thinning_coerce; auto with coc core arith datatypes.
 apply H with f; auto with coc core arith datatypes.
-apply wf_tposr with x A' (Srt_l s0); auto with coc core arith datatypes.
+apply wf_tposr with x x (Srt_l s0); auto with coc core arith datatypes.
 
-apply wf_cons with A' s0; auto with coc core arith datatypes.
+apply wf_cons with s0; auto with coc core arith datatypes.
 Qed.
 
 Lemma wf_sort_lift :
@@ -254,9 +249,9 @@ inversion_clear H2.
 inversion_clear H.
 exists s.
 replace (Srt_l s) with (llift 1 (Srt_l s)); auto with coc core arith datatypes.
-exists (llift 1 A').
+exists (llift 1 l).
 apply thinning; auto with coc core arith datatypes.
-apply wf_cons with A' s; auto with coc core arith datatypes.
+apply wf_cons with s; auto with coc core arith datatypes.
 
 intros.
 elim H1; intros.
@@ -272,7 +267,7 @@ destruct H6.
 exists (llift 1 x1).
 change (tposr (y :: l) (llift 1 (llift (S n0) x)) (llift 1 x1) (llift 1 (Srt_l x0))) in |- *.
 apply thinning; auto with coc core arith datatypes.
-apply wf_cons with A' s; auto with coc core arith datatypes.
+apply wf_cons with s; auto with coc core arith datatypes.
 
 exists x; auto with coc core arith datatypes.
 
