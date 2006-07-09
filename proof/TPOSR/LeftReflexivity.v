@@ -61,7 +61,7 @@ Proof.
   apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
 
   apply tposr_pi1 with s1 s2 s3; auto with coc ecoc.
-  apply tposr_pair with s1 s2 s3 ; auto with coc ecoc.
+  eauto with coc ecoc.
 
   apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
 

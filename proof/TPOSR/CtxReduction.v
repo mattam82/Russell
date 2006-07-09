@@ -161,11 +161,11 @@ apply tposr_pair with s1 s2 s3 ; eauto with coc ecoc.
 
 apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
 
-apply tposr_pi1_red with A' s1 B' s2 s3 v' ; eauto with coc ecoc.
+apply tposr_pi1_red with s1 s2 s3 A'' B'' v' ; eauto with coc ecoc.
 
 apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
 
-apply tposr_pi2_red with A' s1 B' s2 s3 u' ; eauto with coc ecoc.
+apply tposr_pi2_red with s1 s2 s3 A'' B'' u' ; eauto with coc ecoc.
 
 inversion H.
 inversion H0.

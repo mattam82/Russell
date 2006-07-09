@@ -17,6 +17,112 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 Implicit Types e f g : lenv.
 
+Lemma tposr_pair_red_left_aux : forall e t u T, e |-- t -> u : T ->
+  forall A B a b, t = Pair_l (Sum_l A B) a b -> 
+  u = t ->
+  e |-- a -> a : A.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+
+  pose (IHtposr  _ _ _ _ H1 H2).
+  assumption.
+
+  inversion H4 ; inversion H5.
+  subst.
+  assumption.
+Qed. 
+
+Lemma tposr_pair_red_left : forall e A B a b T, e |-- Pair_l (Sum_l A B) a b -> Pair_l (Sum_l A B) a b : T ->
+  e |-- a -> a : A.
+Proof.
+  intros ; eapply tposr_pair_red_left_aux ; eauto with coc.
+Qed.
+
+Lemma tposr_pair_red_comp_aux : forall e t u T, e |-- t -> u : T ->
+  forall A B a b, t = Pair_l (Sum_l A B) a b -> 
+  forall A' B' a' b', u = Pair_l (Sum_l A' B') a' b' ->
+  e |-- a -> a' : A /\ e |-- b -> b' : lsubst a B.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+
+  pose (IHtposr  _ _ _ _ H1 _ _ _ _ H2).
+  assumption.
+
+  inversion H4 ; inversion H5.
+  subst.
+  intuition.
+Qed. 
+
+Lemma tposr_pair_red_comp : forall e A B a b A' B' a' b' T, e |-- Pair_l (Sum_l A B) a b -> Pair_l (Sum_l A' B') a' b' : T ->
+  e |-- a -> a' : A /\ e |-- b -> b' : lsubst a B.
+Proof.
+  intros ; eapply tposr_pair_red_comp_aux ; eauto with coc.
+Qed.
+
+Lemma tposr_pair_coerce_left_aux : forall e t u T, e |-- t -> u : T ->
+  forall A B a b, t = Pair_l (Sum_l A B) a b -> 
+  forall A' B' a' b', u = Pair_l (Sum_l A' B') a' b' ->
+  exists s : sort, e |-- A -> A' : s.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+
+  pose (IHtposr _ _ _ _ H1 _ _ _ _ H2).
+  assumption.
+
+  inversion H4 ; inversion H5.
+  subst.
+  exists s1.
+  eauto with coc ecoc.
+Qed. 
+
+Lemma tposr_pair_coerce_left : forall e A B a b A' B' a' b' T, e |-- Pair_l (Sum_l A B) a b -> Pair_l (Sum_l A' B') a' b' : T ->
+  exists s : sort, e |-- A -> A' : s.
+Proof.
+  intros ; eapply tposr_pair_coerce_left_aux ; eauto with coc.
+Qed.
+
+Lemma tposr_pair_red_right_aux : forall e t u T, e |-- t -> u : T ->
+  forall A B a b, t = Pair_l (Sum_l A B) a b -> u = t ->
+  e |-- b -> b : lsubst a B.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+
+  pose (IHtposr _ _ _ _ H1 H2).
+  assumption.
+
+  inversion H4 ; inversion H5.
+  subst.
+  assumption.
+Qed. 
+
+Lemma tposr_pair_red_right : forall e A B a b T, e |-- Pair_l (Sum_l A B) a b -> Pair_l (Sum_l A B) a b : T ->
+  e |-- b -> b : lsubst a B.
+Proof.
+  intros ; eapply tposr_pair_red_right_aux ; eauto with coc.
+Qed.
+
+Lemma tposr_pair_coerce_right_aux : forall e t u T, e |-- t -> u : T ->
+  forall A B a b, t = Pair_l (Sum_l A B) a b -> 
+  forall A' B' a' b', u = Pair_l (Sum_l A' B') a' b' ->
+  exists s : sort, (A :: e) |-- B -> B' : s.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+
+  pose (IHtposr _ _ _ _ H1 _ _ _ _ H2).
+  assumption.
+
+  inversion H4 ; inversion H5.
+  subst.
+  exists s2.
+  eauto with coc ecoc.
+Qed. 
+
+Lemma tposr_pair_coerce_right : forall e A B a b A' B' a' b' T, e |-- Pair_l (Sum_l A B) a b -> Pair_l (Sum_l A' B') a' b' : T ->
+  exists s : sort, (A :: e) |-- B -> B' : s.
+Proof.
+  intros ; eapply tposr_pair_coerce_right_aux ; eauto with coc.
+Qed.
+
 Lemma ind_right_refl : 
   (forall e u v T, e |-- u -> v : T -> e |-- v -> v : T) /\
   (forall e, tposr_wf e -> True) /\
@@ -74,25 +180,63 @@ Proof.
  apply tposr_conv with (lsubst u B) s2 ; auto with coc.
  apply substitution_tposr_coerce with A ; eauto with coc ecoc.
  
-  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+  apply tposr_coerce_sum with s1 s2 ; auto with coc ecoc.
+  eauto with coc.
+  eauto with coc.
   apply coerce_red_env with (A :: e) ; auto with coc.
+  eauto with coc.
+  apply tposr_red_env with (A :: e) ; auto with coc.
   eauto with coc.
 
   (* Pi1_l *)
   apply tposr_conv with A' s1 ; auto with coc.
-  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  assert(coerce_in_env (A :: e) (A' :: e)).
+  apply coerce_env_hd with s1 ; auto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc ecoc.
+  apply coerce_coerce_env with (A :: e) ; auto with coc.
+  apply tposr_conv with (Sum_l A B) s3 ; auto with coc.
+  apply tposr_coerce_sum with s1 s2 ; auto with coc.
+  apply tposr_coerce_env with (A :: e) ; auto with coc.
+  apply tposr_conv with A' s1 ; auto with coc.
+  pose (tposr_pair_red_left H2) .
+  destruct (tposr_pair_coerce_left t2) .
+  apply tposr_conv with A'' x ; eauto with coc.
 
   (* Pi2 *)
+  assert(coerce_in_env (A :: e) (A' :: e)).
+  apply coerce_env_hd with s1 ; auto with coc.
+
   apply tposr_conv with (lsubst (Pi1_l (Sum_l A' B') t') B') s2 ; auto with coc.  
   apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
   apply tposr_coerce_sym.
   apply substitution_tposr_coerce with A' ; eauto with coc.
   apply coerce_coerce_env with (A :: e) ; eauto with coc.
-  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc ecoc.
+  apply coerce_coerce_env with (A :: e) ; auto with coc.
+  apply tposr_conv with (Sum_l A B) s3 ; auto with coc.
+  apply tposr_coerce_sum with s1 s2 ; auto with coc.
+  apply tposr_coerce_env with (A :: e) ; auto with coc.
 
-  apply tposr_conv with  (lsubst u B) s2 ; auto with coc. 
+  assert(coerce_in_env (A :: e) (A' :: e)).
+  apply coerce_env_hd with s1 ; auto with coc.
+
+  apply tposr_conv with  (lsubst u B') s2 ; auto with coc. 
+  pose (tposr_pair_red_right H2) .
+  destruct (tposr_pair_coerce_right t2) .
+  apply tposr_conv with (lsubst u' B'') x ; auto with coc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with A' ; eauto with coc.
+  destruct(tposr_pair_red_comp t2).
+  assumption.
+  destruct(tposr_pair_red_comp H2).
+  destruct(tposr_pair_coerce_left t2).
+  apply tposr_conv with A'' x0 ; eauto with coc.
+
   apply tposr_coerce_sym.
   apply substitution_tposr_coerce with A ; eauto with coc.
+  destruct (tposr_pair_red_comp t2).
+  pose (refl_l H6).
+  apply tposr_conv with A' s1 ; auto with coc.
 
   apply tposr_prod with s ; eauto with coc ecoc.
 

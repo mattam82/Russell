@@ -93,10 +93,12 @@ apply H1 ; eauto with coc.
 apply wf_cons with s1 ; eauto with coc.
 
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
-apply tposr_pi1_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 v' n); auto with coc.
+apply tposr_pi1_red with s1 s2 s3 (llift_rec 1 A'' n) (llift_rec 1 B'' (S n)) (llift_rec 1 v' n) ; auto with coc.
+
+(*apply tposr_pi1_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 v' n); auto with coc.
 rewrite <- distr_llift_lsubst.
 auto with coc.
-
+*)
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 rewrite distr_llift_lsubst.
 simpl.
@@ -105,10 +107,12 @@ apply tposr_pi2 with s1 s2 s3 ; auto with coc.
 assert (tposr_wf (llift_rec 1 A0 n :: f)) by (apply wf_cons with s1 ; eauto with coc).
 rewrite distr_llift_lsubst.
 simpl.
+apply tposr_pi2_red with s1 s2 s3 (llift_rec 1 A'' n) (llift_rec 1 B'' (S n)) (llift_rec 1 u' n) ; auto with coc.
+(*
 apply tposr_pi2_red with (llift_rec 1 A' n) s1 (llift_rec 1 B' (S n))  s2 s3 (llift_rec 1 u' n); auto with coc.
 rewrite <- distr_llift_lsubst.
 auto with coc.
-
+*)
 apply tposr_eq_trans with (llift_rec 1 X n) ; auto with coc.
 
 

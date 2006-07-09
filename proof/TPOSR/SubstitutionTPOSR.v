@@ -260,12 +260,12 @@ assert(sub_in_lenv d T (S n) (A :: e) (lsubst_rec d A n :: f)).
 apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
 apply trunc_S ; auto with coc.
-destruct (H0 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
-destruct (H1 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
+destruct (H1 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
 destruct (H2 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
-apply tposr_pi1_red with (lsubst_rec d' A' n) s1 (lsubst_rec d' B' (S n))  s2 s3 (lsubst_rec d' v' n); eauto with coc.
-rewrite <- distr_lsubst.
-eauto with coc.
+destruct (H0 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
+apply tposr_pi1_red with s1 s2 s3 (lsubst_rec d' A'' n) (lsubst_rec d' B'' (S n)) (lsubst_rec d' v' n); eauto with coc.
+destruct (H0 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto with coc.
+destruct (H1 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H9 H10) ; auto with coc.
 
 rewrite distr_lsubst.
 simpl.
@@ -289,11 +289,12 @@ assert(sub_in_lenv d T (S n) (A :: e) (lsubst_rec d A n :: f)).
 apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
 apply trunc_S ; auto with coc.
-destruct (H0 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
-destruct (H1 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
+destruct (H1 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
 destruct (H2 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
-apply tposr_pi2_red with (lsubst_rec d' A' n) s1 (lsubst_rec d' B' (S n))  s2 s3 (lsubst_rec d' u' n); eauto with coc.
-rewrite <- distr_lsubst ; eauto with coc.
+destruct (H0 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
+apply tposr_pi2_red with s1 s2 s3 (lsubst_rec d' A'' n) (lsubst_rec d' B'' (S n)) (lsubst_rec d' u' n); eauto with coc.
+destruct (H0 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto with coc.
+destruct (H1 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H9 H10) ; auto with coc.
 
 inversion H1.
 inversion H2 ; subst.
