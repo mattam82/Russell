@@ -6,9 +6,9 @@ Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.CtxReduction.
-Require Import Lambda.TPOSR.CtxCoercion.
+Require Import Lambda.TPOSR.PreCtxCoercion.
 Require Import Lambda.TPOSR.Substitution.
-Require Import Lambda.TPOSR.SubstitutionTPOSR.
+Require Import Lambda.TPOSR.PreSubstitutionTPOSR.
 
 Set Implicit Arguments.
 
@@ -258,32 +258,34 @@ Proof.
   apply (refl_r H).
 Qed.
 
+Corollary eq_refls : forall e u v s, e |-- u ~= v : s -> e |-- u -> u : s /\ e |-- v -> v : s.
+Proof (proj1 (proj2 (proj2 (ind_right_refl)))).
+
 Corollary eq_refl_l : forall e u v s, e |-- u ~= v : s -> e |-- u -> u : s.
 Proof.
-  pose (proj1 (proj2 (proj2 (ind_right_refl)))).
   intros.
-  destruct (a _ _ _ _ H) ; auto.
+  destruct (eq_refls H) ; auto.
 Qed. 
 
 Corollary eq_refl_r : forall e u v s, e |-- u ~= v : s -> e |-- v -> v : s.
 Proof.
-  pose (proj1 (proj2 (proj2 (ind_right_refl)))).
   intros.
-  destruct (a _ _ _ _ H) ; auto.
+  destruct (eq_refls H) ; auto.
 Qed. 
+
+Corollary coerce_refls : forall e u v s, e |-- u >-> v : s -> e |-- u -> u : s /\ e |-- v -> v : s.
+Proof (proj2 (proj2 (proj2 (ind_right_refl)))).
 
 Corollary coerce_refl_l : forall e u v s, e |-- u >-> v : s -> e |-- u -> u : s.
 Proof.
-  pose (proj2 (proj2 (proj2 (ind_right_refl)))).
   intros.
-  destruct (a _ _ _ _ H) ; auto.
-Qed. 
+  destruct (coerce_refls H) ; auto.
+Qed.
 
 Corollary coerce_refl_r : forall e u v s, e |-- u >-> v : s -> e |-- v -> v : s.
 Proof.
-  pose (proj2 (proj2 (proj2 (ind_right_refl)))).
   intros.
-  destruct (a _ _ _ _ H) ; auto.
+  destruct (coerce_refls H) ; auto.
 Qed. 
 
 Hint Resolve refl_r tposrp_refl_r eq_refl_l eq_refl_r coerce_refl_l coerce_refl_r : coc.

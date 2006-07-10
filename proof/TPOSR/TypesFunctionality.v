@@ -75,7 +75,7 @@ Proof.
   induction 1 ; simpl ; intros ; auto with coc.
 
   apply tposr_eq_trans with (Prod_l Y Y0) ; auto.
-  destruct (eq_refls H0).
+  pose (eq_refl_l H0) ;   pose (eq_refl_r H0) ; 
   apply pi_conv_left with s ; auto with coc.
   apply pi_conv_right with s ; auto with coc.
   apply (refl_r H).
@@ -89,7 +89,7 @@ Proof.
 
   apply tposr_eq_trans with (Prod_l X Y0) ; auto with coc.
   apply IHtposr_eq1.
-  destruct(eq_refls H1).
+  pose (eq_refl_l H1) ;  pose (eq_refl_r H1).
   auto with coc.
 
   apply IHtposr_eq2.

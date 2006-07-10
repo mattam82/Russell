@@ -12,8 +12,9 @@ Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.SubstitutionTPOSR.
 Require Import Lambda.TPOSR.CtxConversion.
-Require Import Lambda.TPOSR.Coercion.
+Require Import Lambda.TPOSR.CtxCoercion.
 Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.UnicityOfSorting.
 Require Import Lambda.TPOSR.Equiv.
@@ -291,7 +292,7 @@ Proof.
   apply (coerce_refl_l H25).
   apply (coerce_refl_r H0).
   apply tposr_coerce_sym.
-  apply substitution_coerce with A0 ; auto with coc.
+  apply substitution_tposr_coerce with A0 ; auto with coc.
   apply (fromd H2).
 
   assert(G |-- App_l a0 a2 a1 -> App_l B x1 x0 : lsubst N0 B).
@@ -308,7 +309,7 @@ Proof.
   apply (coerce_refl_l H25).
   apply (coerce_refl_r H25).
   apply tposr_coerce_sym.
-  apply substitution_coerce with a ; auto with coc.
+  apply substitution_tposr_coerce with a ; auto with coc.
   apply (fromd H11).
 
   intuition ; auto with coc.
@@ -351,24 +352,24 @@ Proof.
   rewrite H36.
   apply tposr_beta with a3 b2 B' s2 ; auto with coc.
   apply (eq_refl_r H43).
-  apply type_coerce_env with (A0 :: G) ; auto with coc.
+  apply tposr_coerce_env with (A0 :: G) ; auto with coc.
   apply (coerce_refl_r H0).
   apply conv_env with (a :: G) ; auto with coc.
   apply tposr_conv with B s2 ; auto with coc.
   apply tposr_conv_l with a b2 ; auto with coc.
 
   apply tposr_coerce_sym.
-  apply substitution_coerce with A0 ; auto with coc.
+  apply substitution_tposr_coerce with A0 ; auto with coc.
   apply (fromd H2).
 
   assert(G |-- lsubst a1 b0 -> lsubst x0 x1 : lsubst N0 B).
   apply tposr_conv with (lsubst a1 B') s2 ; auto with coc.
 
-  apply substitution with a ; auto with coc.
+  apply substitution_tposr_tposr with a ; auto with coc.
   apply tposr_conv with B s2 ; auto with coc.
 
   apply tposr_coerce_sym.   
-  apply substitution_coerce with a ; auto with coc.
+  apply substitution_tposr_coerce with a ; auto with coc.
   apply (fromd H11).
   
   intuition ; auto with coc.

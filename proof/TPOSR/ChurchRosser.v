@@ -12,9 +12,10 @@ Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
-Require Import Lambda.TPOSR.CtxConversion.
+Require Import Lambda.TPOSR.SubstitutionTPOSR.
 Require Import Lambda.TPOSR.RightReflexivity.
-Require Import Lambda.TPOSR.Coercion.
+Require Import Lambda.TPOSR.CtxCoercion.
+Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.Validity.
@@ -273,29 +274,18 @@ Proof.
   rewrite e0 in H0.
   elim (tposr_not_kind (coerce_refl_l H0)).
 
-  rewrite H5 in H3.
-  pose (tposr_sort_kinded (coerce_refl_l H3) (refl_equal (Srt_l set))).
+  rewrite H7 in H3.
+  pose (tposr_sort_kinded (refl_l H3) (refl_equal (Srt_l set))).
   injection e0 ; intros.
-  rewrite H6 in H1.
+  rewrite H8 in H1.
   destruct H1 ; intuition ; try discriminate.
-  destruct (inv_subst_sort _ _ _ H5) ; try discriminate.
-  rewrite H6 in H4.
-  pose (tposr_sort_kinded (coerce_refl_l H4) (refl_equal (Srt_l set))).
+  destruct (inv_subst_sort _ _ _ H7) ; try discriminate.
+  rewrite H8 in H5.
+  pose (tposr_sort_kinded (coerce_refl_l H5) (refl_equal (Srt_l set))).
   injection e0 ; intros.
-  rewrite H7 in H1.
+  rewrite H9 in H1.
   destruct H1 ; intuition ; try discriminate.
 Qed.
-(*
-Lemma tposr_eq_sort_red : forall G T s s', G |-- T ~= (Srt_l s) : s' ->
-  lred T (Srt_l s).
-Proof.
-  intros.
-  pose (tposr_eq_cr H) ; destruct_exists.
-  pose (tposrp_sort H1).
-  rewrite e in H0.
-  apply (tposrp_lred H0).
-Qed.
-*)
 
 Lemma tposr_sort_eq_aux : forall e t u T, e |-- t -> u : T ->
   forall s, t = Srt_l s -> u = Srt_l s.

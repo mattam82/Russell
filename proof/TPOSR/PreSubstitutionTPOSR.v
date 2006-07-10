@@ -10,7 +10,7 @@ Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.CtxReduction.
 Require Import Lambda.TPOSR.CtxExpansion.
-Require Import Lambda.TPOSR.CtxCoercion.
+Require Import Lambda.TPOSR.PreCtxCoercion.
 Require Import Lambda.TPOSR.Substitution.
 
 Require Import Coq.Arith.Lt.

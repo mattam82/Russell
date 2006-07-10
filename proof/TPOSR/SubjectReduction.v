@@ -15,7 +15,7 @@ Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.UnicityOfSorting.
-Require Import Lambda.TPOSR.Coercion.
+Require Import Lambda.TPOSR.CtxCoercion.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.TypesDepth.

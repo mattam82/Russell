@@ -10,7 +10,7 @@ Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.RightReflexivity.
-Require Import Lambda.TPOSR.Coercion.
+Require Import Lambda.TPOSR.CtxCoercion.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.UnicityOfSorting.
 Require Import Lambda.TPOSR.ChurchRosser.

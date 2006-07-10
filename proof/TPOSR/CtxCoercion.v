@@ -4,8 +4,7 @@ Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.Types.
-Require Import Lambda.TPOSR.Basic.
-Require Import Lambda.TPOSR.CtxCoercion.
+Require Import Lambda.TPOSR.PreCtxCoercion.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.RightReflexivity.
 
@@ -24,31 +23,47 @@ Inductive coerce_in_env : lenv -> lenv -> Prop :=
 
 Hint Resolve coerce_env_hd coerce_env_tl: coc.
 
-Lemma coerce_in_env_pre : forall e f, coerce_in_env e f -> CtxCoercion.
+Lemma coerce_in_env_pre : forall e f, coerce_in_env e f -> pre_coerce_in_env e f.
+Proof.
+  induction 1 ; simpl ; intros ; eauto with coc.
+  inversion H.
+  apply pre_coerce_env_tl with s ; auto.
+Qed.
 
-
-Lemma type_coerce_env : forall e t u T, e |-- t -> u : T -> 
+Lemma tposr_coerce_env : forall e t u T, e |-- t -> u : T -> 
   forall f, coerce_in_env e f -> f |-- t -> u : T.
-Proof (proj1 ind_conv_env).
+Proof.
+  intros.
+  eapply tposr_pre_coerce_env ; eauto with coc.
+  apply coerce_in_env_pre ; auto.
+Qed.
 
 Lemma eq_coerce_env : forall e T U s, e |-- T ~= U : s -> 
   forall f, coerce_in_env e f -> f |-- T ~= U : s.
-Proof (proj1 (proj2 (proj2 ind_conv_env))).
+Proof.
+  intros.
+  eapply eq_pre_coerce_env ; eauto with coc.
+  apply coerce_in_env_pre ; auto.
+Qed.
 
 Lemma coerce_coerce_env : forall e T U s, e |-- T >-> U : s -> 
   forall f, coerce_in_env e f -> f |-- T >-> U : s.
-Proof (proj2 (proj2 (proj2 ind_conv_env))).
+Proof.
+  intros.
+  eapply coerce_pre_coerce_env ; eauto with coc.
+  apply coerce_in_env_pre ; auto.
+Qed.
 
 Corollary tposrp_coerce_env : forall e t u T, e |-- t -+> u : T -> 
   forall f, coerce_in_env e f -> f |-- t -+> u : T.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc.
   apply tposrp_tposr.
-  eapply type_coerce_env ; eauto with coc.
+  eapply tposr_coerce_env ; eauto with coc.
   apply tposrp_trans with X ; auto with coc.
 Qed.
 
-Hint Resolve type_coerce_env eq_coerce_env coerce_coerce_env : ecoc.
+Hint Resolve tposr_coerce_env eq_coerce_env coerce_coerce_env : ecoc.
 
 Lemma coerce_in_env_sym : forall e f, coerce_in_env e f -> coerce_in_env f e.
 Proof.
@@ -57,13 +72,13 @@ Proof.
   apply coerce_env_tl ; auto with coc.
   inversion H.
   subst.
-  apply wf_cons with A' s.
-  apply type_coerce_env with f ; auto with coc.
+  apply wf_cons with s ; eauto with coc ecoc.
 Qed.
 
 Hint Resolve coerce_in_env_sym : coc.
 
 Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.PreSubstitutionTPOSR.
 
 Lemma substitution_coerce_tposrp : 
   forall e d d' t, e |-- d -+> d' : t -> 
@@ -71,11 +86,11 @@ Lemma substitution_coerce_tposrp :
 Proof.
   induction 1 ; intros.
   
-  apply substitution_coerce with Z ; auto.
+  apply substitution_tposr_coerce with Z ; eauto with coc.
+
   apply tposr_coerce_trans with (lsubst X u) ; auto.
   apply IHtposrp1.
   apply tposr_coerce_conv ; apply tposr_eq_tposr ; auto.
   apply (coerce_refl_l H1).
 Qed.
-
 

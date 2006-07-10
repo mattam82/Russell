@@ -67,11 +67,12 @@ TPOSR/CtxReduction.v
 TPOSR/CtxExpansion.v
 TPOSR/LeftReflexivity.v
 TPOSR/Substitution.v
-TPOSR/SubstitutionTPOSR.v
+TPOSR/PreSubstitutionTPOSR.v
 TPOSR/PreCtxCoercion.v
 TPOSR/RightReflexivity.v
 TPOSR/CtxConversion.v
 TPOSR/CtxCoercion.v
+TPOSR/SubstitutionTPOSR.v
 TPOSR/Equiv.v
 TPOSR/Generation.v
 TPOSR/Validity.v
