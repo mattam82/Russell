@@ -37,7 +37,7 @@ Inductive coerce_rc_depth : lenv -> lterm -> lterm -> sort -> nat -> Prop :=
   (* derivable *) e |-- A' -> A' : s -> e |-- A -> A : s ->
   forall s' m, (A :: e) |-- B >-> B' : s' [m] ->
   (* derivable *) A :: e |-- B -> B : s' -> A' :: e |-- B' -> B' : s' ->
-  forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
+  forall s'', sum_sort s s' s'' ->
   e |-- (Sum_l A B) >-> (Sum_l A' B') : s'' [S (max n m)]
 
   | coerce_rc_depth_sub_l : forall e U P U' n,

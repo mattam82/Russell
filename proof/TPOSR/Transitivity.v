@@ -25,21 +25,41 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 
+
+Theorem coerces_trans : forall e A B C s, e |-- A >>> B : s -> e |-- B >>> C : s ->
+  e |-- A >>> C : s.
+Proof.
+  intros.
+  set (x := depth H).
+  set (y := depth H0).
+  set (sum := x + y).
+  apply (@coerce_trans_aux sum e A B s H C H0).
+  unfold sum, x, y.
+  reflexivity.
+Qed.
+
+Require Import Lambda.TPOSR.CoerceDepth.
+
+Theorem coerce_rc_depth_trans : forall e A B C s n1 n2, e |-- A >-> B : s [n1] -> e |-- B >-> C : s [n2]->
+  exists m, e |-- A >-> C : s [m].
+Proof.
+  intros.
+  destruct (coerce_rc_depth_coerces H).
+  destruct (coerce_rc_depth_coerces H0).
+  pose (coerces_trans x x0).
+  pose (coerces_coerce_rc_depth c).
+  exists (depth c) ; auto.
+Qed.
+
 Theorem coerce_rc_depth_sym : forall e A B s n, e |-- A >-> B : s [n] ->
   e |-- B >-> A : s [n].
 Proof.
-  induction 1 ; simpl ; intros ; auto with coc.
-
-  apply coerce_rc_depth_prod with s ; eauto with coc ecoc.
-  apply coerce_rc_depth_conv_env with (A' :: e) ; auto with coc.
-  apply coerce_rc_depth_env_hd with s n ; auto.
-
-  apply coerce_rc_depth_sum with s s' ; eauto with coc ecoc.
-  apply coerce_rc_depth_conv_env with (A :: e) ; auto with coc.
-  apply coerce_rc_depth_env_hd with s n ; auto.
-
-  apply coerce_rc_depth_conv_r with B ; eauto with coc ecoc.
-  apply coerce_rc_depth_conv_l with B ; eauto with coc ecoc.
+  intros.
+  destruct (coerce_rc_depth_coerces H).
+  destruct (coerces_sym x).
+  pose (coerces_coerce_rc_depth x0).
+  rewrite <- H0.
+  rewrite <- e0 ; auto.
 Qed.
 
 Theorem coerce_coerce_rc_depth : forall e A B s, e |-- A >-> B : s -> exists n, e |-- A >-> B : s [n].

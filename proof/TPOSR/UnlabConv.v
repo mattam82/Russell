@@ -259,7 +259,7 @@ Proof.
   apply conv_env_trans with (T :: f) ; eauto with coc.
   apply IHconv_in_env_full2.
   inversion H1.
-  apply wf_cons with A' s.
+  apply wf_cons with s.
   apply conv_env_full with e ; auto with coc.
 
   apply conv_env_in_env ; auto with coc.
@@ -353,10 +353,9 @@ Proof.
   intros.
   apply conv_env_full_cons ; auto.
   inversion H ; inversion H0 ; subst.
-  assert(G |-- a0 -> A'0 : Srt_l s0).
-  apply conv_env_full with D ; auto.
+  apply wf_cons with s0 ; auto.
+  apply conv_env_full with D ; auto with coc.
   apply conv_env_full_sym ; auto.
-  apply wf_cons with A'0 s0 ; auto.
 
   inversion H ; inversion H0 ; subst ; 
   apply IHG ; eauto with coc.

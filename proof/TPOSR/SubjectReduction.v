@@ -64,7 +64,7 @@ Proof.
   pose (IHpar_lred1_1 _ _ H9).
   apply tposr_beta with T x2 Typ b0 ; auto with coc.
   apply (coerce_refl_r H11).
-  apply type_coerce_env with (a :: e) ; auto with coc.
+  apply tposr_coerce_env with (a :: e) ; auto with coc.
   apply (coerce_refl_l H4).
   apply coerce_env_hd with x2 ; auto with coc.
   apply tposr_conv with x1 b0 ; auto with coc.
@@ -98,7 +98,7 @@ Proof.
   pose (unique_sort (coerce_refl_r H5) (fromd H8)).
   pose (unique_sort (coerce_refl_l H19) (fromd H3)).
   assert(a :: e |-- a2 -> b3 : Srt_l c3).
-  apply type_coerce_env with (a1 :: e) ; auto with coc.
+  apply tposr_coerce_env with (a1 :: e) ; auto with coc.
   apply (fromd H10).
   apply coerce_env_hd with a5 ; auto with coc.
 
@@ -118,9 +118,10 @@ Proof.
 
   apply (fromd H17).
   
-  rewrite <- e0 ; auto.
+  rewrite <- e0 ; eauto with coc.
+  rewrite <- e0 ; eauto with coc.
 
-  rewrite <- e2 ; auto.
+  rewrite <- e2 ; eauto with coc.
   
   pose (generation_pair_depth H11) ; destruct_exists.
   generalize dependent e.
@@ -146,8 +147,17 @@ Proof.
   apply (fromd H17).
 
   apply (fromd H22).
-  rewrite e0 ; assumption.
+  rewrite e0 ; eauto with coc.
+  rewrite e0 ; eauto with coc.
+  
   rewrite <- e1 ; assumption.
+
+  apply tposr_coerce_sum with c c0 ; eauto with coc ecoc.
+  rewrite <- e0.
+  rewrite e1.
+  auto.
+eauto with coc ecoc.
+
 
   (* Pi2 *)
   pose (generation_pi2_depth H0).

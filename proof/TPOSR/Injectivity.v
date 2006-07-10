@@ -100,19 +100,19 @@ Proof.
 
   elim tposr_eq_prod_sum with e A B A0 B0 s' ; auto with coc.
 
+  pose (injectivity_of_sum H6).
   pose (injectivity_of_sum H7).
-  pose (injectivity_of_sum H8).
   destruct_exists.
   pose (coerce_rc_depth_coerce H).
   pose (coerce_rc_depth_coerce H2).
-  rewrite <- (unique_sort (coerce_refl_l t) (eq_refl_l H10)) in H10.
-  rewrite <- (unique_sort (coerce_refl_r t) (eq_refl_l H9)) in H9.
-  rewrite <- (unique_sort (coerce_refl_l t0) (eq_refl_l H13)) in H13.
+  rewrite <- (unique_sort (coerce_refl_l t) (eq_refl_l H9)) in H9.
+  rewrite <- (unique_sort (coerce_refl_r t) (eq_refl_l H8)) in H8.
+  rewrite <- (unique_sort (coerce_refl_l t0) (eq_refl_l H12)) in H12.
   assert(A :: e |-- B' ~= B'0 : b).
   apply eq_coerce_env with (A' :: e) ; auto with coc.
   eauto with coc.
-  rewrite <- (unique_sort (coerce_refl_r t0) (eq_refl_l H15)) in H11.
-  rewrite <- (unique_sort (coerce_refl_r t0) (eq_refl_l H15)) in H15.
+  rewrite <- (unique_sort (coerce_refl_r t0) (eq_refl_l H14)) in H10.
+  rewrite <- (unique_sort (coerce_refl_r t0) (eq_refl_l H14)) in H14.
 
   exists s s' ; intuition ; auto with coc.
   apply tposr_coerce_trans with A' ; auto with coc.

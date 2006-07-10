@@ -343,7 +343,7 @@ Admitted.
   apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
   apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
   apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
-  apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
+  apply eq_conv_env with (A'' :: e) ; eauto with coc ecoc.
 Qed.
 *)
 Lemma tposrp_pi2 : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
@@ -387,14 +387,14 @@ Admitted.
   eauto with coc.
   apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
   apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
-  apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
+  apply eq_conv_env with (A'' :: e) ; eauto with coc ecoc.
 
   apply tposr_pi2 with s1 s2 s3 ; auto with coc ecoc.
   eauto with coc.
   eauto with coc.
   apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
   apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
-  apply conv_env_eq with (A'' :: e) ; eauto with coc ecoc.
+  apply eq_conv_env with (A'' :: e) ; eauto with coc ecoc.
 Qed.*)
 
 Lemma tposrp_substitution : forall e d d' t, e |-- d -+> d' : t ->

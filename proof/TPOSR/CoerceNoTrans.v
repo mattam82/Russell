@@ -9,6 +9,9 @@ Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.LeftReflexivity.
+Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.CtxCoercion.
 
 Set Implicit Arguments.
 
@@ -34,7 +37,7 @@ Inductive coerces : lenv -> lterm -> lterm -> sort -> Set :=
   (* derivable *) e |-- A' -> A' : s -> e |-- A -> A : s ->
   forall s', (A :: e) |-- B >>> B' : s' ->
   (* derivable *) A :: e |-- B -> B : s' -> A' :: e |-- B' -> B' : s' ->
-  forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
+  forall s'', sum_sort s s' s'' -> 
   e |-- (Sum_l A B) >>> (Sum_l A' B') : s''
 
   | coerces_sub_l : forall e U P U',
@@ -68,7 +71,7 @@ Fixpoint depth (e : lenv) (T U : lterm) (s : sort) (d : e |-- T >>> U : s) {stru
   | coerces_refl e A s As => 0
   | coerces_prod e A B A' B' s HsubA A's As s' HsubBB' Bs B's =>
     S (max (depth HsubA) (depth HsubBB'))
-  | coerces_sum e A B A' B' s HsubA A's As s' HsubBB' Bs B's s'' sum sum' =>
+  | coerces_sum e A B A' B' s HsubA A's As s' HsubBB' Bs B's s'' sum =>
     S (max (depth HsubA) (depth HsubBB'))
   | coerces_sub_l e U P U' HsubU Ps => S (depth HsubU)
   | coerces_sub_r e U U' P HsubU Ps => S (depth HsubU)
@@ -79,35 +82,22 @@ Fixpoint depth (e : lenv) (T U : lterm) (s : sort) (d : e |-- T >>> U : s) {stru
 
 Require Import Lambda.TPOSR.CoerceDepth.
 
-Lemma coerces_coerce_rc_depth : forall G T U s, G |-- T >>> U : s -> exists n, G |-- T >-> U : s [n].
+Lemma coerces_coerce_rc_depth : forall G T U s, forall d : G |-- T >>> U : s,
+  G |-- T >-> U : s [depth d].
 Proof.
-  induction 1 ; intros ; auto with coc core.
+  induction d ; intros ; auto with coc core.
   
-  exists 0 ; auto with coc.
+  simpl ; apply coerce_rc_depth_prod with s ; auto.
 
-  destruct IHcoerces1.
-  destruct IHcoerces2.
-  exists (S (max x x0)) ; simpl ; auto with coc.
-  apply coerce_rc_depth_prod with s ; auto.
+  simpl ; apply coerce_rc_depth_sum with s s' ; auto.
 
-  destruct IHcoerces1.
-  destruct IHcoerces2.
-  exists (S (max x x0)) ; simpl ; auto with coc.
-  apply coerce_rc_depth_sum with s s' ; auto.
+  simpl ; auto with coc.
 
-  destruct IHcoerces.
-  exists (S x) ; simpl ; auto with coc.
+  simpl ; auto with coc.
 
-  destruct IHcoerces.
-  exists (S x) ; simpl ; auto with coc.
+  simpl ; apply coerce_rc_depth_conv_l with B ; auto with coc.
 
-  destruct IHcoerces.
-  exists (S x) ; simpl ; auto with coc.
-  apply coerce_rc_depth_conv_l with B ; auto with coc.
-
-  destruct IHcoerces.
-  exists (S x) ; simpl ; auto with coc.
-  apply coerce_rc_depth_conv_r with B ; auto with coc.
+  simpl ; apply coerce_rc_depth_conv_r with B ; auto with coc.
 Qed.
 
 Theorem coerce_rc_depth_coerces : forall e T U s n, e |-- T >-> U : s [n] -> 
@@ -126,7 +116,7 @@ Proof.
 
   destruct IHcoerce_rc_depth1.
   destruct IHcoerce_rc_depth2.
-  exists (coerces_sum x H0 H1 x0 H3 H4 H5 H6).
+  exists (coerces_sum x H0 H1 x0 H3 H4 H5).
   simpl ; auto.
 
   destruct IHcoerce_rc_depth.
@@ -156,13 +146,21 @@ Hint Resolve coerces_env_hd coerces_env_tl : ecoc.
 
 Require Import Lambda.TPOSR.CtxCoercion.
 
+Lemma coerces_coerce : forall e t u s, e |-- t >>> u : s -> e |-- t >-> u : s.
+Proof.
+  intros.
+  pose (coerces_coerce_rc_depth H).
+  apply (coerce_rc_depth_coerce c).
+Qed.
+
 Lemma coerces_in_env_coerce_in_env : forall e f, coerces_in_env e f -> coerce_in_env e f.
 Proof.
   induction 1 ; intros ; eauto with coc.
   apply coerce_env_hd with s.
-  destruct (coerces_coerce_rc_depth H).
-  apply (coerce_rc_depth_coerce H0).
+  apply coerces_coerce ; auto.
 Qed.
+
+Hint Resolve coerces_in_env_coerce_in_env : coc.
 
 Lemma tposr_coerces_env :
   forall e t T, forall d : (e |-- t -> t : T),
@@ -184,44 +182,137 @@ Proof.
   apply eq_coerce_env with e ; auto with coc.
 Qed.
 
-Lemma coerce_coerces_env :
+Lemma coerces_coerces_env :
   forall e T U s, forall d : (e |-- T >>> U : s), 
   forall f, coerces_in_env e f -> 
   tposr_wf f -> 
 	{ d' : f |-- T >>> U : s | (depth d') = depth d }.
 Proof.
   induction d ; simpl ; intros.
+
   pose(tposr_coerces_env t H H0).
   exists (coerces_refl t0).
   simpl ; auto.
-Admitted.
 
+  destruct (IHd1 f H H0).
+  assert(tposr_wf (A' :: f)) by (apply wf_cons with s ; eauto with coc ecoc).
+  assert(coerces_in_env (A' :: e) (A' :: f)).
+  apply coerces_env_tl ; eauto with coc ecoc.
+  destruct (IHd2 _ H2 H1).
+  assert(tposr_wf (A :: f)) by (apply wf_cons with s ; eauto with coc ecoc).
+  assert(coerces_in_env (A :: e) (A :: f)).
+  apply coerces_env_tl ; eauto with coc ecoc.
+  pose (tposr_coerces_env t H H0).
+  pose (tposr_coerces_env t0 H H0).
+  pose (tposr_coerces_env t1 H4 H3).
+  pose (tposr_coerces_env t2 H2 H1).
+  pose (coerces_prod x t3 t4 x0 t5 t6).
+  exists c.
+  simpl.
+  auto.
 
-Inductive coerce_rc_depth_in_env : lenv -> lenv -> Prop :=
-  | coerce_rc_depth_env_hd : forall e t u s n, e |-- t >-> u : s [n] -> 
-	coerce_rc_depth_in_env (u :: e) (t :: e)
-  | coerce_rc_depth_env_tl :
-        forall e f t, tposr_wf (t :: f) -> coerce_rc_depth_in_env e f -> coerce_rc_depth_in_env (t :: e) (t :: f).
+  destruct (IHd1 f H H0).
+  assert(tposr_wf (A' :: f)) by (apply wf_cons with s ; eauto with coc ecoc).
+  assert(coerces_in_env (A' :: e) (A' :: f)).
+  apply coerces_env_tl ; eauto with coc ecoc.
+  assert(tposr_wf (A :: f)) by (apply wf_cons with s ; eauto with coc ecoc).
+  assert(coerces_in_env (A :: e) (A :: f)).
+  apply coerces_env_tl ; eauto with coc ecoc.
+  destruct (IHd2 _ H4 H3).
+  pose (tposr_coerces_env t H H0).
+  pose (tposr_coerces_env t0 H H0).
+  pose (tposr_coerces_env t1 H4 H3).
+  pose (tposr_coerces_env t2 H2 H1).
+  pose (coerces_sum x t3 t4 x0 t5 t6 s0).
+  exists c.
+  simpl.
+  auto.
 
-Hint Resolve coerce_env_hd coerce_env_tl: coc.
+  destruct (IHd f H H0).
+  assert(tposr_wf (U :: f)).
+  apply wf_cons with set.
+  pose (coerces_coerce x).
+  eauto with coc.
+  assert(coerces_in_env (U :: e) (U :: f)).
+  apply coerces_env_tl ; eauto with coc ecoc.
+  
+  pose (tposr_coerces_env t H2 H1).
+  pose (coerces_sub_l x t0).
+  exists c ; simpl ; auto.
 
-Axiom type_rc_depth_conv_env :
-  forall e t T, forall d : (e |-- t -> t : T),
-  forall f, coerce_rc_depth_in_env e f -> 
-  f |-- t -> t : T.
+  destruct (IHd f H H0).
+  assert(tposr_wf (U' :: f)).
+  apply wf_cons with set.
+  pose (coerces_coerce x).
+  eauto with coc.
+  assert(coerces_in_env (U' :: e) (U' :: f)).
+  apply coerces_env_tl ; eauto with coc ecoc.
+  
+  pose (tposr_coerces_env t H2 H1).
+  pose (coerces_sub_r x t0).
+  exists c ; simpl ; auto.
 
-Axiom eq_rc_depth_conv_env :
-  forall e t u s, forall d : (e |-- t ~= u : s),
-  forall f, coerce_rc_depth_in_env e f -> 
-  f |-- t ~= u : s.
+  destruct (IHd _ H H0).
+  pose (tposr_coerces_env t H H0).
+  pose (tposr_coerces_env t0 H H0).
+  pose (tposr_coerces_env t1 H H0).
+  pose (eq_coerces_env t2 H H0).
+  exists (coerces_conv_l t3 t4 t5 t6 x) ; simpl ; auto.
 
-Axiom coerce_rc_depth_conv_env :
-  forall e T U s n, e |-- T >-> U : s [n] -> 
-  forall f, coerce_rc_depth_in_env e f -> f |-- T >-> U : s [n].
+  destruct (IHd _ H H0).
+  pose (tposr_coerces_env t H H0).
+  pose (tposr_coerces_env t0 H H0).
+  pose (tposr_coerces_env t1 H H0).
+  pose (eq_coerces_env t2 H H0).
+  exists (coerces_conv_r t3 t4 t5 x t6) ; simpl ; auto.
+Qed.
+
+Lemma coerces_sym : forall e A B s, forall d : e |-- A >>> B : s, 
+  { d' : e |-- B >>> A : s | depth d' = depth d }. 
+Proof.
+  induction d ; simpl ; intros ; auto with coc.
+
+  exists (coerces_refl t) ; simpl ; auto.
+
+  destruct IHd1 ; destruct IHd2.
+  pose (wf_tposr t1).
+  assert(coerces_in_env (A' :: e) (A :: e)).
+  apply coerces_env_hd with s ; eauto with coc ecoc.
+
+  destruct (coerces_coerces_env x0 H t3).
+  exists (coerces_prod x t0 t x1 t2 t1).
+  simpl ; rewrite e2 ; auto.
+
+  destruct IHd1 ; destruct IHd2.
+  pose (wf_tposr t2).
+  assert(coerces_in_env (A :: e) (A' :: e)).
+  apply coerces_env_hd with s ; eauto with coc ecoc.
+
+  destruct (coerces_coerces_env x0 H t3).
+  exists (coerces_sum x t0 t x1 t2 t1 s0).
+  simpl ; rewrite e2 ; auto.
+
+  destruct IHd.
+  exists (coerces_sub_r x t).
+  simpl ;  auto.
+
+  destruct IHd.
+  exists (coerces_sub_l x t).
+  simpl ;  auto.
+
+  destruct IHd.
+  exists (coerces_conv_r t1 t0 t x (tposr_eq_sym t2)).
+  simpl ; auto.
+
+  destruct IHd.
+  exists (coerces_conv_l t1 t0 t (tposr_eq_sym t2) x).
+  simpl ; auto.
+Qed. 
 
 Require Import Lambda.TPOSR.ChurchRosser.
 Require Import Lambda.TPOSR.UnicityOfSorting.
 Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.CtxConversion.
 
 Lemma inv_eq_prod_l : forall e U V U' V' s, 
   e |-- Prod_l U V ~= Prod_l U' V' : s -> forall s1, e |-- U -> U : s1 -> e |-- U ~= U' : s1.
@@ -239,9 +330,7 @@ Proof.
   intros.
   destruct (injectivity_of_pi H) ; destruct_exists.
   apply eq_conv_env with (U :: e) ; auto with coc.
-  apply coerce_env_hd with x ; auto with coc.
-  apply coerces_conv_r with U' ; eauto with coc ecoc.
-  apply wf_cons with x ; eauto with coc ecoc.
+  apply conv_env_hd with x ; auto with coc.
 Qed.
 
 Lemma inv_eq_sum_l : forall e U V U' V' s, 

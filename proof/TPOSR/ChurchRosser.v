@@ -645,7 +645,7 @@ Proof.
   apply tposr_eq_trans with a0 ; auto with coc.
   intuition.
   apply tposr_eq_trans with b0 ; auto with coc.
-  apply conv_env_eq with (A' :: e) ; auto with coc.
+  apply eq_conv_env with (A' :: e) ; auto with coc.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
 
@@ -720,7 +720,7 @@ Proof.
   apply tposr_eq_trans with a0 ; auto with coc.
   intuition.
   apply tposr_eq_trans with b0 ; auto with coc.
-  apply conv_env_eq with (A' :: e) ; auto with coc.
+  apply eq_conv_env with (A' :: e) ; auto with coc.
   apply tposr_eq_sym.
   pose (tposrp_refl_r H8).
   pose (tposrp_refl_r H5).
@@ -775,7 +775,7 @@ Proof.
   split.
   apply tposr_eq_trans with a ; auto with coc.
   apply tposr_eq_trans with b ; auto with coc.
-  apply conv_env_eq with (U' :: e) ; auto with coc.
+  apply eq_conv_env with (U' :: e) ; auto with coc.
   apply conv_env_hd with set ; auto with coc.
   eauto with coc ecoc.
 Qed.

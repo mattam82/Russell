@@ -200,11 +200,11 @@ Proof.
   simpl.
   apply depth_prod_prod_l.
 
-  cut(coerce_in_env (A' :: e) (A'0 :: e)) ; intros.
+  cut(coerces_in_env (A' :: e) (A'0 :: e)) ; intros.
   assert(tposr_wf (A'0 :: e)).
-  apply wf_cons with A'0 s0 ; auto with coc.
+  apply wf_cons with s0 ; auto with coc.
   rewrite <- e1  ; auto.
-  destruct (coerce_conv_env c0 H1 H7).
+  destruct (coerces_coerces_env c0 H1 H7).
   
   apply coerces_prod with s ; auto with coc.
   
@@ -213,7 +213,7 @@ Proof.
   rewrite H5.
   simpl.
   apply depth_prod_prod_r.
-  apply coerce_env_hd with s ; auto with coc.
+  apply coerces_env_hd with s ; auto with coc.
 
   (* prod, subset *)
   clear H.
@@ -277,26 +277,26 @@ Proof.
   
   apply coerces_prod with s ; auto with coc core.
 
-  cut(coerce_in_env (A' :: e) (A'0 :: e)) ; intros.
+  cut(coerces_in_env (A' :: e) (A'0 :: e)) ; intros.
   assert(tposr_wf (A'0 :: e)).
-  apply wf_cons with A'0 s ; auto with coc.
+  apply wf_cons with s ; auto with coc.
 
   cut(A'0 :: e |-- B' -> B' : s') ; intros.
   cut(A'0 :: e |-- B0 -> B0 : s') ; intros.
   pose (inv_eq_prod_r c2).
   assert(A'0 :: e |-- B' ~= B0 : s').
-  apply eq_conv_env with (A1 :: e) ; auto with coc.
-  apply coerce_env_hd with s ; auto with coc.
+  apply eq_coerces_env with (A1 :: e) ; auto with coc.
+  apply coerces_env_hd with s ; auto with coc.
   set (d := coerces_conv_l H6 H7 t9 H8 c1_2).
-  destruct (coerce_conv_env c0 H3 H5).
+  destruct (coerces_coerces_env c0 H3 H5).
   apply (IH (depth c0 + depth d)) with B' x0 d ; auto with coc.
   simpl.
   rewrite H4.
   apply depth_prod_conv_prod2.
 
   apply (coerces_sort_l c1_2).
-  apply (typ_conv_env t2 H3 H5).
-  apply coerce_env_hd with s ; auto with coc core.
+  apply (tposr_coerces_env t2 H3 H5).
+  apply coerces_env_hd with s ; auto with coc core.
   apply coerces_conv_r with A1 ; auto with coc core.
 
   (* prod, conv_l < sum *)
@@ -362,10 +362,9 @@ Proof.
  clear e A B s d1; intros; clear H H0.
  generalize H1 ; clear H1.
  rename s0 into sum_sort0.
- rename s1 into sum_sort1.
    apply (coerces_dep (fun e1 T0 C0 s0 => fun d : (e1 |-- T0 >>> C0 : s0) =>
      e1 = e -> T0 = Sum_l A' B' -> C0 = C -> s0 = s'' ->     
-     (x = depth (coerces_sum c t t0 c0 t1 t2 sum_sort0 sum_sort1) + depth d) ->
+     (x = depth (coerces_sum c t t0 c0 t1 t2 sum_sort0) + depth d) ->
      e |-- Sum_l A B >>> C0 : s'')) ; intros ; auto with coc ; try discriminate.
 
   (* sum, refl *)
@@ -379,7 +378,7 @@ Proof.
   generalize dependent c1.
   generalize dependent t3 ; generalize dependent t4.
   generalize dependent c2 ; generalize dependent t5 ; generalize dependent t6.
-  generalize dependent s1 ; generalize dependent s2.
+  generalize dependent s1.
   rewrite H1.
   clear H1.
   generalize dependent e.
@@ -400,10 +399,10 @@ Proof.
   apply depth_prod_prod_l.
   auto with arith.
 
-  cut(coerce_in_env (A' :: e) (A :: e)) ; intros.
+  cut(coerces_in_env (A' :: e) (A :: e)) ; intros.
   assert(tposr_wf (A :: e)).
-  apply wf_cons with A s ; auto with coc.
-  destruct (coerce_conv_env c2 H1 H7).
+  apply wf_cons with s ; auto with coc.
+  destruct (coerces_coerces_env c2 H1 H7).
   
   apply coerces_sum with s s' ; auto with coc.
   
@@ -416,7 +415,7 @@ Proof.
   simpl.
   apply depth_prod_prod_r.
   rewrite (unique_sort t2 t5) ; auto.
-  apply coerce_env_hd with s ; auto with coc.
+  apply coerces_env_hd with s ; auto with coc.
 
   (* sum, subset *)
   clear H.
@@ -432,8 +431,7 @@ Proof.
   generalize dependent e.
   rewrite <- H3.
   intros.
-  rewrite <- H3 in sum_sort1.
-  pose (coerces_sum c t t0 c0 t1 t2 sum_sort0 sum_sort1).
+  pose (coerces_sum c t t0 c0 t1 t2 sum_sort0).
   set (dc2 := depth c2).
   apply (IH (depth c2 + depth c1)) with (Sum_l A' B') c2 c1 ; auto.
   rewrite H4.
@@ -489,10 +487,10 @@ Proof.
 
   pose (inv_eq_sum_r c2 t2).
   assert(A' :: e |-- B0 -> B0 : s'0).
-  apply typ_conv_env with (A1 :: e) ; auto with coc.
-  apply coerce_env_hd with s ; intuition ; auto with coc.
+  apply tposr_coerces_env with (A1 :: e) ; auto with coc.
+  apply coerces_env_hd with s ; intuition ; auto with coc.
   apply coerces_conv_l with A1 ; auto with coc.
-  apply wf_cons with A' s ; auto with coc.
+  apply wf_cons with s ; auto with coc.
 
   assert (Heq:=unique_sort H3 (eq_refl_r t11)).
     generalize dependent A1 ; generalize dependent A'0 ; generalize dependent A' ; generalize dependent s''.
@@ -503,15 +501,15 @@ Proof.
   apply coerces_sum with s s' ; auto with coc core.
 
   assert(A1 :: e |-- B' ~= B0 : s').
-  apply eq_conv_env with (A' :: e) ; eauto with coc ecoc.
+  apply eq_coerces_env with (A' :: e) ; eauto with coc ecoc.
   
   set (d := coerces_conv_l (eq_refl_l H5) (eq_refl_r H5) (coerces_sort_r c1_2) H5 c1_2).
-  assert(coerce_in_env (A1 :: e) (A :: e)).
-  apply coerce_env_hd with s ; auto with coc.
+  assert(coerces_in_env (A1 :: e) (A :: e)).
+  apply coerces_env_hd with s ; auto with coc.
   apply coerces_conv_r with A' ; auto with coc.
   assert(tposr_wf (A :: e)).
-  apply wf_cons with A s ; auto with coc.
-  destruct (coerce_conv_env d H6 H7).
+  apply wf_cons with s ; auto with coc.
+  destruct (coerces_coerces_env d H6 H7).
   
   apply (IH (depth c0 + depth x0)) with B' c0 x0 ; auto with coc.
   simpl.
@@ -526,7 +524,7 @@ Proof.
   (* sum, conv_l < sub_r *)
   apply coerces_sub_r ; auto with coc core.
   pose (coerces_conv_l t3 t4 (coerces_sort_r c1) c2 c1).
-  pose (coerces_sum c t t0 c0 t1 t2 sum_sort0 sum_sort1).
+  pose (coerces_sum c t t0 c0 t1 t2 sum_sort0).
   apply (IH (depth c4 + depth c3)) with (Sum_l A' B') c4 c3 ; auto.
   simpl.
   rewrite H4.
@@ -537,7 +535,7 @@ Proof.
   assert(e |-- Sum_l A' B' ~= B0 : s1).
   apply tposr_eq_trans with A1 ; auto with coc.
   pose (coerces_conv_l t3 t7 t8 H2 c1).
-  pose (coerces_sum c t t0 c0 t1 t2 sum_sort0 sum_sort1).
+  pose (coerces_sum c t t0 c0 t1 t2 sum_sort0).
   apply (IH (depth c4 + depth c3)) with (Sum_l A' B') c4 c3.
   rewrite H4 ; simpl ; auto ; omega.
   auto.
@@ -545,7 +543,7 @@ Proof.
   (* sum, conv_l < conv_r *)
   apply coerces_conv_r with B0 ; auto with coc.
 
-  pose (coerces_sum c t t0 c0 t1 t2 (sum_sort0) sum_sort1).
+  pose (coerces_sum c t t0 c0 t1 t2 (sum_sort0)).
   pose (coerces_conv_l t3 t6 t7 c2 c1).
   apply (IH (depth c3 + depth c4)) with (Sum_l A' B') c3 c4.
   rewrite H4 ; simpl ; auto.
@@ -569,7 +567,7 @@ Proof.
    apply coerces_conv_r with B0 ; auto with coc.
    apply tposr_sum with s s' ; auto with coc.
 
-   pose (coerces_sum c t t0 c0 t1 t2 sum_sort0 sum_sort1).
+   pose (coerces_sum c t t0 c0 t1 t2 sum_sort0).
    apply (IH (depth c3 + depth c1)) with (Sum_l A' B') c3 c1.
    rewrite H4.
    simpl.
@@ -762,15 +760,15 @@ Proof.
   apply depth_conv_prod.
   auto.
    
-  cut(coerce_in_env (A'0 :: e) (A' :: e)) ; intros.
+  cut(coerces_in_env (A'0 :: e) (A' :: e)) ; intros.
   assert(tposr_wf (A' :: e)).
-  apply wf_cons with A' s ; auto with coc.
+  apply wf_cons with s ; auto with coc.
 
-  destruct (coerce_conv_env c2 H2 H3).
+  destruct (coerces_coerces_env c2 H2 H3).
   assert(A' :: e |-- B'0 ~= B0 : s').
   pose (inv_eq_prod_r t2 ).
-  apply eq_conv_env with (A0 :: e) ; auto with coc.
-  apply coerce_env_hd with s ; auto with coc.
+  apply eq_coerces_env with (A0 :: e) ; auto with coc.
+  apply coerces_env_hd with s ; auto with coc.
   pose (coerces_conv_r (coerces_sort_l x0) (coerces_sort_r x0) (eq_refl_r H4) x0 H4).
  
   apply (IH (depth c0 + depth d2_2)) with B0 c0 d2_2.
@@ -778,7 +776,7 @@ Proof.
   rewrite e0.
   apply depth_conv_prod2. 
   auto.
-  apply coerce_env_hd with s ; auto with coc core.
+  apply coerces_env_hd with s ; auto with coc core.
 
   (* conv_r  < sum, prod *)
   elim tposr_eq_prod_sum with e A0 B0 A'0 B'0 s'' ; auto with coc.
@@ -816,7 +814,7 @@ Proof.
   assert(e |-- Sum_l A' B' -> Sum_l A' B' : s'').
   apply tposr_sum with s s' ; auto with coc.
   destruct c ;
-  pose (H1 := coerces_sum d2_1 t3 t4 d2_2 t5 t6 s0 s1) .
+  pose (H1 := coerces_sum d2_1 t3 t4 d2_2 t5 t6 s0) .
 
   (* conv_r < refl, sum *) 
   apply coerces_conv_l with (Sum_l A0 B0) ; auto with coc.
@@ -833,22 +831,22 @@ Proof.
   generalize dependent s'0.
   generalize dependent s'.
   rewrite <- Heq.
-  clear s2 Heq ; intros.
+  clear Heq ; intros.
   
   pose (coerces_conv_r t8 t7 t4 c1 t11).
 
-  assert(coerce_in_env (A0 :: e) (A :: e)).
-  apply coerce_env_hd with s ; auto with coc.
+  assert(coerces_in_env (A0 :: e) (A :: e)).
+  apply coerces_env_hd with s ; auto with coc.
 
-  assert(coerce_in_env (A'0 :: e) (A :: e)).
-  apply coerce_env_hd with s ; auto with coc.
+  assert(coerces_in_env (A'0 :: e) (A :: e)).
+  apply coerces_env_hd with s ; auto with coc.
   
   pose (inv_eq_sum_r t2 t10).
   assert(A'0 :: e |-- B0 -> B0 : s').
-  apply typ_conv_env with (A0 ::e) ; auto with coc.
-  apply coerce_env_hd with s ; auto with coc.
+  apply tposr_coerces_env with (A0 ::e) ; auto with coc.
+  apply coerces_env_hd with s ; auto with coc.
   apply coerces_conv_r with A'0 ; auto with coc.
-  apply wf_cons with A'0 s ; auto with coc.
+  apply wf_cons with s ; auto with coc.
   assert(Heq:= unique_sort (eq_refl_r t12) H4).
   generalize dependent A ;   generalize dependent A' ;
   generalize dependent A'0 ;   generalize dependent A0 ;
@@ -865,19 +863,19 @@ Proof.
   auto.
 
   assert(tposr_wf (A'0 :: e)).
-  apply wf_cons with A'0 s ; auto with coc.
+  apply wf_cons with s ; auto with coc.
   
-  assert(coerce_in_env (A0 :: e) (A'0 :: e)).
-  apply coerce_env_hd with s ; auto with coc.
+  assert(coerces_in_env (A0 :: e) (A'0 :: e)).
+  apply coerces_env_hd with s ; auto with coc.
   apply coerces_conv_r with A'0 ; auto with coc.
 
-  destruct (coerce_conv_env d2_2 H6 H5).
+  destruct (coerces_coerces_env d2_2 H6 H5).
 
   pose (coerces_conv_l (eq_refl_l t12) (eq_refl_r t12) (coerces_sort_r x0) t12 x0).
 
   assert(tposr_wf (A :: e)).
-  apply wf_cons with A s ; auto with coc.
-  destruct (coerce_conv_env c0 H3 H7).
+  apply wf_cons with s ; auto with coc.
+  destruct (coerces_coerces_env c0 H3 H7).
 
   apply (IH (depth c2 + depth x1)) with B'0 c2 x1.
   rewrite H0 ; simpl.
@@ -907,7 +905,7 @@ Proof.
   auto.
 
   (* conv_r < conv_r, sum *)
-  assert(e |-- B ~= Sum_l A0 B0 : s2).
+  assert(e |-- B ~= Sum_l A0 B0 : s1).
   apply tposr_eq_trans with C ; auto with coc.
   pose (coerces_conv_r t7 t8 t1 c H2).
   apply (IH (depth c0 + depth H1)) with (Sum_l A0 B0) c0 H1.
@@ -1036,28 +1034,3 @@ Proof.
   rewrite H0 ; simpl ; try omega ; auto.
   auto.
 Qed.
-
-Theorem coerces_trans : forall e A B C s, e |-- A >>> B : s -> e |-- B >>> C : s ->
-  e |-- A >>> C : s.
-Proof.
-  intros.
-  set (x := depth H).
-  set (y := depth H0).
-  set (sum := x + y).
-  apply (@coerce_trans_aux sum e A B s H C H0).
-  unfold sum, x, y.
-  reflexivity.
-Qed.
-
-Require Import Lambda.TPOSR.CoerceDepth.
-
-Theorem coerce_rc_depth_trans : forall e A B C s n1 n2, e |-- A >-> B : s [n1] -> e |-- B >-> C : s [n2]->
-  exists m, e |-- A >-> C : s [m].
-Proof.
-  intros.
-  destruct (coerce_rc_depth_coerces H).
-  destruct (coerce_rc_depth_coerces H0).
-  pose (coerces_trans x x0).
-  exact (coerces_coerce_rc_depth c).
-Qed.
-

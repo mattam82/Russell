@@ -79,12 +79,12 @@ Proof.
   apply pi_conv_left with s ; auto with coc.
   apply pi_conv_right with s ; auto with coc.
   apply (refl_r H).
-  apply conv_env_eq with (X :: e) ; auto with coc.
+  apply eq_conv_env with (X :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 
   apply tposr_eq_sym.
   apply IHtposr_eq.
-  apply conv_env_eq with (Y :: e) ; auto with coc.
+  apply eq_conv_env with (Y :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 
   apply tposr_eq_trans with (Prod_l X Y0) ; auto with coc.
@@ -93,7 +93,7 @@ Proof.
   auto with coc.
 
   apply IHtposr_eq2.
-  apply conv_env_eq with (W :: e) ; auto with coc.
+  apply eq_conv_env with (W :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 Qed. 
 
@@ -166,12 +166,12 @@ Proof.
   apply sum_conv_left with s s2 ; auto with coc.
   apply sum_conv_right with s s2 ; auto with coc.
   apply (refl_r H).
-  apply conv_env_eq with (X :: e) ; auto with coc.
+  apply eq_conv_env with (X :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 
   apply tposr_eq_sym.
   apply IHtposr_eq with s2.
-  apply conv_env_eq with (Y :: e) ; auto with coc.
+  apply eq_conv_env with (Y :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
   assumption.
 
@@ -183,7 +183,7 @@ Proof.
   assumption.
 
   apply IHtposr_eq2 with s2.
-  apply conv_env_eq with (W :: e) ; auto with coc.
+  apply eq_conv_env with (W :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
   assumption.
 Qed. 
@@ -245,12 +245,12 @@ Proof.
   apply subset_conv_right ; auto with coc.
   rewrite <- H0.
   apply (refl_r H).
-  apply conv_env_eq with (X :: e) ; auto with coc.
+  apply eq_conv_env with (X :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 
   apply tposr_eq_sym.
   apply IHtposr_eq ; auto.
-  apply conv_env_eq with (Y :: e) ; auto with coc.
+  apply eq_conv_env with (Y :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 
   apply tposr_eq_trans with (Subset_l X Y0) ; auto with coc.
@@ -258,7 +258,7 @@ Proof.
   destruct(eq_refls H2) ; auto with coc.
 
   apply IHtposr_eq2 ; auto.
-  apply conv_env_eq with (W :: e) ; auto with coc.
+  apply eq_conv_env with (W :: e) ; auto with coc.
   apply conv_env_hd with s ; auto with coc.
 Qed. 
 

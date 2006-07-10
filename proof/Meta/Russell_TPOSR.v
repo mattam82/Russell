@@ -89,13 +89,13 @@ Proof.
   apply unlab_conv_ctx with a1 ; auto with coc.
 
   apply unlab_conv_ctx with (l :: a0) ; auto with coc.
-  apply wf_cons with b1 s1.
+  apply wf_cons with s1.
   apply unlab_conv_ctx with a1 ; auto with coc.
   simpl.
   rewrite H8 ; auto.
 
   apply unlab_conv_ctx with (l0 :: a) ; auto with coc.
-  apply wf_cons with b1 s1.
+  apply wf_cons with s1.
   apply unlab_conv_ctx with a1 ; auto with coc.
   destruct (validity H4) ; destruct_exists.
   rewrite H0 in H3.

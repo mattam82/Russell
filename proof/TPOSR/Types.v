@@ -132,7 +132,7 @@ with tposr_coerce : lenv -> lterm -> lterm -> sort -> Prop :=
   (* derivable *) e |-- A' -> A' :  s -> e |-- A -> A :  s ->
   forall s', (A :: e) |-- B >-> B' : s' ->
   (* derivable *) A :: e |-- B -> B :  s' -> A' :: e |-- B' -> B' :  s' ->
-  forall s'', sum_sort s s' s'' -> sum_sort s s' s'' ->
+  forall s'', sum_sort s s' s'' -> 
   e |-- (Sum_l A B) >-> (Sum_l A' B') : s''
 
   | tposr_coerce_sub_l : forall e U P U', 	
@@ -487,9 +487,9 @@ forall
         P (A :: e) B B s' t3 ->
         forall t4 : A' :: e |-- B' -> B' : s',
         P (A' :: e) B' B' s' t4 ->
-        forall s'' (s0 s1 : sum_sort s s' s''),
+        forall s'' (s0 : sum_sort s s' s''),
         P2 e (Sum_l A B) (Sum_l A' B') s''
-          (tposr_coerce_sum t t0 t1 t2 t3 t4 s0 s1)) ->
+          (tposr_coerce_sum t t0 t1 t2 t3 t4 s0)) ->
        (forall (e : lenv) (U P3 U' : lterm) (t : e |-- U >-> U' : set),
         P2 e U U' set t ->
         forall t0 : e |-- U -> U : set,
@@ -514,6 +514,8 @@ forall
         P2 e A B s t ->
         forall t0 : e |-- B >-> C : s,
         P2 e B C s t0 -> P2 e A C s (tposr_coerce_trans t t0)) ->
+
+
 
        (forall (l : lenv) (l0 l1 l2 : lterm) (t : l |-- l0 -> l1 : l2),
        P l l0 l1 l2 t) /\
