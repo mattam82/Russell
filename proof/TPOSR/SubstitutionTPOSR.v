@@ -5,7 +5,7 @@ Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
-Require Import Lambda.TPOSR.TypesNoDerivs.
+Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.CtxReduction.
@@ -42,35 +42,35 @@ Proof.
   clear IHsub_in_lenv ; intuition.
 Qed.
 
-Lemma wf_coerce : forall e, tposr_wf e -> coerce_in_env_full e e.
+Lemma wf_coerce : forall e, tposr_wf e -> pre_coerce_in_env_full e e.
 Proof.
   induction 1 ; simpl ; intros ; auto with coc.
-  apply coerce_env_in_env.
-  apply coerce_env_hd with s ; eauto with coc.
+  apply pre_coerce_env_in_env.
+  apply pre_coerce_env_hd with s ; eauto with coc.
 Qed.  
 
-Lemma coerce_env_full_cons_coerce : forall G D, coerce_in_env_full G D -> 
+Lemma pre_coerce_env_full_cons_coerce : forall G D, pre_coerce_in_env_full G D -> 
   forall T U s, G |-- T >-> U : s -> G |-- T -> T : s -> G |-- U -> U : s ->
-  coerce_in_env_full (T :: G) (U :: D).
+  pre_coerce_in_env_full (T :: G) (U :: D).
 Proof.
   induction 1 ; simpl ; intros.
 
-  apply coerce_env_trans with (U :: f) ; eauto with coc.
-  apply coerce_env_full_cons ; auto with coc.
+  apply pre_coerce_env_trans with (U :: f) ; eauto with coc.
+  apply pre_coerce_env_full_cons ; auto with coc.
   apply wf_cons with s ; eauto with coc.
-  apply coerce_env_full with e ; auto.
+  apply pre_coerce_env_full with e ; auto.
 
-  apply coerce_env_trans with (T :: f).
-  apply coerce_env_in_env ; eauto with coc.
+  apply pre_coerce_env_trans with (T :: f).
+  apply pre_coerce_env_in_env ; eauto with coc.
 
-  apply coerce_env_in_env ; eauto with coc.
-  apply coerce_env_hd with s ; eauto with coc.
-  apply coerce_coerce_env with e ; eauto with coc.
-  apply tposr_coerce_env with e ; eauto with coc.
-  apply tposr_coerce_env with e ; eauto with coc.
+  apply pre_coerce_env_in_env ; eauto with coc.
+  apply pre_coerce_env_hd with s ; eauto with coc.
+  apply coerce_pre_coerce_env with e ; eauto with coc.
+  apply tposr_pre_coerce_env with e ; eauto with coc.
+  apply tposr_pre_coerce_env with e ; eauto with coc.
   
-  apply coerce_env_in_env ; auto with coc.
-  apply coerce_env_hd with s ; auto with coc.
+  apply pre_coerce_env_in_env ; auto with coc.
+  apply pre_coerce_env_hd with s ; auto with coc.
 Qed.
 
 Lemma ind_substitution_tposr : 
@@ -79,13 +79,13 @@ Lemma ind_substitution_tposr :
    forall f n, sub_in_lenv d T n e f -> trunc _ n f g -> 
    f |-- (lsubst_rec d t n) -> (lsubst_rec d' u n) : (lsubst_rec d U n) /\
    exists f', sub_in_lenv d' T n e f' /\ trunc _ n f' g /\
-   tposr_wf f' /\ coerce_in_env_full f f') /\
+   tposr_wf f' /\ pre_coerce_in_env_full f f') /\
    (forall e, tposr_wf e ->
    forall g d d' T, g |-- d -> d' : T -> g |-- d' -> d' : T ->
    forall n f, sub_in_lenv d T n e f -> trunc _ n f g -> 
    tposr_wf f /\
    exists f', sub_in_lenv d' T n e f' /\ trunc _ n f' g /\
-   tposr_wf f' /\ coerce_in_env_full f f'
+   tposr_wf f' /\ pre_coerce_in_env_full f f'
    ) /\
    (forall e t u s, e |-- t ~= u : s ->
    forall g d d' T, g |-- d -> d' : T -> g |-- d' -> d' : T ->
@@ -104,13 +104,13 @@ apply ind_tposr_wf_eq_coerce with
    forall f n, sub_in_lenv d T n e f -> trunc _ n f g -> 
    f |-- (lsubst_rec d t n) -> (lsubst_rec d' u n) : (lsubst_rec d U n) /\
    exists f', sub_in_lenv d' T n e f' /\ trunc _ n f' g /\
-   tposr_wf f' /\ coerce_in_env_full f f')
+   tposr_wf f' /\ pre_coerce_in_env_full f f')
    (P0:= fun e => fun H : tposr_wf e =>
    forall g d d' T, g |-- d -> d' : T -> g |-- d' -> d' : T ->
    forall n f, sub_in_lenv d T n e f -> trunc _ n f g -> 
    tposr_wf f /\
    exists f', sub_in_lenv d' T n e f' /\ trunc _ n f' g /\
-   tposr_wf f' /\ coerce_in_env_full f f')
+   tposr_wf f' /\ pre_coerce_in_env_full f f')
    (P1 := fun e t u s => fun H : e |-- t ~= u : s =>
    forall g d d' T, g |-- d -> d' : T -> g |-- d' -> d' : T ->
    forall f n, sub_in_lenv d T n e f -> trunc _ n f g -> 
@@ -254,18 +254,24 @@ destruct (H1 _ _ _ _ H3 H4 _ _ H11 H12) ; auto with coc.
 destruct (H2 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
 apply tposr_pi1 with s1 s2 s3 ; eauto with coc.
 
-destruct (H _ _ _ _ H3 H4 _ _ H5 H6).
+destruct (H _ _ _ _ H6 H7 _ _ H8 H9).
 split ; auto.
 assert(sub_in_lenv d T (S n) (A :: e) (lsubst_rec d A n :: f)).
 apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
 apply trunc_S ; auto with coc.
-destruct (H1 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
-destruct (H2 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
-destruct (H0 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
-apply tposr_pi1_red with s1 s2 s3 (lsubst_rec d' A'' n) (lsubst_rec d' B'' (S n)) (lsubst_rec d' v' n); eauto with coc.
-destruct (H0 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto with coc.
-destruct (H1 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H9 H10) ; auto with coc.
+destruct_exists.
+destruct (H1 _ _ _ _ H6 H7 _ _ H8 H9) ; auto with coc.
+destruct (H2 _ _ _ _ H6 H7 _ _ H8 H9) ; auto with coc.
+destruct (H0 _ _ _ _ H6 H7 _ _ H12 H13) ; auto with coc.
+apply tposr_pi1_red with (lsubst_rec d' A' n) s1 (lsubst_rec d' B' (S n)) s2 s3 (lsubst_rec d' v' n); eauto with coc.
+destruct (H3 _ _ _ _ (refl_l H6) (refl_l H6) _ _ H8 H9) ; auto with coc.
+assert(sub_in_lenv d T (S n) (A'' :: e) (lsubst_rec d A'' n :: f)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d A'' n :: f) g).
+apply trunc_S ; auto with coc.
+destruct (H4 _ _ _ _ (refl_l H6) (refl_l H6) _ _ H23 H24) ; auto with coc.
+destruct (H5 _ _ _ _ (refl_l H6) (refl_l H6) _ _ H8 H9) ; auto with coc.
 
 rewrite distr_lsubst.
 simpl.
@@ -282,19 +288,24 @@ apply tposr_pi2 with s1 s2 s3 ; eauto with coc.
 
 rewrite distr_lsubst.
 simpl.
-destruct (H _ _ _ _ H3 H4 _ _ H5 H6).
+destruct (H _ _ _ _ H6 H7 _ _ H8 H9).
 split ; auto.
-
 assert(sub_in_lenv d T (S n) (A :: e) (lsubst_rec d A n :: f)).
 apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d A n :: f) g).
 apply trunc_S ; auto with coc.
-destruct (H1 _ _ _ _ H3 H4 _ _ H9 H10) ; auto with coc.
-destruct (H2 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
-destruct (H0 _ _ _ _ H3 H4 _ _ H5 H6) ; auto with coc.
-apply tposr_pi2_red with s1 s2 s3 (lsubst_rec d' A'' n) (lsubst_rec d' B'' (S n)) (lsubst_rec d' u' n); eauto with coc.
-destruct (H0 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6) ; auto with coc.
-destruct (H1 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H9 H10) ; auto with coc.
+assert(sub_in_lenv d T (S n) (A'' :: e) (lsubst_rec d A'' n :: f)).
+apply sub_S ; auto with coc.
+assert(trunc lterm (S n) (lsubst_rec d A'' n :: f) g).
+apply trunc_S ; auto with coc.
+destruct_exists.
+destruct (H1 _ _ _ _ H6 H7 _ _ H8 H9) ; auto with coc.
+destruct (H2 _ _ _ _ H6 H7 _ _ H8 H9) ; auto with coc.
+destruct (H0 _ _ _ _ H6 H7 _ _ H12 H13) ; auto with coc.
+apply tposr_pi2_red with (lsubst_rec d' A' n) s1 (lsubst_rec d' B' (S n)) s2 s3 (lsubst_rec d' u' n); eauto with coc.
+destruct (H3 _ _ _ _ (refl_l H6) (refl_l H6) _ _ H8 H9) ; auto with coc.
+destruct (H4 _ _ _ _ (refl_l H6) (refl_l H6) _ _ H14 H15) ; auto with coc.
+destruct (H5 _ _ _ _ (refl_l H6) (refl_l H6) _ _ H8 H9) ; auto with coc.
 
 inversion H1.
 inversion H2 ; subst.
@@ -316,17 +327,19 @@ subst.
 destruct (H _ _ _ _ H1 H1 _ _ H11 H12).
 intuition ; auto with coc.
 apply wf_cons with s ; auto with coc.
-apply coerce_env_full_cons_coerce with s ; eauto with coc.
-apply coerce_env_full with x0 ; eauto with coc ecoc.
+apply pre_coerce_env_full_cons_coerce with s ; eauto with coc.
+apply pre_coerce_env_full with x0 ; eauto with coc ecoc.
 
-destruct (H _ _ _ _ H1 H2 _ _ H3 H4).
-destruct (H0 _ _ _ _ H1 H2 _ _ H3 H4).
-destruct (H _ _ _ _ (refl_l H1) (refl_l H1) _ _ H3 H4).
-destruct (H0 _ _ _ _ (refl_l H1) (refl_l H1) _ _ H3 H4).
+destruct (H _ _ _ _ H0 H1 _ _ H2 H3).
+destruct (H _ _ _ _ (refl_l H0) (refl_l H0) _ _ H2 H3).
+clear H7 ; destruct_exists.
+destruct (H _ _ _ _ H1 H1 _ _ H5 H7).
 
 split.
+eauto with coc.
 apply tposr_eq_trans with (lsubst_rec d X n) ; eauto with coc.
-apply tposr_eq_trans with (lsubst_rec d X n) ; eauto with coc.
+apply tposr_eq_trans with (lsubst_rec d' Y n) ; eauto with coc.
+apply eq_pre_coerce_env_full with x ; auto with coc.
 
 destruct (H _ _ _ _ H0 H1 _ _ H2 H3) ; auto with coc.
 
@@ -378,24 +391,24 @@ clear H42.
 
 split.
 apply tposr_coerce_prod with s ; auto with coc.
-apply coerce_env_full with x ; auto with coc.
+apply pre_coerce_env_full with x ; auto with coc.
 
 apply coerce_red_env with (lsubst_rec d A' n :: f) ; auto with coc.
 apply red_env_hd with s ; auto.
-apply coerce_env_full with x ; auto with coc.
+apply pre_coerce_env_full with x ; auto with coc.
 
-apply coerce_env_full with (lsubst_rec d' A' n :: x) ; auto with coc. 
-apply coerce_env_full_cons ; auto with coc.
+apply pre_coerce_env_full with (lsubst_rec d' A' n :: x) ; auto with coc. 
+apply pre_coerce_env_full_cons ; auto with coc.
 apply wf_cons with s ; auto with coc.
 
 apply tposr_coerce_prod with s ; auto with coc.
-apply coerce_env_full with x1 ; auto with coc.
+apply pre_coerce_env_full with x1 ; auto with coc.
 
-apply coerce_env_full with (lsubst_rec d' A n :: x) ; auto with coc. 
-apply coerce_env_full_cons ; auto with coc.
+apply pre_coerce_env_full with (lsubst_rec d' A n :: x) ; auto with coc. 
+apply pre_coerce_env_full_cons ; auto with coc.
 apply wf_cons with s ; auto with coc.
-apply coerce_env_full with f ; auto with coc.
-apply coerce_env_full with x1 ; auto with coc.
+apply pre_coerce_env_full with f ; auto with coc.
+apply pre_coerce_env_full with x1 ; auto with coc.
 destruct (H4 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H11 H12).
 assumption.
 
@@ -438,24 +451,24 @@ clear H42.
 
 split.
 apply tposr_coerce_sum with s s' ; auto with coc.
-apply coerce_env_full with x ; auto with coc.
+apply pre_coerce_env_full with x ; auto with coc.
 
-apply coerce_env_full with (lsubst_rec d' A' n :: x) ; auto with coc. 
-apply coerce_env_full_cons ; auto with coc.
+apply pre_coerce_env_full with (lsubst_rec d' A' n :: x) ; auto with coc. 
+apply pre_coerce_env_full_cons ; auto with coc.
 apply wf_cons with s ; auto with coc.
 
 apply tposr_coerce_sum with s s' ; auto with coc.
-apply coerce_env_full with x1 ; auto with coc.
+apply pre_coerce_env_full with x1 ; auto with coc.
 
 apply coerce_red_env with (lsubst_rec d A n :: f) ; auto with coc.
 apply red_env_hd with s ; auto.
-apply coerce_env_full with x1 ; auto with coc.
+apply pre_coerce_env_full with x1 ; auto with coc.
 
-apply coerce_env_full with (lsubst_rec d' A n :: x) ; auto with coc. 
-apply coerce_env_full_cons ; auto with coc.
+apply pre_coerce_env_full with (lsubst_rec d' A n :: x) ; auto with coc. 
+apply pre_coerce_env_full_cons ; auto with coc.
 apply wf_cons with s ; auto with coc.
-apply coerce_env_full with f ; auto with coc.
-apply coerce_env_full with x1 ; auto with coc.
+apply pre_coerce_env_full with f ; auto with coc.
+apply pre_coerce_env_full with x1 ; auto with coc.
 
 destruct (H4 _ _ _ _ (refl_l H5) (refl_l H5) _ _ H11 H12).
 assumption.
@@ -476,8 +489,8 @@ destruct (H1 _ _ _ _  H4 H4 _ _ H14 H15) ; auto.
 
 split ; 
 apply tposr_coerce_sub_l ; eauto with coc.
-apply coerce_env_full with x ; auto with coc.
-apply coerce_env_full with x ; auto with coc.
+apply pre_coerce_env_full with x ; auto with coc.
+apply pre_coerce_env_full with x ; auto with coc.
 
 change (Srt_l prop) with (lsubst_rec d' (Srt_l prop) (S n)).
 assert(sub_in_lenv d' T (S n) (U :: e) (lsubst_rec d' U n :: x)).
@@ -485,8 +498,8 @@ apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d' U n :: x) g).
 apply trunc_S ; auto with coc.
 destruct(H2 _ _ _ _ H4 H4 _ _ H31 H32).
-apply coerce_env_full with (lsubst_rec d' U n :: x) ; auto.
-apply coerce_env_full_cons ; auto with coc.
+apply pre_coerce_env_full with (lsubst_rec d' U n :: x) ; auto.
+apply pre_coerce_env_full_cons ; auto with coc.
 apply wf_cons with set ; auto.
 
 destruct (H _ _ _ _ H3 H4 _ _ H5 H6).
@@ -503,7 +516,7 @@ destruct (H1 _ _ _ _ (refl_l H3) (refl_l H3) _ _ H5 H6).
 
 split ; 
 apply tposr_coerce_sub_r ; eauto with coc.
-apply coerce_env_full with x ; auto with coc.
+apply pre_coerce_env_full with x ; auto with coc.
 
 change (Srt_l prop) with (lsubst_rec d' (Srt_l prop) (S n)).
 assert(sub_in_lenv d' T (S n) (U' :: e) (lsubst_rec d' U' n :: x)).
@@ -511,10 +524,10 @@ apply sub_S ; auto with coc.
 assert(trunc lterm (S n) (lsubst_rec d' U' n :: x) g).
 apply trunc_S ; auto with coc.
 destruct(H2 _ _ _ _ H4 H4 _ _ H27 H28).
-apply coerce_env_full with (lsubst_rec d' U' n :: x) ; auto.
-apply coerce_env_full_cons ; auto with coc.
+apply pre_coerce_env_full with (lsubst_rec d' U' n :: x) ; auto.
+apply pre_coerce_env_full_cons ; auto with coc.
 apply wf_cons with set ; auto.
-apply coerce_env_full with x ; auto with coc.
+apply pre_coerce_env_full with x ; auto with coc.
 
 destruct (H _ _ _ _ H0 H1 _ _ H2 H3) ; intuition.
 

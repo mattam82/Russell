@@ -3,7 +3,7 @@ Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
-Require Import Lambda.TPOSR.TypesNoDerivs.
+Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.CtxReduction.
@@ -118,7 +118,7 @@ rewrite <- distr_lsubst ; eauto with coc.
 pose (H _ _ _ H3 _ _ H4 H5).
 apply tposr_pi1 with s1 s2 s3 ; eauto with coc.
 
-apply tposr_pi1_red with s1 s2 s3 (lsubst_rec d A'' n) (lsubst_rec d B'' (S n)) (lsubst_rec d v' n); eauto with coc.
+apply tposr_pi1_red with (lsubst_rec d A' n) s1 (lsubst_rec d B' (S n)) s2 s3 (lsubst_rec d v' n); eauto with coc.
 
 rewrite distr_lsubst.
 simpl.
@@ -127,7 +127,7 @@ apply tposr_pi2 with s1 s2 s3 ; eauto with coc.
 
 rewrite distr_lsubst.
 simpl.
-apply tposr_pi2_red with s1 s2 s3  (lsubst_rec d A'' n) (lsubst_rec d B'' (S n))  (lsubst_rec d u' n); eauto with coc.
+apply tposr_pi2_red with  (lsubst_rec d A' n) s1 (lsubst_rec d B' (S n)) s2 s3  (lsubst_rec d u' n); eauto with coc.
 
 inversion H0.
 inversion H1 ; subst.

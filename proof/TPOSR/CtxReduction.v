@@ -6,7 +6,7 @@ Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
-Require Import Lambda.TPOSR.TypesNoDerivs.
+Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.LeftReflexivity.
 
@@ -161,11 +161,11 @@ apply tposr_pair with s1 s2 s3 ; eauto with coc ecoc.
 
 apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
 
-apply tposr_pi1_red with s1 s2 s3 A'' B'' v' ; eauto with coc ecoc.
+eapply tposr_pi1_red ; eauto with coc ecoc.
 
 apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
 
-apply tposr_pi2_red with s1 s2 s3 A'' B'' u' ; eauto with coc ecoc.
+eapply tposr_pi2_red ; eauto with coc ecoc.
 
 inversion H.
 inversion H0.

@@ -58,7 +58,6 @@ TPOSR/Conv_Dec.v
 TPOSR/Env.v
 TPOSR/Unlab.v
 TPOSR/Types.v
-TPOSR/TypesNoDerivs.v
 TPOSR/Basic.v
 TPOSR/UnicityOfSorting.v
 TPOSR/MaxLemmas.v
@@ -69,10 +68,10 @@ TPOSR/CtxExpansion.v
 TPOSR/LeftReflexivity.v
 TPOSR/Substitution.v
 TPOSR/SubstitutionTPOSR.v
-TPOSR/CtxCoercion.v
+TPOSR/PreCtxCoercion.v
 TPOSR/RightReflexivity.v
 TPOSR/CtxConversion.v
-TPOSR/Coercion.v
+TPOSR/CtxCoercion.v
 TPOSR/Equiv.v
 TPOSR/Generation.v
 TPOSR/Validity.v

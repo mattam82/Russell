@@ -3,7 +3,7 @@ Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
-Require Import Lambda.TPOSR.TypesNoDerivs.
+Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.CtxReduction.
 Require Import Lambda.TPOSR.CtxCoercion.
@@ -190,53 +190,55 @@ Proof.
 
   (* Pi1_l *)
   apply tposr_conv with A' s1 ; auto with coc.
-  assert(coerce_in_env (A :: e) (A' :: e)).
-  apply coerce_env_hd with s1 ; auto with coc.
+  assert(pre_coerce_in_env (A :: e) (A' :: e)).
+  apply pre_coerce_env_hd with s1 ; auto with coc.
   apply tposr_pi1 with s1 s2 s3 ; auto with coc ecoc.
-  apply coerce_coerce_env with (A :: e) ; auto with coc.
+  apply coerce_pre_coerce_env with (A :: e) ; auto with coc.
   apply tposr_conv with (Sum_l A B) s3 ; auto with coc.
   apply tposr_coerce_sum with s1 s2 ; auto with coc.
-  apply tposr_coerce_env with (A :: e) ; auto with coc.
+  apply tposr_pre_coerce_env with (A :: e) ; auto with coc.
+
+  (* Pi1 red *)
+  destruct (tposr_pair_red_comp H1) .
   apply tposr_conv with A' s1 ; auto with coc.
-  pose (tposr_pair_red_left H2) .
-  destruct (tposr_pair_coerce_left t2) .
-  apply tposr_conv with A'' x ; eauto with coc.
+  apply tposr_coerce_trans with A ; eauto with coc.
 
   (* Pi2 *)
-  assert(coerce_in_env (A :: e) (A' :: e)).
-  apply coerce_env_hd with s1 ; auto with coc.
+  assert(pre_coerce_in_env (A :: e) (A' :: e)).
+  apply pre_coerce_env_hd with s1 ; auto with coc.
 
   apply tposr_conv with (lsubst (Pi1_l (Sum_l A' B') t') B') s2 ; auto with coc.  
   apply tposr_pi2 with s1 s2 s3 ; eauto with coc ecoc.
   apply tposr_coerce_sym.
   apply substitution_tposr_coerce with A' ; eauto with coc.
-  apply coerce_coerce_env with (A :: e) ; eauto with coc.
+  apply coerce_pre_coerce_env with (A :: e) ; eauto with coc.
   apply tposr_pi1 with s1 s2 s3 ; auto with coc ecoc.
-  apply coerce_coerce_env with (A :: e) ; auto with coc.
+  apply coerce_pre_coerce_env with (A :: e) ; auto with coc.
   apply tposr_conv with (Sum_l A B) s3 ; auto with coc.
   apply tposr_coerce_sum with s1 s2 ; auto with coc.
-  apply tposr_coerce_env with (A :: e) ; auto with coc.
+  apply tposr_pre_coerce_env with (A :: e) ; auto with coc.
 
-  assert(coerce_in_env (A :: e) (A' :: e)).
-  apply coerce_env_hd with s1 ; auto with coc.
+  (* Pi2 red *)
+  destruct(tposr_pair_red_comp t1).
+  destruct(tposr_pair_red_comp H1).
+  destruct(tposr_pair_coerce_right t1).
+
+  assert(pre_coerce_in_env (A :: e) (A' :: e)).
+  apply pre_coerce_env_hd with s1 ; auto with coc.
 
   apply tposr_conv with  (lsubst u B') s2 ; auto with coc. 
-  pose (tposr_pair_red_right H2) .
-  destruct (tposr_pair_coerce_right t2) .
-  apply tposr_conv with (lsubst u' B'') x ; auto with coc.
+  apply tposr_conv with (lsubst u' B') x ; auto with coc.
   apply tposr_coerce_sym.
   apply substitution_tposr_coerce with A' ; eauto with coc.
-  destruct(tposr_pair_red_comp t2).
-  assumption.
-  destruct(tposr_pair_red_comp H2).
-  destruct(tposr_pair_coerce_left t2).
-  apply tposr_conv with A'' x0 ; eauto with coc.
+  apply coerce_red_env with (A :: e) ; eauto with coc.
+  eauto with coc ecoc.
 
   apply tposr_coerce_sym.
-  apply substitution_tposr_coerce with A ; eauto with coc.
-  destruct (tposr_pair_red_comp t2).
-  pose (refl_l H6).
-  apply tposr_conv with A' s1 ; auto with coc.
+  apply substitution_tposr_coerce with A'' ; eauto with coc.
+  apply tposr_coerce_trans with B ; auto with coc.
+  apply coerce_pre_coerce_env with (A :: e) ; eauto with coc.
+ 
+  eauto with coc.
 
   apply tposr_prod with s ; eauto with coc ecoc.
 

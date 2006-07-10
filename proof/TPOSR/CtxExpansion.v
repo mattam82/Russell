@@ -6,7 +6,7 @@ Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
-Require Import Lambda.TPOSR.TypesNoDerivs.
+Require Import Lambda.TPOSR.Types.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.LeftReflexivity.
 
@@ -141,8 +141,6 @@ auto with coc core arith datatypes.
 destruct (exp_item i H0) ; destruct_exists.
 apply tposr_var ; auto with coc.
 apply tposr_conv with x x0 ; auto with coc.
-pose (H3 (H _ H0)).
-eauto with coc ecoc.
 
 apply tposr_prod with s1 ; eauto with coc ecoc.
 

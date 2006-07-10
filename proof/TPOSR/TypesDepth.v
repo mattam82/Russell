@@ -145,14 +145,13 @@ Proof.
 
   exists (S x) ; apply tposrd_pi1 with s1 s2 s3 ; auto with coc.
 
-  exists (S (max3 x1 x0 x)) ; apply tposrd_pi1_red with A' s1 B' s2 s3 v' ; auto with coc.
+  exists (S (max3 x2 x1 x0)) ; apply tposrd_pi1_red with A' s1 B' s2 s3 v' ; auto with coc.
 
   exists (S x) ; apply tposrd_pi2 with s1 s2 s3 ; auto with coc.
 
-  exists (S (max3 x1 x0 x)) ; apply tposrd_pi2_red with A' s1 B' s2 s3 u' ; auto with coc.
+  exists (S (max3 x2 x1 x0)) ; apply tposrd_pi2_red with A' s1 B' s2 s3 u' ; auto with coc.
 
-  apply wfd_cons with A' s x; auto with coc.
-  apply wfd_cons with A' s x; auto with coc.
+  apply wfd_cons with A s x; auto with coc.
 Qed.
 
 Corollary tposr_tposrd_type : forall e t u T, tposr e t u T -> 
@@ -318,6 +317,9 @@ Proof.
   apply wf_tposrd_mutind with (P:=P) (P0:=P0) ; auto ; auto.
 Qed.
 
+Require Import Lambda.TPOSR.LeftReflexivity.
+Require Import Lambda.TPOSR.RightReflexivity.
+
 Lemma tposrd_tposr : 
   (forall e t u T n, tposrd e t u T n -> 
   tposr e t u T) /\
@@ -344,14 +346,19 @@ Proof.
   apply tposr_pair with s1 s2 s3 ; auto with coc.
 
   apply tposr_pi1 with s1 s2 s3 ; auto with coc.
+  apply (coerce_refl_l t).
 
   apply tposr_pi1_red with A' s1 B' s2 s3 v' ; auto with coc.
+  eauto with coc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc.
 
   apply tposr_pi2 with s1 s2 s3; auto with coc.
+  eauto with coc.
 
-  apply tposr_pi2_red with A' s1 B' s2 s3 u'; auto with coc.
+  apply tposr_pi2_red with A' s1 B' s2 s3 u'; eauto with coc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc.
 
-  apply wf_cons with A' s ; auto with coc.
+  apply wf_cons with s ; eauto with coc.
 Qed.
 
 Corollary tposrd_tposr_type : forall e t u T n, e |-- t -> u : T [n] -> 

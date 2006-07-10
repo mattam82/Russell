@@ -27,7 +27,6 @@ Proof.
   
   split ; intros.
   apply tposr_conv with X s ; eauto with coc ecoc.
-  apply tposr_coerce_conv.
   apply tposr_conv with Y s ; auto with coc.
 
   pose (IHtposr_eq M N).
@@ -93,10 +92,8 @@ Qed.
 Lemma tposrp_tposr_eq_aux : forall e M N Z, e |-- M -+> N : Z -> forall s, Z = Srt_l s -> e |-- M ~= N : s.
 Proof.
   induction 1 ; simpl ; intros ; eauto with coc.
-  apply tposr_eq_tposr.
-  rewrite <- H0 ; assumption.
-  pose (IHtposrp1 _ H1).
-  pose (IHtposrp2 _ H1).
+  subst ; eauto with coc ecoc.
+  subst.
   apply tposr_eq_trans with X ; auto.
 Qed.
 
@@ -118,7 +115,7 @@ Proof.
   pose (wf_tposr H2).
   inversion H0.
   rewrite H6 in H0.
-  apply wf_cons with A' s ; auto with coc.
+  apply wf_cons with s ; auto with coc.
   rewrite <- H5 in H0.
   apply (IHg t) with k  ; auto.
 Qed.

@@ -56,7 +56,7 @@ Theorem unlab_sound  :
   (forall e u v s, e |-- u >-> v : s ->
   (unlab_ctx e) |-= (|u|) >> (|v|) : s).
 Proof.
-  apply ind_tposr_wf_eq with 
+  apply ind_tposr_wf_eq_coerce with 
   (P := fun e u v T =>  fun H : e |-- u -> v : T =>
   (unlab_ctx e) |-= (|u|) = (|v|) : (|T|))
   (P0 := fun e => fun H : tposr_wf e =>
@@ -109,25 +109,25 @@ Proof.
   pose (jeq_type_l H).
   pose (jeq_type_l H0).
   pose (jeq_type_l H1).
-  pose (coerce_sort_l H2).
   pose (coerce_sort_l H3).
-  pose (generation_pair t6).
+  pose (coerce_sort_l H4).
+  pose (generation_pair t8).
   destruct_exists.
   pose (jeq_type_r H1).
-  inversion H4.
-  pose (generation_pair t9) ; destruct_exists.
+  inversion H6.
+  pose (generation_pair t11) ; destruct_exists.
   apply jeq_trans with (Pi1 (Pair (Sum (|A'|) (|B'|)) (|u'|) (|v'|))) ; auto with coc.
   apply jeq_conv with (|A|) s1 ; auto with coc.
   apply jeq_pi1 with (|B|) ; auto with coc.
   apply jeq_conv with (|A'|) s1 ; auto with coc.
-  inversion H11.
+  inversion H13.
   apply jeq_pi1_red with s1 s2 s3 ; auto with coc.
   apply (jeq_type_r H).
   pose (jeq_type_r H0).
   apply type_conv_env with ((|A|) :: unlab_ctx e) ; auto with coc.
   apply conv_env_hd with s1 ; auto with coc.
-  rewrite H21 ; assumption.
-  rewrite H22 ; assumption.
+  rewrite H23 ; assumption.
+  rewrite H24 ; assumption.
   apply coerce_trans with (|A|) ; auto with coc.
 
   rewrite lab_subst.
@@ -140,11 +140,11 @@ Proof.
   pose (jeq_type_r H0).
   pose (jeq_type_l H1).
   pose (jeq_type_r H1).
-  pose (generation_pair t8).
-  pose (generation_pair t9).
+  pose (generation_pair t10).
+  pose (generation_pair t11).
   destruct_exists.
-  inversion H5.
-  inversion H4.
+  inversion H7.
+  inversion H6.
   rewrite lab_subst.
   apply jeq_trans with (Pi2 (Pair (Sum (|A'|) (|B'|)) (|u'|) (|v'|))) ; auto with coc.
   simpl. 
@@ -159,17 +159,17 @@ Proof.
   apply typ_coerce_env with ((|A''|) :: unlab_ctx e) ; auto with coc.
   eauto with coc.
   apply coerce_env_hd with s1 ; auto with coc.
-  rewrite (jeq_unique_sort _ _ _ _ H12 (coerce_sort_r H2)).
+  rewrite (jeq_unique_sort _ _ _ _ H14 (coerce_sort_r H3)).
   assumption.
-  rewrite (jeq_unique_sort _ _ _ _ H12 (coerce_sort_r H2)).
+  rewrite (jeq_unique_sort _ _ _ _ H14 (coerce_sort_r H3)).
   assumption.
 
   apply jeq_conv with (subst (|u'|) (|B'|)) s2 ; auto with coc.
   apply jeq_pi2_red with s1 s2 s3 ; auto with coc.
   apply type_conv_env with ((|A|) :: unlab_ctx e) ; auto with coc.
   apply conv_env_hd with s1 ; auto with coc.
-  rewrite H21 ; assumption.
-  rewrite H22 ; assumption.
+  rewrite H23 ; assumption.
+  rewrite H24 ; assumption.
 
   apply coerce_trans with (subst (|u'|) (|B|)) ; auto with coc.
   apply substitution_coerce with x ; auto with coc.
@@ -181,7 +181,7 @@ Proof.
   
   apply coerce_trans with (subst (|u'|) (|B''|)) ; auto with coc.
   apply substitution_coerce with x ; auto with coc.
-  rewrite <- H21.
+  rewrite <- H23.
   apply coerce_coerce_env with (|A''| :: unlab_ctx e) ; auto with coc.
   apply coerce_env_hd with s1 ; auto with coc.
   apply coerce_trans with (|A|) ; auto with coc.
@@ -190,7 +190,7 @@ Proof.
   apply functionality with x ; auto with coc.
   apply jeq_sym.
   simpl.
-  rewrite <- H21.
+  rewrite <- H23.
   apply jeq_conv with (|A|) s1 ; auto with coc.
   apply jeq_trans with (Pi1 (Pair (Sum (|A'|) (|B'|)) (|u'|) (|v'|))) ; auto with coc.
   apply jeq_pi1 with (|B|) ; auto with coc.
@@ -198,11 +198,11 @@ Proof.
   apply jeq_pi1_red with s1 s2 s3 ; auto with coc.
   apply type_conv_env with ((|A|) :: unlab_ctx e) ; auto with coc.
   apply conv_env_hd with s1 ; auto with coc.
-  rewrite H21 ; assumption.
-  rewrite H22 ; assumption.
-  rewrite <- H21.
+  rewrite H23 ; assumption.
+  rewrite H24 ; assumption.
+  rewrite <- H23.
   apply typ_coerce_env with ((|A''|) :: unlab_ctx e) ; auto with coc.
-  apply (coerce_sort_l H3).
+  apply (coerce_sort_l H4).
   apply coerce_env_hd with s1 ; auto with coc.
   apply coerce_trans with (|A|) ; auto with coc.
 
