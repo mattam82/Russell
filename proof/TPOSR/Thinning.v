@@ -231,7 +231,7 @@ apply wf_cons with s0; auto with coc core arith datatypes.
 Qed.
 
 Lemma wf_sort_lift :
- forall n e t, tposr_wf e -> item_llift t e n -> exists s : sort, exists t', e |-- t -> t' : (Srt_l s).
+ forall n e t, tposr_wf e -> item_llift t e n -> exists s : sort, e |-- t -> t : (Srt_l s).
 simple induction n.
 simple destruct e; intros.
 elim H0; intros.
@@ -243,7 +243,6 @@ inversion_clear H2.
 inversion_clear H.
 exists s.
 replace (Srt_l s) with (llift 1 (Srt_l s)); auto with coc core arith datatypes.
-exists (llift 1 l).
 apply thinning; auto with coc core arith datatypes.
 apply wf_cons with s; auto with coc core arith datatypes.
 
@@ -257,9 +256,7 @@ cut (tposr_wf l); intros.
 elim H with l (llift (S n0) x); intros; auto with coc core arith datatypes.
 inversion_clear H3.
 exists x0.
-destruct H6.
-exists (llift 1 x1).
-change (tposr (y :: l) (llift 1 (llift (S n0) x)) (llift 1 x1) (llift 1 (Srt_l x0))) in |- *.
+change (tposr (y :: l) (llift 1 (llift (S n0) x)) (llift 1 (llift (S n0) x)) (llift 1 (Srt_l x0))) in |- *.
 apply thinning; auto with coc core arith datatypes.
 apply wf_cons with s; auto with coc core arith datatypes.
 

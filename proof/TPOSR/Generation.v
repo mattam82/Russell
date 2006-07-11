@@ -1,16 +1,20 @@
 Require Import Lambda.Utils.
 Require Import Lambda.Tactics.
+
 Require Import Lambda.TPOSR.Terms.
 Require Import Lambda.TPOSR.Reduction.
 Require Import Lambda.TPOSR.Conv.
 Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
 Require Import Lambda.TPOSR.Types.
-Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.LeftReflexivity.
+Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.SubstitutionTPOSR.
 Require Import Lambda.TPOSR.CtxConversion.
+Require Import Lambda.TPOSR.CtxCoercion.
 Require Import Lambda.TPOSR.RightReflexivity.
+Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.UnicityOfSorting.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.TypesDepth.
@@ -24,25 +28,16 @@ Implicit Types e f g : lenv.
 
 Lemma generation_sort :  forall e s u T, e |-- Srt_l s -> u : T -> 
   u = Srt_l s /\ T = Srt_l kind.
-Admitted. (*
 Proof.
-  intros e s T.
-  extensionalpattern (Srt s).
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  pose (inv_lift_sort _ _ Heqt).
-  pose (IHtyp1 e0).
-  pose (equiv_kind e1).
-  rewrite e2.
-  simpl ; left ; auto with coc.
-
-  pose (IHtyp Heqt).
-  pose (equiv_kind e0).
-  rewrite e1 in H0.
-  elim (coerce_not_kind H0) ; intros.
-  elim H1 ; auto.
+  intros e s u T H.
+  induction_with_subterm (Srt_l s) H ; simpl ; intros ; try discriminate ; auto with coc.
+  
+  destruct (IHtposr (refl_equal (Srt_l s))).
+  subst.
+  pose (coerce_refl_l H0).
+  elim (tposr_not_kind t) ; intros.
 Qed.
-*)
+
 Lemma inv_lift_ref : forall t n, llift 1 t = Ref_l n -> exists n', t = Ref_l n' /\ S n' = n.
 Proof.
   induction t ; simpl ; intros ; try discriminate ; auto with coc.
@@ -51,108 +46,62 @@ Proof.
   exists n ; intuition.
 Qed.
 
-(*
-Lemma generation_var_aux : forall e T A, e |-- T : A -> 
-  forall n, T = Ref n ->
-  exists B, item_lift B e n /\ equiv e A B.
-Proof.
-  intros e T A.
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  inversion H0.
-  exists (lift 1 T).
-  split.
-  exists T ; auto.
-  constructor.
-  left ; auto with coc.
-  
-  pose (inv_lift_ref _ H1).
-  destruct e0.
-  destruct H2.
-  destruct (IHtyp1 _ H2).
-  destruct H4.
-  exists (lift 1 x0).
-  split.
-  destruct H4.
-  exists x1 ; auto.
-  rewrite H4.
-  rewrite <- simpl_lift.
-  rewrite H3.
-  reflexivity.
-  rewrite <- H3.
-  constructor.
-  assumption.
-
-  apply equiv_lift with s ; auto.
-
-  pose (IHtyp _ H1).
-  destruct e0.
-  destruct H2.
-  exists x ; intuition.
-  right with U s ; auto with coc.
-Qed.
-*)
 Lemma generation_var : forall e n X A, e |-- Ref_l n -> X : A -> 
   X = Ref_l n /\
   exists B, item_llift B e n /\ 
-  equiv e A B.
-Admitted.
-(*
+  exists s, e |-- A >-> B : s.
 Proof.
-  intros ; eapply generation_var_aux ; auto ; auto.
+  intros e n X A H.
+  induction_with_subterm (Ref_l n) H ; simpl ; intros ; try discriminate ; auto with coc.
+
+  inversion y ; subst.
+  inversion H0.
+  split ; auto.
+  exists T.
+  split.
+  exists x ; auto.
+  destruct (wf_sort_lift H H0).
+  exists x0.
+  eauto with coc.
+
+  destruct IHtposr ; auto ; destruct_exists.
+  subst.
+  split ; auto.
+  exists x ; split ; auto with coc.
+  exists x0.
+  apply tposr_coerce_trans with A ; auto with coc.
+  rewrite <- (unique_sort (coerce_refl_l H0) (coerce_refl_l H3)).
+  auto with coc.
 Qed.
 
-
-Lemma generation_prod_depth_aux : forall e T A, e |-- T : A -> forall U V, T = Prod U V ->
-  exists s1, exists s2, e |-- U : Srt s1 /\ U :: e |-- V : Srt s2 /\ equiv e A (Srt s2).
+Lemma equiv_sym_sort : forall e, tposr_wf e -> forall s, equiv e s s.
 Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  induction t ; simpl in H1 ; try discriminate.
-  clear IHt1 IHt2.
-  destruct (IHtyp1 t1 t2) ; auto with coc.
-  destruct H2.
-  intuition.
-  unfold lift in H1 ; simpl in H1.
-  inversion H1.
-  exists x ; exists x0.
-  intuition ; auto with coc.
-  change (Srt x) with (lift 1 (Srt x)).
-  unfold lift.
-  pose (type_weak H3 H0) ; auto with coc.
-
-  
-
-  change (Srt x0) with (lift_rec 1 (Srt x0) 1).
-  apply (type_weak_weak H0 H2) ; auto with coc.
-  
-  pose (equiv_lift H5 H0).
-  unfold lift in e0 ; simpl in e0.
-  unfold lift ; apply e0.
-
-  inversion H1.
-  rewrite <- H3 ; rewrite <- H4.
-  exists s1 ; exists s2 ; intuition ; auto with coc.
-  
-  destruct (IHtyp _ _ H1).
-  destruct H2.
-  intuition.
-  exists x ; exists x0 ; intuition ; auto with coc.
-  right with U s ; auto with coc.
-Qed.
-*)
+  induction s; simpl ; intros ; auto with coc.
+  right ; exists kind ; auto with coc.
+  right ; exists kind ; auto with coc.
+Qed.  
 
 Lemma generation_prod_depth : forall e U V X A n, e |-- Prod_l U V -> X : A [n] -> 
   exists3 U' s1 m, exists3 V' s2 p, 
   e |-- U -> U' : Srt_l s1 [m] /\ m < n /\
   U :: e |-- V -> V' : Srt_l s2 [p] /\ p < n /\
   X = Prod_l U' V' /\ equiv e A (Srt_l s2).
-Admitted.
-(*
 Proof.
-  intros ; eapply generation_prod_depth_aux ; auto ; auto.
+  intros e U V X A n H.
+  induction_with_subterm (Prod_l U V) H ; simpl ; intros ; try discriminate ; auto with coc.
+
+  clear IHtposrd1 IHtposrd2.
+  inversion y ; subst.
+  exists A' s1 n  ; exists B' s2 m.
+  intuition ; auto with coc.
+  apply equiv_sym_sort ; eauto with coc ecoc.
+
+  destruct IHtposrd ; auto ; destruct_exists.
+  exists a b c ; exists a0 b0 c0 ; intuition ; auto with coc.
+
+  apply equiv_trans with A ; eauto with coc.
 Qed.
-*)
+
 Lemma generation_prod : forall e U V X A, e |-- Prod_l U V -> X : A -> 
   exists2 U' s1, exists2 V' s2, 
   e |-- U -> U' : Srt_l s1 /\
@@ -166,49 +115,6 @@ Proof.
 Qed.
 
 
-(*
-
-
-Lemma generation_sum_depth_aux : forall e T A, e |-- T : A -> forall U V, T = Sum U V ->
-  exists s1, exists s2, exists s3,
-  e |-- U : Srt s1 /\ 
-  U :: e |-- V : Srt s2 /\
-  sum_sort s1 s2 s3 /\
-  equiv e A (Srt s3).
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  destruct t ; simpl in H1 ; try discriminate.
-  destruct (IHtyp1 t1 t2) ; auto with coc.
-  destruct H2.
-  destruct H2.
-  intuition.
-  unfold lift in H1 ; simpl in H1.
-  inversion H1.
-  exists x ; exists x0 ; exists x1.
-  intuition ; auto with coc.
-  change (Srt x) with (lift 1 (Srt x)).
-  unfold lift.
-  pose (type_weak H3 H0) ; auto with coc.
-  change (Srt x0) with (lift_rec 1 (Srt x0) 1).
-  apply (type_weak_weak H0 H2) ; auto with coc.
-  
-  pose (equiv_lift H6 H0).
-  unfold lift in e0 ; simpl in e0.
-  unfold lift ; apply e0.
-
-  inversion H2.
-  rewrite <- H4 ; rewrite <- H5.
-  exists s1 ; exists s2 ; exists s3 ; intuition ; auto with coc.
-  
-  destruct (IHtyp _ _ H1).
-  do 2 destruct H2.
-  intuition.
-  exists x ; exists x0 ; exists x1 ; intuition ; auto with coc.
-  right with U s ; auto with coc.
-Qed.
-*)
-
 Lemma generation_sum_depth : forall e U V X A m, e |-- Sum_l U V -> X : A [m] -> 
   exists3 U' s1 n, 
   exists3 V' s2 p, exists s3,
@@ -216,12 +122,20 @@ Lemma generation_sum_depth : forall e U V X A m, e |-- Sum_l U V -> X : A [m] ->
   U :: e |-- V -> V' : Srt_l s2 [p] /\ p < m /\
   sum_sort s1 s2 s3 /\
   X = Sum_l U' V' /\ equiv e A (Srt_l s3).
-Admitted.
-(*
 Proof.
-  intros ; eapply generation_sum_depth_aux ; auto ; auto.
+  intros e U V X A n H.
+  induction_with_subterm (Sum_l U V) H ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct IHtposrd ; auto ; destruct_exists.
+  exists a b c ; exists a0 b0 c0 ; exists x ; intuition ; auto with coc.
+  apply equiv_trans with A ; eauto with coc.
+
+  clear IHtposrd1 IHtposrd2.
+  inversion y ; subst.
+  exists A' s1 n  ; exists B' s2 m ; exists s3.
+  intuition ; auto with coc.
+  apply equiv_sym_sort ; eauto with coc ecoc.
 Qed.
-*)
 
 Lemma generation_sum : forall e U V X A, e |-- Sum_l U V -> X : A -> 
   exists2 U' s1, 
@@ -237,60 +151,34 @@ Proof.
   exists a b ; exists a0 b0 ; exists x0 ; intuition ; eauto with coc ecoc.
 Qed.
 
-Lemma generation_lambda_depth_aux : forall e t X A m, e |-- t -> X : A [m] -> forall T M, t = Abs_l T M ->
-  exists3 T' s1 n, exists3 M' s2 p, exists3 C C' q,
-  e |-- T -> T' : Srt_l s1 [n] /\ n < m /\
-  T :: e |-- M -> M' : C [p] /\ p < m /\
-  T :: e |-- C -> C' : Srt_l s2 [q] /\ q < m /\
-  X = Abs_l T' M' /\ equiv_sort e A  (Prod_l T C) s2.
-Admitted.
-(*Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  destruct t ; simpl in H1 ; try discriminate.
-  destruct (IHtyp1 t1 t2) ; auto with coc.
-  do 2 destruct H2.
-  intuition.
-  unfold lift in H1 ; simpl in H1.
-  inversion H1.
-  exists x ; exists x0 ; exists (lift_rec 1 x1 1).
-  intuition ; auto with coc.
-  change (Srt x) with (lift 1 (Srt x)).
-  unfold lift.
-  pose (type_weak H3 H0) ; auto with coc.
-
-  change (Srt x0) with (lift_rec 1 (Srt x0) 1).
-  apply (type_weak_weak H0 H2) ; auto with coc.
-
-  apply (type_weak_weak H0 H4) ; auto with coc.
-  
-  pose (equiv_lift H6 H0).
-  apply e0.
-
-  inversion H2.
-  rewrite <- H4 ; rewrite <- H5.
-  exists s1 ; exists s2 ; exists U ; intuition ; auto with coc.
-  
-  destruct (IHtyp _ _ H1).
-  do 2 destruct H2.
-  intuition.
-  exists x ; exists x0 ; exists x1 ; intuition ; auto with coc.
-  right with U s ; auto with coc.
-Qed.
-*)
-
 Lemma generation_lambda_depth : forall e T M X A m, e |-- Abs_l T M -> X : A [m] -> 
   exists3 T' s1 n, exists3 M' s2 p, exists3 C C' q,
   e |-- T -> T' : Srt_l s1 [n] /\ n < m /\
   T :: e |-- M -> M' : C [p] /\ p < m /\
   T :: e |-- C -> C' : Srt_l s2 [q] /\ q < m /\
   X = Abs_l T' M' /\ equiv_sort e A  (Prod_l T C) s2.
-Admitted.
-(*
 Proof.
-  intros ; eapply generation_lambda_depth_aux ; auto ; auto.
+  intros e T M X A m H.
+  induction_with_subterm (Abs_l T M) H ; simpl ; intros ; try discriminate ; auto with coc.
+
+  clear IHtposrd1 IHtposrd2 IHtposrd3.
+  inversion y ; subst.
+  exists A' s1 n.
+  exists M' s2 p ; exists B B' m.
+  intuition ; auto with coc.
+  unfold equiv_sort.
+  apply tposr_coerce_prod with s1 ; eauto with coc ecoc.
+
+  destruct IHtposrd ; auto ; destruct_exists.
+  exists a b c ; exists a0 b0 c0 ; exists a1 b1 c1.
+  intuition ; auto with coc.
+  unfold equiv_sort in H8.
+  unfold equiv_sort.
+  apply tposr_coerce_trans with A ; eauto with coc.
+  rewrite (unique_sort (coerce_refl_l H8) (coerce_refl_l H0)).
+  auto with coc.
 Qed.
-*)
+
 Lemma generation_lambda : forall e T M X A, e |-- Abs_l T M -> X : A-> 
   exists2 T' s1, 
   exists2 M' s2,
