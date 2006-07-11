@@ -376,53 +376,52 @@ Proof.
 
   apply tposr_equiv_r with (lsubst N0 B) ; auto.
   apply tposr_equiv_r with (lsubst N0 B) ; auto.
-Admitted.
-(*  (* Beta *)
+
+  (* Beta *)
   intros P B0 Hr.
   pose (generation_app_depth Hr) ; destruct_exists.
 
   assert(q < x) ; try rewrite <- H7 ; auto with arith.
-  pose (IH _ H16 _ _ _ _ _ H2 _ _ H12) ; destruct_exists.
-  pose (uniqueness_of_types (toq H2) (toq H12)).
+  pose (IH _ H15 _ _ _ _ _ H2 _ _ H11) ; destruct_exists.
+  pose (uniqueness_of_types (toq H2) (toq H11)).
   assert(c = s1).
   destruct e0 ; destruct_exists.
-  destruct H21.
-  rewrite H22 in H8 ; elim (tposr_not_kind (fromd H8)).
-  destruct (coerce_refls H21).
-  rewrite <- (unique_sort H22 (fromd H)).
-  rewrite <- (unique_sort H23 (fromd H8)).
+  destruct H20.
+  rewrite H21 in H8 ; elim (tposr_not_kind (fromd H8)).
+  destruct (coerce_refls H20).
+  rewrite <- (unique_sort H21 (fromd H)).
+  rewrite <- (unique_sort H22 (fromd H8)).
   reflexivity.
 
   assert(coerce_in_env (a :: G) (A0 :: G)).
   destruct e0.
-  destruct H22.
-  rewrite H23 in H8 ; elim (tposr_not_kind (fromd H8)).
-  destruct H22.
+  destruct H21.
+  rewrite H22 in H8 ; elim (tposr_not_kind (fromd H8)).
+  destruct H21.
   apply coerce_env_hd with x1 ; auto with coc.
 
-  assert(A0 :: G |-- B -> a0 : Srt_l b0).
-  apply type_coerce_env with (a :: G) ; auto with coc.
-  apply (fromd H10).
+  assert(A0 :: G |-- B >-> a0 : b0).
+  apply coerce_coerce_env with (a :: G) ; auto with coc.
 
   assert(a :: G |-- B -> B' : Srt_l s2).
-  apply type_coerce_env with (A0 :: G) ; auto with coc.
+  apply tposr_coerce_env with (A0 :: G) ; auto with coc.
   apply (fromd H0).
 
   assert(b0 = s2).
-  pose (refl_l H24).
-  pose (refl_l (fromd H10)).
+  pose (refl_l H23).
+  pose (coerce_refl_l H10).
   apply (unique_sort t0 t).
 
-  rewrite H21 in H8.
-  rewrite H25 in H10.
-  rewrite H25 in H14.
-  rewrite H25 in H23.
-  clear H25 b0.
+  rewrite H20 in H8.
+  rewrite H24 in H10.
+  rewrite H24 in H13.
+  rewrite H24 in H22.
+  clear H24 b0.
 
   assert(m0 < x) by (rewrite <- H7 ; auto with arith). 
   pose (tod H23) ; destruct_exists.
   
-  pose (IH _ H25 _ _ _ _ _ H0 _ _ H26) ; destruct_exists.
+  pose (IH _ H24 _ _ _ _ _ H0 _ _ H25) ; destruct_exists.
 
   assert(G |-- lsubst x0 x2 ~= lsubst N0 B : s2).
   apply tposr_eq_sym.

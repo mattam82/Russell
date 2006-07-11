@@ -194,53 +194,6 @@ Proof.
   exists a b ; exists a0 b0 ; exists a1 b1 ; intuition ; eauto with coc ecoc.
 Qed.
 
-Lemma generation_app_depth_aux :
-forall e t Y Z m, e |-- t -> Y : Z [m] -> forall V W X, t = App_l V W X ->
-  exists4 U U' s1 n,
-  exists2 V' s2,
-  exists2 X' q,
-  e |-- U -> U' : Srt_l s1 [n] /\ n < m /\
-  U :: e |-- V >-> V' : s2 /\
-  e |-- X -> X' : U [q] /\ q < m /\
-  equiv_sort e Z (lsubst X V) s2 /\
-  ((exists2 W' r, e |-- W -> W' : Prod_l U V [r] /\ r < m /\
-  Y = App_l V' W' X') \/
-  (exists3 T T' r, 
-  W = Abs_l U T /\
-  U :: e |-- T -> T' : V [r] /\ r < m /\
-  Y = lsubst X' T')).
-Proof.
-Admitted.
-(*
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  destruct t ; simpl in H1 ; try discriminate.
-  destruct (IHtyp1 t1 t2) ; auto with coc.
-  do 2 destruct H2.
-  intuition.
-  unfold lift in H1 ; simpl in H1.
-  inversion H1.
-  exists (lift_rec 1 x 0) ; exists (lift_rec 1 x0 1); intuition ; auto with coc.
-  pose (type_weak H2 H0) ; auto with coc.
-
-  apply (type_weak_lift_rec H4 H0) ; auto with coc.
-  
-  pose (equiv_lift H5 H0).
-  rewrite <- distr_lift_subst.
-  apply e0.
-
-  inversion H1.
-  rewrite <- H4 ; rewrite <- H3.
-  exists V ; exists Ur ; intuition ; auto with coc.
-  
-  destruct (IHtyp _ _ H1).
-  do 2 destruct H2.
-  intuition.
-  exists x ; exists x0 ; intuition ; auto with coc.
-  right with U s ; auto with coc.
-Qed.
-*)
-
 Lemma generation_app_depth : forall e V W X Y Z m, e |-- App_l V W X -> Y : Z [m] -> 
   exists4 U U' s1 n,
   exists2 V' s2,
@@ -255,12 +208,57 @@ Lemma generation_app_depth : forall e V W X Y Z m, e |-- App_l V W X -> Y : Z [m
   W = Abs_l U T /\
   U :: e |-- T -> T' : V [r] /\ r < m /\
   Y = lsubst X' T')).
-Admitted.
-(*
 Proof.
-  intros ; eapply generation_app_depth_aux ; auto ; auto.
+  intros e V W X Y Z m H.
+  induction_with_subterm (App_l V W X) H ; simpl ; intros ; try discriminate ; auto with coc.
+
+  clear IHtposrd1 IHtposrd2 IHtposrd3.
+  inversion y ; subst.
+  exists A A' s1 n.
+  exists B' s2.
+  exists N' q.
+  intuition ; auto with coc.
+  unfold equiv_sort.
+  apply substitution_coerce with A ; eauto with coc ecoc.
+
+  left.
+  exists M' p ; intuition ; auto with coc.
+
+  clear IHtposrd1 IHtposrd2 IHtposrd3 IHtposrd4.
+  inversion y ; subst.
+  exists A A' s1 n.
+  exists B' s2.
+  exists N' q.
+  intuition ; eauto with coc ecoc.
+  unfold equiv_sort.
+  apply substitution_coerce with A ; eauto with coc ecoc.
+  
+  right.
+  exists M M' p.
+  intuition ; auto with coc.
+
+  destruct IHtposrd ; auto ; destruct_exists.
+  exists a b c d ; exists a0 b0 ; exists a1 b1.
+  unfold equiv_sort in H6.
+  unfold equiv_sort.
+  intuition ; auto with coc ecoc.
+  
+  apply tposr_coerce_trans with A ; eauto with coc.
+  rewrite (unique_sort (coerce_refl_l H6) (coerce_refl_l H0)).
+  auto with coc.
+
+  left.
+  destruct_exists.
+  exists a2 b2 ; intuition ; auto with coc.
+
+  apply tposr_coerce_trans with A ; eauto with coc.
+  rewrite (unique_sort (coerce_refl_l H6) (coerce_refl_l H0)).
+  auto with coc.
+
+  right.
+  destruct_exists.
+  exists a2 b2  c0; intuition ; auto with coc.
 Qed.
-*)
 
 Lemma generation_app : forall e V W X Y Z, e |-- App_l V W X -> Y : Z -> 
   exists3 U U' s1,
@@ -297,58 +295,24 @@ Lemma generation_app2 : forall e V W X Y Z, e |-- App_l V W X -> Y : Z ->
   W = Abs_l U T /\
   U :: e |-- T -> T' : V /\ Y = lsubst X' T')).
 Proof.
-Admitted.
+  intros.
+  pose (generation_app H) ; destruct_exists.
+  exists a b c.
+  exists a0 b0.
+  destruct H4 ; destruct_exists.
+  subst.
+  exists x x0.
+  intuition ; auto with coc.
 
-(*
+  exists x (Abs_l a a1).
+  intuition ; auto with coc.
+  subst.
+  apply tposr_abs with c V b0 ; eauto with coc.
 
-Lemma generation_pair_depth_aux : forall e t C, e |-- t : C -> forall T M N, t = Pair T M N ->
-  exists A, exists B, exists s1, exists s2, exists s3,
-  T = Sum A B /\
-  e |-- A : Srt s1 /\
-  A :: e |-- B : Srt s2 /\
-  sum_sort s1 s2 s3 /\
-  e |-- M : A /\ 
-  e |-- N : subst M B /\
-  equiv e C (Sum A B).
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  destruct t ; simpl in H1 ; try discriminate.
-  destruct (IHtyp1 t1 t2 t3) ; auto with coc.
-  do 4 destruct H2.
-  intuition.
-  unfold lift in H1 ; simpl in H1.
-  inversion H1.
-  exists (lift_rec 1 x 0) ; exists (lift_rec 1 x0 1);
-  exists x1 ; exists x2 ; exists x3 ; intuition ; auto with coc.
-  clear IHtyp2.
-  rewrite H3 ; simpl ; auto.
-  
-  change (Srt x1) with (lift_rec 1 (Srt x1) 0).
-  apply (type_weak H2 H0) ; auto with coc.
-
-  change (Srt x2) with (lift_rec 1 (Srt x2) 1).
-  apply (type_weak_weak H0 H4) ; auto with coc.
-
-  pose (type_weak H6 H0) ; auto with coc.
-
-  rewrite <- distr_lift_subst.
-  apply (type_weak_lift_rec H7 H0) ; auto with coc.
-  
-  pose (equiv_lift H9 H0).
-  apply e0.
-
-  inversion H4.
-  rewrite <- H7 ; rewrite <- H8.
-  exists U ; exists V ; exists s1 ; exists s2 ; exists s3 ; intuition ; auto with coc.
-   
-  destruct (IHtyp _ _ _ H1).
-  do 4 destruct H2.
-  intuition.
-  exists x ; exists x0 ; exists x1 ; exists x2 ; exists x3 ; intuition ; auto with coc.
-  right with U s ; auto with coc.
+  right.
+  exists a1 b1.
+  intuition ; auto with coc.
 Qed.
-*)
 
 Lemma generation_pair_depth : forall e T M N X C m, e |-- Pair_l T M N -> X : C [m] ->
   exists4 A A' s1 n,
@@ -361,12 +325,37 @@ Lemma generation_pair_depth : forall e T M N X C m, e |-- Pair_l T M N -> X : C 
   exists2 M' q, e |-- M -> M' : A [q] /\ q < m /\
   exists2 N' r, e |-- N -> N' : lsubst M B [r] /\ r < m /\
   X = Pair_l (Sum_l A' B') M' N' /\ equiv_sort e C (Sum_l A B) s3.
-Admitted.
-(*
 Proof.
-  intros ; eapply generation_pair_depth_aux ; auto ; auto.
+  intros e T M N X C m H.
+  induction_with_subterm (Pair_l T M N) H ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct IHtposrd ; auto with coc ; destruct_exists.
+  exists a b c d.
+  exists a0 b0 c0 d0.
+  exists x.
+  intuition ; auto with coc.
+  exists a1 b1 ; intuition ; auto with coc.
+  exists a2 b2 ; intuition ; auto with coc.
+  unfold equiv_sort.
+  unfold equiv_sort in H12.
+  apply tposr_coerce_trans with A ; auto with coc.
+  rewrite (unique_sort (coerce_refl_l H12) (coerce_refl_l H0)).
+  auto with coc.
+
+  clear IHtposrd1 IHtposrd2 IHtposrd3 IHtposrd4.
+  inversion y ; subst.
+  exists A A' s1 n.
+  exists B B' s2 m.
+  exists s3.
+  intuition ; eauto with coc ecoc.
+  exists u' p.
+  intuition ; auto with coc.
+  exists v' q.
+  intuition ; auto with coc.
+  unfold equiv_sort.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
 Qed.
-*)
+
 Lemma generation_pair : forall e T M N X C, e |-- Pair_l T M N -> X : C ->
   exists3 A A' s1,
   exists3 B B' s2,
@@ -388,215 +377,178 @@ Qed.
 
 Require Import Lambda.TPOSR.MaxLemmas.
 
-Lemma generation_pi1_depth_aux : forall e t X C m, e |-- t -> X : C [m] -> forall T M, t = Pi1_l T M ->
-  exists4 A A' s1 n,
-  exists4 B B' s2 p,
-  exists s3,
-  e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
-  A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
-  exists2 A'' B'', T = Sum_l A'' B'' /\
-  sum_sort s1 s2 s3 /\ equiv e C A'' /\
-  ((exists3 T' M' r,
-  A = A'' /\ B = B'' /\
-  T' = (Sum_l A' B') /\
-  e |-- M -> M' : Sum_l A B [r] /\ r < m /\
-  X = Pi1_l T' M') \/
-  (exists3 u u' r,
-  exists2 v v',
-  M = Pair_l (Sum_l A B) u v /\
-  e |-- A'' >-> A : s1 /\
-  A'' :: e |-- B'' >-> B : s2/\
-  e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [r] /\ r < m /\
+Lemma generation_pi1_depth : forall e T M X C m, e |-- Pi1_l T M -> X : C [m] ->
+  exists2 A B, T = Sum_l A B /\ equiv e C A /\
+  exists4 A' B' s1 s2, 
+  e |-- A >-> A' : s1 /\ A :: e |-- B >-> B' : s2 /\
+  ((exists2 M' n, e |-- M -> M' : Sum_l A B [n] /\
+  X = Pi1_l (Sum_l A' B') M') \/
+  (exists4 u u' v v',
+  M = Pair_l (Sum_l A' B') u v /\
+  exists2 A'' n, e |-- A' -> A'' : s1 [n] /\ n < m /\
+  exists2 B'' p, A' :: e |-- B' -> B'' : s2 [p] /\ p < m /\
+  exists q, e |-- M -> Pair_l (Sum_l A'' B'') u' v' : Sum_l A' B' [q] /\ q < m /\
   X = u')).
 Proof.
-Admitted.
-(*  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-  pose (IHtposrd _ _ H1).
-  destruct_exists.
-  
-  exists a b c d.
-  exists a0 b0 c0 d0.
-  exists x.
-  assert(d < S n) by (apply lt_trans with n ; auto with arith).
-  assert(d0 < S n) by (apply lt_trans with n ; auto with arith).
-  repeat (split ; eauto).
-  exists a1 b1 ; intuition.
-  apply equiv_trans with A ; auto with coc.
-  right ; exists s.
-  apply tposr_coerce_sym ; eauto with coc ecoc.
+  intros e T M X C m H.
+  induction_with_subterm (Pi1_l T M) H ; simpl ; intros ; try discriminate ; auto with coc.
 
-  destruct_exists.
+  destruct IHtposrd ; auto with coc ; destruct_exists.
+  exists a b ; repeat split ; auto with coc.
+  apply equiv_trans with A ; eauto with coc.
+  exists a0 b0 c d ;
+  repeat split ; auto with coc.
+  destruct H5 ; destruct_exists.
   left.
-  assert(c1 < S n) by (apply lt_trans with n ; auto with arith).
-  exists a2 b2 c1 ; intuition.
-  apply equiv_trans with A ; auto with coc.
-  right ; exists s ; eauto with coc ecoc.
-
-  destruct_exists.
+  exists a1 b1 ; intuition ; auto with coc.
   right.
-  assert(c1 < S n) by (apply lt_trans with n ; auto with arith).
-  exists a2 b2 c1 ; exists a3 b3 ; intuition.
-
+  exists a1 b1 c0 d0 ; intuition ; auto with coc.
+  exists a2 b2 ; intuition ; auto with coc.
+  exists a3 b3 ; intuition ; auto with coc.
+  exists x ; intuition ; auto with coc.
   
   clear IHtposrd.
-  inversion H3.
-  subst.
-  exists A A' s1 n.
-  exists B B' s2 m.
-  exists s3.
-  intuition ; auto with arith.
-  exists A B ; intuition.
-  right ; exists s1 ; eauto with coc ecoc.
-  left ; exists (Sum_l A' B') t' p ; intuition.
+  inversion y ; subst.
+
+  exists A B ; auto.
+  intuition.
+  eauto with coc ecoc.
+  exists A' B' s1 s2 ; intuition ; auto with coc.
+  left.
+  exists t' p.
+  intuition.
 
   clear IHtposrd1 IHtposrd2 IHtposrd3.
-  inversion H5.
-  subst.
-  exists A A' s1 n.
-  exists B B' s2 m.
-  exists s3.
-  intuition ; auto with arith.
-  exists A'' B'' ; intuition.
-  right ; exists s1 ; eauto with coc ecoc.
-  
-  right ; exists u u' p ; exists v v' ; intuition.
-Qed.
-*)
-Lemma generation_pi1_depth : forall e T M X C m, e |-- Pi1_l T M -> X : C [m] ->
-  exists4 A A' s1 n,
-  exists4 B B' s2 p,
-  exists s3,
-  e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
-  A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
-  exists2 A'' B'', T = Sum_l A'' B'' /\
-  sum_sort s1 s2 s3 /\ equiv e C A'' /\
-  ((exists3 T' M' r,
-  A = A'' /\ B = B'' /\
-  T' = (Sum_l A' B') /\
-  e |-- M -> M' : Sum_l A B [r] /\ r < m /\
-  X = Pi1_l T' M') \/
-  (exists3 u u' r,
-  exists2 v v',
-  M = Pair_l (Sum_l A B) u v /\
-  e |-- A'' >-> A : s1 /\
-  A'' :: e |-- B'' >-> B : s2 /\
-  e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B [r] /\ r < m /\
-  X = u')).
-Proof.
-  intros ; eapply generation_pi1_depth_aux ; auto ; auto.
+  inversion y ; subst.
+  exists A'' B''.
+  intuition ; eauto with coc ecoc.
+  exists A B s1 s2 ; intuition ; auto with coc ecoc.
+  right.
+  exists u u' v v' ; intuition.
+  exists A' n ; intuition.
+  exists B' m ; intuition.
+  exists p ; intuition.
 Qed.
 
-Lemma generation_pi1 : forall e T M X C, e |-- Pi1_l T M -> X : C ->
-  exists3 A A' s1,
-  exists3 B B' s2,
-  exists s3,
-  e |-- A -> A' : Srt_l s1 /\
-  A :: e |-- B -> B' : Srt_l s2 /\
-  exists2 A'' B'', T = Sum_l A'' B'' /\
-  sum_sort s1 s2 s3 /\ equiv e C A'' /\
-  ((exists2 T' M',
-  A = A'' /\ B = B'' /\
-  T' = (Sum_l A' B') /\
-  e |-- M -> M' : Sum_l A B /\
-  X = Pi1_l T' M') \/
-  (exists2 u u',
-  exists2 v v',
-  M = Pair_l (Sum_l A B) u v /\
-  e |-- A'' >-> A : s1 /\
-  A'' :: e |-- B'' >-> B : s2 /\
-  e |-- M -> Pair_l (Sum_l A' B') u' v' : Sum_l A B /\
+
+
+Lemma generation_pi1 :
+  forall e T M X C, e |-- Pi1_l T M -> X : C ->
+  exists2 A B, T = Sum_l A B /\ equiv e C A /\
+  exists4 A' B' s1 s2, 
+  e |-- A >-> A' : s1 /\ A :: e |-- B >-> B' : s2 /\
+  ((exists M', e |-- M -> M' : Sum_l A B /\
+  X = Pi1_l (Sum_l A' B') M') \/
+  (exists4 u u' v v',
+  M = Pair_l (Sum_l A' B') u v /\
+  exists A'', e |-- A' -> A'' : s1 /\
+  exists B'', A' :: e |-- B' -> B'' : s2 /\
+  e |-- M -> Pair_l (Sum_l A'' B'') u' v' : Sum_l A' B' /\
   X = u')).
 Proof.
   intros.
   pose (tod H) ; destruct_exists.
   pose (generation_pi1_depth H0) ; destruct_exists.
-  exists a b c ; exists a0 b0 c0 ; exists x0 ; intuition ; destruct_exists ; eauto with coc ecoc.
-  exists a1 b1 ; intuition ; eauto with coc ecoc.
-  left ; exists a2 b2 ; intuition ; eauto with coc ecoc.
-  exists a1 b1 ; intuition ; eauto with coc ecoc.
-  right ; exists a2 b2 ; exists a3 b3 ; intuition ; eauto with coc ecoc.
+  exists a b ; repeat split ; auto.
+  exists a0 b0 c d ; repeat split ; auto.
+  intuition ; destruct_exists ; eauto with coc ecoc.
+  right ; exists a1 b1 c0 d0 ; intuition ; auto with coc.
+  exists a2 ; intuition ; eauto with coc ecoc.
+  exists a3 ; intuition ; eauto with coc ecoc.
 Qed.
 
-(*Lemma generation_pi2_depth_aux : forall e t C, e |-- t : C -> forall M, t = Pi2 M ->
-  exists A, exists B,
-  e |-- M : Sum A B /\ 
-  equiv e C (subst (Pi1 M) B).
-Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
-
-  destruct t ; simpl in H1 ; try discriminate.
-  destruct (IHtyp1 t) ; auto with coc.
-  destruct H2.
-  intuition.
-  unfold lift in H1 ; simpl in H1.
-  inversion H1.
-  exists (lift_rec 1 x 0) ; exists (lift_rec 1 x0 1); intuition ; auto with coc.
-  pose (type_weak H3 H0) ; auto with coc.
-
-  pose (equiv_lift H4 H0).
-  unfold lift in e0.
-  rewrite distr_lift_subst in e0.
-  simpl in e0.
-  apply e0.
-
-  inversion H0.
-  rewrite <- H2.
-  exists U ; exists V ; intuition ; auto with coc.
-  
-  destruct (IHtyp _ H1).
-  destruct H2.
-  intuition.
-  exists x ; exists x0 ; intuition ; auto with coc.
-  right with U s ; auto with coc.
-Qed.
-*)
-
-Lemma generation_pi2_depth :
-  forall e T M X C m, e |-- Pi2_l T M -> X : C [m] ->
-  exists4 A A' s1 n,
-  exists4 B B' s2 p,
-  exists s3,
-  e |-- A -> A' : Srt_l s1 [n] /\ n < m /\
-  A :: e |-- B -> B' : Srt_l s2 [p] /\ p < m /\
-  T = Sum_l A B /\
-  sum_sort s1 s2 s3 /\ equiv e C (lsubst (Pi1_l T M) B) /\
-  ((exists3 T' M' r,
-  e |-- M -> M' : Sum_l A B [r] /\ r < m /\
-  T' = Sum_l A' B' /\ X = Pi2_l T' M') \/
-  (exists3 u u' r,
-  exists3 v v' o,
-  M = Pair_l (Sum_l A B) u v /\
-  e |-- u -> u' : A [r] /\ r < m /\
-  e |-- v -> v' : lsubst u B [o] /\ o < m /\
+Lemma generation_pi2_depth : forall e T M X C m, e |-- Pi2_l T M -> X : C [m] ->
+  exists2 A B, T = Sum_l A B /\ equiv e C (lsubst (Pi1_l T M) B) /\
+  exists4 A' B' s1 s2, 
+  e |-- A >-> A' : s1 /\ A :: e |-- B >-> B' : s2 /\
+  ((exists2 M' n, e |-- M -> M' : Sum_l A B [n] /\
+  X = Pi2_l (Sum_l A' B') M') \/
+  (exists4 u u' v v',
+  M = Pair_l (Sum_l A' B') u v /\
+  exists2 A'' n, e |-- A' -> A'' : s1 [n] /\ n < m /\
+  exists2 B'' p, A' :: e |-- B' -> B'' : s2 [p] /\ p < m /\
+  exists q, e |-- M -> Pair_l (Sum_l A'' B'') u' v' : Sum_l A' B' [q] /\ q < m /\
   X = v')).
-Admitted.
-(*
 Proof.
-  intros ; eapply generation_pi2_depth_aux ; auto ; auto.
+  intros e T M X C m H.
+  induction_with_subterm (Pi2_l T M) H ; simpl ; intros ; try discriminate ; auto with coc.
+
+  destruct IHtposrd ; auto with coc ; destruct_exists.
+  exists a b ; repeat split ; auto with coc.
+  apply equiv_trans with A ; eauto with coc.
+  exists a0 b0 c d ;
+  repeat split ; auto with coc.
+  destruct H5 ; destruct_exists.
+  left.
+  exists a1 b1 ; intuition ; auto with coc.
+  right.
+  exists a1 b1 c0 d0 ; intuition ; auto with coc.
+  exists a2 b2 ; intuition ; auto with coc.
+  exists a3 b3 ; intuition ; auto with coc.
+  exists x ; intuition ; auto with coc.
+  
+  clear IHtposrd.
+  inversion y ; subst.
+
+  exists A B ; auto.
+  intuition.
+  right ; exists s2.
+  apply substitution_coerce with A.
+  eauto with coc ecoc.
+  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  exists A' B' s1 s2 ; intuition ; auto with coc.
+  left.
+  exists t' p.
+  intuition.
+
+  clear IHtposrd1 IHtposrd2 IHtposrd3.
+  inversion y ; subst.
+  exists A'' B''.
+  intuition ; auto with coc.
+  right ; exists s2.
+  apply substitution_coerce with A'' ; auto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_conv with (Sum_l A B) s3.
+  eauto with coc ecoc.
+  apply tposr_coerce_sym.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+  exists A B s1 s2 ; intuition ; auto with coc ecoc.
+  right.
+  exists u u' v v' ; intuition.
+  exists A' n ; intuition.
+  exists B' m ; intuition.
+  exists p ; intuition.
 Qed.
-*)
 
 Lemma generation_pi2 :
   forall e T M X C, e |-- Pi2_l T M -> X : C ->
-  exists3 A A' s1,
-  exists3 B B' s2,
-  exists s3,
-  e |-- A -> A' : Srt_l s1 /\
-  A :: e |-- B -> B' : Srt_l s2 /\
-  T = Sum_l A B /\
-  sum_sort s1 s2 s3 /\ equiv e C (lsubst (Pi1_l T M) B) /\
-  ((exists2 T' M',
-  e |-- M -> M' : Sum_l A B /\ 
-  T' = Sum_l A' B' /\ X = Pi2_l T' M') \/
-  (exists2 u u',
-  exists2 v v',
-  M = Pair_l (Sum_l A B) u v /\
-  e |-- u -> u' : A /\ 
-  e |-- v -> v' : lsubst u B /\ X = v')).
+  exists2 A B, T = Sum_l A B /\ equiv e C (lsubst (Pi1_l T M) B) /\
+  exists4 A' B' s1 s2, 
+  e |-- A >-> A' : s1 /\ A :: e |-- B >-> B' : s2 /\
+  ((exists M', e |-- M -> M' : Sum_l A B /\
+  X = Pi2_l (Sum_l A' B') M') \/
+  (exists4 u u' v v',
+  M = Pair_l (Sum_l A' B') u v /\
+  exists A'', e |-- A' -> A'' : s1 /\
+  exists B'', A' :: e |-- B' -> B'' : s2 /\
+  e |-- M -> Pair_l (Sum_l A'' B'') u' v' : Sum_l A' B' /\
+  X = v')).
 Proof.
   intros.
-Admitted.
+  pose (tod H) ; destruct_exists.
+  pose (generation_pi2_depth H0) ; destruct_exists.
+  exists a b ; repeat split ; auto.
+  exists a0 b0 c d ; repeat split ; auto.
+  intuition ; destruct_exists ; eauto with coc ecoc.
 
+  right ; exists a1 b1 c0 d0 ; intuition ; auto with coc.
+  exists a2 ; intuition ; eauto with coc ecoc.
+  exists a3 ; intuition ; eauto with coc ecoc.
+Qed.
 
 Lemma generation_subset_depth : forall e U V X A m, e |-- Subset_l U V -> X : A [m] -> 
   exists2 U' n, 
@@ -604,7 +556,23 @@ Lemma generation_subset_depth : forall e U V X A m, e |-- Subset_l U V -> X : A 
   e |-- U -> U' : Srt_l set [n] /\ n < m /\
   U :: e |-- V -> V' : Srt_l prop [p] /\ p < m /\
   X = Subset_l U' V' /\ equiv_sort e A (Srt_l set) kind.
-Admitted.
+Proof.
+  intros e U V X A m H.
+  induction_with_subterm (Subset_l U V) H ; intros; try discriminate.
+  
+  destruct IHtposrd ; auto ; destruct_exists.
+  exists a b ; exists a0 b0 ; intuition.
+  unfold equiv_sort in H6 ; unfold equiv_sort.
+  apply tposr_coerce_trans with A ; auto.
+  rewrite <- (unique_sort (coerce_refl_l H0) (coerce_refl_l H6)).
+  auto with coc.
+  
+  clear IHtposrd1 IHtposrd2.
+  inversion y ; subst.
+  exists A' n ; exists B' m ; intuition.
+  unfold equiv_sort.
+  apply tposr_coerce_conv ; apply tposr_eq_tposr ; eauto with coc ecoc.
+Qed.
 
 Lemma generation_subset : forall e U V X A, e |-- Subset_l U V -> X : A -> 
   exists2 U' V', 

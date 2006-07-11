@@ -67,7 +67,8 @@ Proof.
   rewrite e0 in H5.
   rewrite <- H2 in H5.
   rewrite H5 in H6.
-  apply (equiv_trans H6 H3).
+  rewrite (unique_sort (coerce_refl_r H3) (coerce_refl_r H6)) in H3.
+  right ; exists x6 ; apply tposr_coerce_trans with x3 ; auto with coc.
 
 
   (* Abs *)
@@ -145,18 +146,16 @@ Proof.
   (* Pi1 *)
   pose (generation_pi1_depth H) ; destruct_exists.
   pose (generation_pi1_depth H0) ; destruct_exists.
-  rewrite H5 in H13.
-  inversion H13.
-  rewrite <- H18 in H15.
-  apply (equiv_trans H7 H15).
+  subst.
+  inversion H6 ; subst.
+  apply (equiv_trans H2 H7).
 
   (* Pi2 *)
   pose (generation_pi2_depth H) ; destruct_exists.
   pose (generation_pi2_depth H0) ; destruct_exists.
-  rewrite H13 in H5.
-  inversion H5.
-  rewrite H19 in H15.
-  apply (equiv_trans H7 H15).
+  subst.
+  inversion H6 ; subst.
+  apply (equiv_trans H2 H7).
 Qed.
 
 Corollary tposr_uniqueness_of_types : forall e M M' M'' A B, 

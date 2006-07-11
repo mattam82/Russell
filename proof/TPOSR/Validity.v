@@ -42,10 +42,7 @@ Proof.
   pose (wf_tposr H1).
   pose (wf_sort_lift t H3).
   destruct_exists.
-  destruct H4 ; destruct_exists.
-  elim (eq_kind_typ_r_l H4 H5).
-
-  right ; exists T x3 ; apply (coerce_refl_l H4).  
+  right ; exists T x1 ; apply (coerce_refl_l H4).  
 
   right.
   pose (generation_lambda_depth H0) ; destruct_exists.
@@ -77,16 +74,16 @@ Proof.
   right ; exists T kind ; apply (coerce_refl_l H6).
 
   pose (generation_pi1_depth H0) ; destruct_exists.
-  destruct H7 ; destruct_exists.
-  destruct H7.
+  destruct H2 ; destruct_exists.
+  destruct H2.
   left ; exists kind ; auto.
-  right ; exists T x1 ; apply (coerce_refl_l H7).
+  right ; exists T x0 ; apply (coerce_refl_l H2).
 
   pose (generation_pi2_depth H0) ; destruct_exists.
-  destruct H7 ; destruct_exists.
-  destruct H7.
+  destruct H2 ; destruct_exists.
+  destruct H2.
   left ; exists kind ; auto.
-  right ; exists T x1 ; apply (coerce_refl_l H7).
+  right ; exists T x0 ; apply (coerce_refl_l H2).
 Qed.
 
 Corollary validity : forall e t u T, e |-- t -> u : T -> 
