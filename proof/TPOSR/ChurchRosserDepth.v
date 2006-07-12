@@ -247,26 +247,6 @@ Proof.
   rewrite H27 in H13.
   clear H27 b0.
 
-(*  assert(n0 < x) by (rewrite <- H7 ; auto with arith). 
-  pose (tod H25) ; destruct_exists.
-  pose (IH _ H27 _ _ _ _ _ H _ _ H2) ; destruct_exists.
-
-  assert(G |-- lsubst x0 x2 ~= lsubst N0 B : s2).
-  apply tposr_eq_sym.
-  apply tposr_eq_trans with (lsubst a1 a0).
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst N0 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
-  pose (refl_r (fromd H12)).
-  pose (refl_l H19).
-  pose (tposr_uniqueness_of_types t t0).
-  apply tposr_equiv_l with a ; auto with coc.
-  apply (fromd H12).
-
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst a1 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.*)
-
   assert(HeqB: equiv G B0 (lsubst N0 B)).
   right ; exists s2 ; assumption.
 
@@ -418,86 +398,77 @@ Proof.
   rewrite H24 in H22.
   clear H24 b0.
 
-  assert(m0 < x) by (rewrite <- H7 ; auto with arith). 
-  pose (tod H23) ; destruct_exists.
-  
-  pose (IH _ H24 _ _ _ _ _ H0 _ _ H25) ; destruct_exists.
-
-  assert(G |-- lsubst x0 x2 ~= lsubst N0 B : s2).
-  apply tposr_eq_sym.
-  apply tposr_eq_trans with (lsubst a1 a0).
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst N0 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
-  pose (refl_r (fromd H12)).
-  pose (refl_l H19).
-  pose (tposr_uniqueness_of_types t t0).
-  apply tposr_equiv_l with a ; auto with coc.
-  apply (fromd H12).
-
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst a1 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
-
   assert(HeqB: equiv G B0 (lsubst N0 B)).
   right ; exists s2 ; assumption.
 
-  destruct H15 ; destruct_exists.
+  destruct H14 ; destruct_exists.
 
   (* Beta, App *)
-  rewrite H33.
-  pose (generation_lambda_depth H15) ; destruct_exists.
+  rewrite H25.
+  pose (generation_lambda_depth H14) ; destruct_exists.
   assert(p < x).
   rewrite <- H7 ; auto with arith.
-  pose (IH _ H42 _ _ _ _ _ H1 _ _ H36) ; destruct_exists.
+  pose (IH _ H34 _ _ _ _ _ H1 _ _ H28) ; destruct_exists.
   assert(n0 < x).
   rewrite <- H7 ; auto with arith.
-  pose (IH _ H47 _ _ _ _ _ H _ _ H34) ; destruct_exists.
+  pose (IH _ H39 _ _ _ _ _ H _ _ H26) ; destruct_exists.
+  rewrite H32.
 
+  exists (lsubst x0 x1).
+
+  assert(Heqs:=unique_sort H40 H41).
+  subst s1.
+  subst c.
+  subst a2.
+  
   assert(G |-- A0 ~= a3 : b2).
-  apply tposr_eq_tposr ; auto with coc.
-  apply (fromd H34).
+  apply tposr_eq_trans with x2 ; auto with coc ecoc.
+  apply tposr_eq_trans with A' ; auto with coc ecoc.
+  eauto with coc ecoc.
 
   assert (conv_in_env (A0 :: G) (a3 :: G)).
   apply conv_env_hd with b2 ; auto.
 
-  assert (coerce_in_env (a :: G) (a3 :: G)).
+  assert (G |-- A0 >-> a : b2).
   destruct e0.
-  destruct H54.
-  rewrite H55 in H8 ; elim (tposr_not_kind (fromd H8)).
-  destruct H54.
-  destruct (coerce_refls H54).
-  pose (unique_sort H55 (fromd H34)).
+  destruct H44.
+  rewrite H45 in H8 ; elim (tposr_not_kind (fromd H8)).
+  destruct H44.
+  destruct (coerce_refls H44).
+  assert (Heq:=unique_sort H45 (eq_refl_l H20)).
+  subst x3.
+  assumption.
+
+  assert (coerce_in_env (a :: G) (a3 :: G)).
   apply coerce_env_hd with b2 ; auto with coc.
   apply tposr_coerce_trans with A0 ; auto with coc.
-  rewrite <- e0 ; auto with coc.
-
-  exists (lsubst x0 x3).
-
-  assert(G |-- App_l a0 a2 a1 -> lsubst x0 x3 : lsubst N0 B).
-
-  apply tposr_conv_l with (lsubst a1 a0) s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst a1 (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
   
-  rewrite H40.
-  apply tposr_beta with x4 s1 x2 s2 ; auto with coc.
-  apply conv_env with (A0 :: G) ; auto with coc.
-  apply conv_env with (A0 :: G) ; auto with coc.
-  apply tposr_conv with B s2 ; auto with coc.
-  apply tposr_conv_l with A0 b2 ; auto with coc.
+  assert(G |-- App_l a0 (Abs_l a3 a4) a1 -> lsubst x0 x1 : lsubst N0 B).
 
-  assert(G |-- lsubst N' M' -> lsubst x0 x3 : lsubst N0 B).
+  apply tposr_conv with (lsubst a1 a0) s2 ; auto with coc.
+  apply tposr_beta with x2 b2 a0 s2 ; auto with coc.
+  apply conv_env with (A0 :: G) ; eauto with coc ecoc.
+  apply conv_env with (A0 :: G) ; auto with coc ecoc.
+  apply tposr_conv with B s2 ; eauto with coc ecoc.
+  apply tposr_conv with A0 b2 ; eauto with coc ecoc.
 
-  apply tposr_conv_l with (lsubst N' a0) s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst N' (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
-  apply substitution with A0 ; auto with coc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with A0 ; auto with coc ecoc.
+  apply tposr_conv with a b2 ; auto with coc ecoc.
+  eauto with coc ecoc.
+
+  assert(G |-- lsubst N' M' -> lsubst x0 x1 : lsubst N0 B).
+
+  apply tposr_conv with (lsubst N' a0) s2 ; auto with coc.
+  apply substitution_tposr_tposr with A0 ; auto with coc.
   apply tposr_conv with B s2 ; auto with coc.
+
+  apply tposr_coerce_trans with (lsubst x0 a0) ; auto with coc.
+  apply substitution_tposr_coerce with A0 ; eauto with coc ecoc.
+  apply tposr_coerce_sym.
+  apply tposr_coerce_trans with (lsubst a1 a0) ; auto with coc.
+  apply substitution_tposr_coerce with A0 ; eauto with coc ecoc.
+  apply substitution_tposr_coerce with A0 ; eauto with coc ecoc.
 
   intuition ; auto with coc.
 
@@ -505,39 +476,30 @@ Proof.
   apply tposr_equiv_r with (lsubst N0 B) ; auto.
 
   (* Beta, Beta *)
-  rewrite H34.
+  rewrite H26.
   assert(p < x) ; try rewrite <- H7 ; auto with arith.
   generalize dependent G.
-  inversion H15.
-  rewrite <- H5.
-  rewrite <- H6.
-  rewrite <- H4.
-  rewrite H0.
-  rewrite H1.
-  clear H0 H1 A0 M0 H15 H4 H5 H6.
+  inversion H14 ; subst.
   intros.
 
-  pose (IH _ H35 _ _ _ _ _ H1 _ _ H32) ; destruct_exists.
+  pose (IH _ H27 _ _ _ _ _ H1 _ _ H24) ; destruct_exists.
   
-  exists (lsubst x0 x3).
+  exists (lsubst x0 x).
 
-  assert(G |-- lsubst N' M' -> lsubst x0 x3 : lsubst N0 B).
-  apply tposr_conv_l with (lsubst N' B') s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst N' (Srt_l s2)).
-  apply substitution with a ; auto with coc.
-  apply substitution with a ; auto with coc.
-  apply tposr_conv with B s2 ; auto with coc.
+  assert(G |-- lsubst N' M' -> lsubst x0 x : lsubst N0 B).
+  apply tposr_conv with (lsubst N' B') s2 ; auto with coc.
 
-  assert(G |-- lsubst a1 b0 -> lsubst x0 x3 : lsubst N0 B).
-  apply tposr_conv_l with (lsubst a1 B') s2 ; auto with coc.
-  apply tposr_eq_trans with (lsubst x0 x2) ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst a1 (Srt_l s2)).
-  apply substitution with a ; auto with coc.
-  apply substitution with a ; auto with coc.
+  apply substitution_tposr_tposr with a ; auto with coc.
   apply tposr_conv with B s2 ; auto with coc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with a ; eauto with coc ecoc.
+
+  assert(G |-- lsubst a1 b0 -> lsubst x0 x : lsubst N0 B).
+  apply tposr_conv with (lsubst a1 B') s2 ; auto with coc.
+  apply substitution_tposr_tposr with a ; auto with coc.
+  apply tposr_conv with B s2 ; auto with coc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with a ; eauto with coc ecoc.
 
   intuition.
 
@@ -674,7 +636,7 @@ Proof.
   apply tposr_conv_l with (lsubst u B) s2 ; auto with coc.
   apply tposr_eq_tposr.
   change (Srt_l s2) with (lsubst u (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
+  apply substitution_tposr_tposr with A0 ; auto with coc.
 
   assert(G |-- Pair_l (Sum_l b b0) a1 a2 -> Pair_l (Sum_l x1 x2) x3 x4 : Sum_l A0 B).
   apply tposr_conv_r with (Sum_l b b0) x0 ; auto with coc ; try apply tposr_pair with c c0 x0 ; auto with coc.
@@ -685,7 +647,7 @@ Proof.
   apply tposr_conv_l with (lsubst u B) c0 ; auto with coc.
   apply tposr_eq_tposr.
   change (Srt_l c0) with (lsubst u (Srt_l c0)).
-  apply substitution with A0 ; auto with coc.
+  apply substitution_tposr_tposr with A0 ; auto with coc.
    
   intuition ; try apply tposr_conv with (Sum_l A0 B) x0 ; auto with coc.
 
