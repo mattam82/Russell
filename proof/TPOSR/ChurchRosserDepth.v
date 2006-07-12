@@ -654,382 +654,603 @@ Proof.
   (* Pi1 *)
   intros.
   pose (generation_pi1_depth H8) ; destruct_exists.
-  inversion H13.
-  rewrite <- H18 in H15.
-  rewrite <- H18 in H16.
-  rewrite <- H18.
-  rewrite <- H19 in H16.
-  clear a1 b1 H19 H18 H13.
-  
-  assert(n0 < x) by (rewrite <- H7 ; auto with arith).
+  inversion H9.
+  subst A.
+  subst A0.
+  subst B.
+  subst e.
 
-  pose (fromd H).
-  pose (fromd H0).
-  pose (fromd H2).
-  pose (fromd H9).
-  pose (fromd H11).
-
-  destruct H16 ; destruct_exists.
+  destruct H13 ; destruct_exists.
 
   (* Pi1, Pi1 *)
-  rewrite H16 in H9.
-  rewrite H17 in H11.
-  rewrite H16 in H11.
-  rewrite H16 in H19.
-  rewrite H18 in H21.
-  rewrite H16 in t3.
-  rewrite H16 in t4.
-  rewrite H17 in t4.
-  rewrite H17 in H19.
-  rewrite H17 in H24.
-  rewrite H16 in H23.
-  clear a a0 H16 H17 H9 H11.
+  rewrite H6.
+  subst M.
+  subst N.
 
-  pose (IH _ H13 _ _ _ _ _ H _ _ H22) ; destruct_exists ; clear H13.
-  assert(m0 < x) by (rewrite <- H7 ; auto with arith).
-  pose (IH _ H13 _ _ _ _ _ H0 _ _ H23) ; destruct_exists ; clear H13.
-  clear H24.
   assert(p < x) by (rewrite <- H7 ; auto with arith).
-  pose (IH _ H13 _ _ _ _ _ H2 _ _ H19) ; destruct_exists ; clear H13.
+  pose (IH _ H4 _ _ _ _ _ H2 _ _ H3) ; destruct_exists ; clear H4.
 
-  assert(conv_in_env (A :: G) (A' :: G)).
-  apply conv_env_hd with s1 ; auto with coc.
-  assert(conv_in_env (A :: G) (b :: G)).
-  apply conv_env_hd with c ; auto with coc.
+  exists (Pi1_l (Sum_l A' B') x0).
 
-  exists (Pi1_l (Sum_l x1 x2) x3).
-  assert(G |-- Pi1_l (Sum_l A' B') t' -> Pi1_l (Sum_l x1 x2) x3 : A).
-  apply tposr_conv_r with A' s1 ; auto with coc ; try apply tposr_pi1 with s1 s2 s3 ; auto with coc.
-  apply conv_env with (A :: G) ; auto with coc.
-  apply tposr_conv with (Sum_l A B) s3 ; auto with coc.
-  apply tposr_coerce_sum with s1 s2 ; auto with coc.
+  assert (Heq:=unique_sort (coerce_refl_l H11) (coerce_refl_l H)).
+  subst c.
+  assert (Heq:=unique_sort (coerce_refl_l H12) (coerce_refl_l H0)).
+  subst d.
+
+  assert(G |-- a0 >-> A' : s1).
+  apply tposr_coerce_trans with a ; eauto with coc.
+
+  assert(coerce_in_env (a :: G) (A' :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc.
+
+  assert(G |-- Pi1_l (Sum_l A' B') t' -> Pi1_l (Sum_l A' B') x0 : a).
+  apply tposr_conv with A' s1 ; auto with coc ; try apply tposr_pi1 with s1 s2 s3 ;  auto with coc ecoc.
   eauto with coc ecoc.
   eauto with coc ecoc.
+  apply coerce_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_conv with (Sum_l a b) s3 ; auto with coc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  assert(coerce_in_env (a :: G) (a0 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc.
+
+  assert(G |-- Pi1_l (Sum_l a0 b0) a1 -> Pi1_l (Sum_l A' B') x0 : a).
+  apply tposr_conv with a0 s1 ; auto with coc ; try apply tposr_pi1 with s1 s2 s3 ;  auto with coc ecoc.
   eauto with coc ecoc.
-  apply conv_env with (A :: G) ; auto with coc.
-  eauto with coc ecoc.
- 
-  rewrite H21.
-  assert(G |-- Pi1_l (Sum_l b b0) b1 -> Pi1_l (Sum_l x1 x2) x3 : A).
-  apply tposr_conv_r with b c ; auto with coc ; try apply tposr_pi1 with c c0 x0 ; auto with coc.
-  apply conv_env with (A :: G) ; auto with coc.
-  apply tposr_conv with (Sum_l A B) x0 ; auto with coc.
-  apply tposr_coerce_sum with c c0 ; auto with coc.
-  eauto with coc ecoc.
-  eauto with coc ecoc.
-  eauto with coc ecoc.
-  apply conv_env with (A :: G) ; auto with coc.
-  eauto with coc ecoc.
-   
-  intuition ; try apply tposr_equiv_r with A ; auto.
+  apply coerce_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_conv with (Sum_l a b) s3 ; auto with coc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  intuition ; try apply tposr_equiv_r with a ; auto with coc ecoc.
   
   (* Pi1, Pi1_red *)
-  rewrite H21.
-  rewrite H16 in H2.
-  pose (generation_pair_depth H22) ; destruct_exists.
-  rewrite H33.
-  inversion H23.
-  rewrite <- H36 in H24.
-  rewrite <- H36 in H26.
-  rewrite <- H36 in H29.
-  rewrite <- H36 in H34.
-  rewrite <- H37 in H26.
-  rewrite <- H37 in H31.
-  rewrite <- H37 in H34.
-  clear H36 H37 a3 a4 H23.
-  rewrite H16 in H19.
-  pose (generation_pair_depth H19) ; destruct_exists.
-  inversion H23.
-  rewrite <- H47 in H35.
-  rewrite <- H47 in H37.
-  rewrite <- H47 in H40.
-  rewrite <- H47 in H45.
-  rewrite <- H48 in H37.
-  rewrite <- H48 in H42.
-  rewrite <- H48 in H45.
-  clear H47 H48 a3 a4 H23.
+  subst P.
+  subst t.
+  subst N.
+  subst M.
+  assert (Heq:=unique_sort (coerce_refl_l H11) (coerce_refl_l H)).
+  subst c.
+  assert (Heq:=unique_sort (coerce_refl_l H12) (coerce_refl_l H0)).
+  subst d.
  
-  assert(d1 < x) by (rewrite <- H7 ; apply lt_trans with p ;  auto with arith).
-  pose (IH _ H23 _ _ _ _ _ H24 _ _ H35) ; destruct_exists ; clear H23.
-  assert(d2 < x) by (rewrite <- H7 ; apply lt_trans with p ; auto with arith).
-  pose (IH _ H23 _ _ _ _ _ H26 _ _ H37) ; destruct_exists ; clear H23.
-  assert(b5 < x) by (rewrite <- H7 ; apply lt_trans with p ; auto with arith).
-  pose (IH _ H23 _ _ _ _ _ H29 _ _ H40) ; destruct_exists ; clear H23.
-  assert(b6 < x) by (rewrite <- H7 ; apply lt_trans with p ; auto with arith).
-  pose (IH _ H23 _ _ _ _ _ H31 _ _ H42) ; destruct_exists ; clear H23.
+  assert(p < x) by  (rewrite <- H7 ; auto with arith).  
+  pose (IH _ H3 _ _ _ _ _ H2 _ _ H16) ; destruct_exists.
+  pose (tod H18).
+  destruct_exists.
+  pose (generation_pair_depth H20) ; destruct_exists.
+  inversion H21.
+  subst a4 ; subst a5.
+  subst x1.
+  assert (Heq:=unique_sort (refl_l (fromd H22)) (refl_r (fromd H6))).
+  subst c.
+  assert(coerce_in_env (a2 :: G) (a0 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc ecoc.
+  assert(a0 :: G |-- a3 -> b5 : c1).
+  apply tposr_coerce_env with (a2 :: G) ; eauto with coc ecoc.
+  assert (Heq:=unique_sort (refl_r (fromd H14)) (refl_l H33)).
+  subst c1.
 
-  pose (fromd H24).
-  assert(conv_in_env (a :: G) (b3 :: G)).
-  apply conv_env_hd with c2 ; apply tposr_eq_tposr ; apply t5.
-  assert(coerce_in_env (a :: G) (A :: G)).
-  apply coerce_env_hd with c ; auto with coc.
-  assert(convAA':conv_in_env (A :: G) (A' :: G)).
-  apply conv_env_hd with s1 ; auto with coc.
+  pose (generation_pair_depth H2) ; destruct_exists.
+  subst t'.
+  inversion H34.
+  subst a4 ; subst a5.
+  exists a6.
+  assert (Heq:=unique_sort (refl_l (fromd H35)) (coerce_refl_r H11)).
+  subst c.
+  assert (Heq:=unique_sort (refl_l (fromd H37)) (refl_l (fromd H14))).
+  subst c1.
+  pose (generation_pair H4) ; destruct_exists.
+  inversion H51 ; subst.
+  inversion H44 ; subst.
+  assert (Heq:=unique_sort (refl_r (fromd H35)) (refl_l H46)).
+  subst c.
+  assert(coerce_in_env (a4 :: G) (a0 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc ecoc.
+  assert(a0 :: G |-- a5 -> b13 : c1).
+  apply tposr_coerce_env with (a4 :: G) ; eauto with coc ecoc.
+  assert (Heq:=unique_sort (refl_l H53) (refl_r (fromd H37))).
+  subst c1.
 
-  destruct (coerce_refls H17).
-  destruct (coerce_refls H18).
-  assert(s1 = c).
-  apply (unique_sort t0 H63).
-  pose (unique_sort t5 H64).
-  assert(s2 = c0).
-  pose (fromd H0).
-  apply (unique_sort t6 H65).
-
-  exists x5.
-  
-  assert(G |-- Pi1_l (Sum_l A' B') (Pair_l (Sum_l b3 b4) a5 a6) -> x5 : A).
-  apply tposr_conv_r with A' s1 ; auto with coc.
-  apply tposr_pi1_red with x3 c2 x4 c3 x1 x6 ; auto with coc.
-  apply conv_env with (a :: G) ; auto with coc.
-  apply tposr_pair with c2 c3 x1 ; auto with coc.
-  apply conv_env with (a :: G) ; auto with coc.
-  apply tposr_conv with a c2 ; auto with coc.
-  apply tposr_conv with (lsubst a1 a0) c3; auto with coc.
-  apply tposr_coerce_conv.
-  apply tposr_eq_tposr.
-  change (Srt_l c3) with (lsubst a1 (Srt_l c3)).
-  apply substitution with a ; auto with coc.
-  apply (fromd H26).
-  apply (fromd H29).
-
-  apply tposr_coerce_trans with A.
-  apply tposr_coerce_sym.
-  apply tposr_coerce_conv.
-  apply tposr_eq_tposr.
-  rewrite e0.
-  rewrite <- H67 ; auto.
-  apply tposr_coerce_trans with a ; auto with coc.
-  rewrite e0 ; auto.
-
-  assert(c0 = c3).
-  pose(fromd H26).
-  assert(A :: G |-- a0 -> a0 : Srt_l c3).
-  apply type_coerce_env with (a :: G) ; auto with coc.
-  apply (refl_l t6).
-  apply (unique_sort H66 H69).
-  rewrite <- H69.
-  rewrite <- H68 ; auto.
-
-  apply tposr_coerce_trans with B ; auto with coc.
-  apply tposr_coerce_sym.
-  apply tposr_coerce_conv.
-  apply tposr_eq_tposr.
-
-  apply conv_env with (A :: G) ; auto with coc.
-
-  apply coerce_conv_env with (A :: G) ; auto with coc.
-  
-  apply tposr_coerce_trans with a0 ; auto with coc.
-  rewrite H68.
+  assert(coerce_in_env (a :: G) (A' :: G)) by eauto with coc ecoc.
+  assert(G |-- B0 >-> a : s1).
+  destruct H10.
+  destruct H10.
+  subst a.
+  elim (tposr_not_kind (coerce_refl_l H11)).
+  destruct H10.
+  rewrite (unique_sort (coerce_refl_r H10) (coerce_refl_l H)) in H10.
   assumption.
-  rewrite H68.
-  rewrite H69.
-  apply tposr_coerce_conv.
-  apply tposr_eq_tposr ; auto.
-  apply type_coerce_env with (a :: G) ; auto with coc.
-  apply (fromd H26).
-  
-  assert(c3 = c0).
 
-  assert(A :: G |-- a0 -> b4 : Srt_l c3).
-  apply type_coerce_env with (a :: G) ; auto with coc.
-  apply (fromd H26).
-  apply (unique_sort H70 H66).
-  
-  assert(G |-- b1 -> x5 : A).
-  inversion H44.
-  apply tposr_conv with a c ; auto with coc.
+   assert(G |-- Pi1_l (Sum_l A' B') (Pair_l (Sum_l a4 a5) a8 a9) -> x5 : B0).
+  apply tposr_conv with A' s1.
+  apply tposr_pi1_red with b12 s1 b13 s2 x4 x6 ; auto with coc.
+  apply tposr_equiv_l with (Sum_l a b) ; auto with coc.
+  right ; exists x4 ; auto.
+  eauto with coc ecoc.
+  apply tposr_coerce_trans with a ; auto with coc.
+  apply tposr_coerce_trans with a0 ; eauto with coc ecoc.
+  apply tposr_coerce_trans with b ; auto with coc.
+  apply coerce_coerce_env with (a :: G) ; auto.
+  auto with coc ecoc.
+  apply tposr_coerce_trans with b0 ; auto with coc ecoc.
+  apply coerce_coerce_env with (a :: G) ; auto.
+  apply coerce_coerce_env with (a0 :: G) ; eauto with coc ecoc.
 
-  intuition ; try apply tposr_equiv_r with A ; auto.
+  unfold equiv_sort in H52.
+  apply tposr_coerce_trans with (Sum_l a b) ; auto.
+  apply tposr_coerce_sum with s1 s2 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply coerce_coerce_env with (a :: G) ; auto with coc ecoc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_coerce_trans with a ; auto with coc.
+  
+  assert(G |-- b1 -> x5 : a).
+  apply tposr_conv with a2 s1 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_coerce_trans with a0 ; auto with coc ecoc.
+  pose (fromd H6) ; auto with coc ecoc.
+
+  intuition.
+  apply tposr_conv with B0 s1 ; auto.
+  apply tposr_conv with a s1 ; auto with coc.
 
   (* Pi1_red *)
   intros.
-  rewrite <- H7.
-  rewrite H8 in H6.
-  clear H8 A''.
+  subst N.
+  subst A''.
+  subst e.
+  subst M.
   pose (generation_pair_depth H2) ; destruct_exists.
-  inversion H8.
-  generalize dependent G.
-  rewrite <- H23 ; rewrite <- H24.
-  inversion H20.
-  rewrite <- H0 ; rewrite <- H2.
-  rewrite <- H3 ; rewrite <- H4.
-  clear a a0 H8 H23 H24 H0 H2 H3 H4 b b0 a1 a2 H20 ; intros.
-  clear e H5.
-
+  inversion H5.
+  subst A0 a0.
+  clear H5.
+  inversion H17.
+  subst b b0 a1 a2.
+  assert(Heq:=unique_sort (fromd H6) (fromd H)).
+  subst c.
+  assert(Heq:=unique_sort (fromd H8) (fromd H0)).
+  subst c0.
+  assert(G |-- A >-> A' : s1). 
+  pose (fromd H) ; apply tposr_coerce_trans with a ; auto with coc ecoc.
+  
   pose (generation_pi1_depth H10) ; destruct_exists.
-  inversion H23.
-  generalize dependent G.
-  rewrite <- H28.
-  rewrite <- H29.
-  clear H23 H29 H28 a1 b3.
-  intros.
-
-  assert(s1 = c).
-  apply (unique_sort (fromd H) (fromd H11)).
+  inversion H19.
+  subst a0 B''.
+  assert(Heq:=unique_sort (coerce_refl_l H21) (coerce_refl_l H5)).
+  subst c.
+  assert(Heq:=unique_sort (coerce_refl_l H4) (coerce_refl_l H22)).
+  subst d1.
   
-  assert(s2 = c0).
-  apply (unique_sort (fromd H0) (fromd H13)).
-  generalize dependent G.
-  rewrite <- H23.
-  rewrite <- H27.
-  intros.
+  destruct (H20).
+  destruct H20.
+  subst A.
+  elim (tposr_not_kind (coerce_refl_l H3)).
+  destruct H20.
+  rewrite (unique_sort (coerce_refl_r H20) (coerce_refl_l H5)) in H20.
+  clear x1.
   
-  destruct H26 ; destruct_exists.
+  assert(coerce_in_env (a :: G) (A :: G)).
+  apply coerce_env_hd with s1 ; auto with coc.
+  
+  destruct H23 ; destruct_exists.
   
   (* Pi1_red, Pi1 *)
-  generalize dependent G.
-  rewrite H26.
-  rewrite H28.
-  rewrite H32.
-  rewrite H29.
-  clear a a0 a1 P H26 H28 H29 H32.
-  intros.
-  pose (generation_pair_depth H30).
+  subst P.
+  
+  pose (generation_pair_depth H23).
   destruct_exists.
-  inversion H26.
-  generalize dependent G.
-  rewrite <- H42.
-  rewrite <- H43.
-  clear H42 H43 H26 a a0.
-  rewrite H39.
-  rewrite <- H6.
-  rewrite <- H7.
-  intros.
-
+  inversion H25.
+  subst a2 a3.
+  assert(Heq:=unique_sort (fromd H26) (fromd H)).
+  subst c.
+  assert(Heq:=unique_sort (fromd H28) (fromd H8)).
+  subst c0.
+  subst a0.
   assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
-  pose (IH _ H26 _ _ _ _ _ H16 _ _ H35) ; destruct_exists.
-  exists x3.
-  
-  assert(G |-- u' -> x3 : A).
-  apply tposr_conv with A0 s1; auto with coc.
-  
-  assert(conv_in_env (A0 :: G) (b4 :: G)).
-  apply conv_env_hd with c4 ; apply tposr_eq_tposr ; apply (fromd H28).
+  pose (IH _ H35 _ _ _ _ _ H13 _ _ H31) ; destruct_exists.
+  exists x2.
 
-  pose (coerce_refls H3) ; destruct_exists.
-  pose (unique_sort H47 (fromd H5)).
-  pose (unique_sort H48 (refl_l (fromd H28))).
+  pose (fromd H26) ; pose (fromd H28) ; pose (fromd H31) ; pose (fromd H33).
+  assert(G |-- a1 >-> b4 : s1).
+  apply tposr_coerce_trans with A ; eauto with coc.
+  apply tposr_coerce_trans with a ; eauto with coc.
 
-  assert(G |-- b >-> b4 : c4).
-  apply tposr_coerce_trans with A0 ; auto with coc.
-  apply tposr_coerce_trans with A ; auto with coc.
-  apply tposr_coerce_sym.
-  apply tposr_coerce_conv.
-  apply tposr_eq_tposr.
-  rewrite <- e0.
-  rewrite e ; apply (fromd H5).
-  rewrite <- e0.
-  assumption.
-  apply tposr_coerce_conv.
-  apply tposr_eq_tposr ; apply (fromd H28).
 
-  pose (coerce_refls H4) ; destruct_exists.
-  assert(c2 = s2).
-  apply (unique_sort (fromd H20) H50).
-
-  assert(coerce_in_env (A0 :: G) (A :: G)).
+  assert(a1 :: G |-- b0 >-> b5 : s2).
+  apply coerce_coerce_env with (a :: G) ; auto with coc.
+  apply tposr_coerce_trans with B ; auto with coc.
+  apply tposr_coerce_trans with b ; auto with coc.
+  apply coerce_coerce_env with (A :: G) ; auto with coc.
+  apply coerce_coerce_env with (A :: G) ; auto with coc.
   apply coerce_env_hd with s1 ; auto with coc.
-  assert(A :: G |-- B -> b5 : Srt_l c5).
-  apply type_coerce_env with (A0 :: G) ; auto.
-  apply (fromd H32).
+  apply tposr_coerce_trans with A ; auto with coc.
+  
+  assert(G |-- Pi1_l (Sum_l a1 b0) (Pair_l (Sum_l b4 b5) a4 a5) -> x2 : A).
+  apply tposr_conv with a1 s1 ; try apply (fromd H5) ; auto with coc.
+  assert(coerce_in_env (a :: G) (b4 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc ecoc.
 
-  assert(c5 = s2).
-  apply (unique_sort H54 H51).
-  assert(s1 = c1) ; auto.
-  assert(s1 = c4) ; auto.
-  generalize dependent G.
-  rewrite H52.
-  rewrite H55.
-  rewrite <- H56.
-  rewrite <- H57.
-  clear H52 H55 H56 H57.
-  intros.
+  apply tposr_pi1_red with b4 s1 b5 s2 s3 a5 ; auto with coc.
+  eauto with coc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_pair with s1 s2 s3 ; auto with coc ecoc.
+  eauto with coc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_conv with a s1 ; eauto with coc ecoc.
+  apply tposr_conv with (lsubst u B) s2 ; auto with coc.
+  eauto with coc.
+  apply substitution_tposr_coerce with a ; auto with coc.
+  eauto with coc.
 
-  assert(A :: G |-- b0 >-> b5 : s2).
-  apply tposr_coerce_trans with B ; auto.
-  apply tposr_coerce_trans with B'' ; auto with coc.
-  apply tposr_coerce_sym.
-  apply tposr_coerce_conv ; apply tposr_eq_tposr.
-  apply (fromd H20).
-  apply tposr_coerce_conv ; apply tposr_eq_tposr ; auto.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
 
-  assert(G |-- Pi1_l (Sum_l b b0) (Pair_l (Sum_l b4 b5) a1 a2) -> x3 : A).
-  apply tposr_conv with b s1 ; try apply (fromd H5) ; auto with coc.
-  apply tposr_pi1_red with b4 s1 b5 s2 s3 a2 ; auto with coc.
-  apply (refl_r (fromd H28)).
-  apply conv_env with (A0 :: G) ; auto with coc.
-  apply (refl_r (fromd H32)).
-  apply tposr_pair with s1 s2 s3; auto with coc.
-  apply (refl_r (fromd H28)).
-  apply conv_env with (A0 :: G) ; auto with coc.
-  apply (refl_r (fromd H32)).
-  apply tposr_conv_l with A0 s1 ; auto.
-  apply tposr_eq_tposr ; apply (fromd H28).
-  apply tposr_conv_l with (lsubst u B) s2 ; auto with coc.
-  apply tposr_eq_tposr.
-  change (Srt_l s2) with (lsubst u (Srt_l s2)).
-  apply substitution with A0 ; auto with coc.
-  apply (fromd H32).
-  apply (fromd H35).
-  apply (refl_r (fromd H37)).
-  apply coerce_conv_env with (A :: G) ; auto with coc.
-  apply conv_env_hd with s1 ; apply tposr_eq_tposr ; apply (fromd H5).
-  apply tposr_coerce_sym.
-  apply tposr_coerce_conv ; auto with coc.
-  apply tposr_eq_tposr ; auto with coc.
-  apply (fromd H5).
-
-  intuition ; try apply tposr_equiv_r with A ; auto.
+  intuition ; auto with coc.
+  apply tposr_conv with a s1 ; auto with coc.
+  apply tposr_conv with A s1 ; auto with coc.
+  apply tposr_conv with a s1 ; auto with coc.
+  apply tposr_conv with A s1 ; auto with coc.
 
   (* Pi1_red, Pi1_red *)
-  rewrite H32.
-  generalize dependent G.
-  rewrite <- H7.
-  clear H23 H27.
-  inversion H26.
-  rewrite <- H0.
-  rewrite <- H2.
-  rewrite <- H3.
-  rewrite <- H4.
-  clear H0 H2 H3 H4 H26.
-  intros.
+  inversion H23.
+  subst a1 b0 a0 c.
+  clear H19 H23 H17.
+  subst P.
+  pose (generation_pair_depth H29) ; destruct_exists.
+  inversion H17.
+  subst a0 a1.
+  inversion H38.
+  subst b0 b6 b3 d1.
   
-  pose (generation_pair_depth H2).
-  pose (generation_pair_depth H30).
-  destruct_exists.
-  generalize dependent G.
-  inversion H26 ; inversion H23.
-  rewrite <- H0.
-  rewrite <- H2.
-  rewrite <- H3.
-  rewrite <- H4.
-  clear H0 H2 H3 H4 H26 H23.
-  inversion H52.
-  rewrite <- H0.
-  rewrite <- H2.
-  rewrite <- H3.
-  rewrite <- H4.
-  clear H0 H2 H3 H4 H52.
-  inversion H41.
-  rewrite <- H0.
-  rewrite <- H2.
-  rewrite <- H3.
-  rewrite <- H4.
-  clear H0 H2 H3 H4 H41.
-  intros.
-
   assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
-  pose (IH _ H23 _ _ _ _ _ H16 _ _ H37) ; destruct_exists.
-  exists x4.
+  pose (IH _ H40 _ _ _ _ _ H13 _ _ H34) ; destruct_exists.
+  exists x3.
 
-  assert(equiv G A A0).
-  right ; exists s1 ; auto.
+  assert(equiv G B0 a).
+  right ; exists s1 ; eauto with coc.
+  apply tposr_coerce_trans with A ; auto with coc.
 
-  assert(equiv G B0 A0).
-  apply (equiv_trans H25 (equiv_sym H55)).
+  assert(equiv G A a).
+  right ; exists s1 ; eauto with coc.
 
-  intuition ; try apply tposr_equiv_r with A0 ; auto.
+  intuition ; try apply tposr_equiv_r with a ; auto.
+
   (* Pi2 *)
-Admitted.
-*)
+  intros.
+  pose (generation_pi2_depth H8) ; destruct_exists.
+  inversion H9.
+  subst A.
+  subst A0.
+  subst B.
+  subst e.
+
+  destruct H13 ; destruct_exists.
+
+  (* Pi2, Pi2 *)
+  rewrite H6.
+  subst M.
+  subst N.
+
+  assert(p < x) by (rewrite <- H7 ; auto with arith).
+  pose (IH _ H4 _ _ _ _ _ H2 _ _ H3) ; destruct_exists ; clear H4.
+
+  exists (Pi2_l (Sum_l A' B') x0).
+
+  assert (Heq:=unique_sort (coerce_refl_l H11) (coerce_refl_l H)).
+  subst c.
+  assert (Heq:=unique_sort (coerce_refl_l H12) (coerce_refl_l H0)).
+  subst d.
+
+  assert(G |-- a0 >-> A' : s1).
+  apply tposr_coerce_trans with a ; eauto with coc.
+
+  assert(coerce_in_env (a :: G) (A' :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc.
+
+  assert(G |-- Pi2_l (Sum_l A' B') t' -> Pi2_l (Sum_l A' B') x0 : lsubst (Pi1_l (Sum_l a b) t) b).
+  apply tposr_conv with (lsubst (Pi1_l (Sum_l A' B') t') B') s2 ; auto with coc.
+  apply tposr_pi2 with s1 s2 s3 ;  auto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply coerce_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_conv with (Sum_l a b) s3 ; auto with coc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  assert(coerce_in_env (a :: G) (a0 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc.
+
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with a ; auto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+
+
+  assert(G |-- Pi2_l (Sum_l a0 b0) a1 -> Pi2_l (Sum_l A' B') x0 : lsubst (Pi1_l (Sum_l a b) t) b).
+  apply tposr_conv with (lsubst (Pi1_l (Sum_l a0 b0) a1) b0) s2 ; auto with coc.
+  apply tposr_pi2 with s1 s2 s3 ;  auto with coc ecoc.
+  eauto with coc ecoc.
+  apply coerce_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_conv with (Sum_l a b) s3 ; auto with coc.
+  assert(coerce_in_env (a :: G) (a0 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc.
+
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with a ; auto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+
+  intuition ; try apply tposr_equiv_r with (lsubst (Pi1_l (Sum_l a b) t) b) ; auto with coc ecoc.
+  
+  (* Pi2, Pi2_red *)
+  subst P.
+  subst t.
+  subst N.
+  subst M.
+  assert (Heq:=unique_sort (coerce_refl_l H11) (coerce_refl_l H)).
+  subst c.
+  assert (Heq:=unique_sort (coerce_refl_l H12) (coerce_refl_l H0)).
+  subst d.
+ 
+  assert(p < x) by  (rewrite <- H7 ; auto with arith).  
+  pose (IH _ H3 _ _ _ _ _ H2 _ _ H16) ; destruct_exists.
+  pose (tod H18).
+  destruct_exists.
+  pose (generation_pair_depth H20) ; destruct_exists.
+  inversion H21.
+  subst a4 ; subst a5.
+  subst x1.
+  assert (Heq:=unique_sort (refl_l (fromd H22)) (refl_r (fromd H6))).
+  subst c.
+  assert(coerce_in_env (a2 :: G) (a0 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc ecoc.
+  assert(a0 :: G |-- a3 -> b5 : c1).
+  apply tposr_coerce_env with (a2 :: G) ; eauto with coc ecoc.
+  assert (Heq:=unique_sort (refl_r (fromd H14)) (refl_l H33)).
+  subst c1.
+
+  pose (generation_pair_depth H2) ; destruct_exists.
+  subst t'.
+  inversion H34.
+  subst a4 ; subst a5.
+
+  exists a7.
+
+  assert (Heq:=unique_sort (refl_l (fromd H35)) (coerce_refl_r H11)).
+  subst c.
+  assert (Heq:=unique_sort (refl_l (fromd H37)) (refl_l (fromd H14))).
+  subst c1.
+  pose (generation_pair H4) ; destruct_exists.
+  inversion H51 ; subst.
+  inversion H44 ; subst.
+  assert (Heq:=unique_sort (refl_r (fromd H35)) (refl_l H46)).
+  subst c.
+  assert(coerce_in_env (a4 :: G) (a0 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc ecoc.
+  assert(a0 :: G |-- a5 -> b13 : c1).
+  apply tposr_coerce_env with (a4 :: G) ; eauto with coc ecoc.
+  assert (Heq:=unique_sort (refl_l H53) (refl_r (fromd H37))).
+  subst c1.
+
+  assert(coerce_in_env (a :: G) (A' :: G)) by eauto with coc ecoc.
+  assert(Htpi1:G |-- lsubst (Pi1_l (Sum_l a b) (Pair_l (Sum_l a0 b0) a1 c0)) b -> lsubst (Pi1_l (Sum_l a b) (Pair_l (Sum_l a0 b0) a1 c0)) b: s2).
+  apply substitution_sorted with a ; auto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  
+  assert(G |-- B0 >-> lsubst (Pi1_l (Sum_l a b) (Pair_l (Sum_l a0 b0) a1 c0)) b : s2).
+  destruct H10.
+  destruct H10.
+  destruct b ; simpl in H55 ; try discriminate.
+  unfold lsubst in H55 ; simpl in H55.
+  rewrite H55 in H0.
+  elim (tposr_not_kind (coerce_refl_l H0)).
+  unfold lsubst in H55.
+  destruct (inv_subst_sort _ _ _ H55) ; try discriminate.
+  destruct H10.
+  rewrite (unique_sort (coerce_refl_r H10) Htpi1) in H10.
+  assumption.
+
+   assert(G |-- Pi2_l (Sum_l A' B') (Pair_l (Sum_l a4 a5) a8 a9) -> x6 :  lsubst (Pi1_l (Sum_l a b) (Pair_l (Sum_l a0 b0) a1 c0)) b).
+  apply tposr_conv with (lsubst (Pi1_l (Sum_l A' B')  (Pair_l (Sum_l a4 a5) a8 a9)) B') s2.
+  apply tposr_pi2_red with b12 s1 b13 s2 x4 x5 ; auto with coc.
+  apply tposr_equiv_l with (Sum_l a b) ; auto with coc.
+  right ; exists x4 ; auto.
+  eauto with coc ecoc.
+  apply tposr_coerce_trans with a ; auto with coc.
+  apply tposr_coerce_trans with a0 ; eauto with coc ecoc.
+  apply tposr_coerce_trans with b ; auto with coc.
+  apply coerce_coerce_env with (a :: G) ; auto.
+  auto with coc ecoc.
+  apply tposr_coerce_trans with b0 ; auto with coc ecoc.
+  apply coerce_coerce_env with (a :: G) ; auto.
+  apply coerce_coerce_env with (a0 :: G) ; eauto with coc ecoc.
+
+  unfold equiv_sort in H52.
+  apply tposr_coerce_trans with (Sum_l a b) ; auto.
+  apply tposr_coerce_sum with s1 s2 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply coerce_coerce_env with (a :: G) ; auto with coc ecoc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with a ; auto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  
+  assert(G |-- d0 -> x6 : B0).
+  apply tposr_conv with (lsubst b1 a3) s2 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_coerce_trans with (lsubst (Pi1_l (Sum_l a b) (Pair_l (Sum_l a0 b0) a1 c0)) b) ; auto with coc ecoc.
+  apply tposr_coerce_sym.
+  apply tposr_coerce_trans with (lsubst a8 b).
+  apply substitution_tposr_coerce with a ; auto with coc.
+  apply tposr_coerce_trans with b0 ; auto with coc ecoc.
+  apply tposr_pi1_red with a0 s1 b0 s2 s3 a9 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_pair with s1 s2 s3 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+  apply tposr_coerce_trans with (lsubst x5 b).
+  apply substitution_tposr_coerce with a ; eauto with coc ecoc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with a0. 
+  apply tposr_coerce_trans with b0.
+  eauto with coc ecoc.
+  apply coerce_coerce_env with (a :: G).
+  auto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+
+  intuition.
+  apply tposr_conv with (  lsubst (Pi1_l (Sum_l a b) (Pair_l (Sum_l a0 b0) a1 c0)) b) s2 ; auto with coc.
+  apply tposr_conv with B0 s2 ; auto with coc.
+
+  (* Pi2_red *)
+  intros.
+  subst e.
+  subst N.
+  subst M.
+  pose (generation_pair_depth H2) ; destruct_exists.
+  inversion H5.
+  subst A0 a0.
+  clear H5.
+  inversion H18.
+  subst b b0 a1 a2.
+  assert(Heq:=unique_sort (fromd H6) (fromd H)).
+  subst c.
+  assert(Heq:=unique_sort (fromd H11) (fromd H0)).
+  subst c0.
+
+  assert(G |-- A'' >-> A' : s1). 
+  pose (fromd H) ; apply tposr_coerce_trans with a ; auto with coc ecoc.
+  
+  pose (generation_pi2_depth H10) ; destruct_exists.
+  inversion H20.
+  subst a0 B''.
+  assert(Heq:=unique_sort (coerce_refl_l H22) (coerce_refl_l H5)).
+  subst c.
+  assert(Heq:=unique_sort (coerce_refl_l H4) (coerce_refl_l H23)).
+  subst d1.
+
+  assert(coerce_in_env (A'' ::G) (a :: G)).
+  eauto with coc ecoc.
+
+  assert(G |-- lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b ->
+  lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b : s2).
+  apply substitution_sorted with A'' ; auto with coc.
+  eauto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_conv with (Sum_l a B) s3 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_coerce_sum with s1 s2 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply coerce_coerce_env with (A'' :: G) ; auto.
+  auto with coc ecoc.
+  apply tposr_coerce_env with (A'' :: G) ; eauto with coc ecoc.
+  apply tposr_coerce_env with (A'' :: G) ; eauto with coc ecoc.
+
+  destruct H21.
+  destruct H21.
+  destruct (inv_subst_sort _ _ _ H27) ; try discriminate.
+  subst b.
+  elim (tposr_not_kind (coerce_refl_l H4)).
+  destruct H21.
+  rewrite (unique_sort (coerce_refl_r H21) (refl_l H26)) in H21.
+  clear x1.
+  
+  destruct H24 ; destruct_exists.
+  
+  (* Pi1_red, Pi1 *)
+  subst P.
+  
+  pose (generation_pair_depth H23).
+  destruct_exists.
+  inversion H25.
+  subst a2 a3.
+  assert(Heq:=unique_sort (fromd H26) (fromd H)).
+  subst c.
+  assert(Heq:=unique_sort (fromd H28) (fromd H8)).
+  subst c0.
+  subst a0.
+  assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
+  pose (IH _ H35 _ _ _ _ _ H13 _ _ H31) ; destruct_exists.
+  exists x2.
+
+  pose (fromd H26) ; pose (fromd H28) ; pose (fromd H31) ; pose (fromd H33).
+  assert(G |-- a1 >-> b4 : s1).
+  apply tposr_coerce_trans with A ; eauto with coc.
+  apply tposr_coerce_trans with a ; eauto with coc.
+
+
+  assert(a1 :: G |-- b0 >-> b5 : s2).
+  apply coerce_coerce_env with (a :: G) ; auto with coc.
+  apply tposr_coerce_trans with B ; auto with coc.
+  apply tposr_coerce_trans with b ; auto with coc.
+  apply coerce_coerce_env with (A :: G) ; auto with coc.
+  apply coerce_coerce_env with (A :: G) ; auto with coc.
+  apply coerce_env_hd with s1 ; auto with coc.
+  apply tposr_coerce_trans with A ; auto with coc.
+  
+  assert(G |-- Pi1_l (Sum_l a1 b0) (Pair_l (Sum_l b4 b5) a4 a5) -> x2 : A).
+  apply tposr_conv with a1 s1 ; try apply (fromd H5) ; auto with coc.
+  assert(coerce_in_env (a :: G) (b4 :: G)).
+  apply coerce_env_hd with s1 ; eauto with coc ecoc.
+
+  apply tposr_pi1_red with b4 s1 b5 s2 s3 a5 ; auto with coc.
+  eauto with coc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_pair with s1 s2 s3 ; auto with coc ecoc.
+  eauto with coc.
+  apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
+  apply tposr_conv with a s1 ; eauto with coc ecoc.
+  apply tposr_conv with (lsubst u B) s2 ; auto with coc.
+  eauto with coc.
+  apply substitution_tposr_coerce with a ; auto with coc.
+  eauto with coc.
+
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  intuition ; auto with coc.
+  apply tposr_conv with a s1 ; auto with coc.
+  apply tposr_conv with A s1 ; auto with coc.
+  apply tposr_conv with a s1 ; auto with coc.
+  apply tposr_conv with A s1 ; auto with coc.
+
+  (* Pi1_red, Pi1_red *)
+  inversion H23.
+  subst a1 b0 a0 c.
+  clear H19 H23 H17.
+  subst P.
+  pose (generation_pair_depth H29) ; destruct_exists.
+  inversion H17.
+  subst a0 a1.
+  inversion H38.
+  subst b0 b6 b3 d1.
+  
+  assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
+  pose (IH _ H40 _ _ _ _ _ H13 _ _ H34) ; destruct_exists.
+  exists x3.
+
+  assert(equiv G B0 a).
+  right ; exists s1 ; eauto with coc.
+  apply tposr_coerce_trans with A ; auto with coc.
+
+  assert(equiv G A a).
+  right ; exists s1 ; eauto with coc.
+
+  intuition ; try apply tposr_equiv_r with a ; auto.
+

@@ -216,3 +216,27 @@ Proof.
   change (Srt_l s') with (llift 1 (Srt_l s')).
   apply thinning_coerce ; auto.
 Qed.
+
+
+Lemma inv_llift_sort : forall t s n, llift n t = Srt_l s -> t = Srt_l s.
+Proof.
+intros.
+induction t ; simpl ; try discriminate.
+unfold llift in H ; simpl in H.
+auto.
+Qed.
+
+Lemma inv_subst_sort : forall t t' n s, lsubst_rec t t' n = Srt_l s -> 
+  t = Srt_l s \/ t' = Srt_l s.
+Proof.
+  induction t' ;  simpl ; intros ;
+  auto with coc core arith datatypes ; try discriminate.
+  generalize H.
+  elim (lt_eq_lt_dec n0 n).
+  intros a ; case a ; clear a ; intros ; try discriminate ; auto.
+  left.
+  exact (inv_llift_sort _ _ H0).
+
+  intros.
+  discriminate.
+Qed.
