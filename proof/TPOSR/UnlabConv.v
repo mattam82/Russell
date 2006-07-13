@@ -35,6 +35,30 @@ Hint Unfold tposr_term tposr_term_depth : coc.
 Hint Unfold equiv_sort : coc.
 Hint Resolve conv_env : coc.
 
+Lemma equiv_sort_strenghten : forall G s s', equiv G s s' -> forall e, tposr_wf e -> equiv e s s'.
+Proof.
+  induction 1.
+  intros.
+  left.
+  assumption.
+
+  intros.
+  destruct_exists.
+  right.
+  exists x.
+
+  pose (tposr_coerce_eq_sort H).
+  rewrite e0.
+  assert (Heq:=tposr_sort_kinded (coerce_refl_r H) (refl_equal (Srt_l s'))).
+  injection Heq.
+  intros.
+  rewrite H1.
+  induction s'.
+  elim (tposr_not_kind (coerce_refl_r H)).
+  apply tposr_coerce_conv ; apply tposr_eq_tposr ; auto with coc ecoc.
+  apply tposr_coerce_conv ; apply tposr_eq_tposr ; auto with coc ecoc.
+Qed.
+
 Lemma tposr_term_conv_env : forall e t T, tposr_term e t T ->
   forall f, conv_in_env e f -> tposr_term f t T.
 Proof.
@@ -336,9 +360,138 @@ Proof.
 
   (* Prod *)
   pose (generation_prod H) ; destruct_exists.
+  subst.
+  destruct N ; try discriminate.
+  pose (generation_prod H0) ; destruct_exists.
+  inversion H1.
+  assert(tposr_term G M1 b) by eauto with coc ecoc.
+  assert(tposr_term G N1 b1) by eauto with coc ecoc.
+  pose (IHM1 _ _ _ _ H9 H12 H10) ; destruct_exists.
+  assert(G |-- M1 >-> N1 : b).
+  apply tposr_coerce_trans with x0 ; auto with coc.
+
+  assert(tposr_term (M1 :: G) M2 b0) by eauto with coc ecoc.
+  assert(M1 :: G |-- N2 -> a2 : b2).
+  apply tposr_coerce_env with (N1 :: G) ; eauto with coc ecoc. 
+  assert(tposr_term (M1 :: G) N2 b2) by eauto with coc ecoc.
+  pose (IHM2 _ _ _ _ H18 H20 H11) ; destruct_exists.
+  exists (Prod_l x0 x1).
+
+  assert(G |-- Prod_l M1 M2 -+> Prod_l x0 x1 : A).
+  apply tposrp_equiv_l with b0 ; auto with coc.
+  subst x.
+  apply tposrp_prod with b ; auto with coc.
+  
+  assert(G |-- Prod_l N1 N2 -+> Prod_l x0 x1 : B).
+  apply tposrp_equiv_l with b2 ; auto with coc.
+  apply tposrp_prod with b ; auto with coc.
+  apply tposrp_coerce_env with (M1 :: G) ; eauto with coc ecoc.
+
+  assert(equiv G A B).
+  pose (tposrp_uniqueness_of_types H21 H22).
+  pose (wf_tposr H0).
+  pose(equiv_sort_strenghten e t).
+  apply equiv_trans with b0 ; auto.
+  apply equiv_trans with b2 ; auto.
+
+  intuition.
+  apply tposrp_equiv_l with A ; auto.
+  apply tposrp_equiv_l with B ; auto with coc.
+
+  (* Sum *)
+  pose (generation_sum H) ; destruct_exists.
+  subst.
+  destruct N ; try discriminate.
+  pose (generation_sum H0) ; destruct_exists.
+  inversion H1.
+  assert(tposr_term G M1 b) by eauto with coc ecoc.
+  assert(tposr_term G N1 b1) by eauto with coc ecoc.
+  pose (IHM1 _ _ _ _ H11 H14 H12) ; destruct_exists.
+
+  assert(G |-- M1 >-> N1 : b).
+  apply tposr_coerce_trans with x2 ; auto with coc.
+
+  assert(tposr_term (M1 :: G) M2 b0) by eauto with coc ecoc.
+  assert(M1 :: G |-- N2 -> a2 : b2).
+  apply tposr_coerce_env with (N1 :: G) ; eauto with coc ecoc. 
+  assert(tposr_term (M1 :: G) N2 b2) by eauto with coc ecoc.
+  pose (IHM2 _ _ _ _ H20 H22 H13) ; destruct_exists.
+  exists (Sum_l x2 x3).
+
+  assert(x0 = x1).
+  pose (tposrp_uniqueness_of_types H15 H16).
+  pose (tposrp_uniqueness_of_types H23 H24).
+  assert (Heq:=equiv_eq_sort e).
+  subst b1.
+  assert(Heq:=equiv_eq_sort e0).
+  subst b2.
+  apply (sum_sort_functional H8 H4).
+
+  assert(equiv G A B).
+  rewrite H27 in H10.
+  apply equiv_trans with x1 ; auto with coc.
+
+  assert(G |-- Sum_l M1 M2 -+> Sum_l x2 x3 : A).
+  apply tposrp_equiv_l with x1 ; auto with coc.
+  subst x.
+  apply tposrp_sigma with b b0 ; auto with coc.
+  
+  assert(G |-- Sum_l N1 N2 -+> Sum_l x2 x3 : B).
+  apply tposrp_equiv_l with x0 ; auto with coc.
+  apply tposrp_sigma with b b0 ; auto with coc.
+  apply tposrp_coerce_env with (M1 :: G) ; eauto with coc ecoc.
+  rewrite H27 ; auto.
+  
+  intuition.
+  apply tposrp_equiv_l with A ; auto.
+  apply tposrp_equiv_l with B ; auto with coc.
+
+  (* Subset *)
+  destruct N ; try discriminate.
+  pose (generation_subset H).
+  pose (generation_subset H0).
+  destruct_exists.
+  inversion H1 ; subst.
+  assert(tposr_term G M1 set) by eauto with coc ecoc.
+  assert(tposr_term G N1 set) by eauto with coc ecoc.
+  assert(tposr_term (M1 :: G) M2 prop) by eauto with coc ecoc.
+
+  pose (IHM1 _ _ _ _ H5 H8 H11) ; destruct_exists.
+
+  assert(M1 :: G |-- N2 -> b : prop).
+  apply tposr_coerce_env with (N1 :: G) ; auto with coc ecoc.
+  apply coerce_env_hd with set ; auto with coc.
+  apply tposr_coerce_trans with x ; auto with coc.
+
+  assert(tposr_term (M1 :: G) N2 prop) by eauto with coc ecoc.
+  pose (IHM2 _ _ _ _ H10 H18 H12) ; destruct_exists.
+
+  exists (Subset_l x x0).
+
+  assert(G |-- Subset_l M1 M2 -+> Subset_l x x0 : set).
+  apply tposrp_subset ; auto with coc.
+
+  assert(G |-- Subset_l N1 N2 -+> Subset_l x x0 : set).
+  apply tposrp_subset ; auto with coc.
+  apply tposrp_coerce_env with (M1 :: G) ; auto with coc ecoc.
+  apply coerce_env_hd with set ; auto with coc.
+  apply tposr_coerce_trans with x ; auto with coc.
+
+  intuition ;
+  apply tposrp_conv with set kind ; auto with coc.
+
+  (* Pi1 *)
+  destruct N ; try discriminate.
+  inversion H1.
+  pose (generation_pi1 H).
+  pose (generation_pi1 H0).
+  destruct_exists.
+
+  subst N1.
+  subst M1.
   
 
-  
+
 Admitted.
 
 Corollary unlab_conv_sorted : forall G A B s t, tposr_term G A (Srt_l s) ->

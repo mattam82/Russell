@@ -99,6 +99,15 @@ Proof.
   apply tposr_conv with A x  ; auto.
 Qed. 
 
+Lemma tposrp_equiv_l : forall e A B, equiv e A B -> forall M N, 
+  e |-- M -+> N : A -> e |-- M -+> N : B.
+Proof.
+  induction 2 ; simpl ; intros.
+  apply tposrp_tposr.
+  apply tposr_equiv_l with Z ; auto.
+  apply tposrp_trans with X ; auto with coc.
+Qed.
+
 Lemma tposr_equiv_r : forall e A B, equiv e A B -> forall M N, 
   e |-- M -> N : B -> e |-- M -> N : A.
 Proof.
@@ -216,7 +225,6 @@ Proof.
   change (Srt_l s') with (llift 1 (Srt_l s')).
   apply thinning_coerce ; auto.
 Qed.
-
 
 Lemma inv_llift_sort : forall t s n, llift n t = Srt_l s -> t = Srt_l s.
 Proof.
