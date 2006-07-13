@@ -12,12 +12,14 @@ Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.SubstitutionTPOSR.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.CtxCoercion.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.UnicityOfSorting.
+Require Import Lambda.TPOSR.Validity.
 Require Import Lambda.TPOSR.TypesDepth.
 Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
@@ -67,6 +69,97 @@ Proof.
 Qed.
 
 Hint Resolve tposr_term_conv_env : coc.
+
+
+Lemma generation_pi1_alt :
+  forall e T M X C, e |-- Pi1_l T M -> X : C ->
+  exists2 A B, T = Sum_l A B /\ equiv e C A /\
+  exists4 A' B' s1 s2, 
+  e |-- A >-> A' : s1 /\ A :: e |-- B >-> B' : s2 /\
+  exists M', e |-- M -> M' : Sum_l A B /\
+  ((X = Pi1_l (Sum_l A' B') M') \/
+  (exists4 u u' v v',
+  M = Pair_l (Sum_l A' B') u v /\
+  exists A'', e |-- A' -> A'' : s1 /\
+  exists B'', A' :: e |-- B' -> B'' : s2 /\
+  e |-- M -> Pair_l (Sum_l A'' B'') u' v' : Sum_l A' B' /\
+  X = u')).
+Proof.
+  intros.
+  pose (generation_pi1 H) ; destruct_exists.
+  exists a b ; repeat split ; auto.
+  exists a0 b0 c d ; repeat split ; auto.
+  intuition.
+  destruct_exists.
+  exists x.
+  intuition.
+
+  destruct_exists.
+  exists (Pair_l (Sum_l x x0) b1 d0).
+  intuition.
+  destruct (validity H7) ; destruct_exists ; try discriminate.
+  apply tposr_conv with (Sum_l a0 b0) b2 ; auto with coc.
+  apply tposr_coerce_sym.
+  eapply tposr_coerce_sum with c d ; eauto with coc ecoc.
+  pose (generation_sum H9) ; destruct_exists.
+  assert (Heq:=unique_sort (coerce_refl_r H2) H10).
+  subst b3.
+  assert(a :: e |-- b0 -> a4 : b4).
+  apply tposr_coerce_env with (a0 :: e) ; eauto with coc ecoc.
+  assert (Heq:=unique_sort H6 H11).
+  subst b4.
+  rewrite (equiv_eq_sort H14).
+  assumption.
+  right ; intuition.
+  exists a1 b1 c0 d0 ; intuition.
+  exists x ; intuition.
+  exists x0 ; intuition.
+Qed.
+
+Lemma generation_pi2_alt :
+  forall e T M X C, e |-- Pi2_l T M -> X : C ->
+  exists2 A B, T = Sum_l A B /\ equiv e C (lsubst (Pi1_l T M) B) /\
+  exists4 A' B' s1 s2, 
+  e |-- A >-> A' : s1 /\ A :: e |-- B >-> B' : s2 /\
+  exists M', e |-- M -> M' : Sum_l A B /\
+  ((X = Pi2_l (Sum_l A' B') M') \/
+  (exists4 u u' v v',
+  M = Pair_l (Sum_l A' B') u v /\
+  exists A'', e |-- A' -> A'' : s1 /\
+  exists B'', A' :: e |-- B' -> B'' : s2 /\
+  e |-- M -> Pair_l (Sum_l A'' B'') u' v' : Sum_l A' B' /\
+  X = v')).
+Proof.
+  intros.
+  pose (generation_pi2 H) ; destruct_exists.
+  exists a b ; repeat split ; auto.
+  exists a0 b0 c d ; repeat split ; auto.
+  intuition.
+  destruct_exists.
+  exists x.
+  intuition.
+
+  destruct_exists.
+  exists (Pair_l (Sum_l x x0) b1 d0).
+  intuition.
+  destruct (validity H7) ; destruct_exists ; try discriminate.
+  apply tposr_conv with (Sum_l a0 b0) b2 ; auto with coc.
+  apply tposr_coerce_sym.
+  eapply tposr_coerce_sum with c d ; eauto with coc ecoc.
+  pose (generation_sum H9) ; destruct_exists.
+  assert (Heq:=unique_sort (coerce_refl_r H2) H10).
+  subst b3.
+  assert(a :: e |-- b0 -> a4 : b4).
+  apply tposr_coerce_env with (a0 :: e) ; eauto with coc ecoc.
+  assert (Heq:=unique_sort H6 H11).
+  subst b4.
+  rewrite (equiv_eq_sort H14).
+  assumption.
+  right ; intuition.
+  exists a1 b1 c0 d0 ; intuition.
+  exists x ; intuition.
+  exists x0 ; intuition.
+Qed.
 
 Lemma substitution_coerce_eq : forall e u v s, e |-- u ~= v : s ->
   forall U V s', Srt_l s :: e |-- U >-> V : s' -> e |-- lsubst u U >-> lsubst v V : s'.
@@ -483,16 +576,130 @@ Proof.
   (* Pi1 *)
   destruct N ; try discriminate.
   inversion H1.
-  pose (generation_pi1 H).
-  pose (generation_pi1 H0).
+  pose (generation_pi1_alt H).
+  pose (generation_pi1_alt H0).
   destruct_exists.
 
-  subst N1.
+  assert(tposr_term G M2 (Sum_l a0 b0)) by eauto with coc ecoc.
+  assert(tposr_term G N2 (Sum_l a b)) by eauto with coc ecoc.
+  pose (IHM2 _ _ _ _ H15 H16 H3) ; destruct_exists.
+
+  pose (tposrp_uniqueness_of_types H17 H18).
+  destruct e ; destruct_exists.
+  destruct H21 ; try discriminate.
+  pose (injectivity_of_sum_coerce H21) ; destruct_exists.
+  assert(Heq:=unique_sort (coerce_refl_l H11) (coerce_refl_l H22)).
+  subst a3.
+  assert(Heq:=unique_sort (coerce_refl_l H12) (coerce_refl_l H23)).
+  subst b3.
+  assert(Heq:=unique_sort (coerce_refl_l H6) (coerce_refl_r H22)).
+  subst c0.
+  assert(a :: G |-- b0 >-> b : d0).
+  apply coerce_coerce_env with (a0 :: G) ; eauto with coc ecoc.
+
+  assert(Heq:=unique_sort (coerce_refl_l H7) (coerce_refl_r H25)).
+  subst d0.
+
+  exists (Pi1_l M1 x3).
+  assert(G |-- Pi1_l M1 M2 -+> Pi1_l M1 x3 : A).
+  apply tposrp_equiv_l with a0 ; auto with coc.
   subst M1.
+  apply tposrp_pi1 with c d x4 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+ 
+  assert(G |-- Pi1_l N1 N2 -+> Pi1_l M1 x3 : B).
+  apply tposrp_equiv_l with a ; auto with coc.
+  subst N1 ; subst M1.
+  apply tposrp_pi1 with c d x4 ; auto with coc.
   
+  clear H9 H14.
+  assert(equiv G A B).
+  apply equiv_trans with a0 ; auto with coc.
+  apply equiv_trans with a ; auto with coc.
+  eauto with coc ecoc.
 
+  intuition.
+  apply tposrp_equiv_l with A ; auto with coc.
+  apply tposrp_equiv_l with B ; auto with coc.
 
-Admitted.
+  (* Pi2 *)
+  destruct N ; try discriminate.
+  inversion H1.
+  pose (generation_pi2_alt H).
+  pose (generation_pi2_alt H0).
+  destruct_exists.
+
+  assert(tposr_term G M2 (Sum_l a0 b0)) by eauto with coc ecoc.
+  assert(tposr_term G N2 (Sum_l a b)) by eauto with coc ecoc.
+  pose (IHM2 _ _ _ _ H15 H16 H3) ; destruct_exists.
+
+  pose (tposrp_uniqueness_of_types H17 H18).
+  destruct e ; destruct_exists.
+  destruct H21 ; try discriminate.
+  pose (injectivity_of_sum_coerce H21) ; destruct_exists.
+  assert(Heq:=unique_sort (coerce_refl_l H11) (coerce_refl_l H22)).
+  subst a3.
+  assert(Heq:=unique_sort (coerce_refl_l H12) (coerce_refl_l H23)).
+  subst b3.
+  assert(Heq:=unique_sort (coerce_refl_l H6) (coerce_refl_r H22)).
+  subst c0.
+  assert(a :: G |-- b0 >-> b : d0).
+  apply coerce_coerce_env with (a0 :: G) ; eauto with coc ecoc.
+
+  assert(Heq:=unique_sort (coerce_refl_l H7) (coerce_refl_r H25)).
+  subst d0.
+
+  exists (Pi2_l M1 x3).
+  assert(G |-- Pi2_l M1 M2 -+> Pi2_l M1 x3 : A).
+  apply tposrp_equiv_l with (lsubst (Pi1_l M1 M2) b0) ; auto with coc.
+  subst M1.
+  apply tposrp_pi2 with c d x4 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+ 
+  assert(G |-- Pi2_l N1 N2 -+> Pi2_l M1 x3 : B).
+  apply tposrp_equiv_l with (lsubst (Pi1_l N1 N2) b) ; auto with coc.
+  subst N1 ; subst M1.
+  apply tposrp_pi2 with c d x4 ; auto with coc.
+
+  assert(G |-- Pi1_l M1 M2 -+> Pi1_l M1 x3 : a0).
+  subst M1.
+  apply tposrp_pi1 with c d x4 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+
+  assert(G |-- Pi1_l N1 N2 -+> Pi1_l M1 x3 : a).
+  subst M1 ; subst N1.
+  apply tposrp_pi1 with c d x4 ; auto with coc.
+
+  clear H9 H14.
+  assert(equiv G A B).
+  apply equiv_trans with (lsubst (Pi1_l M1 M2) b0) ; auto with coc.
+  apply equiv_trans with (lsubst (Pi1_l N1 N2) b); auto with coc.
+  right ; exists d.
+  apply tposr_coerce_trans with (lsubst (Pi1_l M1 x3) b0).
+  apply tposr_coerce_conv.
+  apply tposrp_tposr_eq.
+  change (Srt_l d) with (lsubst (Pi1_l M1 M2) (Srt_l d)).
+  apply tposrp_substitution with a0 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_coerce_trans with (lsubst (Pi1_l N1 N2) b0) ; auto with coc.
+  apply tposr_coerce_sym.
+  apply tposr_coerce_conv.
+  apply tposrp_tposr_eq.
+  change (Srt_l d) with (lsubst (Pi1_l N1 N2) (Srt_l d)).
+  apply tposrp_substitution with a0 ; auto with coc ecoc.
+  apply tposrp_conv with a c ; auto with coc.
+  eauto with coc ecoc.
+  apply substitution_coerce with a0 ; auto with coc ecoc.
+  apply tposr_conv with a c ; auto with coc.
+  eauto with coc.
+
+  intuition.
+  apply tposrp_equiv_l with A ; auto with coc.
+  apply tposrp_equiv_l with B ; auto with coc.
+Qed.  
 
 Corollary unlab_conv_sorted : forall G A B s t, tposr_term G A (Srt_l s) ->
   tposr_term G B (Srt_l t) -> ( | A | ) = ( | B | ) -> s = t /\ G |-- A ~= B : s.

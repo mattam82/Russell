@@ -307,8 +307,8 @@ Admitted.
   eapply tposr_pair ; eauto with coc ecoc.
 Qed.*)
 
-Lemma tposrp_pi1 : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
+Lemma tposrp_pi1 : forall e A A' s1, e |-- A >-> A' : s1 ->
+  forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   forall t t', e |-- t -+> t' : Sum_l A B ->
   e |-- Pi1_l (Sum_l A B) t -+> Pi1_l (Sum_l A' B') t' : A.
@@ -322,7 +322,7 @@ Admitted.
   exists (Pi1_l (Sum_l A B) t).
   eapply tposr_pi1 ; eauto with coc ecoc.
 Qed.
-*)
+
 Lemma tposrp_pi1_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
@@ -332,7 +332,7 @@ Lemma tposrp_pi1_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   e |-- Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v) -+> u' : A''.
 Proof.
 Admitted.
-(*  intros.  
+  intros.  
   pose (tposrp_lred H).
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).
@@ -346,8 +346,8 @@ Admitted.
   apply eq_conv_env with (A'' :: e) ; eauto with coc ecoc.
 Qed.
 *)
-Lemma tposrp_pi2 : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
+Lemma tposrp_pi2 : forall e A A' s1, e |-- A >-> A' : s1 ->
+  forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   forall t t', e |-- t -+> t' : Sum_l A B ->
   e |-- Pi2_l (Sum_l A B) t -+> Pi2_l (Sum_l A' B') t' : lsubst (Pi1_l (Sum_l A B) t) B.
@@ -361,7 +361,7 @@ Admitted.
   exists (Pi2_l (Sum_l A B) t).
   eapply tposr_pi2 ; eauto with coc ecoc.
 Qed.
-*)
+
 Lemma tposrp_pi2_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
@@ -372,7 +372,7 @@ Lemma tposrp_pi2_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   e |-- Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v) -+> v' : lsubst (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)) B.
 Proof.
 Admitted.
-(*  intros.  
+  intros.  
   pose (tposrp_lred H).
   pose (tposrp_lred H0).
   pose (tposrp_lred H2).

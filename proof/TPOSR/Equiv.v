@@ -226,6 +226,7 @@ Proof.
   apply thinning_coerce ; auto.
 Qed.
 
+
 Lemma inv_llift_sort : forall t s n, llift n t = Srt_l s -> t = Srt_l s.
 Proof.
 intros.
