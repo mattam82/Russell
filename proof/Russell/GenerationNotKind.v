@@ -68,32 +68,7 @@ Proof.
   rewrite H2 in H.
   auto.
 Qed.
-(*
-Lemma type_range_not_kind_ps : forall G t T, G |-- t : T -> 
-  forall U V, t = Prod U V \/ t = Sum U V -> type_range U <> Srt kind /\
-  type_range V <> Srt kind.
-Proof.
-  induction 1; simpl ; intros ; auto with coc ; try (intuition ; discriminate).
-  destruct H1.
 
-  inversion H1.
-  rewrite <- H3.
-  rewrite <- H4.
-  split.
-  apply (type_range_not_kind H).
-  apply (type_range_not_kind H0).
-  discriminate.
-
-  inversion H1.
-  discriminate.
-  inversion H2.
-  rewrite <- H4.
-  rewrite <- H5.
-  split.
-  apply (type_range_not_kind H).
-  apply (type_range_not_kind H0).
-Qed.
-*)
 Lemma lift_type_range_eq_sort : forall n t k, type_no_kind (lift_rec n t k) -> 
   type_no_kind t.
 Proof.

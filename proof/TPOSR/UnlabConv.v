@@ -29,6 +29,8 @@ Require Import Lambda.TPOSR.Unlab.
 Require Import Lambda.TPOSR.TPOSR_trans.
 Set Implicit Arguments.
 
+Implicit Types s : sort.
+
 Hint Unfold tposr_term tposr_term_depth : coc.
 Hint Unfold equiv_sort : coc.
 Hint Resolve conv_env : coc.
@@ -53,7 +55,71 @@ Proof.
   apply (coerce_refl_l H0).
   apply tposr_coerce_sym.
   apply substitution_coerce_tposrp with s ; auto with coc.
-Qed.  
+Qed. 
+
+Lemma generation_sump : forall e t u T, e |-- t -+> u : T -> 
+  forall U V, t = Sum_l U V ->
+  exists2 U' V',
+  exists s1 : sort,
+  exists s2 : sort, u = Sum_l U' V' /\ e |-- U -+> U' : s1 /\ U :: e |-- V -+> V' : s2.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+  
+  subst.
+  pose (generation_sum H) ; destruct_exists.
+  subst.
+  exists a a0 ; exists b ; exists b0 ; auto with coc ecoc.
+  destruct (IHtposrp1 U V) ; auto.
+  destruct_exists.
+  subst.
+  destruct (IHtposrp2 a b) ; auto.
+  destruct_exists.
+  exists a0 b0 ; exists x1 ; exists x2.
+  intuition ; auto with coc ecoc.
+  apply tposrp_trans with a ; auto with coc.
+  rewrite <- (unique_sort (tposrp_refl_r H3) (tposrp_refl_l H2)) ; auto.
+  assert(coerce_in_env (a :: e) (U :: e)).
+  apply coerce_env_hd with x.
+  eauto with coc ecoc.
+  assert(U :: e |-- b -+> b0 : x2).
+  apply tposrp_coerce_env with (a :: e) ; auto with coc.
+  apply tposrp_trans with b ; auto with coc.
+  rewrite <- (unique_sort (tposrp_refl_r H4) (tposrp_refl_l H7)) ; auto.
+Qed.
+
+Lemma generation_tposrp_sum : forall e t u T, e |-- t -+> u : T -> 
+  forall U V, t = Sum_l U V -> forall U' V', u = Sum_l U' V' ->
+  exists s1 : sort,
+  exists s2 : sort, e |-- U -+> U' : s1 /\ U :: e |-- V -+> V' : s2.
+Proof.
+  induction 1 ; simpl ; intros ; try discriminate.
+  
+  subst.
+  pose (generation_sum H) ; destruct_exists.
+  subst.
+  inversion H3 ; subst.
+  exists b ; exists b0 ; auto with coc ecoc.
+
+  subst.
+  destruct (generation_sump H (refl_equal (Sum_l U V))) ; destruct_exists.
+  
+  destruct (IHtposrp1 U V (refl_equal (Sum_l U V)) a b) ; auto.
+  destruct_exists.
+  subst.
+  elim IHtposrp2 with a b U' V' ; intros ; auto.
+  destruct_exists.
+  exists x1 ; exists x2.
+  intuition ; auto with coc ecoc.
+  apply tposrp_trans with a ; auto with coc.
+  rewrite (unique_sort (tposrp_refl_r H4) (tposrp_refl_l H1)) ; auto.
+  assert(coerce_in_env (a :: e) (U :: e)).
+  apply coerce_env_hd with x.
+  eauto with coc ecoc.
+  assert(U :: e |-- b -+> V' : x4).
+  apply tposrp_coerce_env with (a :: e) ; auto with coc.
+  apply tposrp_trans with b ; auto with coc.
+  rewrite (unique_sort (tposrp_refl_r H5) (tposrp_refl_l H8)) ; auto.
+Qed.
 
 Lemma tposr_unlab_conv : forall M G N A B, tposr_term G M A -> tposr_term G N B ->
   (|M|) = (|N|) ->
@@ -208,6 +274,70 @@ Proof.
 
   (* Pair *)
   destruct N ; try (simpl in H1 ; try discriminate).
+  pose (generation_pair H).
+  pose (generation_pair H0).
+  destruct_exists.
+  subst.
+  inversion H1.
+  unfold equiv_sort in H17, H10.
+  destruct (IHM1 G (Sum_l a a0) x2 x1) ; eauto with coc.
+  simpl ; subst ; auto.
+  rewrite H3 ; rewrite H9 ; auto.
+  destruct (IHM2 G N2 a1 a) ; eauto with coc.
+  destruct (IHM3 G N3 (lsubst M2 a2) (lsubst N2 a0)) ; eauto with coc.
+  destruct_exists.
+  pose (generation_sump H2).
+  destruct (e a1 a2) ; auto.
+  clear e.
+  destruct_exists.
+  subst x.
+  exists (Pair_l (Sum_l a3 b3) x0 x7).
+
+  assert(G |-- Sum_l a a0 >-> Sum_l a1 a2 : x1).
+  apply tposr_coerce_trans with (Sum_l a3 b3) ; auto with coc.
+  pose (injectivity_of_sum_coerce H30) ; destruct_exists.
+  
+  assert(Heq:= unique_sort (refl_l H11)  (coerce_refl_r H33)).
+  subst a4.
+  assert(Heq:= unique_sort (refl_l H4)  (coerce_refl_l H33)).
+  subst c1.
+  assert(a :: G |-- a2 -> b2 : c2).
+  apply tposr_coerce_env with (a1 :: G) ; eauto with coc ecoc.
+  assert(Heq:= unique_sort H36  (coerce_refl_r H34)).
+  subst b4.
+  assert(Heq:= unique_sort H5 (coerce_refl_l H34)).
+  subst c2.
+  assert (Heq:=sum_sort_functional H13 H35).
+  subst x2.
+  assert(Heq:= unique_sort (tposrp_refl_l H31) H11).
+  subst x8.
+  assert(Heq:= unique_sort (tposrp_refl_l H32) H12).
+  subst x9.
+   
+  assert(G |-- Pair_l (Sum_l a1 a2) M2 M3 -+> Pair_l (Sum_l a3 b3) x0 x7 : A).
+  apply tposrp_conv with (Sum_l a1 a2) x1 ; auto with coc.
+  apply tposrp_pair with c c0 x1 ; auto with coc.
+
+  assert(G |-- Pair_l (Sum_l a a0) N2 N3 -+> Pair_l (Sum_l a3 b3) x0 x7 : B).
+  elim (generation_tposrp_sum H29) with a a0 a3 b3 ; auto ; intros.
+  destruct_exists.
+  apply tposrp_conv with (Sum_l a a0) x1 ; auto with coc.
+  apply tposrp_pair with c c0 x1 ; auto with coc.
+  rewrite <- (unique_sort (tposrp_refl_l H38) (coerce_refl_l H33)) ; auto.
+  rewrite (unique_sort (coerce_refl_l H34) (tposrp_refl_l H39)) ; auto.
+
+  assert(G |-- A >-> B : x1).
+  apply tposr_coerce_trans with (Sum_l a1 a2) ; auto.
+  apply tposr_coerce_trans with (Sum_l a3 b3) ; auto with coc.
+  apply tposr_coerce_trans with (Sum_l a a0) ; auto with coc.
+  intuition.
+  apply tposrp_conv with A x1 ; auto with coc.
+  apply tposrp_conv with B x1 ; auto with coc.
+
+  (* Prod *)
+  pose (generation_prod H) ; destruct_exists.
+  
+
   
 Admitted.
 

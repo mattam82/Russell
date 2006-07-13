@@ -198,34 +198,30 @@ Proof.
    inversion e1 ; auto.
 Qed.  
 
-Lemma tposr_sort_kinded : forall e T U, e |-- T -> T : U ->
-  forall s, T = Srt_l s -> U = kind.
+Lemma tposr_sort_kinded_depth : forall n e T U V, e |-- T -> U : V [n] ->
+  forall s, T = Srt_l s -> V = kind.
 Proof.
-  induction 1 ; simpl ; intros; try discriminate ; auto with coc.
+  intros n.
+  pattern n.
+  apply wf_lt_induction_type.
+  intros x IH m.
   
-  unfold lsubst in H3.
-  destruct (inv_subst_sort _ _ _ H3).
-  
-  pose (IHtposr4 _ H4).
-  rewrite e0 in H.
-  elim (tposr_not_kind H).
+  destruct 1 ; simpl ; intros ; try discriminate ; auto with coc.
 
-  pose (IHtposr3 _ H4).
-  rewrite e0 in H0.
-  elim (tposr_not_kind H0).
-
-  pose (IHtposr _ H1).
-  rewrite e0 in H0.
-  pose (coerce_refl_l H0).
-  elim (tposr_not_kind t).
-  
   subst.
-  pose (refl_r H2).
-  pose (generation_pair t) ; destruct_exists.
-  inversion H5 ; subst.
-  inversion H11 ; subst.
+  assert(n0 < S n0) by auto with arith.
+  pose (IH _ H1 _ _ _ _ H s0 (refl_equal (Srt_l s0))).
+  rewrite e0 in H0.
+  elim (tposr_not_kind (coerce_refl_l H0)).
+Qed.
 
-Admitted. 
+Lemma tposr_sort_kinded : forall e T V, e |-- T -> T : V ->
+  forall s, T = Srt_l s -> V = kind.
+Proof.
+  intros.
+  destruct (tod H).
+  apply (tposr_sort_kinded_depth H1 H0).
+Qed.  
 
 Lemma in_set_not_sort : forall e t T, e |-- t -> t : T ->
   T = Srt_l set -> forall s, t <> Srt_l s.

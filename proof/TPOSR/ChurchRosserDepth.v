@@ -1177,40 +1177,39 @@ Proof.
   (* Pi1_red, Pi1 *)
   subst P.
   
-  pose (generation_pair_depth H23).
+  pose (generation_pair_depth H24).
   destruct_exists.
-  inversion H25.
+  inversion H27.
   subst a2 a3.
-  assert(Heq:=unique_sort (fromd H26) (fromd H)).
+  assert(Heq:=unique_sort (fromd H28) (fromd H)).
   subst c.
-  assert(Heq:=unique_sort (fromd H28) (fromd H8)).
+  assert(Heq:=unique_sort (fromd H30) (fromd H11)).
   subst c0.
   subst a0.
-  assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
-  pose (IH _ H35 _ _ _ _ _ H13 _ _ H31) ; destruct_exists.
+  assert(b2 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
+  pose (IH _ H37 _ _ _ _ _ H16 _ _ H35) ; destruct_exists.
   exists x2.
 
-  pose (fromd H26) ; pose (fromd H28) ; pose (fromd H31) ; pose (fromd H33).
+  pose (fromd H28) ; pose (fromd H30) ; pose (fromd H33) ; pose (fromd H35).
   assert(G |-- a1 >-> b4 : s1).
-  apply tposr_coerce_trans with A ; eauto with coc.
+  apply tposr_coerce_trans with A'' ; eauto with coc.
   apply tposr_coerce_trans with a ; eauto with coc.
-
 
   assert(a1 :: G |-- b0 >-> b5 : s2).
   apply coerce_coerce_env with (a :: G) ; auto with coc.
   apply tposr_coerce_trans with B ; auto with coc.
   apply tposr_coerce_trans with b ; auto with coc.
-  apply coerce_coerce_env with (A :: G) ; auto with coc.
-  apply coerce_coerce_env with (A :: G) ; auto with coc.
+  apply coerce_coerce_env with (A'' :: G) ; auto with coc.
+  apply coerce_coerce_env with (A'' :: G) ; auto with coc.
   apply coerce_env_hd with s1 ; auto with coc.
-  apply tposr_coerce_trans with A ; auto with coc.
+  apply tposr_coerce_trans with A'' ; auto with coc.
   
-  assert(G |-- Pi1_l (Sum_l a1 b0) (Pair_l (Sum_l b4 b5) a4 a5) -> x2 : A).
-  apply tposr_conv with a1 s1 ; try apply (fromd H5) ; auto with coc.
   assert(coerce_in_env (a :: G) (b4 :: G)).
   apply coerce_env_hd with s1 ; eauto with coc ecoc.
 
-  apply tposr_pi1_red with b4 s1 b5 s2 s3 a5 ; auto with coc.
+  assert(G |-- Pi2_l (Sum_l a1 b0) (Pair_l (Sum_l b4 b5) a4 a5) -> x2 : lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b).
+  apply tposr_conv with (lsubst (Pi1_l (Sum_l a1 b0) (Pair_l (Sum_l b4 b5) a4 a5)) b0) s2 ; try apply (fromd H5) ; auto with coc.
+  apply tposr_pi2_red with b4 s1 b5 s2 s3 a4 ; auto with coc.
   eauto with coc.
   apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
   apply tposr_pair with s1 s2 s3 ; auto with coc ecoc.
@@ -1218,39 +1217,66 @@ Proof.
   apply tposr_coerce_env with (a :: G) ; eauto with coc ecoc.
   apply tposr_conv with a s1 ; eauto with coc ecoc.
   apply tposr_conv with (lsubst u B) s2 ; auto with coc.
-  eauto with coc.
   apply substitution_tposr_coerce with a ; auto with coc.
   eauto with coc.
 
   apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
 
-  intuition ; auto with coc.
-  apply tposr_conv with a s1 ; auto with coc.
-  apply tposr_conv with A s1 ; auto with coc.
-  apply tposr_conv with a s1 ; auto with coc.
-  apply tposr_conv with A s1 ; auto with coc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with A'' ; auto with coc.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
 
-  (* Pi1_red, Pi1_red *)
-  inversion H23.
+  assert(G |-- v' -> x2 : lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b).
+  apply tposr_conv with (lsubst u B) s2 ; auto with coc.
+  apply tposr_coerce_sym.
+  apply substitution_tposr_coerce with A'' ; auto with coc.
+  apply tposr_pi1_red with a s1 B s2 s3 v; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_pair with s1 s2 s3 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  intuition ; auto with coc.
+  apply tposr_conv with (lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b) s2 ; auto with coc ecoc.
+  apply tposr_conv with (lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b) s2 ; auto with coc ecoc.
+
+  (* Pi2_red, Pi2_red *)
+  inversion H24.
   subst a1 b0 a0 c.
-  clear H19 H23 H17.
   subst P.
-  pose (generation_pair_depth H29) ; destruct_exists.
-  inversion H17.
+  pose (generation_pair_depth H31) ; destruct_exists.
+  inversion H33.
   subst a0 a1.
-  inversion H38.
+  inversion H43.
   subst b0 b6 b3 d1.
   
-  assert(b1 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
-  pose (IH _ H40 _ _ _ _ _ H13 _ _ H34) ; destruct_exists.
+  assert(b2 < x) by (rewrite <- H9 ; apply lt_trans with p ; auto with arith).
+  pose (IH _ H45 _ _ _ _ _ H16 _ _ H41) ; destruct_exists.
   exists x3.
 
-  assert(equiv G B0 a).
-  right ; exists s1 ; eauto with coc.
-  apply tposr_coerce_trans with A ; auto with coc.
+  assert(G |-- lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b >-> lsubst u B : s2).
+  apply substitution_tposr_coerce with A'' ; auto with coc.
+  apply tposr_pi1_red with a s1 B s2 s3 v; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_pair with s1 s2 s3 ; auto with coc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+  
+  assert(G |-- B0 >-> lsubst u B : s2).
+  apply tposr_coerce_trans with (lsubst (Pi1_l (Sum_l A'' b) (Pair_l (Sum_l a B) u v)) b) ; auto.
 
-  assert(equiv G A a).
-  right ; exists s1 ; eauto with coc.
-
-  intuition ; try apply tposr_equiv_r with a ; auto.
-
+  intuition ;
+  apply tposr_conv with (lsubst u B) s2 ; auto with coc.
+Qed.
