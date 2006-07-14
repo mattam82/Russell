@@ -12,6 +12,7 @@ Require Import Lambda.TPOSR.Basic.
 Require Import Lambda.TPOSR.Thinning.
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.Substitution.
+Require Import Lambda.TPOSR.SubstitutionTPOSR.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.CtxCoercion.
@@ -30,6 +31,34 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : lterm.
 
+Lemma substitution_tposrp_tposr : forall e d d' t, e |-- d -+> d' : t ->
+  forall u u' U, t :: e |-- u ->  u' : U -> 
+  e |-- (lsubst d u) -+> (lsubst d' u') : (lsubst d U).
+Proof.
+  induction 1 ; simpl ; intros.
+  apply tposrp_tposr.
+  apply substitution_tposr_tposr with Z ; auto.
+  apply tposrp_trans with (lsubst X u).
+  apply IHtposrp1 ; eauto with coc.
+  pose (IHtposrp1 _ _ _ (refl_l H1)).
+  pose (IHtposrp2 _ _ _ H1).
+  pose (tposr_uniqueness_of_types (tposrp_refl_r t) (tposrp_refl_l t0)).
+  apply tposrp_equiv_l with (lsubst X U) ; auto with coc.
+Qed.
+
+Lemma substitution_tposrp_coerce : forall e d d' t, e |-- d -+> d' : t ->
+  forall u u' s, t :: e |-- u >->  u' : s -> 
+  e |-- (lsubst d u) >-> (lsubst d' u') : s.
+Proof.
+  induction 1 ; simpl ; intros.
+  apply substitution_tposr_coerce with Z ; auto.
+
+  apply tposr_coerce_trans with (lsubst X u).
+  apply IHtposrp1 ; eauto with coc.
+  apply IHtposrp2 ; eauto with coc.
+Qed.
+
+Require Import Lambda.TPOSR.Substitution.
 
 Lemma tposrp_abs_aux :  forall e A A' Ts1, e |-- A -+> A' : Ts1 ->
   forall s1, Ts1 = Srt_l s1 ->
@@ -96,6 +125,9 @@ Qed.
 
 Ltac conv_in_env X Y e s :=
   assert(conv_in_env (X :: e) (Y :: e)) by (apply conv_env_hd with s ; auto with coc).
+
+Ltac coerce_in_env X Y e s :=
+  assert(coerce_in_env (X :: e) (Y :: e)) by (apply coerce_env_hd with s ; auto with coc ecoc).
 
 Lemma tposrp_prod_aux : forall e A A' Ts1, e |-- A -+> A' : Ts1 ->
   forall s1, Ts1 = Srt_l s1 ->
@@ -216,78 +248,210 @@ Proof.
   apply tposrp_conv with (Prod_l A B) s2 ; auto with coc.
   apply tposr_coerce_prod with s1 ; eauto with coc ecoc.
 
+  assert(coerce_in_env (A :: e) (A' :: e)).
+  apply coerce_env_hd with s1 ; eauto with coc ecoc.
+  assert(e |-- Prod_l A B >-> Prod_l A B' : s2).
+  apply tposr_coerce_prod with s1 ; eauto with coc ecoc.
+
   eapply tposrp_app_aux3 with A s2 A s1 ; auto with coc ecoc.
   apply tposr_conv with (Prod_l A B) s2 ; eauto with coc ecoc.
-  apply tposr_coerce_prod with s1 ; eauto with coc ecoc.
-  eauto with coc ecoc.  
+  eauto with coc ecoc.
   eauto with coc ecoc. 
 Qed.
 
+(*
 Lemma tposrp_beta : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
   forall M M', (A :: e) |-- M -+> M' : B -> 
   forall N N', e |-- N -+> N' : A ->
   e |-- App_l B (Abs_l A M) N -+> lsubst N' M' : lsubst N B.
 Proof.
-Admitted.
-(*  intros.
-  pose (tposrp_lred H).
-  pose (tposrp_lred H0).
-  pose (tposrp_lred H1).
-  pose (tposrp_lred H2).
-  apply subject_reduction_p ; auto with coc ecoc.
-  apply lred_par_lred.
-  apply trans_lred with (App_l B' (Abs_l A' M') N') ; auto with coc.
-  exists (App_l B (Abs_l A M) N).
-  apply tposr_app with A A s1 s2 ; auto with coc ecoc.
-  eauto with coc.
-  eauto with coc.
-  apply tposr_abs with s1 B s2 ; eauto with coc ecoc.
-  eauto with coc.
-Qed.
-*)
+
 Lemma tposrp_red : forall e M N A, e |-- M -+> N : A -> 
   forall B s, e |-- A -+> B : Srt_l s ->
   e |-- M -+> N : B.
 Proof.
-Admitted.
-(*  intros.
-  apply subject_reduction_p ; eauto with coc ecoc.
-  exists M.
-  apply tposr_conv_l with A s ; eauto with coc ecoc.
-Qed.  
-*)
+
 Lemma tposrp_exp : forall e M N B, e |-- M -+> N : B -> 
   forall A s, e |-- A -+> B : Srt_l s ->
   e |-- M -+> N : A.
 Proof.
-Admitted.
-(*  intros.
-  apply subject_reduction_p ; eauto with coc ecoc.
-  exists M.
-  apply tposr_conv_l with B s ; eauto with coc ecoc.
-Qed. 
 *)
+
+Lemma tposrp_subset_aux : forall e A A', e |-- A -+> A' : Srt_l set ->
+  forall B B', (A :: e) |-- B -> B' : Srt_l prop ->
+  e |-- Subset_l A B -+> Subset_l A' B' : Srt_l set.
+Proof.
+  intros e A A' H.
+  induction_ws (Srt_l set) H ; simpl ; intros ; subst.
+
+  apply tposrp_tposr.
+  apply tposr_subset ; auto with coc.
+
+  apply tposrp_trans with (Subset_l X B) ; auto with coc.
+  apply IHtposrp1  ; auto with coc.
+  eauto with coc.
+
+  apply IHtposrp2 ; auto.
+  coerce_in_env W X e set.
+  apply tposr_coerce_env with (W :: e) ; auto.
+Qed.
 
 Lemma tposrp_subset : forall e A A', e |-- A -+> A' : Srt_l set ->
   forall B B', (A :: e) |-- B -+> B' : Srt_l prop ->
   e |-- Subset_l A B -+> Subset_l A' B' : Srt_l set.
 Proof.
-Admitted.
-(*  intros.
-  apply subject_reduction_p ; eauto with coc ecoc.
-Qed.  
-*)
+  intros.
+
+  apply tposrp_trans with (Subset_l A' B).
+  eapply tposrp_subset_aux ; eauto with coc ecoc.
+
+  induction_with_subterms (A :: e) (Srt_l prop) H0.
+  apply tposrp_tposr.
+  conv_in_env A A' e set.
+  apply tposr_subset ; eauto with coc ecoc.
+
+  apply tposrp_trans with (Subset_l A' X) ; auto with coc.
+Qed.
+
+Lemma tposrp_sigma_aux : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall s3, sum_sort s1 s2 s3 ->
+  e |-- Sum_l A B -+> Sum_l A' B' : Srt_l s3.
+Proof.
+  intros e A A' s1 H.
+  induction_ws (Srt_l s1) H ; simpl ; intros ; subst.
+
+  apply tposrp_tposr.
+  apply tposr_sum with s1 s2 ; auto with coc.
+
+  apply tposrp_trans with (Sum_l X B) ; auto with coc.
+  apply IHtposrp1 with s2  ; auto with coc.
+  eauto with coc.
+
+  apply IHtposrp2 with s2 ; auto.
+  coerce_in_env W X e s1.
+  apply tposr_coerce_env with (W :: e) ; auto.
+Qed.
+
 Lemma tposrp_sigma : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   e |-- Sum_l A B -+> Sum_l A' B' : Srt_l s3.
 Proof.
-Admitted.
-(*  intros.
-  apply subject_reduction_p ; eauto with coc ecoc.
+  intros.
+
+  apply tposrp_trans with (Sum_l A' B).
+  eapply tposrp_sigma_aux ; eauto with coc ecoc.
+
+  induction_with_subterms (A :: e) (Srt_l s2) H0.
+  apply tposrp_tposr.
+  conv_in_env A A' e s1.
+  apply tposr_sum with s1 s2 ; eauto with coc ecoc.
+
+  apply tposrp_trans with (Sum_l A' X) ; auto with coc.
 Qed.
- *)
+
+Lemma tposrp_pair_aux1 : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall s3, sum_sort s1 s2 s3 ->
+  forall u u', e |-- u -> u' : A ->
+  forall v v', e |-- v -> v' : lsubst u B ->
+  e |-- Pair_l (Sum_l A B) u v -+> Pair_l (Sum_l A' B') u' v' : Sum_l A B.
+Proof.
+  intros e A A' s1 H.
+  induction_ws (Srt_l s1) H ; simpl ; intros ; subst.
+
+  apply tposrp_tposr.
+  apply tposr_pair with s1 s2 s3 ; auto with coc.
+
+  apply tposrp_trans with (Pair_l (Sum_l X B) u v) ; auto with coc.
+  apply IHtposrp1 with s2 s3 ; auto with coc.
+  eauto with coc.
+  eauto with coc.
+  eauto with coc.
+
+  coerce_in_env W X e s1.
+
+  apply tposrp_conv with (Sum_l X B) s3 ; auto.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  apply IHtposrp2 with s2 s3 ; auto.
+  eauto with coc ecoc.
+  eauto with coc.
+Qed.
+
+Lemma tposrp_pair_aux2 :
+  forall e A B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
+  forall A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall s3, sum_sort s1 s2 s3 ->
+  forall u u', e |-- u -> u' : A ->
+  forall v v', e |-- v -> v' : lsubst u B ->
+  e |-- Pair_l (Sum_l A B) u v -+> Pair_l (Sum_l A' B') u' v' : Sum_l A B.
+Proof.
+  intros e A B B' s2 H.
+  induction_ws2 (A :: e) (Srt_l s2) H ; simpl ; intros ; subst.
+ 
+  apply tposrp_tposr.
+  apply tposr_pair with s1 s2 s3 ; auto with coc.
+
+  apply tposrp_trans with (Pair_l (Sum_l A X) u v) ; auto with coc.
+  apply IHtposrp1 with s1 s3 ; eauto with coc.
+
+  apply tposrp_conv with (Sum_l A X) s3 ; auto.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  apply IHtposrp2 with s1 s3 ; auto.
+  apply tposr_conv with (lsubst u W) s2.
+  eauto with coc ecoc.
+  apply substitution_coerce with A ; auto with coc.
+  eauto with coc.
+Qed.
+
+Lemma tposrp_pair_aux3 :
+  forall e u u' A, e |-- u -+> u' : A ->
+  forall A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall s3, sum_sort s1 s2 s3 ->
+  forall v v', e |-- v -> v' : lsubst u B ->
+  e |-- Pair_l (Sum_l A B) u v -+> Pair_l (Sum_l A' B') u' v' : Sum_l A B.
+Proof.
+  intros e u u' A H.
+  induction H ; simpl ; intros ; subst.
+ 
+  apply tposrp_tposr.
+  apply tposr_pair with s1 s2 s3 ; auto with coc.
+
+  apply tposrp_trans with (Pair_l (Sum_l Z B) X v) ; auto with coc.
+  apply IHtposrp1 with s1 s2 s3 ; eauto with coc.
+
+  apply IHtposrp2 with s1 s2 s3 ; auto.
+  apply tposr_conv with (lsubst W B) s2.
+  eauto with coc ecoc.
+  apply substitution_tposrp_coerce with Z ; auto with coc.
+  eauto with coc.
+Qed.
+
+
+Lemma tposrp_pair_aux4 :
+  forall e u v v' B, e |-- v -+> v' : lsubst u B ->
+  forall A A' s1, e |-- A -> A' : Srt_l s1 ->
+  forall B' s2, (A :: e) |-- B -> B' : Srt_l s2 ->
+  forall s3, sum_sort s1 s2 s3 ->
+  forall u', e |-- u -> u' : A ->
+  e |-- Pair_l (Sum_l A B) u v -+> Pair_l (Sum_l A' B') u' v' : Sum_l A B.
+Proof.
+  intros e u v v' B H.
+  induction_ws (lsubst u B) H ; simpl ; intros ; subst.
+ 
+  apply tposrp_tposr.
+  apply tposr_pair with s1 s2 s3 ; auto with coc.
+
+  apply tposrp_trans with (Pair_l (Sum_l A B) u X) ; auto with coc.
+  apply IHtposrp1 with s1 s2 s3 ; eauto with coc.
+
+  apply IHtposrp2 with s1 s2 s3 ; auto.
+Qed.
 
 Lemma tposrp_pair : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
@@ -296,205 +460,98 @@ Lemma tposrp_pair : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
   forall v v', e |-- v -+> v' : lsubst u B ->
   e |-- Pair_l (Sum_l A B) u v -+> Pair_l (Sum_l A' B') u' v' : Sum_l A B.
 Proof.
-Admitted.
-(*  intros.
-  pose (tposrp_lred H).
-  pose (tposrp_lred H0).
-  pose (tposrp_lred H2).
-  pose (tposrp_lred H3).
-  apply subject_reduction_p ; eauto with coc ecoc.
-  exists (Pair_l (Sum_l A B) u v).
-  eapply tposr_pair ; eauto with coc ecoc.
-Qed.*)
+  intros.
+  apply tposrp_trans with (Pair_l (Sum_l A' B) u v) ; auto with coc.
+  apply tposrp_pair_aux1 with s1 s2 s3 ; eauto with coc ecoc.
 
-Lemma tposrp_pi1 : forall e A A' s1, e |-- A >-> A' : s1 ->
+  assert(e |-- A >-> A' : s1) by eauto with coc.
+  assert(coerce_in_env (A :: e) (A' :: e)).
+  eauto with coc ecoc.
+  pose (tposrp_coerce_env H0 H5).
+  pose (tposrp_conv H4 H2).
+  apply tposrp_conv with (Sum_l A' B) s3 ; auto with coc.
+  apply tposr_coerce_sym.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+
+  apply tposrp_trans with (Pair_l (Sum_l A' B') u v) ; auto with coc.
+  apply tposrp_pair_aux2 with s2 s1 s3 ; eauto with coc ecoc.
+  
+  apply tposrp_conv with (Sum_l A' B') s3.
+  apply tposr_coerce_sum with s1 s2 ; eauto with coc ecoc.
+  
+  apply tposrp_trans with (Pair_l (Sum_l A' B') u' v) ; auto with coc.
+  apply tposrp_pair_aux3 with s1 s2 s3 ; auto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc.
+  apply tposr_conv with (lsubst u B) s2 ; eauto with coc.
+  apply substitution_tposr_coerce with A ; eauto with coc ecoc.
+  
+  apply tposrp_pair_aux4 with s1 s2 s3 ; auto with coc ecoc.
+  apply tposrp_conv with (lsubst u B) s2 ; eauto with coc.
+  apply substitution_tposrp_coerce with A ; eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+  eauto with coc ecoc.
+Qed. 
+
+Lemma tposrp_pi1_aux :
+  forall e t t' A B , e |-- t -+> t' : Sum_l A B ->
+  forall A' s1, e |-- A >-> A' : s1 ->
+  forall B' s2, (A :: e) |-- B >-> B' : s2 ->
+  forall s3, sum_sort s1 s2 s3 ->
+  e |-- Pi1_l (Sum_l A B) t -+> Pi1_l (Sum_l A' B') t' : A.
+Proof.
+  intros e t t' A B H.
+  induction_ws (Sum_l A B) H ; simpl ; intros ; subst.
+  apply tposrp_tposr.
+  apply tposr_pi1 with s1 s2 s3 ; auto with coc.
+  eauto with coc.
+
+  apply tposrp_trans with (Pi1_l (Sum_l A B) X).
+  apply IHtposrp1 with s1 s2 s3 ; eauto with coc ecoc.
+
+  apply IHtposrp2 with s1 s2 s3 ; eauto with coc ecoc.
+Qed.
+
+Lemma tposrp_pi1 :
+  forall e A A' s1, e |-- A >-> A' : s1 ->
   forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   forall t t', e |-- t -+> t' : Sum_l A B ->
   e |-- Pi1_l (Sum_l A B) t -+> Pi1_l (Sum_l A' B') t' : A.
 Proof.
-Admitted.
-(*  intros.  
-  pose (tposrp_lred H).
-  pose (tposrp_lred H0).
-  pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc ecoc.
-  exists (Pi1_l (Sum_l A B) t).
-  eapply tposr_pi1 ; eauto with coc ecoc.
+  intros ; apply tposrp_pi1_aux with s1 s2 s3 ; auto with coc.
 Qed.
 
-Lemma tposrp_pi1_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
+Lemma tposrp_pi2_aux : forall e t t' A B, e |-- t -+> t' : Sum_l A B ->
+  forall A' s1, e |-- A >-> A' : s1 ->
+  forall B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall s3, sum_sort s1 s2 s3 ->
-  forall u u' v v', e |-- Pair_l (Sum_l A B) u v -+> Pair_l (Sum_l A' B') u' v' : Sum_l A B ->
-  forall A'', e |-- A'' ~= A : s1 ->
-  forall B'', A'' :: e |-- B'' ~= B : s2 ->
-  e |-- Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v) -+> u' : A''.
+  e |-- Pi2_l (Sum_l A B) t -+> Pi2_l (Sum_l A' B') t' : lsubst (Pi1_l (Sum_l A B) t) B.
 Proof.
-Admitted.
-  intros.  
-  pose (tposrp_lred H).
-  pose (tposrp_lred H0).
-  pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc ecoc.
-  apply lred_par_lred.
-  apply trans_lred with (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
-  exists (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)).
-  apply tposr_pi1 with s1 s2 s3 ; eauto with coc ecoc.
-  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
-  apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
-  apply eq_conv_env with (A'' :: e) ; eauto with coc ecoc.
+  intros e t t' A B H.
+  induction_ws (Sum_l A B) H ; simpl ; intros ; subst.
+  apply tposrp_tposr.
+  apply tposr_pi2 with s1 s2 s3 ; auto with coc.
+  eauto with coc.
+
+  apply tposrp_trans with (Pi2_l (Sum_l A B) X).
+  apply IHtposrp1 with s1 s2 s3 ; eauto with coc ecoc.
+
+  apply tposrp_conv with (lsubst (Pi1_l (Sum_l A B) X) B) s2.
+  apply tposr_coerce_sym.
+  apply substitution_tposrp_coerce with A ; auto with coc.
+  apply tposrp_pi1 with s1 s2 s3 ; eauto with coc ecoc.
+  eauto with coc ecoc.
+
+  apply IHtposrp2 with s1 s2 s3 ; eauto with coc ecoc.
 Qed.
-*)
+
 Lemma tposrp_pi2 : forall e A A' s1, e |-- A >-> A' : s1 ->
   forall B B' s2, (A :: e) |-- B >-> B' : s2 ->
   forall s3, sum_sort s1 s2 s3 ->
   forall t t', e |-- t -+> t' : Sum_l A B ->
   e |-- Pi2_l (Sum_l A B) t -+> Pi2_l (Sum_l A' B') t' : lsubst (Pi1_l (Sum_l A B) t) B.
 Proof.
-Admitted.
-(*  intros.  
-  pose (tposrp_lred H).
-  pose (tposrp_lred H0).
-  pose (tposrp_lred H2).
-  apply subject_reduction_p ; eauto with coc ecoc.
-  exists (Pi2_l (Sum_l A B) t).
-  eapply tposr_pi2 ; eauto with coc ecoc.
+  intros ; apply tposrp_pi2_aux with s1 s2 s3 ; auto with coc.
 Qed.
-
-Lemma tposrp_pi2_red : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
-  forall s3, sum_sort s1 s2 s3 ->
-  forall u u' v v', 
-  e |-- Pair_l (Sum_l A B) u v -+> Pair_l (Sum_l A' B') u' v' : Sum_l A B ->
-  forall A'', e |-- A'' ~= A : s1 ->
-  forall B'', A'' :: e |-- B'' ~= B : s2 ->
-  e |-- Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v) -+> v' : lsubst (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)) B.
-Proof.
-Admitted.
-  intros.  
-  pose (tposrp_lred H).
-  pose (tposrp_lred H0).
-  pose (tposrp_lred H2).
-  apply subject_reduction_p ; auto with coc ecoc.
-  apply lred_par_lred.
-  apply trans_lred with (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A' B') u' v')) ; auto with coc.
-  exists (Pi2_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)).
-  apply tposr_conv_l with (lsubst (Pi1_l (Sum_l A'' B'') (Pair_l (Sum_l A B) u v)) B'') s2.
-  apply substitution_eq with A''  ; auto with coc.
-  apply tposr_pi1 with s1 s2 s3 ; auto with coc ecoc.
-  eauto with coc.
-  eauto with coc.
-  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
-  apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
-  apply eq_conv_env with (A'' :: e) ; eauto with coc ecoc.
-
-  apply tposr_pi2 with s1 s2 s3 ; auto with coc ecoc.
-  eauto with coc.
-  eauto with coc.
-  apply tposr_conv_l with (Sum_l A B) s3 ; eauto with coc ecoc.
-  apply sigma_functionality with s1 s2 ; eauto with coc ecoc.
-  apply eq_conv_env with (A'' :: e) ; eauto with coc ecoc.
-Qed.*)
-
-Lemma tposrp_substitution : forall e d d' t, e |-- d -+> d' : t ->
-  forall u u' U, t :: e |-- u -+>  u' : U -> 
-  e |-- (lsubst d u) -+> (lsubst d' u') : (lsubst d U).
-Proof.
-Admitted.
-(*  induction 1 ; simpl ; intros; subst ; eauto with coc ecoc.
-  apply tposrp_substitution with Z ; auto.
-
-  apply tposrp_trans with (lsubst X u) ; eauto with coc ecoc.
-  destruct (validity_tposrp H1) ; destruct_exists.
-  rewrite H2.
-  change (lsubst W (Srt_l x)) with (Srt_l x).
-  rewrite H2 in H1.
-  subst.
-  apply (IHtposrp2 u u' (Srt_l x)) ; auto.
-  apply tposrp_conv_l with (lsubst X U) b ; eauto with coc ecoc.
-  
-  pose (refl_l H2).
-  pose (tposrp_tposr t).
-  pose (IHtposrp1 _ _ _ t0).
-  apply tposr_eq_sym.
-  apply tposrp_tposr_eq.
-  apply t1.
-Qed.
-*)
-Lemma conv_substitution :   forall G d d' s, G |-- d ~= d' : s ->  
-  forall u v s', Srt_l s :: G |-- u ~= v : s' ->
-  G |-- (lsubst d u) ~= (lsubst d' v) : s'.
-Proof.
-Admitted.
-(*  intros.
-  pose (tposr_eq_cr H).
-  pose (tposr_eq_cr H0).
-  destruct_exists.  
-  apply tposr_eq_trans with (lsubst x0 x).
-  apply tposrp_tposr_eq.
-  change (Srt_l s') with (lsubst d (Srt_l s')).
-  apply (tposrp_substitution H2 H1).
- 
-  apply tposr_eq_sym.
-  apply tposrp_tposr_eq.
-  change (Srt_l s') with (lsubst d' (Srt_l s')).
-  apply (tposrp_substitution H4 H3).
-Qed.*)
-(*
-Lemma coerce_conv_substitution :   forall G d d' s, G |-- d >-> d' : s ->  
-  forall u v s', Srt_l s :: G |-- u ~= v : s' ->
-  G |-- (lsubst d u) >-> (lsubst d' v) : s'.
-Proof.
-  intros.
-  pose (tposr_eq_cr H0).
-  destruct_exists.  
-
-  apply tposr_coerce_trans with (lsubst d x).
-  apply substitution_coerce with s.
-  auto with coc.
-  pose (coerce_refl_l H).
-  auto with coc.
-
-  induction H.
-  apply tposr_coerce_conv.
-  apply conv_substitution with s ; auto with coc.
-  
-  
-  
- 
-  apply tposr_eq_sym.
-  apply tposrp_tposr_eq.
-  change (Srt_l s') with (lsubst d' (Srt_l s')).
-  apply (tposrp_substitution H4 H3).
-Qed.
-
-Lemma coerce_substitution_aux :   forall G d d' s, G |-- d >-> d' : s ->  
-  forall e u v s', e |-- u >-> v : s' -> e = Srt_l s :: G ->
-  G |-- (lsubst d u) >-> (lsubst d' v) : s'.
-Proof.
-  induction 2 ; simpl ; intros ; subst ; auto with coc.
-  
-  pose (conv_substitution 
-
-Lemma coerce_substitution :   forall G d d' s, G |-- d >-> d' : s ->  
-  forall u v s', Srt_l s :: G |-- u >-> v : s' ->
-  G |-- (lsubst d u) >-> (lsubst d' v) : s'.
-Proof.
-  intros.
-  pose (tposr_eq_cr H).
-  pose (tposr_eq_cr H0).
-  destruct_exists.  
-  apply tposr_eq_trans with (lsubst x0 x).
-  apply tposrp_tposr_eq.
-  change (Srt_l s') with (lsubst d (Srt_l s')).
-  apply (tposrp_substitution H2 H1).
- 
-  apply tposr_eq_sym.
-  apply tposrp_tposr_eq.
-  change (Srt_l s') with (lsubst d' (Srt_l s')).
-  apply (tposrp_substitution H4 H3).
-Qed.
-
-  
-*)

@@ -215,12 +215,11 @@ Proof.
   elim (tposr_not_kind (coerce_refl_l H0)).
 Qed.
 
-Lemma tposr_sort_kinded : forall e T V, e |-- T -> T : V ->
-  forall s, T = Srt_l s -> V = kind.
+Lemma tposr_sort_kinded : forall e s V, e |-- s -> s : V -> V = kind.
 Proof.
   intros.
   destruct (tod H).
-  apply (tposr_sort_kinded_depth H1 H0).
+  apply (tposr_sort_kinded_depth H0) with s ; auto.
 Qed.  
 
 Lemma in_set_not_sort : forall e t T, e |-- t -> t : T ->
@@ -231,30 +230,30 @@ Proof.
   red ; intros.
   destruct (inv_subst_sort _ _ _ H3).
   rewrite H5 in H2.
-  pose (tposr_sort_kinded (refl_l H2) (refl_equal (Srt_l set))).
+  pose (tposr_sort_kinded (refl_l H2)).
   rewrite e0 in H.
   elim (tposr_not_kind H).
   pose (IHtposr3 H5).
   destruct (inv_subst_sort _ _ _ H4).
   rewrite H6 in H2.
-  pose (tposr_sort_kinded (refl_r H2) (refl_equal (Srt_l s))).
+  pose (tposr_sort_kinded (refl_r H2)).
   rewrite e0 in H.
   elim (tposr_not_kind H).
   pose (n s) ; contradiction.
   red ; intros.
   rewrite H2 in H.
-  pose (tposr_sort_kinded (refl_r H) (refl_equal (Srt_l s0))).
+  pose (tposr_sort_kinded (refl_r H)).
   rewrite e0 in H0.
   elim (tposr_not_kind (coerce_refl_l H0)).
 
   rewrite H7 in H3.
-  pose (tposr_sort_kinded (refl_l H3) (refl_equal (Srt_l set))).
+  pose (tposr_sort_kinded (refl_l H3)).
   injection e0 ; intros.
   rewrite H8 in H1.
   destruct H1 ; intuition ; try discriminate.
   destruct (inv_subst_sort _ _ _ H7) ; try discriminate.
   rewrite H8 in H5.
-  pose (tposr_sort_kinded (coerce_refl_l H5) (refl_equal (Srt_l set))).
+  pose (tposr_sort_kinded (coerce_refl_l H5)).
   injection e0 ; intros.
   rewrite H9 in H1.
   destruct H1 ; intuition ; try discriminate.

@@ -51,7 +51,7 @@ Proof.
 
   pose (tposr_coerce_eq_sort H).
   rewrite e0.
-  assert (Heq:=tposr_sort_kinded (coerce_refl_r H) (refl_equal (Srt_l s'))).
+  assert (Heq:=tposr_sort_kinded (coerce_refl_r H)).
   injection Heq.
   intros.
   rewrite H1.
@@ -59,6 +59,23 @@ Proof.
   elim (tposr_not_kind (coerce_refl_r H)).
   apply tposr_coerce_conv ; apply tposr_eq_tposr ; auto with coc ecoc.
   apply tposr_coerce_conv ; apply tposr_eq_tposr ; auto with coc ecoc.
+Qed.
+
+Lemma tposr_sort_strenghten : forall G s s', G |-- s -> s : s' -> forall e, tposr_wf e -> e |-- s -> s : s'.
+Proof.
+  intros G s s' H.
+  assert(equiv G s s) by eauto with coc ecoc.
+  intros.
+  pose (equiv_sort_strenghten H0 H1).
+  destruct e0 ; destruct_exists.
+  destruct H2.
+  injection H2 ; intros ; subst s.
+  elim (tposr_not_kind H).
+  pose (coerce_refl_l H2).
+  pose (tposr_sort_kinded t).
+  rewrite e0 in t.
+  pose (tposr_sort_kinded H).
+  rewrite e1 ; auto.
 Qed.
 
 Lemma tposr_term_conv_env : forall e t T, tposr_term e t T ->
@@ -682,14 +699,14 @@ Proof.
   apply tposr_coerce_conv.
   apply tposrp_tposr_eq.
   change (Srt_l d) with (lsubst (Pi1_l M1 M2) (Srt_l d)).
-  apply tposrp_substitution with a0 ; auto with coc ecoc.
+  apply substitution_tposrp_tposr with a0 ; auto with coc ecoc.
   eauto with coc ecoc.
   apply tposr_coerce_trans with (lsubst (Pi1_l N1 N2) b0) ; auto with coc.
   apply tposr_coerce_sym.
   apply tposr_coerce_conv.
   apply tposrp_tposr_eq.
   change (Srt_l d) with (lsubst (Pi1_l N1 N2) (Srt_l d)).
-  apply tposrp_substitution with a0 ; auto with coc ecoc.
+  apply substitution_tposrp_tposr with a0 ; auto with coc ecoc.
   apply tposrp_conv with a c ; auto with coc.
   eauto with coc ecoc.
   apply substitution_coerce with a0 ; auto with coc ecoc.
