@@ -28,26 +28,3 @@ Proof.
   intros.
   exact (unique_range_sort H H0 (refl_equal (Srt s)) (refl_equal (Srt s'))).
 Qed.
-(*
-Theorem uniqueness_of_types : forall G t T, G |-= t : T ->
-  forall T', G |-= t : T' ->
-  (exists s, T = Srt s /\ T = T') \/ (exists s', G |-= T >> T' : s').
-Proof.
-  induction t ; simpl ; intros.
-  
-  pose (typ_sort H0).
-  pose (typ_sort H).
-  left ; exists kind ; intuition.
-  rewrite H2 ; rewrite H4 ; auto.
-
-
-  Focus 2.
-  pose (unique_var
-
-  left ; exists kind ; intuition ; auto.
-  pose (typ_sort H0).
-  left ; exists kind ; intuition ; auto.
-  
-  destruct (wf_sort_lift H H0).
-  
-*)

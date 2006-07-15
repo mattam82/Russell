@@ -281,4 +281,40 @@ Corollary unlab_sound_coerce : forall e u v s, e |-- u >-> v : s ->
   (unlab_ctx e) |-= (|u|) >> (|v|) : s.
 Proof (proj2 (proj2 (proj2 (unlab_sound)))).
 
+Require Import Lambda.JRussell.UnicityOfSorting.
 
+Theorem tposr_unique_sort : forall G A B C s s', G |-- A -> B : Srt_l s -> G |-- A -> C : Srt_l s' ->
+  s = s'.
+Proof.
+  intros.
+  pose (unlab_sound_type H).
+  pose (unlab_sound_type H0).
+  pose (jeq_type_l j).
+  pose (jeq_type_l j0).
+  simpl in t, t0.
+  apply (unique_sort t t0).
+Qed.
+
+Theorem tposr_eq_unique_sort : forall G A B C s s', G |-- A ~= B : s -> G |-- A ~= C : s' ->
+  s = s'.
+Proof.
+  simpl ; intros.
+  pose (unlab_sound_eq H).
+  pose (unlab_sound_eq H0).
+  pose (jeq_type_l j).
+  pose (jeq_type_l j0).
+  simpl in t, t0.
+  apply (unique_sort t t0).
+Qed.
+
+Theorem tposr_coerce_unique_sort : forall G A B C s s', G |-- A >-> B : s -> G |-- A >-> C : s' ->
+  s = s'.
+Proof.
+  simpl ; intros.
+  pose (unlab_sound_coerce H).
+  pose (unlab_sound_coerce H0).
+  pose (coerce_sort_l c).
+  pose (coerce_sort_l c0).
+  simpl in t, t0.
+  apply (unique_sort t t0).
+Qed.

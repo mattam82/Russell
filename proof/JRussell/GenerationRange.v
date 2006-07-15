@@ -1,23 +1,29 @@
+Require Import Lambda.Utils.
+Require Import Lambda.Tactics.
+
 Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.Conv_Dec.
 Require Import Lambda.LiftSubst.
+Require Import Lambda.InvLift.
 Require Import Lambda.Env.
 Require Import Lambda.JRussell.Types.
 Require Import Lambda.JRussell.Thinning.
 Require Import Lambda.JRussell.Substitution.
 Require Import Lambda.JRussell.Coercion.
+Require Import Lambda.JRussell.Generation.
+Require Import Lambda.JRussell.Validity.
 Require Import Lambda.JRussell.GenerationNotKind.
 Require Import Lambda.JRussell.GenerationCoerce.
-Require Import Lambda.JRussell.Generation.
+
+Set Implicit Arguments.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
-Set Implicit Arguments.
 
 Lemma type_range_lift : forall n t k s, type_range (lift_rec n t k) = Srt s -> 
   type_range t = Srt s.
@@ -27,6 +33,13 @@ Proof.
   generalize H ; clear H.
   elim (le_gt_dec k n0) ;  simpl ; intros ; try discriminate.
   apply IHt2 with (S k) ; auto.
+Qed.
+
+Lemma type_range_lift_inv : forall n t k s, type_range t = Srt s ->
+  type_range (lift_rec n t k) = Srt s.
+Proof.
+  induction t ; simpl ; intros ;
+  auto with coc core arith datatypes ; try discriminate.
 Qed.
 
 Lemma type_range_subst : forall t u n s, type_range (subst_rec t u n) = Srt s ->
@@ -55,11 +68,14 @@ Lemma term_type_range_kinded : forall e t T, e |-= t : T ->
   forall s, type_range t = Srt s -> T = Srt kind. 
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  unfold lift in H1 ; pose (type_range_lift _ _  _ H1).
+  rewrite (IHtyp1 _ e0) ; auto.
   
   apply IHtyp2 with s ; auto.
   
-  rewrite (IHtyp1 _ H3) in H1.
-  elim typ_not_kind2 with e (Srt s) ; auto.
+  rewrite (IHtyp _ H1) in H0.
+  elim (typ_not_kind (coerce_sort_l H0)) ; auto.
 Qed.
 
 Lemma term_type_range_not_kind : forall e t T, e |-= t : T ->
@@ -67,10 +83,12 @@ Lemma term_type_range_not_kind : forall e t T, e |-= t : T ->
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
   
-  inversion H0.
+  inversion H.
   unfold not ; intros ; discriminate.
-  inversion H0.
+  inversion H.
   unfold not ; intros ; discriminate.
+  unfold lift in H1 ; pose (type_range_lift _ _ _ H1).
+  apply (IHtyp1 _ e0).
 Qed.
 
 Lemma conv_dom : 
@@ -98,30 +116,64 @@ Proof.
   assumption.
 Qed.
 
+Lemma eq_dom : 
+  forall e A B s, e |-= A = B : Srt s -> 
+  forall s', 
+  (type_range A = Srt s' -> type_range B = Srt s').
+Proof.
+  intros.
+  pose (term_type_range_kinded (jeq_type_l H) H0).
+  inversion e0.
+  rewrite H2 in H.
+  pose (sort_of_kinded (jeq_type_l H1)).
+  pose (sort_of_kinded (jeq_type_r H1)).
+  pose (eq_conv H).
+  apply (@conv_dom _ _ c s' i i0 H0).
+Qed.
+
 Lemma type_range_sub : forall e T U s, e |-= T >> U : s ->
-  forall s0, (type_range U = Srt s0 -> type_range T = Srt s0).
+  forall s0, (type_range U = Srt s0 -> type_range T = Srt s0) /\
+  (type_range T = Srt s0 -> type_range U = Srt s0).
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+  
+  split ; intros.
+  apply (eq_dom (jeq_sym H) H0).
+  apply (eq_dom H H0).
 
+  destruct (IHcoerce s0).
+  intuition.
+  unfold lift in H3.
+  pose (type_range_lift _ _ _ H3).
+  pose (H1 e0).
+  unfold lift.
+  apply (type_range_lift_inv) ; auto.
+
+
+  unfold lift in H3.
+  pose (type_range_lift _ _ _ H3).
+  pose (H2 e0).
+  unfold lift.
+  apply (type_range_lift_inv) ; auto.
+
+  split ; intros ; discriminate.
+
+  split ; intros ; try discriminate.
   pose (coerce_sort_r H).
   
-  pose (term_type_range_kinded t H1).
+  pose (term_type_range_kinded t H3).
   discriminate.
 
-  pose (term_type_range_kinded H2 H6).
-  inversion e0.
-  rewrite H8 in H.
-  rewrite H8 in H0.
-  rewrite H8 in H1.
-  rewrite H8 in H2.
-  pose (sort_of_kinded H).
-  pose (sort_of_kinded H0).
-  pose (sort_of_kinded H1).
-  pose (sort_of_kinded H7).
-  pose (@conv_dom _ _ (sym_conv _ _ H5) s0 i2 i1).
-  pose (e1 H6).
-  pose (IHcoerce s0 e2).
-  apply (@conv_dom _ _  (sym_conv _ _ H3) s0 i0 i) ; auto.
+  split ; intros ; try discriminate.
+  pose (term_type_range_kinded H0 H3).
+  discriminate.
+
+  destruct (IHcoerce s0).
+  intuition.
+
+  destruct (IHcoerce1 s0).
+  destruct (IHcoerce2 s0).
+  split ; intros ; auto.
 Qed.
 
 Lemma var_sort_range_item_aux : forall e t T, e |-= t : T ->
@@ -130,27 +182,42 @@ Lemma var_sort_range_item_aux : forall e t T, e |-= t : T ->
   exists T', item_lift T' e n /\ type_range T' = Srt s.
 Proof.
   induction 1 ; simpl ; intros ; try discriminate ; auto with coc.
+
+  induction T ; simpl ; simpl in H1 ; try discriminate.
+  exists (Srt s1).
+  split.
+  exists (Srt s1) ; simpl ; auto.
+  inversion H0.
+  auto with coc.
+  simpl ; auto.
+
+  inversion H0.
+  subst.
+  exists (lift 1 (Prod T1 T2)).
+  split ; simpl ; auto.
+  exists (Prod T1 T2) ; auto with coc.
+
+  destruct t ; simpl in H1 ; try discriminate.
+  unfold lift in H2.
+  pose (type_range_lift _ _ _ H2).
+  destruct n ; simpl.
   inversion H1.
-  
-  induction T ; simpl ; simpl in H2 ; try discriminate.
-  
-  rewrite H2 in H0.
-  rewrite <- H4 ; auto.
-  destruct H0.
-  assert(x = Srt s).
-  apply (inv_lift_sort) with (S n) ; auto.
-  inversion H2.
-  exists (Srt s).
-  simpl ; intuition ; auto.
-  exists (Srt s) ; unfold lift ; simpl ; auto.
-  rewrite H5 in H3 ; assumption.
-  
+  pose (IHtyp1 _ (refl_equal (Ref n0)) _ e0).
+  destruct e1.
+  exists (lift 1 x).
+  intuition ; auto with coc.
+  destruct H4.
   inversion H1.
-  exists (Prod T1 T2).
-  intuition ; auto.
-  rewrite <- H5 ; assumption.
-  
-  exact (IHtyp1 n H3 s0 (type_range_sub H2 H4)).
+  subst.
+  exists x0.
+  pattern (lift (S (S n)) x0).
+  rewrite simpl_lift.
+  auto.
+  apply item_tl ; auto.
+  unfold lift; apply type_range_lift_inv ; auto.
+
+  destruct (type_range_sub H0 s0).
+  exact (IHtyp n H1 s0 (H3 H2)).
 Qed. 
 
 Lemma var_sort_range_item : forall e n T, e |-= Ref n : T ->
@@ -189,23 +256,34 @@ Lemma sort_of_app_range_aux : forall e t Ts, e |-= t : Ts ->
 Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
-  inversion H1.
 
-  induction (type_range_subst _ _ _ H2).
-  rewrite <- H5.
-  exists V.
-  exists Ur.
-  rewrite <- H4.
-  split ; auto.
+  unfold lift in H1 ; pose (inv_lift_app _ _ _ _ H1).
+  destruct_exists.
+  subst.
+
+  destruct(IHtyp1 _ _ (refl_equal (App x x0)) s0).
+  unfold lift in H2 ; apply (type_range_lift _ _ _ H2).
+  destruct_exists.
+  exists (lift_rec 1 x1 0).
+  exists (lift_rec 1 x2 1).
+  split ; auto with coc.
+  eapply type_weak_weak with e U s e ; eauto with coc.
+  split.
+  change (Prod (lift_rec 1 x1 0) (lift_rec 1 x2 1)) with
+  (lift_rec 1 (Prod x1 x2) 0).
+  eapply type_weak_weak with e U s e ; eauto with coc.
+
+  intuition.
+  left ; eapply type_range_lift_inv ; eauto.
+  right ; eapply type_range_lift_inv ; eauto.
   
-  exists V ; auto.
-  exists Ur.
-  rewrite <- H5.
-  rewrite <- H4.
-  split ; auto.
-  
-  pose (type_range_sub H2 H4).
-  exact (IHtyp1 _ _ H3 _ e0).
+  inversion H1 ; subst.
+  exists V ; exists Ur ; intuition.
+  induction (type_range_subst _ _ _ H2) ; intuition.
+
+  destruct (@type_range_sub _ _ _ _ H0 s0).
+  pose (H3 H2).
+  exact (IHtyp _ _ H1 _ e0).
 Qed.
 
 Lemma sort_of_app_range : forall e M N Ts, e |-= App M N : Ts ->
@@ -226,15 +304,29 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  exists s1 ; exists s2.
-  exists U.
-  inversion H2.
-  rewrite <- H5 ; rewrite <- H6.
-  intuition.
+  unfold lift in H1 ; pose (inv_lift_abs _ _ _ _ H1).
+  destruct_exists.
+  subst.
 
-  apply (IHtyp1) ; auto.
+  destruct(IHtyp1 _ _ (refl_equal (Abs x x0)) s0).
+  unfold lift in H2 ; apply (type_range_lift _ _ _ H2).
+  destruct_exists.
+  exists x1 ; exists x2 ; exists (lift_rec 1 x3 1).
+  intuition ; auto with coc.
+  change (Srt x1) with (lift_rec 1 (Srt x1) 0).
+  eapply type_weak_weak with e U s e ; eauto with coc.
+  eapply type_weak_weak with e U s (x :: e) ; eauto with coc.
+  change (Srt x2) with (lift_rec 1 (Srt x2) 1).
+  eapply type_weak_weak with e U s (x :: e) ; eauto with coc.
+
+  eapply type_range_lift_inv ; eauto.
   
-  apply (type_range_sub H2 H4).
+  inversion H2 ; subst.
+  exists s1 ; exists s2 ; exists U ; intuition.
+
+  destruct (@type_range_sub _ _ _ _ H0 s0).
+  pose (H3 H2).
+  exact (IHtyp _ _ H1 _ e0).
 Qed.
 
 Lemma sort_of_abs_range : forall e M N Ts, e |-= Abs M N : Ts ->
@@ -254,8 +346,15 @@ Proof.
   auto with coc core arith datatypes ; try discriminate.
 
   unfold not ; intros.
-  pose (type_range_sub H2 H4).
-  pose (IHtyp1 _ _ _ H3 s0).
+  unfold lift in H2 ; pose (type_range_lift _ _ _ H2).
+  pose (inv_lift_pair _ _ _ _ _ H1) ; destruct_exists.
+  subst.
+  destruct (IHtyp1 _ _ _ (refl_equal (Pair a b c)) s0) ; auto.
+
+  pose (IHtyp _ _ _ H1 s0).
+  red ; intros.
+  destruct (type_range_sub H0 s0).
+  pose (H3 H2).
   contradiction.
 Qed.
 
@@ -287,7 +386,18 @@ Lemma sort_of_sum_aux : forall e T Ts, e |-= T : Ts ->
 Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
-  
+
+  pose (inv_lift_sum _ _ _ _ H1) ; destruct_exists.
+  subst.
+  destruct (IHtyp1 x x0) ; auto.
+  split ; intros; auto with coc.
+  red ; intros.
+  pose (type_range_lift _ _ _ H4).
+  pose (H2 s0) ; auto.
+  red ; intros.
+  pose (type_range_lift _ _ _ H4).
+  pose (H3 s0) ; auto.
+
   pose (sum_sort_prop H1).
   destruct a.
   destruct H4.
@@ -316,14 +426,25 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  induction (type_sorted H) ; try discriminate.
-  induction H1.
-  induction (sort_of_sum H1).
-  apply H2 ; auto.
+  pose (inv_lift_pi1 _ _ _ H1) ; destruct_exists.
+  red ; intros.
+  subst.
+  unfold lift in H4 ; pose (type_range_lift _ _ _ H4).
+  pose (IHtyp1 _ (refl_equal (Pi1 x)) s0).
+  auto.
   
   red ; intros.
-  pose (type_range_sub H2 H4).
-  apply (IHtyp1 _ H3 s0 e0).
+  inversion H0.
+  subst.
+  induction (validity_typ H) ; try discriminate.
+  induction H2.
+  induction (sort_of_sum H2).
+  elim (H3 s) ; auto.
+  
+  red ; intros.
+  destruct (type_range_sub H0 s0).
+  pose (H3 H2).
+  apply (IHtyp _ H1 s0 e0).
 Qed.
 
 Lemma sort_of_pi1_range :  forall e t Ts, e |-= Pi1 t : Ts ->
@@ -340,18 +461,29 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  induction (type_sorted H) ; try discriminate.
-  induction H1.
-  induction (sort_of_sum H1).
+  pose (inv_lift_pi2 _ _ _ H1) ; destruct_exists.
   red ; intros.
+  subst.
+  unfold lift in H4 ; pose (type_range_lift _ _ _ H4).
+  pose (IHtyp1 _ (refl_equal (Pi2 x)) s0).
+  auto.
   
-  induction (type_range_subst _ _ _ H4).
-  simpl in H5 ; discriminate.
-  pose (H3 s);contradiction.
-
   red ; intros.
-  pose (type_range_sub H2 H4).
-  apply (IHtyp1 u H3 s0 e0) ; auto.
+  inversion H0.
+  subst.
+  induction (validity_typ H) ; try discriminate.
+  induction H2.
+  induction (sort_of_sum H2).
+  unfold subst in H1.
+  destruct (type_range_subst _ _ _ H1).
+  discriminate.
+
+  elim (H4 s) ; auto.
+  
+  red ; intros.
+  destruct (type_range_sub H0 s0).
+  pose (H3 H2).
+  apply (IHtyp _ H1 s0 e0).
 Qed.
 
 Lemma sort_of_pi2_range :  forall e t Ts, e |-= Pi2 t : Ts ->
@@ -361,7 +493,7 @@ Proof.
   apply sort_of_pi2_range_aux with e (Pi2 t) t  ; auto ; auto.
 Qed.
 
-Lemma type_range_subst2 : forall t u n s, type_range t = Srt s -> 
+Lemma type_range_subst_inv : forall t u n s, type_range t = Srt s -> 
   type_range (subst_rec u t n) = Srt s.
 Proof.
   induction t ; simpl ; intros ;

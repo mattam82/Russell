@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage[latin1]{inputenc}
 \usepackage{xspace} % To get the right spacings in front of : and so on
 \usepackage[english]{babel}
@@ -7,13 +7,27 @@
 \usepackage{ifthen}
 \usepackage{coqdoc}
 \usepackage{bussproofs}
-\usepackage{pgf,pgfarrows,pgfnodes}
 \usepackage{amsmath}
 %\usepackage{concmath}
 \usepackage{url}
 \usepackage{fullpage}
+\usepackage{qsymbols}
+\usepackage{coqdoc}
 
+\newboolean{defineTheoremFr}
+\newboolean{defineTheoremEn}
+\setboolean{defineTheoremFr}{false}
+\setboolean{defineTheoremEn}{false}
+\input{mathenv}
+\input{typing-macros}
+\EnableBpAbbreviations
+\def\TPOSR{{\sc tposr}\xspace}
 \def\tactic#1{\texttt{#1}}
+
+\def\coqmodule#1{\texttt{#1}}
+
+\input{typing-decl}
+\input{subtyping-decl}
 
 \title{\Russell's Metatheoretic Study - Notes}
 \date{\today}
@@ -61,24 +75,309 @@ several other technical difficulties including:
 
 \end{abstract}
 
-- Works only with $``>=$ coq-v8.2.
+% - Works only with $``>=$ coq-v8.2.
 
-\begin{itemize}
-\item Work on a dependency analyser for terms.
-\item Problem of mutual induction, conjunction of goals, generating the
-  principle and applying it.
-\item Problem of induction on partially instanciated goals, see McBride.
-\item Induction on depths:
-  \begin{itemize}
-  \item Adding a parameter on judgements.
-  \item Adding a parameter and going in \Set.
-  \end{itemize}
-\item Useful tactics: \tactic{subst}, \tactic{eauto}, \tactic{generalize dependent}.
-\item Reusability of proofs (multiple systems).
-\end{itemize}
+% Some topics of interest:
+% \begin{itemize}
+% \item Work on a dependency analyser for terms.
+% \item Problem of mutual induction, conjunction of goals, generating the
+%   principle and applying it.
+% \item Problem of induction on partially instanciated goals, see McBride.
+% \item Induction on depths:
+%   \begin{itemize}
+%   \item Adding a parameter on judgements.
+%   \item Adding a parameter and going in \Set.
+%   \end{itemize}
+% \item Useful tactics: \tactic{subst}, \tactic{eauto}, \tactic{generalize dependent}.
+% \item Reusability of proofs (multiple systems).
+% \end{itemize}
+
+\section*{Organization of the \Coq proof}
+The proof is developed in the \coqmodule{Lambda} namespace. At the root
+we have definition of the term language \coqmodule{Lambda.Terms} which
+is a lambda calculus with dependent products, sums and a distinguished
+subset type with no introduction or elimination constructs. 
+In \coqmodule{LiftSubst} we have lemmas on substitution and lifting.
+The definitions and proofs about
+reduction and conversion including Church-Rosser for $\beta\pi$ reduction
+are in the remaining modules.
+
+The first type system is \coqmodule{Lambda.CCSum}, the Calculus of
+Constructions enriched with dependent sums. All the metatheory up to
+Subject Reduction and Unicity has been done for this system, simply
+adapting the work of Bruno Barras.
+
+Then we have two versions of the \Russell type system.
+The \coqmodule{Lambda.JRussell} directory contains a definition of
+Russell with judgemental equality and a coercion relation with
+transitivity and symetry built-in. It is the most declarative, and thus
+the clearest presentation of \Russell, however we can't prove Subject
+Reduction for this system directly. We proved basic metatheory for this
+system up to validity.
+
+The modules in \coqmodule{Lambda.Russell} define a more algorithmical
+version of the \Russell type system. This version uses and untyped
+conversion relation and an already refined coercion algorithm (without
+transitivity).
+
+\section*{The proof of Subject Reduction}
+Directly proving Subject Reduction for our system is not possible
+because of the enriched equivalence we use. Indeed, we use a typed
+equivalence relation, hence we cannot use the same style of proof as the
+one for the Calculus of Constructions. In the later case, when proving
+subject reduction at the application case, with reduction being $\beta$, we have:
+\begin{prooftree}
+  \AXC{$`G \type (\lambda x : A.M) : \Pi x : B.C$}
+  \AXC{$`G \type N : B$}
+  \BIC{$`G \type (\lambda x : A.M)~N : C[N/x]$}
+\end{prooftree}
+
+\def\redonebp{"->"_{\beta\pi}}
+\def\redbp{"->>"_{\beta\pi}}
+\def\redpbp{"->"_{\beta\pi}^+}
+
+%Hence by induction hypothesis we get:
+%$`A t', (\lambda x : A. M) \redonebp t' "=>" `G \type t' : \Pi x : B.C$ and
+%$`A N', N \redonebp N' "=>" `G \type N' : B$.
+We need to prove $`G \type M[N/x] : C[N/x]$.
+
+By inversion for dependent products, we have $(s, s') `: \PTSaxioms$ so that
+\begin{eqnarray*}
+  `G & \type & A : s \\
+  `G, x : A & \type & D : s' \\
+  `G, x : A & \type & M : D
+\end{eqnarray*}
+and $\Pi x : B.C \eqbp \Pi x : A.D$ ($`G \type \Pi x : B.C = \Pi x : A.D
+: s'$ for typed equivalence). By the Church-Rosser theorem for $\eqbp$ we
+get $A \eqbp B$ and $C \eqbp D$. Hence we have $`G \type N : A$ and $`G, x
+: A \type M : C$ by conversion. By substitution we can then derive
+$`G \type M[N/x] : C[N/x]$.
+
+\begin{paragraph}{}
+What goes wrong in the typed version ? We would need to prove the
+following lemma (injectivity of pi):
+\[`G \type \Pi x : A.B = \Pi x : C.D : s' "=>" `E s, 
+`G \type A = C : s `^ `G, x : A \type B = D : s `^ (s, s') `: \PTSaxioms\] However, this is not
+provable as we can use a transitivity rule in the definition of typed
+equivalence. Here the premise can have the form
+$`G \type \Pi x : A.B = X_0 `^ \ldots `^ X_n = \Pi x : C.D : s$ and we
+can't say anything about the $X$'s yet, in particular we cannot prove
+that they reduce to products.
+Hence we need to devise a new, equivalent system for which subject
+reduction is provable. We can do that using a typed parallel one step
+reduction relation (\TPOSR) on \emph{labelled} terms which generates the typed
+equivalence relation on the original terms. 
+The formalization as a reduction relation, along with its proof of
+Church-Rosser eliminates transitivity and permits to prove Uniqueness of
+Types and Injectivity of products (and sums in our case). It is then possible
+to prove Subject Reduction for this system and transpose this result to
+the judgemental equality system by virtue of the equivalence of the two
+systems.
+\end{paragraph}
 
 
 
+\subsection*{Proof sketch}
+The technique of using \TPOSR is due to Robin Adams work on proving the
+equivalence of judgemental equality (or typed equivalence) and untyped
+conversion presentations of Pure Type Systems \cite{adams:PTSEQ}. We
+extended this technique to an enriched equivalence relation which we
+call coercion (denoted by $\sub$). Coercion includes the usual equivalence relation
+generated by the reduction rules of the system ($\beta$ and $\pi$ in our
+case) and extends it with custom equality rules. In the \Russell system,
+we added the following rules:
+
+\begin{center}
+\SubProof\DP
+\vspace{1em}
+
+\SubSub\DP
+\end{center}
+
+The following module is the definition of the \Russell system with
+judgemental equality in \Coq.
+
+\input{JRussell.Types.v}
+
+
+\def\lapp#1#2{\text{app}_{#1}(#2)}
+\def\lpi#1#2{\text{pi}_{#1}(#2)}
+\def\rel{\mathcal{R}}
+
+
+
+The proof works as follows: 
+
+\subsubsection*{\TPOSR system}
+We define a \TPOSR system on labelled terms. Here follows the
+corresponding \Coq definitions (\coqmodule{Lambda.TPOSR.Types}).
+
+\vspace{1em}
+
+\input{TPOSR.Types.v}
+
+We add labels at applications and projections. 
+Applications are annoted with the codomain of their function, for example, in
+$\lapp{(x)B}{M~N}$, we suppose that $M$ can be typed with a product
+type of the form $\Pi x : \_. B$. Projections are annotated with their
+full domain, e.g in $\lpi{`S x : A.B}{t}$, we suppose that $t$ can be
+typed with the sum type $`S x : A.B$. The reduction associated with
+labelled terms is the same as for unlabelled ones, plus reduction on
+labels. On the other hand, in the \TPOSR relation, we allow coercion
+of type labels at will. Indeed an application of type $B$ can be seen
+as an object of type $B'$ if they are coercible. 
+
+We prove the basic metatheory of the system, including thinning
+ (\coqmodule{Lambda.TPOSR.Thinning}), substituion
+(\coqmodule{Lambda.TPOSR.Substitution}) and
+substituion of \TPOSR derivations
+(\coqmodule{Lambda.TPOSR.SubstitutionTPOSR}). Most proofs use mutual
+induction on the typing, well-formedness of contexts, equivalence
+relation and coercion relation derivations and are
+straightforward. 
+However, much care must be taken in the staging of
+proofs. We denote by $`G \type J$ any of the four judgements and use
+$\rel$ to range over $"->"$ (reduction), $\simeq$ (equivalence) and $\sub$ (coercion).
+We were able to complete these proofs by following this order:
+\begin{enumerate}
+\item First, proving left reflexivity:
+  If $`G \type t "->" t' : T$ then $`G \type t "->" t : T$
+\item Then a preliminary form of context coercion:
+  If $`G, x : A, `D \type J$ and $`G \type A \sub B : s$ 
+  with $`G \type A "->" A : s$ and $`G \type B "->" B : s$ then
+  $`G, x : B, `D \type J$.
+\item Then substitution: if $`G, x : U, `D \type J$ and $`G \type u
+  "->" u : U$ then $`G, `D[u/x] \type J[u/x]$.
+\item Then a preliminary form of substitution of \TPOSR derivations:
+  If $`G, x : U, `D \type t~\rel~t' : T$ and $`G \type u "->" u' : U$
+  with $`G \type u' "->" u' : U$ 
+  then $`G, `D[u/x] \type t[u/x]~\rel~t'[u'/x] : T[u/x]$.
+\item Then we can prove right reflexivity:
+  If $`G \type t~\rel~t' : T$ then $`G \type t'~\rel~t' : T$
+\end{enumerate}
+   
+After proving right reflexivity we can remove the side conditions in the
+statements of context coercion and substitution.
+
+Once done with this we can prove generation lemmas for the \TPOSR judgement.
+They are used to prove validity: if $`G \type t "->" t : T$ then $T = s$
+for $s `: \PTSsorts$ or there exists $s `: \PTSsorts$ so that $G \type T
+"->" T : s$. Once we have validity we just need to prove we have
+functionality of types to get uniqueness of types. Functionality says
+that types with equivalent components are equivalent. For example,
+functionality of pi is the property:
+if $`G \type A \simeq B : s1$ and $`G, x : A \type C \simeq D : s2$ then
+$`G \type \Pi x : A.C \simeq \Pi x : B.D : s2$.
+
+We can then prove uniqueness of types: $`G \type t "->"~? : T$ and $`G
+\type t "->"~? : U$ then $T = U = \Type$ or there exists a sort $s$ so
+that $`G \type T \sub U : s$. This is were labels are needed, indeed at
+the application case, in the original system we have the derivations:
+
+\begin{prooftree}
+  \AXC{$`G \type M : \Pi x : A. C$}
+  \AXC{$`G \type N : A$}
+  \BIC{$`G \type M~N "->"~? : C[N/x]$}
+\end{prooftree}
+\begin{prooftree}
+  \AXC{$`G \type M : \Pi x : B. D$}
+  \AXC{$`G \type N : B$}
+  \BIC{$`G \type M~N "->"~? : D[N/x]$}
+\end{prooftree}
+
+By induction hypothesis we have $`G \type \Pi x : A.C \sub \Pi x : B.D :
+s$ for some s. However we cannot deduce yet that it implies $`G, x : B
+\type C \sub D : s$, as this requires injectivity of products which we
+can't prove, just like for the subject reduction proof. If we add labels
+we have:
+
+\begin{prooftree}
+  \AXC{$`G \type M : \Pi x : A. C$}
+  \AXC{$`G \type N : A$}
+  \BIC{$`G \type \lapp{(x)E}{M~N} "->"~? : C[N/x]$}
+\end{prooftree}
+\begin{prooftree}
+  \AXC{$`G \type M : \Pi x : B. D$}
+  \AXC{$`G \type N : B$}
+  \BIC{$`G \type \lapp{(x)E}{M~N} "->"~? : D[N/x]$}
+\end{prooftree}
+
+Generation gives us the addidional hypothesis that $`G \type E[N/x] \sub
+C[N/x] : s$ and $`G \type E[N/x] \sub D[N/x]$, hence we are able to
+complete the proof.
+The same technique permits to prove uniqueness of types for projections.
+
+Now that we have uniqueness of types, we can prove a Church-Rosser
+property for \TPOSR:
+If $`G \type t "->" u : U$ and $`G \type t "->" v : V$ then there exists
+$t'$ so that
+\begin{eqnarray*}
+  `G \type u "->" t' : U \\
+  `G \type u "->" t' : V \\
+  `G \type v "->" t' : U \\
+  `G \type v "->" t' : V
+\end{eqnarray*}
+
+The proof is by induction on the sum of the depth of the two derivations 
+(\coqmodule{Lambda.TPOSR.\-ChurchRosserDepth}).
+
+As a corrolary we get (\coqmodule{Lambda.TPOSR.ChurchRosser}):
+If $`G \type t \simeq u : s$ then there exists $x$ so that $`G \type t
+\redpbp x : s$ and $`G \type u \redpbp x : s$.
+
+It is then easy to prove injectivity of products and sums using a
+similar argument as the one for untyped conversion : if $`G \type \Pi x :
+A. C \simeq \Pi x : B. D : s$ then there exists $x$, $`G \type \Pi x : A. C
+\redpbp x : s$ and $`G \type \Pi x : B.D \redpbp x : s$. So we can
+derive that $x `= \Pi x : E.F$ for some $E, F$ and there exists $s'$
+so that $`G \type A \simeq E \simeq C : s1$, and $`G, x : B \type C
+\simeq F \simeq D : s$.
+
+The story doesn't ends here for injectivity as we have enriched the
+equivalence with a coercion system, so we need to prove a similar
+property for this system. Again this is not a trivial matter because we
+have a transitivity rule in this system which causes the same problem as
+for the usual equivalence. What we need to do is prove elimination of
+transitivity for the coercion system. The proof is again by induction on
+the depths of the two coercion derivations from which we build one 
+(\coqmodule{Lambda.TPOSR.CoercionDepth}).
+Then we are able to prove injectivity of products and sums with respect
+to coercion (\coqmodule{Lambda.TPOSR.Injectivity}):
+If $`G \type \Pi x : A. C \sub \Pi x : B. D : s$ then there exists $s'$
+so that $`G \type B \sub C : s'$ and $`G, x : B \type C \sub D : s$.
+
+Once we have injectivity for our type constructors we can easily prove
+subject reduction for the \TPOSR system.
+
+\subsubsection*{Translation to and from \Russell}
+To prove the equivalence of the \TPOSR system and the original one, we
+need to show properties on the unlabelling of terms (denoted by the
+$|\_|$ function) (\coqmodule{Lambda.TPOSR.Unlab}). In this module, apart from easy
+properties of commutation of substitution, lifting and unlabelling,
+we show that labelled reductions entail reductions on the unlabelled terms and vice-versa:
+If $|t'| \redonebp u$, then there exists $u'$, $|u'| = u$ and $t'
+\redonebp u'$. 
+
+Then the easy way, from \TPOSR to \Russell
+(\coqmodule{Lambda.Meta.TPOSR\_JRussell}, \coqmodule{Lambda.Meta.\-TPOSR\_Russell}), is proved by a simple induction
+on derivations:
+If $`G \type t "->" t' : T$ then $|`G| \type |t| : |T|$ and $|`G| \type |t'| : |T|$.
+
+The other way needs another lemma: stated simply, we need to show
+that if two typable labelled terms have syntaxically equal translates, then they
+have a common reduct and coercible types
+(\coqmodule{Lambda.TPOSR.UnlabConv}). Once armed with this result
+and its extension to contexts we can prove that unlabelling is complete
+with respect to the original system (\coqmodule{Lambda.Meta.Russell\_TPOSR}), that is:
+If $`G \type t : T$ then there exists $`G'$, $t'$ and $T'$ so that
+$|`G'| = `G$, $|t'| = t$ and $T' = |T|$, with $|`G'| \type |t'| : |T'|$.
+
+It is then possible to prove subject reduction for the original system:
+If $`G \type t : T$ and $t \redonebp u$ then $`G \type u : T$ (\coqmodule{Lambda.Meta.SubjectReduction}).
+
+First we use the last lemma to go in \TPOSR, then we translate the
+unlabelled reduction ta labelled one: $t' \redonebp u'$ with $|u'| = u$.
+We need just apply subject reduction for \TPOSR and go back to \Russell.
 
 \bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
@@ -92,6 +391,6 @@ cparent,demons,demons2,demons3}
 
 %%% Local Variables: 
 %%% mode: latex
-%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:../figures:\" ${pdfx}latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:../figures:../../proof/latex:\" ${pdfx}latex"
 %%% TeX-master: t
 %%% End: 

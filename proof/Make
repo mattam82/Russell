@@ -6,6 +6,7 @@ MyList.v
 ListType.v
 Terms.v
 LiftSubst.v
+InvLift.v
 Reduction.v
 Conv.v
 Conv_Dec.v
@@ -19,25 +20,25 @@ CCSum/TypeCase.v
 CCSum/SubjectReduction.v
 CCSum/Unicity.v
 # Russell
-Russell/Types.v
-Russell/Coercion.v
-Russell/Inversion.v
-Russell/Thinning.v
-Russell/Substitution.v
-Russell/GenerationNotKind.v
-Russell/GenerationCoerce.v
-Russell/Generation.v
-Russell/GenerationRange.v
-Russell/UnicityOfSortingRange.v
-Russell/UnicityOfSorting.v
-Russell/Axioms.v
-Russell/Depth.v
-Russell/Narrowing.v
-Russell/Transitivity.v
-Russell/Inversion.v
-Russell/SubjectReduction.v
-Russell/TypeCase.v
-Russell/Unicity.v
+#Russell/Types.v
+#Russell/Coercion.v
+#Russell/Inversion.v
+#Russell/Thinning.v
+#Russell/Substitution.v
+#Russell/GenerationNotKind.v
+#Russell/GenerationCoerce.v
+#Russell/Generation.v
+#Russell/GenerationRange.v
+#Russell/UnicityOfSortingRange.v
+#Russell/UnicityOfSorting.v
+#Russell/Axioms.v
+#Russell/Depth.v
+#Russell/Narrowing.v
+#Russell/Transitivity.v
+#Russell/Inversion.v
+#Russell/SubjectReduction.v
+#Russell/TypeCase.v
+#Russell/Unicity.v
 # JRussell
 JRussell/Types.v
 JRussell/Freevars.v
@@ -49,6 +50,11 @@ JRussell/Substitution.v
 JRussell/PreFunctionality.v
 JRussell/Generation.v
 JRussell/Validity.v
+JRussell/GenerationNotKind.v
+JRussell/GenerationCoerce.v
+JRussell/GenerationRange.v
+JRussell/UnicityOfSortingRange.v
+JRussell/UnicityOfSorting.v
 # TPOSR
 TPOSR/Terms.v
 TPOSR/LiftSubst.v
@@ -89,9 +95,9 @@ TPOSR/SubjectReduction.v
 TPOSR/TPOSR_trans.v
 TPOSR/UnlabConv.v
 # Meta
-Meta/JRussell_Russell.v
+#Meta/JRussell_Russell.v
 Meta/TPOSR_JRussell.v
-Meta/TPOSR_Russell.v
-Meta/Russell_TPOSR.v
-Meta/Russell_JRussell.v
+#Meta/TPOSR_Russell.v
+#Meta/Russell_TPOSR.v
+#Meta/Russell_JRussell.v
 Meta/SubjectReduction.v

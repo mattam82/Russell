@@ -81,34 +81,3 @@ Proof.
   apply type_subset ; auto with coc.
   destruct (tposr_russell H2) ; auto.
 Qed.
-
-Theorem tposr_unique_sort : forall G A B C s s', G |-- A -> B : Srt_l s -> G |-- A -> C : Srt_l s' ->
-  s = s'.
-Proof.
-  intros.
-  destruct (tposr_russell H).
-  destruct (tposr_russell H0).
-  simpl in H1 ; simpl in H3.
-  apply (unique_sort H1 H3).
-Qed.
-
-Theorem tposr_eq_unique_sort : forall G A B C s s', G |-- A ~= B : s -> G |-- A ~= C : s' ->
-  s = s'.
-Proof.
-  simpl ; intros.
-
-  destruct (tposr_eq_russell H).
-  destruct (tposr_eq_russell H0).
-  apply (unique_sort H1 H3).
-Qed.
-
-Theorem tposr_coerce_unique_sort : forall G A B C s s', G |-- A >-> B : s -> G |-- A >-> C : s' ->
-  s = s'.
-Proof.
-  simpl ; intros.
-
-  destruct (tposr_coerce_russell H).
-  destruct (tposr_coerce_russell H0).
-  apply (unique_sort H1 H3).
-Qed.
-

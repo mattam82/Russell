@@ -1,3 +1,5 @@
+Require Import Lambda.Tactics.
+
 Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
@@ -9,6 +11,7 @@ Require Import Lambda.JRussell.Thinning.
 Require Import Lambda.JRussell.Substitution.
 Require Import Lambda.JRussell.Coercion.
 Require Import Lambda.JRussell.GenerationNotKind.
+Require Import Lambda.JRussell.Validity.
 
 Implicit Types i k m n p : nat.
 Implicit Type s : sort.
@@ -57,6 +60,12 @@ Proof.
   inversion H2.
 Qed.
 
+Lemma is_low_lift : forall t, is_low t -> forall n k, is_low (lift_rec n t k).
+Proof.
+  induction t ; simpl ; intros ; auto with coc.
+  elim H.
+Qed.
+
 Lemma kind_is_prod_aux : forall G t T, G |-= t : T -> 
   T = Srt kind -> is_low t.
 Proof.
@@ -65,11 +74,16 @@ Proof.
   unfold is_prop ; intuition.
   unfold is_prop ; intuition.
   
-  induction (wf_sort_lift H H0).
-  elim (typ_not_kind H2) ; auto.
+  pose (lift_eq_sort _ _ H0).
+  rewrite e0 in H.
+  elim (type_has_no_kind H).
+
+  unfold lift ; apply is_low_lift.
+  pose (lift_eq_sort _ _ H1).
+  apply (IHtyp1 e0).
 
   pose (subst_to_sort _ H1 (typ_not_kind H)).
-
+  
   pose (type_no_kind_type H0 (or_introl _ (refl_equal (Prod V Ur)))).
   simpl in t.
   destruct t.
@@ -96,9 +110,9 @@ Proof.
   destruct t0.
   contradiction.
   
-  rewrite H3 in H2.
-  pose (coerce_sort_r H2).
-  elim (typ_not_kind t0).
+  rewrite H1 in H0.
+  destruct (validity_coerce H0).
+  elim (typ_not_kind H3).
   auto.
 Qed.
 
@@ -128,6 +142,28 @@ Proof.
   pose (conv_sort_prod s T1 T2).
   pose (sym_conv _ _ H0).
   contradiction.
+Qed.
+
+Lemma typ_sort : forall G s T, G |-= (Srt s) : T -> is_prop s /\ T = (Srt kind).
+Proof.
+  intros G s T H.
+  induction_with_subterm (Srt s) H ; intuition ; try discriminate.
+
+  injection y ; intro ; rewrite <- H ; unfold is_prop ; intuition.
+
+  injection y ; intro ; rewrite <- H ; unfold is_prop ; intuition.
+
+  pose (lift_eq_sort _ _ y).
+  induction (IHtyp1 e0).
+  auto.
+
+  pose (lift_eq_sort _ _ y).
+  induction (IHtyp1 e0).
+  subst T ; auto.
+
+  rewrite H3 in H0.
+  pose (coerce_sort_l H0).
+  elim (typ_not_kind t) ; auto.
 Qed.
 
 Lemma coerce_sort_l_in_kind : forall G A s s', G |-= Srt s >> A : s' -> s' = kind.
@@ -164,45 +200,75 @@ Proof.
   auto.
 Qed.
 
-Lemma coerce_propset_l_aux : forall G Ts A s', G |-= Ts >> A : s' ->
-  forall s, Ts = Srt s ->  s' = kind -> A = Srt s.
+Lemma eq_conv : forall e t u T, e |-= t = u : T -> conv t u.
 Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto.
+  induction 1 ; simpl ; intros; auto with coc.
 
-  rewrite H6 in H3.
-  rewrite H7 in H0.
-  rewrite H7 in H2.
-  rewrite H7 in H1.
-  pose (sym_conv _ _  H3).
-  pose (sort_conv_eq H0 c).
-  rewrite e0 in IHcoerce.
-  pose (IHcoerce s0 (refl_equal (Srt s0)) H7).
-  rewrite e1 in H5.
-  pose (sym_conv _ _ H5).
-  exact (sort_conv_eq H2 c0).
+  unfold lift ; apply (conv_conv_lift) ; auto.
+
+  apply (conv_conv_abs) ; auto.
+  apply (conv_conv_app) ; auto.
+  apply (conv_conv_sum) ; auto.
+  apply (conv_conv_pair) ; auto.
+  apply (conv_conv_sum) ; auto.
+  apply (conv_conv_subset) ; auto.
+  apply trans_conv_conv with N; auto.
 Qed.
 
-Lemma coerce_propset_r_aux : forall G Ts A s', G |-= A >> Ts : s' ->
-  forall s, Ts = Srt s ->  s' = kind -> A = Srt s.
+Lemma sort_eq_eq : forall G T s, G |-= T = (Srt s) : Srt kind -> T = Srt s.
 Proof.
-  induction 1 ; simpl ; intros ; try discriminate ; auto.
+  intros.
+  pose (eq_conv H).
+  apply sort_conv_eq with G ; auto.
+  apply (jeq_type_l H).
+Qed.
 
-  rewrite H6 in H5.
-  rewrite H7 in H.
-  rewrite H7 in H0.
-  rewrite H7 in H1.
-  pose (sort_conv_eq H1 H5).
-  rewrite e0 in IHcoerce.
-  pose (IHcoerce s0 (refl_equal (Srt s0)) H7).
-  rewrite e1 in H3.
-  exact (sort_conv_eq H H3).
+Lemma coerce_propset_aux : forall G A B s', G |-= A >> B : s' ->
+  (forall s, A = Srt s ->  s' = kind -> B = Srt s) /\
+  (forall s, B = Srt s ->  s' = kind -> A = Srt s).
+Proof.
+  induction 1 ; simpl ; split ; intros ; try discriminate ; auto.
+
+  subst.
+  pose (jeq_sym H).
+  apply (sort_eq_eq j).
+
+  subst.
+  apply (sort_eq_eq H).
+
+  destruct IHcoerce.
+  pose (lift_eq_sort _ _ H1).
+  pose (H3 s0 e0 H2).
+  rewrite e1 ; auto.
+
+  destruct IHcoerce.
+  pose (lift_eq_sort _ _ H1).
+  pose (H4 s0 e0 H2).
+  rewrite e1 ; auto.
+
+  destruct IHcoerce.
+  apply (H3 s0 H0 H1).
+
+  destruct IHcoerce.
+  apply (H2 s0 H0 H1).
+
+  destruct IHcoerce1.
+  destruct IHcoerce2.
+  pose (H3 s0 H1 H2).
+  apply (H5 s0 e0 H2).
+
+  destruct IHcoerce1.
+  destruct IHcoerce2.
+  pose (H6 s0 H1 H2).
+  apply (H4 s0 e0 H2).
 Qed.
 
 Lemma coerce_propset_l :  forall G s A s', G |-= Srt s >> A : s' ->
   A = Srt s.
 Proof.
   intros.
-  apply coerce_propset_l_aux with G (Srt s) s'; auto.
+  destruct (coerce_propset_aux H) ; auto.
+  apply H0 ; auto with coc.
   apply coerce_sort_l_in_kind with G A s ; auto.
 Qed.
 
@@ -210,7 +276,8 @@ Lemma coerce_propset_r :  forall G s A s', G |-= A >> Srt s : s' ->
   A = Srt s.
 Proof.
   intros.
-  apply coerce_propset_r_aux with G (Srt s) s'; auto.
+  destruct (coerce_propset_aux H) ; auto.
+  apply H1 ; auto with coc.
   apply coerce_sort_r_in_kind with G A s ; auto.
 Qed.
 
@@ -221,12 +288,24 @@ Fixpoint no_sort t : Prop :=
   | _ => True
   end.
 
+Lemma no_sort_lift : forall t, no_sort t -> forall n k, no_sort (lift_rec n t k).
+Proof.
+  induction t ; simpl ; intros ; auto.
+  elim (le_gt_dec k n) ; auto.
+Qed.
+
 Fixpoint is_low_full t : Prop :=
   match t with 
   | Prod T U => is_low_full U
   | Srt s => is_prop s
   | _ => False
   end.
+
+Lemma is_low_full_lift : forall t, is_low_full t -> forall n k, is_low_full (lift_rec n t k).
+Proof.
+  induction t ; simpl ; intros ; auto.
+  elim (le_gt_dec k n) ; auto.
+Qed.
 
 Lemma sort_of_kinded_aux : forall G t T, G |-= t : T -> 
   forall s, T = Srt s -> 
@@ -235,22 +314,32 @@ Proof.
   unfold is_prop ; induction 1 ; intros ; try discriminate ; simpl ; auto.
 
   unfold is_prop ; intuition.
-  rewrite H2 in H0 ; discriminate.
-  rewrite H2 in H0 ; discriminate.
+  rewrite H1 in H ; discriminate.
+  rewrite H1 in H ; discriminate.
   
   split ; intros ; unfold is_prop ; auto.
-  intuition ; rewrite H2 in H0 ; discriminate.
+  intuition ; rewrite H1 in H ; discriminate.
 
   split ; intros.
-  rewrite H2 in H1.
-  induction (wf_sort_lift H H0).
-  rewrite H1 in H3.
-  elim (typ_not_kind H3) ; auto.
+  rewrite H1 in H0.
+  pose (lift_eq_sort _ _ H0).
+  rewrite e0 in H.
+  elim (typ_not_kind H) ; auto.
   auto.
 
   split ; intros ; auto.
   rewrite H2 in H1.
-  pose (subst_to_sort _ H1 (typ_not_kind H)).
+  pose (lift_eq_sort _ _ H1).
+  destruct (IHtyp1 _ e0).
+  unfold lift ; apply is_low_full_lift ; auto.
+  unfold lift ; apply no_sort_lift ; auto.
+  pose (lift_eq_sort _ _ H1).
+  destruct (IHtyp1 _ e0).
+  apply H4 ; auto.
+  
+  split ; intros.
+  rewrite H2 in H1.
+  pose (subst_to_sort _ H1  (typ_not_kind H)).
 
   pose (type_no_kind_type H0 (or_introl _ (refl_equal (Prod V Ur)))).
   simpl in t.
@@ -258,6 +347,7 @@ Proof.
   rewrite e0 in H4.
   simpl in H4.
   contradiction.
+  auto.
   
   inversion H2.
   rewrite H4 in H1.
@@ -294,25 +384,20 @@ Proof.
   contradiction.
 
   assert(s = kind).
-  pose (coerce_sort_r H2).
-  rewrite H3 in t0.
+  pose (coerce_sort_r H0).
+  rewrite H1 in t0.
   destruct (typ_sort t0).
-  inversion H5.
+  inversion H3.
   auto.
 
-  destruct (IHtyp3 kind) ; rewrite <- H4 ; auto.
-  destruct (IHtyp2 kind) ; try rewrite <- H4 ; auto.
   split ; intros.
-  rewrite H4 in H9.
-  rewrite H9 in H3.
-  rewrite H3 in H7.
-  unfold is_low, is_prop in H7 ; simpl in H7.
-  destruct (H7 (refl_equal kind)) ; discriminate.
-
-  clear H6 H5 H7 H8.
-  rewrite H3 in H2.
-  pose (coerce_propset_r H2).
-  destruct (IHtyp1 s0 e0).
+  rewrite H3 in H1.
+  rewrite H1 in H0.
+  pose (coerce_sort_r H0).
+  elim (typ_not_kind t0) ; auto.
+  rewrite H1 in H0.
+  pose (coerce_propset_r H0).
+  destruct (IHtyp s0 e0).
   auto.
 Qed.
 

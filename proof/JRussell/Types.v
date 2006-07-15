@@ -10,6 +10,10 @@ Implicit Types i k m n p : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
+(** printing = $=$ *)
+(** printing >> $\sub$ *)
+(** printing |-= $\type$ *)
+
 Reserved Notation "G |-= T = U : s" (at level 70, T, U, s at next level).
 Reserved Notation "G |-= T >> U : s" (at level 70, T, U, s at next level).
 Reserved Notation "G |-= T : U" (at level 70, T, U at next level).
@@ -190,6 +194,7 @@ with typ : env -> term -> term -> Prop :=
 
 where "G |-= T : U" :=  (typ G T U).
 
+(* begin hide *)
 Hint Resolve coerce_conv coerce_weak coerce_sym coerce_prod coerce_sum coerce_sub_l coerce_sub_r coerce_trans : coc.
 Hint Resolve jeq_refl jeq_sym jeq_beta : coc.
 Hint Resolve type_pi1 type_pi2 type_pair type_prop type_set type_var type_weak: coc.
@@ -425,4 +430,4 @@ Proof.
   eapply coerce_typ_jeq_mutind with (P:=P) (P0:=P0) (P1:=P1) ; auto ; auto.
   eapply jeq_typ_coerce_mutind with (P:=P) (P0:=P0) (P1:=P1) ; auto ; auto.
 Qed.
-
+(* end hide *)

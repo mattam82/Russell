@@ -91,16 +91,18 @@
 }
 
 \def\SubProof{
-  \UAX{SubProof}
-  {$`G \type U \sub V$}
-  {$`G \type U \sub \mysubset{x}{V}{P}$}
+  \BAX{SubProof}
+  {$`G \type U \sub V : \Set$}
+  {$`G, x : V \type P : \Prop$}
+  {$`G \type U \sub \mysubset{x}{V}{P} : \Set$}
   {}
 }
 
 \def\SubSub{
-  \UAX{SubSub}
-  {$`G \type U \sub V$}
-  {$`G \type \mysubset{x}{U}{P} \sub V$}
+  \BAX{SubSub}
+  {$`G \type U \sub V : \Set$}
+  {$`G, x : U \type P : \Prop$}
+  {$`G \type \mysubset{x}{U}{P} \sub V : \Set$}
   {}
 }
 

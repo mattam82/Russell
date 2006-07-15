@@ -10,6 +10,10 @@ Require Import Lambda.TPOSR.LiftSubst.
 Require Import Lambda.TPOSR.Env.
 
 Set Implicit Arguments.
+Implicit Types s : sort.
+
+(** printing |-- $\type$ *)
+(** printing -> $"->"$ *)
 
 Reserved Notation "G |-- T -> U : s" (at level 70, T, U, s at next level).
 
@@ -18,9 +22,8 @@ Definition sum_sort s1 s2 s3 :=
   (s1 = prop /\ s2 = prop /\ s3 = prop).
 
 Coercion Srt_l : sort >-> lterm.
-
-Implicit Types s : sort.
-
+(** printing ~= $\simeq$ *)
+(** printing >-> $\sub$ *)
 Reserved Notation "G |-- T ~= U : s" (at level 70, T, U, s at next level).
 Reserved Notation "G |-- T >-> U : s" (at level 70, T, U, s at next level).
 
@@ -28,11 +31,14 @@ Inductive tposr_wf : lenv -> Prop :=
   | wf_nil : tposr_wf nil
   | wf_cons : forall G A s, G |-- A -> A : s -> tposr_wf (A :: G)
 
+
 with tposr : lenv -> lterm -> lterm -> lterm -> Prop :=
+
   | tposr_var : forall e, tposr_wf e -> 
   forall n T, item_llift T e n -> e |-- (Ref_l n) -> (Ref_l n) : T
 
   | tposr_set : forall e, tposr_wf e -> e |-- set -> set : kind
+
   | tposr_prop : forall e, tposr_wf e -> e |-- prop -> prop : kind
 
   | tposr_prod : forall e A A' s1, e |-- A -> A' : s1 ->
@@ -112,8 +118,7 @@ where "G |-- T -> U : s" := (tposr G T U s)
 with tposr_eq : lenv -> lterm -> lterm -> sort -> Prop :=
   | tposr_eq_tposr : forall e X Y s, e |-- X -> Y : s -> e |-- X ~= Y : s
   | tposr_eq_sym : forall e X Y s, e |-- X ~= Y : s -> e |-- Y ~= X : s
-  | tposr_eq_trans : forall e W X Y s, e |-- W ~= X : s -> e |-- X ~= Y : s ->
-  e |-- W ~= Y : s
+  | tposr_eq_trans : forall e W X Y s, e |-- W ~= X : s -> e |-- X ~= Y : s -> e |-- W ~= Y : s
 
 where "G |-- T ~= U : s" := (tposr_eq G T U s)
 
@@ -154,6 +159,7 @@ with tposr_coerce : lenv -> lterm -> lterm -> sort -> Prop :=
 
 where "G |-- T >-> U : s" := (tposr_coerce G T U s).
 
+(* begin hide *)
 Hint Resolve wf_nil tposr_set tposr_prop : coc.
 Hint Resolve tposr_pi2_red tposr_pi2 tposr_pi1_red tposr_pi1 tposr_pair tposr_sum tposr_subset tposr_conv : coc.
 Hint Resolve tposr_beta tposr_app tposr_var tposr_prod tposr_app : coc.
@@ -536,20 +542,19 @@ Proof.
   eapply coerce_mutind with (P := P) (P0 := P0) (P1 := P1) (P2 := P2) ; auto ; auto.
 Qed.
 
+(* end hide *)
 Lemma wf_tposr : forall e M N T, e |-- M -> N : T -> tposr_wf e.
 Proof.
   induction 1 ; simpl ; auto with coc.
 Qed.
 
 Hint Resolve wf_tposr : ecoc.
-
+(** printing -+> $"->"^+$ *)
 Reserved Notation "G |-- M -+> N : B" (at level 70, M, N, B at next level). 
 
 Inductive tposrp : lenv -> lterm -> lterm -> lterm -> Prop :=
   | tposrp_tposr : forall e X Y Z, e |-- X -> Y : Z -> e |-- X -+> Y : Z
-  | tposrp_trans : forall e W X Y Z, e |-- W -+> X : Z -> e |-- X -+> Y : Z ->
-  e |-- W -+> Y : Z
-
+  | tposrp_trans : forall e W X Y Z, e |-- W -+> X : Z -> e |-- X -+> Y : Z -> e |-- W -+> Y : Z
 where "G |-- M -+> N : B" := (tposrp G M N B). 
 
 Hint Resolve tposrp_tposr : coc.
