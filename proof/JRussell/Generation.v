@@ -3,6 +3,7 @@ Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.Conv_Dec.
 Require Import Lambda.LiftSubst.
+Require Import Lambda.InvLiftSubst.
 Require Import Lambda.Env.
 Require Import Lambda.JRussell.Types.
 Require Import Lambda.JRussell.Basic.
@@ -18,29 +19,6 @@ Implicit Types A B M N T t u v : term.
 Implicit Types e f g : env.
 
 Set Implicit Arguments.
-
-Lemma inv_lift_sort : forall t s n, lift n t = Srt s -> t = Srt s.
-Proof.
-intros.
-induction t ; simpl ; try discriminate.
-unfold lift in H ; simpl in H.
-auto.
-Qed.
-
-Lemma inv_subst_sort : forall t t' n s, subst_rec t t' n = Srt s -> 
-  t = Srt s \/ t' = Srt s.
-Proof.
-  induction t' ;  simpl ; intros ;
-  auto with coc core arith datatypes ; try discriminate.
-  generalize H.
-  elim (lt_eq_lt_dec n0 n).
-  intros a ; case a ; clear a ; intros ; try discriminate ; auto.
-  left.
-  exact (inv_lift_sort _ _ H0).
-
-  intros.
-  discriminate.
-Qed.
 
 Ltac extensionalpattern a :=
 let t := fresh "t" in (

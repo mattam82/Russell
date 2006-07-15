@@ -113,12 +113,17 @@ Russell with judgemental equality and a coercion relation with
 transitivity and symetry built-in. It is the most declarative, and thus
 the clearest presentation of \Russell, however we can't prove Subject
 Reduction for this system directly. We proved basic metatheory for this
-system up to validity.
+system up to validity and unicity of sorting, which we can transpose to
+\TPOSR easily.
 
 The modules in \coqmodule{Lambda.Russell} define a more algorithmical
 version of the \Russell type system. This version uses and untyped
 conversion relation and an already refined coercion algorithm (without
 transitivity).
+
+Finally, one can find in \coqmodule{Lambda.Meta} modules the
+metatheorems about those systems, that is the equivalence proofs. 
+
 
 \section*{The proof of Subject Reduction}
 Directly proving Subject Reduction for our system is not possible

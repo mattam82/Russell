@@ -12,8 +12,7 @@ Require Import Lambda.JRussell.Generation.
 Require Import Lambda.JRussell.Thinning.
 Require Import Lambda.JRussell.Substitution.
 Require Import Lambda.JRussell.Validity.
-
-Require Import Lambda.Meta.JRussell_Russell.
+Require Import Lambda.JRussell.UnicityOfSorting.
 
 Require Import Lambda.TPOSR.Terms.
 Require Import Lambda.TPOSR.Reduction.
@@ -159,9 +158,9 @@ Proof.
   apply typ_coerce_env with ((|A''|) :: unlab_ctx e) ; auto with coc.
   eauto with coc.
   apply coerce_env_hd with s1 ; auto with coc.
-  rewrite (jeq_unique_sort _ _ _ _ H14 (coerce_sort_r H3)).
+  rewrite (unique_sort H14 (coerce_sort_r H3)).
   assumption.
-  rewrite (jeq_unique_sort _ _ _ _ H14 (coerce_sort_r H3)).
+  rewrite (unique_sort H14 (coerce_sort_r H3)).
   assumption.
 
   apply jeq_conv with (subst (|u'|) (|B'|)) s2 ; auto with coc.
@@ -280,8 +279,6 @@ Proof (proj1 (proj2 (proj2 (unlab_sound)))).
 Corollary unlab_sound_coerce : forall e u v s, e |-- u >-> v : s -> 
   (unlab_ctx e) |-= (|u|) >> (|v|) : s.
 Proof (proj2 (proj2 (proj2 (unlab_sound)))).
-
-Require Import Lambda.JRussell.UnicityOfSorting.
 
 Theorem tposr_unique_sort : forall G A B C s s', G |-- A -> B : Srt_l s -> G |-- A -> C : Srt_l s' ->
   s = s'.

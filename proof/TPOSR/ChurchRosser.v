@@ -19,12 +19,11 @@ Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.Equiv.
 Require Import Lambda.TPOSR.Generation.
 Require Import Lambda.TPOSR.Validity.
+Require Import Lambda.TPOSR.UnicityOfSorting.
 Require Import Lambda.TPOSR.TypesDepth.
 Require Import Lambda.TPOSR.TypesFunctionality.
 Require Import Lambda.TPOSR.UniquenessOfTypes.
 Require Import Lambda.TPOSR.ChurchRosserDepth.
-
-Require Import Lambda.Meta.TPOSR_Russell.
 
 Set Implicit Arguments.
 
@@ -578,7 +577,7 @@ Proof.
   apply tposrp_trans with a ; auto with coc.
   pose (tposrp_refl_l H7).
   pose (tposrp_refl_r H4).
-  rewrite (tposr_unique_sort t t0).
+  rewrite (unique_sort t t0).
   assumption.
   apply tposrp_trans with b ; auto with coc.
   apply tposrp_conv_env with (a :: e) ; auto with coc. 
@@ -606,7 +605,7 @@ Proof.
   intros.
   pose (tposrp_refl_r H6).
   pose (tposrp_refl_r H4).
-  pose (tposr_unique_sort t t0).
+  pose (unique_sort t t0).
   rewrite <- e0 in H4.
   pose (tposrp_tposr_eq H3).
   pose (tposrp_tposr_eq H6).
@@ -648,14 +647,14 @@ Proof.
   apply tposrp_trans with a ; auto with coc.
   pose (tposrp_refl_l H8).
   pose (tposrp_refl_r H4).
-  rewrite (tposr_unique_sort t t0).
+  rewrite (unique_sort t t0).
   assumption.
   apply tposrp_trans with b ; auto with coc.
   pose (tposrp_refl_l H9).
   pose (tposrp_refl_r H5).
   assert(tposr (A :: e) b b (Srt_l d0)).
   apply conv_env with (a :: e) ; auto with coc.
-  rewrite (tposr_unique_sort H12 t0) ; auto.
+  rewrite (unique_sort H12 t0) ; auto.
   apply tposrp_conv_env with (a :: e) ; auto with coc.
 Qed.  
 
@@ -681,7 +680,7 @@ Proof.
   intros.
   pose (tposrp_refl_r H7).
   pose (tposrp_refl_r H4).
-  pose (tposr_unique_sort t t0).
+  pose (unique_sort t t0).
   rewrite <- e0 in H4.
   pose (tposrp_tposr_eq H3).
   pose (tposrp_tposr_eq H7).
@@ -699,7 +698,7 @@ Proof.
   assert(tposr (A :: e) b0 b0 (Srt_l d)).
   apply conv_env with (A' :: e) ; auto with coc.
   apply conv_env_hd with c0 ; auto with coc.
-  rewrite (tposr_unique_sort t5 H11).
+  rewrite (unique_sort t5 H11).
   assumption.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
@@ -749,5 +748,5 @@ Proof.
   apply tposr_eq_trans with b ; auto with coc.
   apply eq_conv_env with (U' :: e) ; auto with coc.
   apply conv_env_hd with set ; auto with coc.
-  eauto with coc ecoc.
+  apply tposr_eq_trans with a ; auto with coc ecoc.
 Qed.

@@ -6,7 +6,7 @@ MyList.v
 ListType.v
 Terms.v
 LiftSubst.v
-InvLift.v
+InvLiftSubst.v
 Reduction.v
 Conv.v
 Conv_Dec.v
@@ -94,6 +94,7 @@ TPOSR/Injectivity.v
 TPOSR/SubjectReduction.v
 TPOSR/TPOSR_trans.v
 TPOSR/UnlabConv.v
+TPOSR/TypesNoTrans.v
 # Meta
 #Meta/JRussell_Russell.v
 Meta/TPOSR_JRussell.v

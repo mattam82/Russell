@@ -9,19 +9,14 @@ Require Import Lambda.TPOSR.RightReflexivity.
 Require Import Lambda.TPOSR.SubjectReduction.
 Require Import Lambda.TPOSR.Unlab.
 
-Require Import Lambda.Meta.Russell_TPOSR.
 Require Import Lambda.Meta.TPOSR_JRussell.
 
 Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
-Require Import Lambda.Russell.Types.
 
 Require Import Lambda.JRussell.Types.
 Require Import Lambda.JRussell.Validity.
-
-Require Import Lambda.Meta.JRussell_Russell.
-Require Import Lambda.Meta.Russell_JRussell.
 
 Set Implicit Arguments.
 
@@ -30,6 +25,8 @@ Lemma jrussell_subject_reduction :
   e |-= t = u : T.
 Proof.
   intros.
+  pose (type_jrussell_tposr).
+
   pose (type_jrussell_to_russell _ _ _ H). 
   pose (type_russell_tposr t0) ; destruct_exists.
   subst.

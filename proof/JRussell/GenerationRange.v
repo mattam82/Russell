@@ -6,7 +6,7 @@ Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.Conv_Dec.
 Require Import Lambda.LiftSubst.
-Require Import Lambda.InvLift.
+Require Import Lambda.InvLiftSubst.
 Require Import Lambda.Env.
 Require Import Lambda.JRussell.Types.
 Require Import Lambda.JRussell.Thinning.
@@ -257,7 +257,7 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  unfold lift in H1 ; pose (inv_lift_app _ _ _ _ H1).
+  unfold lift in H1 ; pose (inv_lift_app _ _ H1).
   destruct_exists.
   subst.
 
@@ -304,7 +304,7 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  unfold lift in H1 ; pose (inv_lift_abs _ _ _ _ H1).
+  unfold lift in H1 ; pose (inv_lift_abs _ _ H1).
   destruct_exists.
   subst.
 
@@ -347,7 +347,7 @@ Proof.
 
   unfold not ; intros.
   unfold lift in H2 ; pose (type_range_lift _ _ _ H2).
-  pose (inv_lift_pair _ _ _ _ _ H1) ; destruct_exists.
+  pose (inv_lift_pair _ _ H1) ; destruct_exists.
   subst.
   destruct (IHtyp1 _ _ _ (refl_equal (Pair a b c)) s0) ; auto.
 
@@ -387,7 +387,7 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  pose (inv_lift_sum _ _ _ _ H1) ; destruct_exists.
+  pose (inv_lift_sum _ _ H1) ; destruct_exists.
   subst.
   destruct (IHtyp1 x x0) ; auto.
   split ; intros; auto with coc.
@@ -426,7 +426,7 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  pose (inv_lift_pi1 _ _ _ H1) ; destruct_exists.
+  pose (inv_lift_pi1 _ _ H1) ; destruct_exists.
   red ; intros.
   subst.
   unfold lift in H4 ; pose (type_range_lift _ _ _ H4).
@@ -461,7 +461,7 @@ Proof.
   induction 1 ; simpl ; intros ;
   auto with coc core arith datatypes ; try discriminate.
 
-  pose (inv_lift_pi2 _ _ _ H1) ; destruct_exists.
+  pose (inv_lift_pi2 _ _ H1) ; destruct_exists.
   red ; intros.
   subst.
   unfold lift in H4 ; pose (type_range_lift _ _ _ H4).

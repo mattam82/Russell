@@ -6,7 +6,7 @@ Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.Conv_Dec.
 Require Import Lambda.LiftSubst.
-Require Import Lambda.InvLift.
+Require Import Lambda.InvLiftSubst.
 Require Import Lambda.Env.
 Require Import Lambda.JRussell.Types.
 Require Import Lambda.JRussell.Basic.
@@ -48,7 +48,7 @@ Proof.
   intros e t T H.
   induction H ; simpl ; intros; subst ; try discriminate.
 
-  pose (inv_lift_prod _ _ _ _ H1).
+  pose (inv_lift_prod _ _ H1).
   destruct_exists.
   subst.
   destruct (IHtyp1 x x0) ; auto.
@@ -87,7 +87,7 @@ Proof.
   intros e t T H.
   induction H ; simpl ; intros; subst ; try discriminate.
 
-  pose (inv_lift_sum _ _ _ _ H1).
+  pose (inv_lift_sum _ _ H1).
   destruct_exists.
   subst.
   destruct (IHtyp1 x x0) ; auto.
@@ -125,7 +125,7 @@ Proof.
   intros e t T H.
   induction H ; simpl ; intros; subst ; try discriminate.
 
-  pose (inv_lift_subset _ _ _ _ H1).
+  pose (inv_lift_subset _ _ H1).
   destruct_exists.
   subst.
   destruct (IHtyp1 x x0) ; auto.

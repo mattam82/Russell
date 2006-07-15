@@ -15,7 +15,7 @@ Require Import Lambda.TPOSR.Substitution.
 Require Import Lambda.TPOSR.CtxConversion.
 Require Import Lambda.TPOSR.RightReflexivity.
 
-Require Import Lambda.Meta.TPOSR_Russell.
+Require Import Lambda.Meta.TPOSR_JRussell.
 
 Set Implicit Arguments.
 
