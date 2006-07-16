@@ -97,22 +97,3 @@ Proof.
   apply coerce_conv with A B ; auto with coc.
 Qed.
 
-Inductive coerce_in_env : env -> env -> Prop :=
-  | coerce_env_hd : forall e t u s n, e |-- t >>> u : s [n] -> 
-	coerce_in_env (u :: e) (t :: e)
-  | coerce_env_tl :
-        forall e f t, wf (t :: f) -> coerce_in_env e f -> coerce_in_env (t :: e) (t :: f).
-
-Hint Resolve coerce_env_hd coerce_env_tl: coc.
-
-Axiom typ_conv_env :
-  forall e t T, forall d : (e |-- t : T),
-  forall f, coerce_in_env e f -> 
-  wf f -> f |-- t : T.
-
-Axiom coerce_conv_env :
-  forall e T U s n, 
-  e |-- T >>> U : s [n] -> 
-  forall f, coerce_in_env e f -> 
-  wf f ->  f |-- T >>> U : s [n].
-

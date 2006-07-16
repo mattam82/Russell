@@ -31,6 +31,7 @@ Require Import Lambda.TPOSR.UnlabConv.
 
 Require Import Lambda.Terms.
 Require Import Lambda.LiftSubst.
+Require Import Lambda.InvLiftSubst.
 Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.Russell.Types.
@@ -39,36 +40,6 @@ Set Implicit Arguments.
 
 Ltac destruct_lab_inv c H :=
   destruct c ; try discriminate ; simpl in H ; inversion H ; subst.
-
-Lemma russell_conv_eq : forall t u, Lambda.Reduction.conv (|t|) (|u|) ->
-  forall e (s : sort), e |-- t -> t : s -> e |-- u -> u : s -> e |-- t ~= u : s.
-Proof.
-  intros t u H.
-  destruct(church_rosser _ _ H). 
-  intros ; subst.
-  destruct (unlab_lab_red _ H1).
-  destruct (unlab_lab_red _ H0).
-  destruct_exists.
-  subst x.
-  pose (lred_par_lred _ _ H7).
-  pose (lred_par_lred _ _ H6).
-
-  assert(tposr_term e t s) by eauto with coc ecoc.
-  assert(tposr_term e u s) by eauto with coc ecoc.
-  pose (subject_reduction_p p0 H4).
-  apply tposr_eq_trans with x1.
-  auto with coc.
-
-  apply tposr_eq_sym.
-  pose (subject_reduction_p p H8).
-  apply tposr_eq_trans with x0.
-  auto with coc.
-  
-  assert(tposr_term e x1 s) by eauto with coc ecoc.
-  assert(tposr_term e x0 s) by eauto with coc ecoc.
-  pose (tposr_unlab_conv H9 H10 H5) ; destruct_exists.
-  apply tposr_eq_trans with x ; auto with coc.
-Qed.
 
 Lemma unlab_ctx_item : forall a x n,  
   item term x (unlab_ctx a) n -> 
@@ -237,7 +208,7 @@ Proof.
   unfold subst in H4.
   pose (sym_eq H4).
   simpl in e.
-  destruct (Lambda.Russell.Generation.inv_subst_sort _ _ _ e).
+  destruct (inv_subst_sort _ _ _ e).
   destruct b1 ; try discriminate.
   simpl in H9.
   inversion H9 ; intros ; subst s4.
@@ -421,8 +392,8 @@ Proof.
   destruct (unlab_conv_sorted H10 H13 H5).
   destruct (unlab_conv_sorted H16 H19 H4).
 
-  pose (russell_conv_eq c1 t4 t5).
-  pose (russell_conv_eq c H18 t3).
+  pose (conv_eq c1 t4 t5).
+  pose (conv_eq c H18 t3).
   apply tposr_coerce_trans with b2 ; auto with coc.
   apply tposr_coerce_trans with b ; auto with coc.
   apply tposr_coerce_trans with b1 ; auto with coc.
@@ -480,4 +451,42 @@ Proof.
   intros.
   pose (H1 G H2) ; destruct_exists ; auto.
   exists x ; intuition.
+Qed.
+
+Lemma conv_eq2 : forall t u, conv (|t|) (|u|) ->
+  forall e (s s' : sort), e |-- t -> t : s -> e |-- u -> u : s' -> s = s'.
+Proof.
+  intros t u H.
+  destruct(church_rosser _ _ H). 
+  intros ; subst.
+  destruct (unlab_lab_red _ H1).
+  destruct (unlab_lab_red _ H0).
+  destruct_exists.
+  subst x.
+  pose (lred_par_lred _ _ H7).
+  pose (lred_par_lred _ _ H6).
+
+  assert(tposr_term e t s) by eauto with coc ecoc.
+  assert(tposr_term e u s') by eauto with coc ecoc.
+  pose (subject_reduction_p p0 H4).
+  pose (subject_reduction_p p H8).
+ 
+  assert(tposr_term e x1 s) by eauto with coc ecoc.
+  assert(tposr_term e x0 s') by eauto with coc ecoc.
+  pose (tposr_unlab_conv H9 H10 H5) ; destruct_exists.
+  apply (unique_sort (tposrp_refl_l H11) (tposrp_refl_l H12)).
+Qed.
+
+Corollary russell_unique_sort_conv : forall G A A' s1 s2, 
+  G |-- A : Srt s1 -> G |-- A' : Srt s2 -> conv A A' -> s1 = s2.
+Proof.
+  intros.
+  pose (type_russell_tposr H).
+  pose (type_russell_tposr H0).
+  destruct_exists ; subst.
+  destruct_lab_inv c0 H8.
+  destruct_lab_inv c H5.
+  assert(a |-- b0 -> b0 : s1).
+  apply unlab_conv_ctx with a0 ; eauto with coc ecoc.
+  apply (conv_eq2 H1 H3 H6).
 Qed.

@@ -101,12 +101,6 @@ apply type_pi1 with (subst_rec d V (S n)) ; auto with coc.
 rewrite distr_subst.
 simpl.
 apply type_pi2 with (subst_rec d U n) ; auto with coc.
-(*
-cut (wf (subst_rec d U n :: f)).
-intro ; rewrite distr_subst.
-apply type_let_in with (subst_rec d U n) s1 s2 ; auto with coc core arith datatypes.
-apply wf_var with s1 ; auto with coc core arith datatypes.
-*)
 apply type_conv with (subst_rec d U n) s; auto with coc core arith datatypes.
 
 apply coerce_prod with s; auto with coc core arith datatypes.

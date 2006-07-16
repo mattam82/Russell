@@ -12,7 +12,7 @@ Require Import Lambda.Russell.Inversion.
 Require Import Lambda.Russell.Generation.
 Require Import Lambda.Russell.GenerationRange.
 Require Import Lambda.Russell.UnicityOfSorting.
-Require Import Lambda.Russell.Axioms.
+Require Import Lambda.Russell.Injectivity.
 
 Set Implicit Arguments.
 

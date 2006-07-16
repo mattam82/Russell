@@ -11,7 +11,6 @@ Require Import Lambda.Russell.Coercion.
 Require Import Lambda.Russell.Inversion.
 Require Import Lambda.Russell.Thinning.
 Require Import Lambda.Russell.Substitution.
-Require Import Lambda.Russell.TypeCase.
 Require Import Lambda.Russell.Generation.
 Require Import Lambda.Russell.GenerationCoerce.
 Require Import Lambda.Russell.UnicityOfSorting.
@@ -198,7 +197,7 @@ Qed.
   Lemma type_kind_not_conv :
    forall e t T, typ e t T -> typ e t (Srt kind) -> T = Srt kind.
 intros.
-elim type_case with e t T; intros; auto with coc core arith datatypes.
+elim type_sorted with e t T; intros; auto with coc core arith datatypes.
 elim H1; intros.
 elim inv_typ_conv_kind with e T (Srt x); auto with coc core arith datatypes.
 elim (typ_unique H0 H) ; auto with coc.
@@ -213,16 +212,15 @@ Qed.
   Lemma type_reduction :
    forall e t T (U : term), red T U -> typ e t T -> typ e t U.
 intros.
-elim type_case with e t T; intros; auto with coc core arith datatypes.
+elim type_sorted with e t T; intros; auto with coc core arith datatypes.
+subst T.
+elim red_normal with (Srt kind) U; auto with coc core arith datatypes.
+red in |- *; red in |- *; intros.
 inversion_clear H1.
+destruct H1.
 assert(e |-- U : Srt x).
 apply subject_reduction with T; auto with coc core arith datatypes.
 apply type_conv with T x; auto with coc core arith datatypes.
-
-elim red_normal with T U; auto with coc core arith datatypes.
-rewrite H1.
-red in |- *; red in |- *; intros.
-inversion_clear H2.
 Qed.
 
 Lemma typ_conv_conv_coerce : forall e u (U : term) v (V : term), 

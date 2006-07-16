@@ -193,31 +193,6 @@ Proof.
   pose (IHtyp U V (or_intror _ (refl_equal (Sum U V)))).
   simpl in t0 ; intuition.
     
-(*  induction M ; intuition ; try discriminate.
-  generalize H4 ; unfold subst, subst_rec.
-  elim (lt_eq_lt_dec 0 n) ; intros a ; try discriminate.
-  case a ; clear a ; intros ; try discriminate.
-  rewrite lift0. rewrite lift0 in H3.
-  rewrite H3 ; rewrite H3 in H.
-  pose (type_has_no_kind H) ; auto with coc.
-  
-  intros ; discriminate.
-  pose (type_has_no_kind H2).
-  pose (type_has_no_kind H).
-  unfold subst ; apply type_range_subst_not_kind ; auto.
-  
-  unfold subst in H4 ; simpl in H4.
-  inversion H4.
-  pose (type_has_no_kind H2).
-  pose (type_has_no_kind H).
-  unfold subst ; apply type_range_subst_not_kind ; auto.
-
-  unfold subst in H4 ; simpl in H4.
-  inversion H4.
-  pose (type_has_no_kind H2).
-  pose (type_has_no_kind H).
-  unfold subst ; apply type_range_subst_not_kind ; auto.*)
-  
   destruct H2 ;
   rewrite H2 in H0 ;
   rewrite H2 ; apply (type_has_no_kind H0).

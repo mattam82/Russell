@@ -10,6 +10,9 @@ Require Import Lambda.TPOSR.SubjectReduction.
 Require Import Lambda.TPOSR.Unlab.
 
 Require Import Lambda.Meta.TPOSR_JRussell.
+Require Import Lambda.Meta.JRussell_Russell.
+Require Import Lambda.Meta.Russell_JRussell.
+Require Import Lambda.Meta.Russell_TPOSR.
 
 Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
@@ -25,8 +28,6 @@ Lemma jrussell_subject_reduction :
   e |-= t = u : T.
 Proof.
   intros.
-  pose (type_jrussell_tposr).
-
   pose (type_jrussell_to_russell _ _ _ H). 
   pose (type_russell_tposr t0) ; destruct_exists.
   subst.
@@ -37,6 +38,8 @@ Proof.
   apply unlab_sound_tposrp.
   apply (subject_reduction_p H3 H5).
 Qed.
+
+Require Import Lambda.Russell.Types.
 
 Lemma russell_subject_reduction : 
   forall e t T, e |-- t : T -> forall u, red t u -> 

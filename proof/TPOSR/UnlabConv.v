@@ -895,3 +895,36 @@ Proof.
   pose (unlab_conv_ctx_conv (wf_tposr (coerce_refl_l H0)) H H1).
   apply coerce_conv_env_full with G ; auto with coc.
 Qed.
+
+Require Import Lambda.Reduction.
+Require Import Lambda.Conv.
+
+Lemma conv_eq : forall t u, conv (|t|) (|u|) ->
+  forall e (s : sort), e |-- t -> t : s -> e |-- u -> u : s -> e |-- t ~= u : s.
+Proof.
+  intros t u H.
+  destruct(church_rosser _ _ H). 
+  intros ; subst.
+  destruct (unlab_lab_red _ H1).
+  destruct (unlab_lab_red _ H0).
+  destruct_exists.
+  subst x.
+  pose (lred_par_lred _ _ H7).
+  pose (lred_par_lred _ _ H6).
+
+  assert(tposr_term e t s) by eauto with coc ecoc.
+  assert(tposr_term e u s) by eauto with coc ecoc.
+  pose (subject_reduction_p p0 H4).
+  apply tposr_eq_trans with x1.
+  auto with coc.
+
+  apply tposr_eq_sym.
+  pose (subject_reduction_p p H8).
+  apply tposr_eq_trans with x0.
+  auto with coc.
+  
+  assert(tposr_term e x1 s) by eauto with coc ecoc.
+  assert(tposr_term e x0 s) by eauto with coc ecoc.
+  pose (tposr_unlab_conv H9 H10 H5) ; destruct_exists.
+  apply tposr_eq_trans with x ; auto with coc.
+Qed.

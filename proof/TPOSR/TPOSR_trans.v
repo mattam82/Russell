@@ -259,25 +259,6 @@ Proof.
   eauto with coc ecoc. 
 Qed.
 
-(*
-Lemma tposrp_beta : forall e A A' s1, e |-- A -+> A' : Srt_l s1 ->
-  forall B B' s2, (A :: e) |-- B -+> B' : Srt_l s2 ->
-  forall M M', (A :: e) |-- M -+> M' : B -> 
-  forall N N', e |-- N -+> N' : A ->
-  e |-- App_l B (Abs_l A M) N -+> lsubst N' M' : lsubst N B.
-Proof.
-
-Lemma tposrp_red : forall e M N A, e |-- M -+> N : A -> 
-  forall B s, e |-- A -+> B : Srt_l s ->
-  e |-- M -+> N : B.
-Proof.
-
-Lemma tposrp_exp : forall e M N B, e |-- M -+> N : B -> 
-  forall A s, e |-- A -+> B : Srt_l s ->
-  e |-- M -+> N : A.
-Proof.
-*)
-
 Lemma tposrp_subset_aux : forall e A A', e |-- A -+> A' : Srt_l set ->
   forall B B', (A :: e) |-- B -> B' : Srt_l prop ->
   e |-- Subset_l A B -+> Subset_l A' B' : Srt_l set.

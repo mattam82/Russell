@@ -273,25 +273,7 @@ Proof.
   exists s2.
   change (Srt s2) with (subst N (Srt s2)).
   apply substitution with A ; auto with coc.
-(*
-  (* Red *)
-  do 2 destruct H0.
-  do 2 destruct H.
-  split.
-  split ; apply type_conv with A s ; auto with coc.
 
-  right.
-  exists s ; auto.
-
-  (* Exp *)
-  do 2 destruct H0.
-  do 2 destruct H.
-  split.
-  split ; apply type_conv with B s ; auto with coc.
-
-  right.
-  exists s ; auto.
-*)
   (* Sum *)
   do 2 destruct H.
   do 2 destruct H0.

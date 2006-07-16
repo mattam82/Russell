@@ -622,22 +622,6 @@ Qed.
 Hint Resolve sublterm_abs sublterm_prod sublterm_sum sublterm_subset : coc.
 
 
-(*
-  Lemma mem_sort_ref: (s:sort)(n:nat)~(mem_sort s (Ref_l n)).
-(Red; Intros).
-Cut (b:lterm)(mem_sort s b)->b=(Ref_l n)->False.
-Intros.
-(App_lly H0 with (Ref_l n); Auto with coc core arith sets).
-
-Do 2 Intro.
-(Elim H0 using clos_refl_trans_ind_left; Intros; Auto with coc core arith sets).
-Discriminate H1.
-
-Rewrite H4 in H3.
-(Inversion_clear H3; Inversion_clear H5).
-Save.
-*)
-
   Lemma mem_sort_llift :
    forall t n k s, mem_sort s (llift_rec n t k) -> mem_sort s t.
 simple induction t; simpl in |- *; intros; auto with coc core arith sets.

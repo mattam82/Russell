@@ -10,7 +10,7 @@ Require Import Lambda.Russell.Substitution.
 Require Import Lambda.Russell.Generation.
 Require Import Lambda.Russell.UnicityOfSorting.
 Require Import Lambda.Russell.Narrowing.
-Require Import Lambda.Russell.Axioms.
+Require Import Lambda.Russell.Injectivity.
 
 Set Implicit Arguments.
 
@@ -259,7 +259,8 @@ Proof.
 
   (* prod, conv_l < prod *)
   simpl in H4.
-  destruct (inv_conv_prod_sort_l_set t3 t4 c1).
+  pose (H1 := t).
+  pose (H2:=inv_conv_prod_sort_l_set t3 t4 c1 t).
   intuition.
   pose (unique_sort t7 H2).
   rewrite <- e1 in H1.
@@ -289,7 +290,7 @@ Proof.
   pose (inv_conv_prod_r _ _ _ _ c1).
   set (d := coerces_conv_l H7 H8 t9 c2 c2_2).
   destruct (coerce_conv_env c0 H5 H6).
-  apply (IH (depth c0 + depth d)) with B' x1 d ; auto with coc.
+  apply (IH (depth c0 + depth d)) with B' x0 d ; auto with coc.
   simpl.
   rewrite H4.
   apply depth_prod_conv_prod2.
@@ -300,7 +301,6 @@ Proof.
   apply coerce_env_hd with s ; auto with coc core.
   apply coerces_conv_r with A1 ; auto with coc core.
   rewrite e2 in t7.
-  apply t10.
   apply (sym_conv _ _ (inv_conv_prod_l _ _ _ _ c1)).
 
   (* prod, conv_l < sum *)
@@ -475,47 +475,41 @@ Proof.
 
   (* sum, conv_l < sum *)
   simpl in H4.
-  induction (inv_conv_sum_sort_l_set t3 t4 c1).
-  destruct p.
+  pose (H3:=inv_conv_sum_sort_l_set t3 t4 c1 t).
   pose (unique_sort t7 H3).
-  pose (unique_sort H2 t).
   generalize dependent A'0.
   rewrite e1.
-  rewrite e2.
   intros.
   
   assert(e |-- A >>> A'0 : s).
   pose (inv_conv_sum_l _ _ _ _ c1).
-  rewrite e2 in H3.
-  set (d := coerces_conv_l t H5 t6 c2 c2_1).
+  set (d := coerces_conv_l t H3 t6 c2 c2_1).
   apply (IH (depth c + depth d)) with A' c d ; auto with coc.
   simpl.
   rewrite H4 ; simpl.
   apply depth_sum_conv_sum2.
 
-  induction (inv_conv_sum_sort_r_set t3 t4 c1).
-  destruct p.
-  pose (unique_sort t2 H6).
+  pose (H6:=inv_conv_sum_sort_r_set t3 t4 c1 t2).
   assert(A' :: e |-- B0 : Srt s'0).
   apply typ_conv_env with (A1 :: e) ; auto with coc.
-  induction (inv_conv_sum_sort_l_set t3 t4 c1).
-  apply coerce_env_hd with x2 ; intuition ; auto with coc.
+  pose (inv_conv_sum_sort_l_set t3 t4 c1 t).
+  apply coerce_env_hd with s ; intuition ; auto with coc.
   apply coerces_conv_l with A1 ; auto with coc.
   exact (inv_conv_sum_l _ _ _ _ c1).
   apply wf_var with s ; auto with coc.
-  pose (unique_sort H7 H8).
 
   apply coerces_sum with s s' ; auto with coc core.
+
+  assert (Heq:=unique_sort H6 H5).
 
   cut(coerce_in_env (A1 :: e) (A :: e)) ; intros.
   assert(wf (A :: e)).
   apply wf_var with s ; auto with coc.
-  
+
   generalize dependent B'.
-  rewrite e4.
-  intros.
   generalize dependent B'0.
-  rewrite <- e3.
+  generalize dependent B0.
+  rewrite <- Heq.
   intros.
 
   cut(A :: e |-- B' : Srt s') ; intros.
@@ -523,27 +517,24 @@ Proof.
   cut(A :: e |-- B'0 : Srt s') ; intros.
   pose (inv_conv_sum_r _ _ _ _ c1).
   
-  destruct (coerce_conv_env c2_2 H9 H10).
-  set (d := coerces_conv_l H11 H12 H13 c2 x2).
+  destruct (coerce_conv_env c2_2 H7 H8).
+  set (d := coerces_conv_l H9 H10 H11 c2 x0).
   apply (IH (depth c0 + depth d)) with B' c0 d ; auto with coc.
   simpl.
-  rewrite e5.
   rewrite H4.
+  rewrite e2.
   apply depth_prod_conv_prod2.
 
   apply typ_conv_env with (A'0 :: e) ; auto with coc.
   apply coerce_env_hd with s ; auto with coc.
 
   apply typ_conv_env with (A1 :: e) ; auto with coc.
-  apply (coerces_sort_l c2_2).
   apply (coerces_sort_r c0).
 
   apply coerce_env_hd with s ; auto with coc.
   apply coerces_conv_r with A' ; auto with coc core.
-  rewrite <- e2 ; auto.
   apply (inv_conv_sum_l _ _ _ _ c1).
-  rewrite e3.
-  rewrite e4.
+  rewrite <- (unique_sort H5 H6).
   assumption.
 
   (* sum, conv_l < sub_l *)
@@ -771,15 +762,15 @@ Proof.
 
   (* conv_r < prod, prod *)
   simpl in H0.
-  induction (inv_conv_prod_sort_l_set t0 t1 c0).
-  intuition.
+  assert (H3:=inv_conv_prod_sort_l_set t0 t1 c0 t6).
+  assert (H2:=t6).
   pose (unique_sort t6 H2).
   pose (unique_sort t3 H3).
   generalize dependent A ; generalize dependent A'0.
   rewrite <- e1.
   intros.
   generalize dependent A' ; generalize dependent A0.
-  generalize dependent c1 ; generalize dependent t7 ; rewrite e0.
+  generalize dependent c1 ; generalize dependent t7.
   intros.
   clear e0 ; clear e1.
 
@@ -800,7 +791,7 @@ Proof.
   destruct (coerce_conv_env c2 H4 H5).
 
   pose (inv_conv_prod_r _ _ _ _ c0).
-  pose (coerces_conv_r (coerces_sort_l x1) (coerces_sort_r x1) (coerces_sort_l d2_2) x1 c4).
+  pose (coerces_conv_r (coerces_sort_l x0) (coerces_sort_r x0) (coerces_sort_l d2_2) x0 c4).
   
   apply (IH (depth c5 + depth d2_2)) with B0 c5 d2_2.
   rewrite H0 ; simpl.
@@ -855,7 +846,8 @@ Proof.
 
   (* conv_r < sum, sum *)
   simpl in H0.
-  induction (inv_conv_sum_sort_l_set t0 t1 c0).
+  assert (H3:=inv_conv_sum_sort_l_set t0 t1 c0 t6).
+  assert (H2:=t6).
   intuition.
   pose (unique_sort t6 H2).
   pose (unique_sort t3 H3).
@@ -863,7 +855,7 @@ Proof.
   rewrite <- e1.
   intros.
   generalize dependent A' ; generalize dependent A0.
-  generalize dependent c1 ; generalize dependent t7 ; rewrite e0.
+  generalize dependent c1 ; generalize dependent t7.
   intros.
   clear e0 ; clear e1.
   assert(s' = s'0).
@@ -892,7 +884,7 @@ Proof.
   generalize dependent e.
   rewrite <- H4.
   intros.
-  pose (coerces_conv_l (coerces_sort_r c2) (coerces_sort_l x1)  (coerces_sort_r x1)  c4 x1).
+  pose (coerces_conv_l (coerces_sort_r c2) (coerces_sort_l x0) (coerces_sort_r x0) c4 x0).
   
   apply (IH (depth c2 + depth c5)) with B'0 c2 c5.
   rewrite H0 ; simpl.
@@ -1064,73 +1056,6 @@ Proof.
 Qed.
 
 Require Import Lambda.Russell.Depth.
-
-Theorem coerces_db_depth : forall e T U s n1, Depth.coerces_db e T U s n1 -> 
-  exists d : (Narrowing.coerces_db e T U s), depth d = n1.
-Proof.
-  intros.
-  induction H.
-  
-  exists (Narrowing.coerces_refl H).
-  simpl ; auto.
-
-  destruct IHcoerces_db1.
-  destruct IHcoerces_db2.
-  exists (Narrowing.coerces_prod x H0 H1 x0 H3 H4).
-  simpl ; auto.
-
-  destruct IHcoerces_db1.
-  destruct IHcoerces_db2.
-  exists (Narrowing.coerces_sum x H0 H1 x0 H3 H4 H5 H6).
-  simpl ; auto.
-
-  destruct IHcoerces_db.
-  exists (Narrowing.coerces_sub_l x H0).
-  simpl ; auto.
-
-  destruct IHcoerces_db.
-  exists (Narrowing.coerces_sub_r x H0).
-  simpl ; auto.
-
-  destruct IHcoerces_db.
-  exists (Narrowing.coerces_conv_l H H0 H1 H2 x).
-  simpl ; auto.
-
-  destruct IHcoerces_db.
-  exists (Narrowing.coerces_conv_r H H0 H1 x H3).
-  simpl ; auto.
-Qed.
-
-Theorem depth_coerces_db : forall e T U s, Narrowing.coerces_db e T U s -> exists n, 
- Depth.coerces_db e T U s n.
-Proof.
-  induction 1 ; intros ; auto with coc core.
-  exists 0 ; auto with coc.
-
-  destruct IHcoerces_db1.
-  destruct IHcoerces_db2.
-  exists (S (max x x0)) ; simpl ; auto with coc.
-  apply Depth.coerces_prod with s ; auto.
-
-  destruct IHcoerces_db1.
-  destruct IHcoerces_db2.
-  exists (S (max x x0)) ; simpl ; auto with coc.
-  apply Depth.coerces_sum with s s' ; auto.
-
-  destruct IHcoerces_db.
-  exists (S x) ; simpl ; auto with coc.
-
-  destruct IHcoerces_db.
-  exists (S x) ; simpl ; auto with coc.
-
-  destruct IHcoerces_db.
-  exists (S x) ; simpl ; auto with coc.
-  apply coerces_conv_l with B ; auto with coc.
-
-  destruct IHcoerces_db.
-  exists (S x) ; simpl ; auto with coc.
-  apply coerces_conv_r with B ; auto with coc.
-Qed.
 
 Theorem coerce_trans_d : forall e A B C s n1 n2, e |-- A >>> B : s [n1] -> e |-- B >>> C : s [n2]->
   exists m, e |-- A >>> C : s [m].

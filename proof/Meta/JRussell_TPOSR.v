@@ -41,6 +41,7 @@ Set Implicit Arguments.
 Ltac destruct_lab_inv c H :=
   destruct c ; try discriminate ; simpl in H ; inversion H ; subst.
 
+
 Lemma conv_eq : forall t u, Lambda.Reduction.conv (|t|) (|u|) ->
   forall e (s : sort), e |-- t -> t : s -> e |-- u -> u : s -> e |-- t ~= u : s.
 Proof.
