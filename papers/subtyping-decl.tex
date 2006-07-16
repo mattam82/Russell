@@ -53,8 +53,8 @@
 \def\SubConv{
   \UAX{SubConv}
 %  {$`G \type T, U : s$}
-  {$T \eqbr U$}
-  {$`G \type T \sub U$}
+  {$`G \type T \eqbr U : s$}
+  {$`G \type T \sub U : s$}
   {} 
 }
 
@@ -66,28 +66,27 @@
 }
 
 \def\SubTrans{
-\TAX{SubTrans}
-{$`G \type T : s$}
-{$`G \type S \sub T$}
-{$`G \type T \sub U$}
-{$`G \type S \sub U$}
+\BAX{SubTrans}
+{$`G \type S \sub T : s$}
+{$`G \type T \sub U : s$}
+{$`G \type S \sub U : s$}
 {}
 } 
 
 \def\SubProd{
 \BAX{SubProd}
-{$`G \type U \sub T$} %"<|-|>"
-{$`G, x : U \type V \sub W$}
-{$`G \type \Pi x : T.V \sub \Pi x : U.W$}
-{}
+{$`G \type U \sub T : s_1$} %"<|-|>"
+{$`G, x : U \type V \sub W : s_2$}
+{$`G \type \Pi x : T.V \sub \Pi x : U.W : s_2$}
+{$(s_1, s_2) `: \PTSrules$}
 }
 
 \def\SubSigma{
   \BAX{SubSigma}
-  {$`G \type T \sub U$}
-  {$`G, x : T \type V \sub W$}
-  {$`G \type \Sigma x : T. V \sub \Sigma y : U. W$}
-  {}
+  {$`G \type T \sub U : s$}
+  {$`G, x : T \type V \sub W : s$}
+  {$`G \type \Sigma x : T. V \sub \Sigma y : U. W : s$}
+  {$s `:  \setprop$}
 }
 
 \def\SubProof{

@@ -14,71 +14,71 @@
 %%   {}
 %% }
 
-\newcommand{\subalgoimpl}[4]{#1 \typea #3 \suba #4}
+\newcommand{\subalgoimpl}[5]{#1 \typea #3 \suba #4 : #5}
 \newcommand{\SubConvA}[1][\Gamma]{
   \BAX{SubConv}
   {$T \eqbr U$}
   {$\tgen{#1}{T,U}{s}$}
-  {$\subalgoimpl{#1}{\ctxdot}{T}{U}$}
+  {$\subalgoimpl{#1}{\ctxdot}{T}{U}{s}$}
   {$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U}$}
 }
 
 \newcommand{\SubConvAs}[1][\Gamma]{
 \UAX{SubConv}
 {$T \eqbr U$}
-{$\subalgoimpl{#1}{\ctxdot}{T}{U}$}
+{$\subalgoimpl{#1}{\ctxdot}{T}{U}{s}$}
 {} 
 }
 
 \newcommand{\SubHnfA}[1][\Gamma]{
 \BAX{SubHnf}
-{$\subalgoimpl{#1}{c}{\hnf{T}}{\hnf{U}}$}
+{$\subalgoimpl{#1}{c}{\hnf{T}}{\hnf{U}}{s}$}
 {$\tgen{#1}{T,U}{s}$}
-{$\subalgoimpl{#1}{c}{T}{U}$}
+{$\subalgoimpl{#1}{c}{T}{U}{s}$}
 {$T "/=" \hnf{T} `V U "/=" \hnf{U}$} 
 }
 
 \newcommand{\SubProdA}[1][\Gamma]{%
   \BAX{SubProd}
-  {$\subalgoimpl{#1}{c_1}{U}{T}$}
-  {$\subalgoimpl{#1, x : U}{c_2}{V}{W}$}  
+  {$\subalgoimpl{#1}{c_1}{U}{T}{s_1}$}
+  {$\subalgoimpl{#1, x : U}{c_2}{V}{W}{s_2}$}  
   {$\subalgoimpl{#1}{\lambda x : \ip{U}{#1}. c_2[\ctxdot~(c_1[x])]}
-    {\Pi x : T.V}{\Pi x : U.W}$}
-  {}
+    {\Pi x : T.V}{\Pi x : U.W}{s_2}$}
+  {$(s_1, s_2) `: \PTSrules$}
 }
 
 \newcommand{\SubSigmaA}[1][\Gamma]{%
 \BAX{SubSigma}
-{$\subalgoimpl{#1}{c_1}{T}{U}$}
-{$\subalgoimpl{#1, x : T}{c_2}{V}{W}$}
+{$\subalgoimpl{#1}{c_1}{T}{U}{s}$}
+{$\subalgoimpl{#1, x : T}{c_2}{V}{W}{s}$}
 {$\subalgoimpl{#1}{\pair{\ip{\Sigma x : U.W}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/x]}}
-  {\Sigma x : T. V}{\Sigma x : U. W}$}
-{}
+  {\Sigma x : T. V}{\Sigma x : U. W}{s}$}
+{$s `: \setprop$}
 }
 
 \newcommand{\SubSubA}[1][\Gamma]{%
 \BAX{SubSub}
-{$\subalgoimpl{#1}{c}{U}{T}$}
-{$\talgo{#1}{\mysubset{x}{U}{P}}{\Set}$}
-{$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
+{$\subalgoimpl{#1}{c}{U}{T}{\Set}$}
+{$\talgo{#1, x : U}{P}{\Prop}$}
+{$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}{\Set}$}
 {$T = \hnf{T}$}
 }
 
 \newcommand{\SubSubAs}[1][\Gamma]{%
 \BAX{SubSub}
-{$\subalgoimpl{#1}{c}{U}{T}$}
-{$\talgo{#1}{\mysubset{x}{U}{P}}{\Set}$}
-{$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
+{$\subalgoimpl{#1}{c}{U}{T}{\Set}$}
+{$\talgo{#1, x : U}{P}{\Prop}$}
+{$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}{\Set}$}
 {}
 }
    
 \newcommand{\SubProofA}[1][\Gamma]{%
   \UAX{SubProof}
-  {$\subalgoimpl{#1}{c}{T}{U}$}
+  {$\subalgoimpl{#1}{c}{T}{U}{\Set}$}
   {$\subalgoimpl{#1}
     {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
       {\ex{\ipG{#1}}{\ip{P}{#1, x : U}[c/x]}}}
-  {T}{\mysubset{x}{U}{P}}$}
+  {T}{\mysubset{x}{U}{P}}{\Set}$}
 {$T = \hnf{T}$}
 }
 
