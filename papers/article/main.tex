@@ -30,16 +30,7 @@
 \input{typing-macros}
 \input{typing-decl}
 \input{subtyping-decl}
-
 \input{typing-algo}
-% \renewcommand{\AppAFull}[9][\Gamma]{
-% \TAX{App}
-% {$\tgen{#1}{#2}{#3} \suba \Pi #4 : #5. #6$}
-% {$\tgen{#1}{#8}{#9}$} % \quad \tgen{#1}{#9, #5}{#7'}$}
-% {$\subalgo{#1}{#9}{#5}{s}$}
-% {$\tgen{#1}{(#2 #8)}{#6 [ #8 / #4 ]}$}
-% {}
-% }
 \input{subtyping-algo}
 \renewcommand{\SubSubAs}[1][\Gamma]{%
 \UAX{SubSub}
@@ -47,6 +38,9 @@
 {$\subalgoimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}{\Set}$}
 {}
 }
+
+\input{typing-impl}
+\input{subtyping-impl}
 
 \usepackage{framed}
 %\usepackage{multicol}
@@ -336,7 +330,7 @@ domains in the \irule{SubProd} rule, not restricting to invariance as in
 \PVS. It is accessory here, as we could have used \emph{co}variance and
 still get the same judgements because we have symetry. However, it will
 become important when we create coercions (see
-\vref{fig:subtyping-impl-rules}).
+\vref{fig:coerce-impl-rules-short}).
 
 The really interesting rules are \irule{SubSub} and
 \irule{SubProof}. The first one allows to use an object of a subset type
@@ -416,7 +410,7 @@ define our algorithmic system. Indeed, when typing an application,
 we need to ensure that the object we apply can be seen as an object of a
 product type modulo the equivalence. This notion is presented in \PVS{} by
 means of a $\mu_0$ operator which was readily adaptable in our setting
-\ref{fig:mualgo}. In Gang Chen's work, the notion is formalized by a
+\vref{fig:mualgo-definition}. In Gang Chen's work, the notion is formalized by a
 new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
 \begin{figure*}[t]
   \def\infvspace{0.5em}
@@ -466,6 +460,8 @@ new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
 %  \vspace{-1em}
 \end{figure*}
 
+\typemuaFig[$\mualgo$ definition]
+
 \begin{figure*}
     \def\fCenter{\suba}
     \def\type{\typea}
@@ -499,7 +495,7 @@ new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
 \begin{paragraph}{}
   The next thing to do is to construct a decidable judgement for
   equivalence given two types. We denote it by $`G \typea T
-  \suba U : s$ (figure \ref{fig:subtyping-algo-rules}).
+  \suba U : s$ (figure \vref{fig:subtyping-algo-rules}).
   In our case, we have to check that conversion is decidable, which is the
   case. We also need to eliminate the transitivity rule which is not
   syntax-directed. That is the purpose of the following theorem:
@@ -597,8 +593,12 @@ algorithm. Finaly we will present a proof sketch of the aforementionned
 proposition.
 
 \subsection{Explicit coercions}
-The algorithm which derives explicit coercions is based on the
-algorithmic equivalence derivations. 
+The derivation of explicit coercions (figure
+\vref{fig:coerce-impl-rules-short}) is based on the
+algorithmic equivalence derivations, hence we can derive a function from
+the judgement. 
+
+\subtqis[Coercion derivation]
 
 \subsection{Terms}
 - Follows algo typing derivation. Done at the same time as typing in the

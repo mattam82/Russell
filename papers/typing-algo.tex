@@ -99,7 +99,7 @@
 \end{figure}
 }
 
-\def\typemuaFig{
+\newcommand{\typemuaFig}[1][Définition de $\mualgo$]{%
   \begin{figure}[ht]
     \[\begin{array}{lcll}
       \mualgoprim{\mysubset{x}{U}{P}} & "=>" &
@@ -109,7 +109,7 @@
       \\
       \mualgo{x} & "=>" & \mualgoprim{\downarrow{x}}
     \end{array}\]
-    \caption{Définition de $\mualgo$}
+    \caption{#1}
     \label{fig:mualgo-definition}
 \end{figure}
 }

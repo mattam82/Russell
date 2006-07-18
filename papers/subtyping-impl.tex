@@ -3,77 +3,86 @@
 \newcommand{\SubConvI}[1][\Gamma]{
 \UAX{SubConv}
 {$T \eqbr U \quad \talgo{`G}{T, U}{s}$}
-{$\subimpl{#1}{\ctxdot}{T}{U}$}
+{$\subimpl{#1}{\ctxdot}{T}{U}{s}$}
 {$T = \hnf{T} `^ T "/=" \Pi, \Sigma, \{|\} `^ U = \hnf{U}$}
 }
 
 \newcommand{\SubConvIs}[1][\Gamma]{
 \UAX{SubConv}
 {$T \eqbr U$}
-{$\subimpl{#1}{\ctxdot}{T}{U}$}
+{$\subimpl{#1}{\ctxdot}{T}{U}{s}$}
 {} 
 }
 
 \newcommand{\SubHnfI}[1][\Gamma]{
 \UAX{SubHnf}
-{$\subimpl{#1}{c}{\hnf{T}}{\hnf{U}} \quad \talgo{`G}{T,U}{s}$}
-{$\subimpl{#1}{c}{T}{U}$}
-{$T "/=" \hnf{T} `V U "/=" \hnf{U}$} 
+{$\subimpl{#1}{c}{\hnf{T}}{\hnf{U}}{s}$}
+{$\subimpl{#1}{c}{T}{U}{s}$}
+{$T "/=" \hnf{T} `V U "/=" \hnf{U}$}
 }
 
 \newcommand{\SubProdI}[1][\Gamma]{%
   \BAX{SubProd}
-  {$\subimpl{#1}{c_1}{U}{T}$}
-  {$\subimpl{#1, x : U}{c_2}{V}{W}$}  
+  {$\subimpl{#1}{c_1}{U}{T}{s_1}$}
+  {$\subimpl{#1, x : U}{c_2}{V}{W}{s_2}$}  
   {$\subimpl{#1}{\lambda x : \ip{U}{#1}. c_2[\ctxdot~(c_1[x])]}
-    {\Pi x : T.V}{\Pi x : U.W}$}
+    {\Pi x : T.V}{\Pi x : U.W}{s_2}$}
+  {$(s_1, s_2) `: \PTSrules$}
+}
+
+\newcommand{\SubProdIs}[1][\Gamma]{%
+  \BAX{SubProd}
+  {$\subimpl{#1}{c_1}{U}{T}{s_1}$}
+  {$\subimpl{#1, x : U}{c_2}{V}{W}{s_2}$}  
+  {$\subimpl{#1}{\lambda x : \ip{U}{#1}. c_2[\ctxdot~(c_1[x])]}
+    {\Pi x : T.V}{\Pi x : U.W}{s_2}$}
   {}
 }
 
 \newcommand{\SubSigmaI}[1][\Gamma]{%
 \BAX{SubSigma}
-{$\subimpl{#1}{c_1}{T}{U}$}
-{$\subimpl{#1, x : T}{c_2}{V}{W}$}
+{$\subimpl{#1}{c_1}{T}{U}{s}$}
+{$\subimpl{#1, x : T}{c_2}{V}{W}{s}$}
 {$\subimpl{#1}{\pair{\ip{\Sigma x : U.W}{`G}}{c_1[\pi_1~\ctxdot]}{c_2[\pi_2~\ctxdot][\pi_1~\ctxdot/x]}}
-  {\Sigma x : T. V}{\Sigma x : U. W}$}
+  {\Sigma x : T. V}{\Sigma x : U. W}{s}$}
 {}
 }
 
 \newcommand{\SubSubI}[1][\Gamma]{%
 \UAX{SubSub}
-{$\subimpl{#1}{c}{U}{T}$}
-{$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
+{$\subimpl{#1}{c}{U}{T}{\Set}$}
+{$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}{\Set}$}
 {$T = \hnf{T}$}
 }
 
 \newcommand{\SubSubIs}[1][\Gamma]{%
 \UAX{SubSub}
-{$\subimpl{#1}{c}{U}{T}$}
-{$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}$}
+{$\subimpl{#1}{c}{U}{T}{\Set}$}
+{$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}{\Set}$}
 {}
 }
    
 \newcommand{\SubProofI}[1][\Gamma]{%
   \UAX{SubProof}
-  {$\subimpl{#1}{c}{T}{U}$}
+  {$\subimpl{#1}{c}{T}{U}{\Set}$}
   {$\subimpl{#1}
     {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
       {\ex{\ip{P}{#1, x : U}[c/x]}}}
-  {T}{\mysubset{x}{U}{P}}$}
+  {T}{\mysubset{x}{U}{P}}{\Set}$}
 {$T = \hnf{T}$}
 }
 
 \newcommand{\SubProofIs}[1][\Gamma]{%
   \UAX{SubProof}
-  {$\subimpl{#1}{c}{T}{U}$}
+  {$\subimpl{#1}{c}{T}{U}{\Set}$}
   {$\subimpl{#1}
     {\elt{}{}{c}
       {\ex{\ip{P}{#1, x : U}[c/x]}}}
-  {T}{\mysubset{x}{U}{P}}$}
+    {T}{\mysubset{x}{U}{P}}{\Set}$}
 {}
 }
 
-\def\subtiFig{
+\newcommand{\subtiFig}[1][Réécriture de la coercion vers \CCI]{
 \begin{figure}[ht]
   \begin{center}
     \def\fCenter{\subtd}
@@ -97,7 +106,7 @@
     \SubProofI\DP
     
   \end{center}
-  \caption{Réécriture de la coercion vers \CCI}
+  \caption{#1}
   \label{fig:coerce-impl-rules}
 \end{figure}
 }
@@ -110,7 +119,7 @@
     \SubHnfI\DP
 
     \vspace{\infvspace}
-    \SubProdI\DP
+    \SubProdIs\DP
     
     \vspace{\infvspace}
     \SubSigmaI\DP
@@ -119,13 +128,13 @@
     \SubSubIs\DP
 
     \vspace{\infvspace}
-    \SubProofI\DP
+    \SubProofIs\DP
   \end{center}}
 
-\def\subtis{
+\newcommand{\subtis}[1][Réécriture de la coercion vers \CCI]{
 \begin{figure}[ht]
   \subtisc
-  \caption{Réécriture de la coercion vers \CCI}
+  \caption{#1}
   \label{fig:coerce-impl-rules-short}
 \end{figure}
 }
