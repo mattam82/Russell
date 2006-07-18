@@ -112,6 +112,7 @@
 \def\ConvRule{Conv}
 
 \def\SubReflRule{$\rightslice$-Refl}
+\def\SubSymRule{$\rightslice$-Sym}
 \def\SubTransRule{$\rightslice$-Trans} 
 \def\SubConvRule{$\rightslice$-Conv}
 \def\SubHnfRule{$\rightslice$-$\downarrow$}
@@ -192,6 +193,7 @@
 {\ifstreq{#1}{Conv}{\ConvRule}
 {\ifstreq{#1}{Subset}{\SubsetRule}
 {\ifstreq{#1}{SubRefl}{\SubReflRule}
+{\ifstreq{#1}{SubSym}{\SubSymRule}
 {\ifstreq{#1}{SubTrans}{\SubTransRule}
 {\ifstreq{#1}{SubConv}{\SubConvRule}
 {\ifstreq{#1}{SubHnf}{\SubHnfRule}
@@ -212,8 +214,7 @@
 {\ifstreq{#1}{PiTeq}{\PiTeqRule}
 {\ifstreq{#1}{SigmaTeq}{\SigmaTeqRule}
 {\ifstreq{#1}{SubsetTeq}{\SubsetTeqRule}
-{\ifstreq{#1}{*}{\_}{#1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
+{\ifstreq{#1}{*}{\_}{#1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 \newcommand{\rulename}[1]{{\sc \inductionrule{#1}}}
 
 % Factorize!!!
@@ -222,7 +223,6 @@
 \def\rname{\rulename}
 
 \def\rulelabel{\rulename}
-
 
 \def\infvspace{1em}
 

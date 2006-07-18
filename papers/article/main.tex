@@ -11,6 +11,7 @@
 %\usepackage{cmbright}
 \usepackage{concmath}
 \usepackage{ifthen}
+\usepackage{url}
 \usepackage{varioref}
 
 \newboolean{defineTheoremFr}
@@ -24,8 +25,6 @@
 \EnableBpAbbreviations
 \def\ScoreOverhang{3pt}			% How much underlines extend out
 \def\defaultHypSeparation{\hskip.05in}   % Used if \insertBetweenHyps isn't given
-
-
 
 \input{typing-macros}
 \input{typing-decl}
@@ -45,6 +44,8 @@
 \usepackage{framed}
 %\usepackage{multicol}
 
+\def\CCI{\CIC}
+
 \author{Matthieu Sozeau\inst{1}}
 
 \institute{LRI, Paris Sud XI University\\\email{sozeau@lri.fr}}
@@ -54,22 +55,22 @@
 \begin{document}
 \maketitle
 
-\abstract{We set out to establish a phase distinction between writing and
-  proving algorithms in the \Coq{} environment. Concretely, this means
-  allowing to write algorithms as easily as in a pratical functionnal 
-  programming language
-  whilst giving them as rich a specification as desired and proving that
-  the code meets the specification using the whole \Coq{} proof
-  apparatus. This is achieved by extending conversion to an equivalence 
-  which relates types
-  and subsets based on them, a technique  
-  originating from the ``\emph{Predicate subtyping}'' feature of \PVS{} and
-  following mathematical convention. The typing judgments can be
-  translated to the \CICfull (\CIC{}) by means of an interpretation which inserts
-  coercions at the appropriate places. These coercions can contain
-  existential variables representing the propositional parts of the final
-  term. A prototype implementation of this process
-  has been implemented.}
+\abstract{We propose a new language for writing programs with dependent
+  types which can be elaborated into \Coq terms. This language permits
+  to establish a phase distinction between writing and proving
+  algorithms in the \Coq{} environment.  Concretely, this means allowing
+  to write algorithms as easily as in a pratical functionnal programming
+  language whilst giving them as rich a specification as desired and
+  proving that the code meets the specification using the whole \Coq{}
+  proof apparatus. This is achieved by extending conversion to an
+  equivalence which relates types and subsets based on them, a technique
+  originating from the ``\emph{Predicate subtyping}'' feature of \PVS{}
+  and following mathematical convention. The typing judgments can be
+  translated to the \CICfull (\CIC{}) by means of an interpretation
+  which inserts coercions at the appropriate places. These coercions can
+  contain existential variables representing the propositional parts of
+  the final term. A prototype implementation of this process has been
+  implemented.}
 
 \section{Introduction}
 There are many means to program in the \Coq{} environment. One
@@ -83,13 +84,13 @@ essence. It is however difficult to mix the two methods
 propose a solution to overcome this difficulty, based on the \ps{}
 \cite{Shankar&Owre:WADT99} technique of \PVS{}
 \cite{PVS:Language,PVS-Semantics:TR}. This solution also provides
-facilities to express properties with a syntaxicaly more mathematical flavor,
-bridging the gap between mathematical convention and type theory.
+facilities to express properties with a more mathematical flavor,
+bridging a gap between mathematical convention and type theory.
 
 The \Program{} tactic by C. Parent \cite{conf/mpc/Parent95} had the same
 goal as ours but a slightly different method for achieving it. It was strongly
 linked to the extraction mechanism included in \Coq, both theoreticaly
-and practically. Sketching the mechanism, they defined a weakened
+and practically. Sketching the mechanism, she defined a weakened
 extraction operation on \CIC{} terms which could be inverted because it left enough
 information in the extracted term to rebuild a partial proof. The
 mechanism, while general and theoreticaly well thought out, required
@@ -108,7 +109,7 @@ assistant with proof terms, which formally justifies the extension in
 the first place.
 
 The rest of the article is organized as follows: first we present a
-type system based on \ECC{}, which integrates subset ``subtyping'', and
+type system based on \CC, which integrates subset ``subtyping'', and
 we show how it relates to \CIC{} by means of traductions between
 judgements of the two systems. Then, we present a prototype
 implementation with some case studies, and finally we give our
@@ -281,17 +282,18 @@ in \Russell{} terms, leaving only the type former.
     
     \AXC{$`G \type a : A$}
     \AXC{$`G \type p : P[a/x]$}
-    \BIC{$`G \type \elt{A}{(\lambda x : A.P)}{a}{p} : \mysubset{x}{A}{P}$}
+    \AXC{$`G \type \mysubset{x}{A}{P} : \Set$}
+    \TIC{$`G \type \elt{A}{(\lambda x : A.P)}{a}{p} : \mysubset{x}{A}{P}$}
     \DP
     \vspace{\infvspace}
 
     \AXC{$`G \type t : \mysubset{x}{A}{P}$}
-    \UIC{$`G \type \text{proj1\_sig}~t : A$}
+    \UIC{$`G \type \eltpit~t : A$}
     \DP
     \vspace{\infvspace}
 
     \AXC{$`G \type t : \mysubset{x}{A}{P}$}
-    \UIC{$`G \type \text{proj2\_sig}~t : P[\text{proj1\_sig}~t/x]$}
+    \UIC{$`G \type \eltpip~t : P[\eltpit~t/x]$}
     \DP
   \end{center}
   \vspace{-1em}
@@ -307,8 +309,7 @@ include our subset equivalence.
 We have renamed the technique from \ps{} to 
 \emph{subset equivalence} because we have a symmetric relation, contrary
 to usual subtyping relations. It also conveys the idea that it can
-include the usual $\beta\pi$-conversion directly in the judgement, 
-although it may not be possible if we have cummulative universes.
+include the usual $\beta\pi$-conversion directly in the judgement.
 The judgment $`G \typed T \subd{} U : s$ (figure
 \vref{fig:conversion-decl-rules}) reads $T$ is equivalent to $U$ in
 environment $`G$, both being sorted by $s$. 
@@ -323,7 +324,8 @@ The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
 judgment. We use a judgemental equality here, which will be refined by
 the usual conversion relation later. The \irule{SubSym} and
 \irule{SubTrans} rules ensure that our judgement constructs an \emph{equivalence} and has
-proper modularity. The next two rules do context closure for dependent
+proper modularity. The next two rules (\irule{SubProd} and
+\irule{SubSigma}) do context closure for dependent
 products and sums. It is remarkable that we use contravariance
 \cite{journals/toplas/Castagna95} for
 domains in the \irule{SubProd} rule, not restricting to invariance as in
@@ -400,8 +402,8 @@ formalization and the proof fall outside the scope of this paper.
 We use a standard transformation to get an algorithm from our typing
 rules, integrating the conversion (or subsumption) rule
 (here \irule{Coerce}) to the premises of the other rules.
-We recall that $`G \type t : s$ is shorthand for $`G \type t : T$ and
-$T  `= s$ with $s `: \PTSsorts$ in a algorithmic presentation.
+%We recall that $`G \type t : s$ is shorthand for $`G \type t : T$ and
+%$T  `= s$ with $s `: \PTSsorts$ in a algorithmic presentation.
 \TODO{App?, SumDep?, Pi?}. Our algorithmic judgement $`G \typea t : T$
 (figure \vref{fig:typing-algo-rules})
 reads: $t$ is a well-typed term of type $T$ in environment $`G$.
@@ -410,8 +412,9 @@ define our algorithmic system. Indeed, when typing an application,
 we need to ensure that the object we apply can be seen as an object of a
 product type modulo the equivalence. This notion is presented in \PVS{} by
 means of a $\mu_0$ operator which was readily adaptable in our setting
-\vref{fig:mualgo-definition}. In Gang Chen's work, the notion is formalized by a
-new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
+(figure \vref{fig:mualgo-definition}). In Gang Chen's work, the notion is formalized by a
+new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator
+$\mualgo$, except ours finds $\Sigma_{lub}$s too.
 \begin{figure*}[t]
   \def\infvspace{0.5em}
     \def\type{\typea}
@@ -499,7 +502,7 @@ new judgement $\Pi_{lub}$ which is essentialy equivalent to the operator.
   In our case, we have to check that conversion is decidable, which is the
   case. We also need to eliminate the transitivity rule which is not
   syntax-directed. That is the purpose of the following theorem:
-\begin{theorem}[Elimination of transitivity]
+\begin{theorem}[Admissibility of transitivity]
   If $`G \typea T \suba U : s$ and $`G \typea U \suba V : s$, then $`G \typea T
   \suba V : s$.
 \end{theorem}
@@ -547,14 +550,14 @@ except for the following cases:
 We can now prove the following:
 \begin{theorem}[Forgetful map correctness]
   If $`G \typec t : T$ then $`G^{\circ} \typea t^{\circ} : T^{\circ}$ if $()^{\circ}$ is
-  defined on $`G, t$ and $T$.
+  defined (ie, does not return $`_$) on $`G, t$ and $T$.
 \end{theorem}
 
-Practically, this means we can use almost any existing definition in the
-\Coq environment, potentially turning them (locally) to an opaque form
-if their body is not traductible. Obviously, this map is involutive and
+Practically, this means we can use almost all existing definitions in the
+\Coq environment. Obviously, this map is involutive and
 the identity on \Russell terms. 
-
+%, potentially turning them (locally) to an opaque form
+% if their body is not traductible
 \section{From \lng{} to \CCq{}}
 We will now build an interpretation
 $\ip{t}{`G}$ of \Russell terms $t$ in environment $`G$ into \CCI
@@ -589,7 +592,7 @@ The remainder of this section is organized as follows: first we will
 define the explicit coercion derivation algorithm which will permit to
 put proof obligations in the terms, then we will define the
 interpretation of terms which is mutually recursive with the precedent
-algorithm. Finaly we will present a proof sketch of the aforementionned
+algorithm. Finally we will present a proof sketch of the aforementionned
 proposition.
 
 \subsection{Explicit coercions}
@@ -598,7 +601,7 @@ The derivation of explicit coercions (figure
 algorithmic equivalence derivations, hence we can derive a function from
 the judgement. 
 
-\subtqis[Coercion derivation]
+\subtis[Coercion derivation]
 
 \subsection{Terms}
 - Follows algo typing derivation. Done at the same time as typing in the
