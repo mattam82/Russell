@@ -41,6 +41,8 @@
 \input{typing-impl}
 \input{subtyping-impl}
 
+\def\sidecond{\sideconden}
+
 \usepackage{framed}
 %\usepackage{multicol}
 
@@ -599,13 +601,103 @@ proposition.
 The derivation of explicit coercions (figure
 \vref{fig:coerce-impl-rules-short}) is based on the
 algorithmic equivalence derivations, hence we can derive a function from
-the judgement. 
+the judgement which build a coercion given two types. 
+The side-conditions of the rules have not changed, so we omit them for
+improved readability.
 
 \subtis[Coercion derivation]
 
-\subsection{Terms}
-- Follows algo typing derivation. Done at the same time as typing in the
-impl.
+Coercions are formalized as multi-holes evaluation contexts, with
+$\ctxdot$ the denotation of a hole. We define the instanciation $C[x]$ of a context $C$
+by a term $x$ as simultaneous substitution of $x$ for every $\ctxdot$ in $C$.
+Hence if $C$ is an evaluation context and $x$ a term, $C[x]$ is a term
+(ie, it cannot contain $\ctxdot$).
+The holes will denote the object to which the coercion is applied. Other
+presentations are possible, notably the ``\LMS{}'' style of \cite{longo95logic} which
+was adopted by Gang Chen in his treatment of coercive subtyping for the
+Calculus of Constructions \cite{conf/popl/Chen03}, and the presentation 
+of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
+in defining a judgement $x : A \type y : B$ which reads: $A$ is
+coercible to $B$ and the coercion is $\lambda x : A.y$. This
+presentation is very elegant and well suited for checking coherence and
+of the coercion judgement, which we don't need here as we have unicity
+of coercions. Moreover, it did not seem readily usable in
+our setting, where coercions may contain metavariables. Similarly, Amokrane Sa\"ibi defines
+a coercion derivation algorithm which respect some coherence criteria,
+roughly, that type-erased coercions $\beta\eta$-reduce to the
+identity. Again this wasn't adapted to our setting, so we invented this
+new presentation. 
+
+We suppose that conversion is preserved by the interpretation $\ip{}{}$, so
+the rule \irule{SubConv} derives an empty coercion, as the target system
+will be able to derive itself that $\ip{T}{`G} `= \ip{U}{`G}$.
+Similarly for \irule{SubHnf}, we rely on the target's system conversion
+rule so that the coercion $c$ of codomain $\ip{\hnf{U}}{`G}$ can be seen
+as an object of type $\ip{U}{`G}$.
+
+Next, we have the rules for products and sums, which compose
+coercions. In the \irule{SubProd} rule, we first coerce the argument to
+an object of type $\ip{T}{`G}$. Then we apply it to the coerced
+function, resulting in an object $\ctxdot~(c_1[x])$ of type
+$\ip{V}{`G, x : T}[c_1[x]/x]$. We'll see later that this type is equivalent to
+$\ip{V}{`G, x : U}$, so we can apply the second coercion and get an
+object of type $\ip{W}{`G}$. Similarly for dependent sums \TODO{}
+
+Now for the original part, the \irule{SubSub} rule simply inserts a
+projection before applying the inductively defined coercion on the
+support of the subset. On the other hand, \irule{SubProof} creates and
+object of a subset using its sole constructor \sref{elt}. The object
+part is given by the coercion between the support while the proof part
+is promised using a metavariable of type $\ip{P}{`G, x : U}[c/x]$ which
+we will turn later into a proof obligation. 
+
+\subsection{Interpretation of terms}
+The interpretation of terms from \Russell to \CCq (figure
+\vref{fig:interp}) is a straightforward
+recursive traversal of algorithmic typing derivations. In other, more
+practical words, we can do interpretation of terms simultaneously with
+typing in our implementation, just like for the existing coercion system
+of \Coq. 
+
+\interpfig[Interpretion of terms]
+
+We describe the case of application here, others are similar. First we
+get the types $F$ and $U$ of the function $f$ and argument $u$ by recursively calling the
+typing function on both terms. Then we must ensure that $F$ can indeed
+be seen as a product using the $\mualgo$ operator. We can then build
+the coercion between $F$ and this product, and between $U$ and its
+domain. We finally instantiate these coercions by their corresponding
+interpreted objects and return their application.
+
+\subsection{A little more expressiveness}
+One may wonder how can we interpret \Russell terms to a system with only
+$\beta\pi$-equivalence. Indeed, if the algorithmic coercion judgement is transitive
+and has a unicity property, then we may suppose that the coercions
+themselves have corresponding properties:
+\begin{proposition}[Coercion transitivity]
+  If $\subimpl{`G}{c_1}{T}{U}{s}$ and $\subimpl{`G}{c_2}{U}{V}{s}$ then
+  there exists a coercion $c$ so that $\subimpl{`G}{c}{T}{V}{s}$ and $c
+  \eqqbp c_2 `o c_1$ (where $c_2 `o c_1 = c_2[c_1]$).
+\end{proposition}
+
+Now take the following example
+\begin{example}[Transitivity needs eta]
+  Let $T, U, V = \Pi x : A.B$.
+  Then $c_1$ (and $c_2$ by unicity) must have the form $\lambda x :
+  \ip{C}{`G}.c^2_1[\ctxdot~c^1_1[x]]$ (respectively $\lambda x : \ip{A}{`G}.c^2_2[\ctxdot~c^1_2[x]]$).
+  So $c_2 `o c_1 = \lambda x : \ip{A}{`G}. c^2_1[(\lambda x :
+  \ip{A}{`G}.c^2_2[\ctxdot~c^1_2[x]])~c^1_1[]] \redbp \lambda x :
+  \ip{A}{`G}. c^2_1[c^2_2[\ctxdot~c^1_2[c^1_1[x]]]]$.
+  Suppose all $c^i_j$ have been derived by \irule{SubConv}. Then we have 
+  $c_2 `o c_1 = $.
+  
+
+\end{example}
+
+
+
+
+\ccieqfig[Equational theory of \CCq]
 
 \subsection{Properties}
 - Proofs.
@@ -614,6 +706,8 @@ impl.
 \subsection{Related work}
 
 \subsection{Further work}
+
+\newpage
 
 \bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
