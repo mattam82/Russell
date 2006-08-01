@@ -620,12 +620,12 @@ of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
 in defining a judgement $x : A \type y : B$ which reads: $A$ is
 coercible to $B$ and the coercion is $\lambda x : A.y$. This
 presentation is very elegant and well suited for checking coherence and
-of the coercion judgement, which we don't need here as we have unicity
+of the coercion judgement, which we don't need here as we can get unicity
 of coercions. Moreover, it did not seem readily usable in
 our setting, where coercions may contain metavariables. Similarly, Amokrane Sa\"ibi defines
 a coercion derivation algorithm which respect some coherence criteria,
 roughly, that type-erased coercions $\beta\eta$-reduce to the
-identity. Again this wasn't adapted to our setting, so we invented this
+identity. Again, this wasn't adapted to our setting, so we invented this
 new presentation. 
 
 We suppose that conversion is preserved by the interpretation $\ip{}{}$, so
@@ -641,14 +641,21 @@ an object of type $\ip{T}{`G}$. Then we apply it to the coerced
 function, resulting in an object $\ctxdot~(c_1[x])$ of type
 $\ip{V}{`G, x : T}[c_1[x]/x]$. We'll see later that this type is equivalent to
 $\ip{V}{`G, x : U}$, so we can apply the second coercion and get an
-object of type $\ip{W}{`G}$. Similarly for dependent sums \TODO{}
+object of type $\ip{W}{`G}$. There is a little twist when coercing the
+second component of a dependent sum. Indeed, we must simultaneously
+substitute the first projection of the coerced sum in the second
+coercion which was typed in environment $`G, x : T$ and also instanciate
+the coercion with the second component. Clearly, the $\ctxdot$ of the
+former shouldn't be instanciated with the later, so we must first
+instanciate $c_2$ and then substitute $\pi_1~\ctxdot$ for $x$, knowing
+the $x$ can't appear in $\pi_2~t$ where $t : \Sigma x : T.V$.
 
 Now for the original part, the \irule{SubSub} rule simply inserts a
 projection before applying the inductively defined coercion on the
-support of the subset. On the other hand, \irule{SubProof} creates and
+support of the subset. On the other hand, \irule{SubProof} creates an
 object of a subset using its sole constructor \sref{elt}. The object
-part is given by the coercion between the support while the proof part
-is promised using a metavariable of type $\ip{P}{`G, x : U}[c/x]$ which
+part is given by the coercion to the support of the target subset
+while the proof part is promised using a metavariable of type $\ip{P}{`G, x : U}[c/x]$ which
 we will turn later into a proof obligation. 
 
 \subsection{Interpretation of terms}
@@ -671,43 +678,103 @@ interpreted objects and return their application.
 
 \subsection{A little more expressiveness}
 One may wonder how can we interpret \Russell terms to a system with only
-$\beta\pi$-equivalence. Indeed, if the algorithmic coercion judgement is transitive
-and has a unicity property, then we may suppose that the coercions
-themselves have corresponding properties:
-\begin{proposition}[Coercion transitivity]
-  If $\subimpl{`G}{c_1}{T}{U}{s}$ and $\subimpl{`G}{c_2}{U}{V}{s}$ then
-  there exists a coercion $c$ so that $\subimpl{`G}{c}{T}{V}{s}$ and $c
-  \eqqbp c_2 `o c_1$ (where $c_2 `o c_1 = c_2[c_1]$).
+$\beta\pi$-equivalence. 
+Indeed, if our algorithmic system has transitivity and symetry of
+coercions, we expect that the derived coercions will inherit these
+properties, for example:
+\begin{proposition}[Symetry of coercions]
+  If $\subimpl{`G}{c}{T}{U}{s}$ then there exists $c^{-1}$ so that
+  $\subimpl{`G}{c^{-1}}{U}{T}{s}$ and $c `o c^{-1} `= c^{-1} `o c `=
+  \ctxdot$.
 \end{proposition}
 
-Now take the following example
-\begin{example}[Transitivity needs eta]
-  Let $T, U, V = \Pi x : A.B$.
-  Then $c_1$ (and $c_2$ by unicity) must have the form $\lambda x :
-  \ip{C}{`G}.c^2_1[\ctxdot~c^1_1[x]]$ (respectively $\lambda x : \ip{A}{`G}.c^2_2[\ctxdot~c^1_2[x]]$).
-  So $c_2 `o c_1 = \lambda x : \ip{A}{`G}. c^2_1[(\lambda x :
-  \ip{A}{`G}.c^2_2[\ctxdot~c^1_2[x]])~c^1_1[]] \redbp \lambda x :
-  \ip{A}{`G}. c^2_1[c^2_2[\ctxdot~c^1_2[c^1_1[x]]]]$.
-  Suppose all $c^i_j$ have been derived by \irule{SubConv}. Then we have 
-  $c_2 `o c_1 = $.
-  
-
+Now take the following example:
+\begin{example}[Symetry for products]
+  Let $T, U = \Pi x : A.B$. The coercions $c, c^{-1}$ derived by
+  the algorithm must have the form $\lambda x :
+  \ip{A}{`G}.c_2[\ctxdot~c_1[x]]$, hence we must include the $\eta$
+  rule in order to have $c `o c^{-1} `= \ctxdot$.
 \end{example}
 
+Similarly, we must add $\eta$ rules for all introduction terms of our
+language if we want to be conservative (the coercion algorithm will
+always derive $\eta$-long normal forms, so we must be able to prove that they
+are equivalent to the empty coercion) and have unicity of
+coercions. The later is an important property of our system, as it
+corresponds in practice to the determinism of proof-obligations
+generation. The complete equational theory of \CCq{} is given in figure
+\vref{fig:eqccq}. It includes $\eta$, surjective pairing for dependent
+sums and subsets ($\rho$) and proof-irrelevance for the second component
+of subset objects.
+Benjamin Werner has studied the addition of proof-irrelevance (rule
+$\sigma$) in the calculus of constructions
+\cite{Werner:ProofIrrelevance}. It is not a trivial extension and it has
+far-reaching consequences on the model of the calculus
+\cite{DBLP:conf/types/MiquelW02}. We direct the reader to these papers for further
+information on the subject.
 
-
-
-\ccieqfig[Equational theory of \CCq]
+\ccqeqfig[Equational theory of \CCq]
 
 \subsection{Properties}
-- Proofs.
+The correctness proof of the traduction is very involved, so we will
+only sketch it here. A paper version \vref{sozeau:coq/Russell/report} is
+available (in french) and a mechanically checked proof is in the works.
+
+
+We first prove reflexivity, symmetry and transitivity of the coercion
+derivation algorithm, which extends previous proofs for the algorithmic
+system with properties on
+the generated coercions. Then we show substitutivity of the
+interpretation: if $`G, x : U, `D \type t : T$ then $\ip{t[u/x]}{`G,
+ `D[u/x]} = \ip{t}{`G, x : U, `D}[\ip{u}{`G}/x]$. We extend the notion
+of coercion to contexts next and show stability of judgements under
+context coercion. It is then possible to prove a lemma about commutativity of
+subtitution with the interpretation and coercions. Then we get an
+important corrolary: if $`G \type u : U$, $\subimpl{`G}{c}{U}{V}{s}$ and
+$`G, x : V \type T : s$ then $\ip{T[u/x]}{`G} `= \ip{T}{`G, x :
+  V}[c[\ip{u}{`G}]/x]$. Essentially, it shows that coercions inserted
+by the interpretation depend only on the context and hence could be
+added later using substitution instead. This allows us to show that
+equivalence is conserved by interpretation and finaly that our
+interpretation is correct.
 
 \section{Conclusion}
+We have developed a new language for writing programs in the \Coq proof
+assistant which allows the user to specify complex programs while
+keeping the corresponding code simple. It is a first step towards
+interpretation of \ML code into \Coq for building certified
+programs. While the system and its accompanying proofs may seem complex, the
+implementation is short, simple and has been tested with success on
+various examples. This works is also a second proof of the
+meaningfullness of the Predicate Subtyping feature of \PVS{} and may
+help build a common interface for the two provers. 
+
 \subsection{Related work}
+Other efforts to build certified programs using type theory include
+Cayenne \cite{Augustsson99} and Epigram
+\cite{DBLP:journals/jfp/McBrideM04}. Cayenne offers dependent
+types and general recursion at the expense of a non-terminating type
+checker, it can be sought of as a testbed for developing languages with
+dependent types but is not so much aimed at building certified programs.
+Epigram ought to become a complete programming language with dependent
+types at its heart. Instead of using a phase distinction to separate
+coding and proving, Epigram is based on an interactive, 2-dimensional editing process
+where code and proofs are written incrementaly to get a complete program.
+Using type annotations and with the help of the editor for structuring, 
+they are able to write programs with precise specifications. However it
+is not obvious if it could be made usable by programmers because of the
+paradigm change and scalling issues. 
 
 \subsection{Further work}
-
-\newpage
+Much has to be done for integrating \Russell cleanly into \Coq. The
+treatment of existential variables of \Coq has to be improved, the
+type inference algorithm needs some tuning to become more similar to \ML
+and an implementation of proof-irrelevance, while rarely needed in
+practice, is necessary to have a robust system.
+We also hope to extend this mechanism of proof-obligations generation to other
+constructs, notably inductive types. Finally, we intend to use this system as a
+basis for interpretation of \ML{} programs in \Coq, using a monadic
+traduction or some kind of effects as first class objects.
 
 \bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
