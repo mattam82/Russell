@@ -237,7 +237,8 @@ our main purpose which is programming. We omit (co-)inductive
 constructs here, as they can be considered as constants and leave their
 treatment as future work. The judgement $`G \typed t : T$
 means $t$ is a well-typed term of type $T$ in environment $`G$, and $`G
-\typed T \subd U$ means $T$ is equivalent to $U$ in environment $`G$. 
+\typed T \subd U : s$ means $T$ is equivalent to $U$ in environment
+$`G$, both sorted with $s$.
 Following the presentation as a Pure Type System, 
 the set of sorts $\PTSsorts$ is defined as $\setproptype$. As usual, we
 let $s, s_i$ for $i `: `N$ range over sorts. The
