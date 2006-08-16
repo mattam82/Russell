@@ -46,8 +46,6 @@
 \usepackage{framed}
 %\usepackage{multicol}
 
-\def\CCI{\CIC}
-
 \author{Matthieu Sozeau\inst{1}}
 
 \institute{LRI, Paris Sud XI University\\\email{sozeau@lri.fr}}
@@ -82,10 +80,10 @@ specifications, or give a rich type expressing them as a goal and use the
 proof tactics to solve it, producing a corresponding program by the
 \CurryHoward isomorphism but having much less control on its algorithmic
 essence. It is however difficult to mix the two methods
-(writing code and prove interactively) using a rich specification. We
+(writing code and proving interactively) using a rich specification. We
 propose a solution to overcome this difficulty, based on the \ps{}
 \cite{Shankar&Owre:WADT99} technique of \PVS{}
-\cite{PVS:Language,PVS-Semantics:TR}. This solution also provides
+\cite{PVS-Semantics:TR}. This solution also provides % PVS:Language,
 facilities to express properties with a more mathematical flavor,
 bridging a gap between mathematical convention and type theory.
 
@@ -111,7 +109,7 @@ assistant with proof terms, which formally justifies the extension in
 the first place.
 
 The rest of the article is organized as follows: first we present a
-type system based on \CC, which integrates subset ``subtyping'', and
+type system based on \CIC, which integrates subset ``subtyping'', and
 we show how it relates to \CIC{} by means of traductions between
 judgements of the two systems. Then, we present a prototype
 implementation with some case studies, and finally we give our
@@ -126,7 +124,7 @@ then $X `; X$ and if $X `; X$ then $X `: X$, hence we have an
 inconsistency. \Russell{} was one of the pioneers of type theory when he
 devised a set theory with a restricted comprehension axiom that
 permitted to create subsets only from already defined subsets,
-forbidding the definition of $X$ \cite{whitehead.russell:principia}. 
+forbidding the definition of $X$. % \cite{whitehead.russell:principia}. 
 
 The subset equivalence idea is to identify elements of subsets if
 they are built from the same underlying set. That is, we can identify
@@ -150,7 +148,7 @@ because they separate the objects we want to manipulate and the
 properties which we use to reason about them.
 
 \subsection{From \ps{} to subset equivalence}
-The \ps{} mechanism \cite{Rushby98:TSE,Shankar&Owre:WADT99}
+The \ps{} mechanism \cite{Shankar&Owre:WADT99} %Rushby96:TSE
 is an extension of the \PVS type system which internalizes this idea.
 Concretely, this means that the following rules are derivable in \PVS:
 \begin{center}
@@ -232,12 +230,15 @@ essentially because of the proof terms, but we have also extended it in some way
 \end{figure}
 %
 \Russell{}'s type system (figure \vref{fig:typing-decl-rules}) is based
-on the Calculus of Constructions \cite{coquandhuet88,Barras99}, with sigma types but without universes.
+on the Calculus of (Co-)Inductive Constructions
+\cite{coquandhuet88}, with sigma types but without universes.
 This restriction may be removed in future work, but cause no problem for
-our main purpose which is programming. The judgement $`G \typed t : T$
+our main purpose which is programming. We omit (co-)inductive
+constructs here, as they can be considered as constants and leave their
+treatment as future work. The judgement $`G \typed t : T$
 means $t$ is a well-typed term of type $T$ in environment $`G$, and $`G
 \typed T \subd U$ means $T$ is equivalent to $U$ in environment $`G$. 
-Following the presentation as a pure type system \cite{barendregt91}, 
+Following the presentation as a Pure Type System, 
 the set of sorts $\PTSsorts$ is defined as $\setproptype$. As usual, we
 let $s, s_i$ for $i `: `N$ range over sorts. The
 axioms are $\PTSaxioms = \{ (\Set, \Type), (\Prop, \Type) \}$ and the
@@ -299,7 +300,7 @@ in \Russell{} terms, leaving only the type former.
     \DP
   \end{center}
   \vspace{-1em}
-  \caption{Subset type in \CCI}
+  \caption{Subset type in \CIC}
   \label{fig:cci-subset}
   \vspace{-2.5em}
 \end{figure}
@@ -328,8 +329,8 @@ the usual conversion relation later. The \irule{SubSym} and
 \irule{SubTrans} rules ensure that our judgement constructs an \emph{equivalence} and has
 proper modularity. The next two rules (\irule{SubProd} and
 \irule{SubSigma}) do context closure for dependent
-products and sums. It is remarkable that we use contravariance
-\cite{journals/toplas/Castagna95} for
+products and sums. It is remarkable that we use contravariance for
+% \cite{journals/toplas/Castagna95}
 domains in the \irule{SubProd} rule, not restricting to invariance as in
 \PVS. It is accessory here, as we could have used \emph{co}variance and
 still get the same judgements because we have symetry. However, it will
@@ -345,10 +346,11 @@ we do not care about its provability.
 
 \subsubsection{Properties}
 We have proved the metatheory for this system in \Coq{}
-\cite{sozeau:coq/Russell/meta}. We have assumed that it is strongly
+\cite{sozeau:Coq/Russell/meta-web}. We have assumed that it is strongly
 normalizing (SN) but we have proved subject reduction (SR) for it: 
 if $`G \typed t : T$ and $t "->"_{\beta\pi} t'$ then $`G \typed t' :
-T$. Gang Chen \cite{ChenPhD} has studied various type systems from the
+T$ (our proof of SR doesn't depend on SN).
+Gang Chen \cite{ChenPhD} has studied various type systems from the
 $\lambda$-cube extended by subtyping or coercive subtyping
 \cite{DBLP:conf/csl/Luo96}, including the Calculus of Constructions, and
 proved such results as SN and SR for them. It requires a very careful
@@ -532,11 +534,11 @@ Finaly, we can state the desired property of the algorithmic system:
   s$ are decidable problems.
 \end{theorem}
 
-\subsection{From \CC to \lng{}}
-We have presented a calculus based on \CC with a stronger equivalence
+\subsection{From \CIC to \lng{}}
+We have presented a calculus based on \CIC with a stronger equivalence
 but with restricted typing rules. We will now see how they relate
 formally.
-We can build a forgetful map from terms of \CCI to \Russell
+We can build a forgetful map from terms of \CIC to \Russell
 (interpreting inductives as constants). It bears
 relation to the $`e$ extraction function defined in
 \cite{Werner:ProofIrrelevance}. Essentially, \Russell{} terms do not
@@ -560,15 +562,15 @@ Practically, this means we can use almost all existing definitions in the
 the identity on \Russell terms. 
 %, potentially turning them (locally) to an opaque form
 % if their body is not traductible
-\section{From \lng{} to \CCq{}}
+\section{From \lng{} to \CICq{}}
 We will now build an interpretation
-$\ip{t}{`G}$ of \Russell terms $t$ in environment $`G$ into \CCI
+$\ip{t}{`G}$ of \Russell terms $t$ in environment $`G$ into \CIC
 terms. We will check at the end that it respects the $()^{\circ}$ operator
 in the sense that if $t$ is well-typed in $`G$ then $\ip{t}{`G}^{\circ} = t$.
 
-Our interpretation will build a full-fledged \CCI term from its
+Our interpretation will build a full-fledged \CIC term from its
 algorithmic skeleton and a rich type written in \Russell. Obviously, we
-cannot infer proof terms where they are needed in \CCI, but we can build
+cannot infer proof terms where they are needed in \CIC, but we can build
 a \emph{partial} term, leaving typed holes where proofs are
 needed. Hence we add a rule to build existential variables (or
 metavariables) in the target calculus ($\typeq$ denotes the new system's typing judgement):
@@ -619,8 +621,8 @@ Calculus of Constructions \cite{conf/popl/Chen03}, and the presentation
 of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
 in defining a judgement $x : A \type y : B$ which reads: $A$ is
 coercible to $B$ and the coercion is $\lambda x : A.y$. This
-presentation is very elegant and well suited for checking coherence and
-of the coercion judgement, which we don't need here as we can get unicity
+presentation is very elegant and well suited for checking coherence 
+of coercions, which we don't need here as we can get unicity
 of coercions. Moreover, it did not seem readily usable in
 our setting, where coercions may contain metavariables. Similarly, Amokrane Sa\"ibi defines
 a coercion derivation algorithm which respect some coherence criteria,
@@ -647,8 +649,8 @@ substitute the first projection of the coerced sum in the second
 coercion which was typed in environment $`G, x : T$ and also instanciate
 the coercion with the second component. Clearly, the $\ctxdot$ of the
 former shouldn't be instanciated with the later, so we must first
-instanciate $c_2$ and then substitute $\pi_1~\ctxdot$ for $x$, knowing
-the $x$ can't appear in $\pi_2~t$ where $t : \Sigma x : T.V$.
+instanciate $c_2$ and then substitute $\pi_1~\ctxdot$ for $x$ 
+($x$ cannot appear in $\pi_2~t$ where $t : \Sigma x : T.V$).
 
 Now for the original part, the \irule{SubSub} rule simply inserts a
 projection before applying the inductively defined coercion on the
@@ -659,7 +661,7 @@ while the proof part is promised using a metavariable of type $\ip{P}{`G, x : U}
 we will turn later into a proof obligation. 
 
 \subsection{Interpretation of terms}
-The interpretation of terms from \Russell to \CCq (figure
+The interpretation of terms from \Russell to \CICq (figure
 \vref{fig:interp}) is a straightforward
 recursive traversal of algorithmic typing derivations. In other, more
 practical words, we can do interpretation of terms simultaneously with
@@ -702,7 +704,7 @@ always derive $\eta$-long normal forms, so we must be able to prove that they
 are equivalent to the empty coercion) and have unicity of
 coercions. The later is an important property of our system, as it
 corresponds in practice to the determinism of proof-obligations
-generation. The complete equational theory of \CCq{} is given in figure
+generation. The complete equational theory of \CICq{} is given in figure
 \vref{fig:eqccq}. It includes $\eta$, surjective pairing for dependent
 sums and subsets ($\rho$) and proof-irrelevance for the second component
 of subset objects.
@@ -713,11 +715,11 @@ far-reaching consequences on the model of the calculus
 \cite{DBLP:conf/types/MiquelW02}. We direct the reader to these papers for further
 information on the subject.
 
-\ccqeqfig[Equational theory of \CCq]
+\ccqeqfig[Equational theory of \CICq]
 
 \subsection{Properties}
 The correctness proof of the traduction is very involved, so we will
-only sketch it here. A paper version \vref{sozeau:coq/Russell/report} is
+only sketch it here. A paper version \cite{sozeau:Coq/Russell/report} is
 available (in french) and a mechanically checked proof is in the works.
 
 
@@ -745,7 +747,7 @@ keeping the corresponding code simple. It is a first step towards
 interpretation of \ML code into \Coq for building certified
 programs. While the system and its accompanying proofs may seem complex, the
 implementation is short, simple and has been tested with success on
-various examples. This works is also a second proof of the
+various examples. This work is also a second proof of the
 meaningfullness of the Predicate Subtyping feature of \PVS{} and may
 help build a common interface for the two provers. 
 
@@ -763,20 +765,28 @@ where code and proofs are written incrementaly to get a complete program.
 Using type annotations and with the help of the editor for structuring, 
 they are able to write programs with precise specifications. However it
 is not obvious if it could be made usable by programmers because of the
-paradigm change and scalling issues. 
+paradigm change and scalling issues. DML \cite{Xi98:PhD} is more akin to
+comparison with our solution. It provides a way to use a restricted set
+of dependent types in \ML programs, carefully chosen so as to keep
+type-checking decidable by addition of an automatic prover. Our method
+subsumes this one as it is perfectly possible to integrate automatic
+proof tools with \Coq to resolve the generated obligations.
 
 \subsection{Further work}
 Much has to be done for integrating \Russell cleanly into \Coq. The
 treatment of existential variables of \Coq has to be improved, the
 type inference algorithm needs some tuning to become more similar to \ML
-and an implementation of proof-irrelevance, while rarely needed in
+and an integration of proof-irrelevance in the kernel, while rarely needed in
 practice, is necessary to have a robust system.
 We also hope to extend this mechanism of proof-obligations generation to other
 constructs, notably inductive types. Finally, we intend to use this system as a
-basis for interpretation of \ML{} programs in \Coq, using a monadic
-traduction or some kind of effects as first class objects.
+basis for interpretation of complete \ML{} programs in \Coq, using a monadic
+traduction or some kind of effects to reflect imperative constructs.
 
-\bibliography{bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
+\paragraph{Aknowledgments}
+I'd like to thank Christine Paulin-Mohring for directing this work.
+
+\bibliography{my,bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
 \bibliographystyle{splncs}
 
