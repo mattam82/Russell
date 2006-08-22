@@ -56,22 +56,25 @@
 }
 
 \newcommand{\SubSubI}[1][\Gamma]{%
-\UAX{SubSub}
+\BAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}{\Set}$}
+{$\timpl{#1}{\mysubset{x}{U}{P}}{\Set}$}
 {$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}{\Set}$}
 {$T = \hnf{T}$}
 }
 
 \newcommand{\SubSubIs}[1][\Gamma]{%
-\UAX{SubSub}
+\BAX{SubSub}
 {$\subimpl{#1}{c}{U}{T}{\Set}$}
+{$\timpl{#1}{\mysubset{x}{U}{P}}{\Set}$}
 {$\subimpl{#1}{c[\eltpit~\ctxdot]}{\mysubset{x}{U}{P}}{T}{\Set}$}
 {}
 }
    
 \newcommand{\SubProofI}[1][\Gamma]{%
-  \UAX{SubProof}
+  \BAX{SubProof}
   {$\subimpl{#1}{c}{T}{U}{\Set}$}
+  {$\timpl{#1}{\mysubset{x}{U}{P}}{\Set}$}
   {$\subimpl{#1}
     {\elt{\ip{U}{#1}}{\ip{\lambda x : U.P}{#1}}{c}
       {\ex{\ip{P}{#1, x : U}[c/x]}}}
@@ -80,8 +83,9 @@
 }
 
 \newcommand{\SubProofIs}[1][\Gamma]{%
-  \UAX{SubProof}
+  \BAX{SubProof}
   {$\subimpl{#1}{c}{T}{U}{\Set}$}
+  {$\timpl{#1}{\mysubset{x}{U}{P}}{\Set}$}
   {$\subimpl{#1}
     {\elt{}{}{c}
       {\ex{\ip{P}{#1, x : U}[c/x]}}}
@@ -132,7 +136,7 @@
     \SubSigmaI\DP
 
     \vspace{\infvspace}
-    \SubSubIs\DP
+    \SubSubI\DP
 
     \vspace{\infvspace}
     \SubProofI\DP
