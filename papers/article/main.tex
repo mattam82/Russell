@@ -2,9 +2,9 @@
 \usepackage{abbrevs}
 \usepackage{array}
 \usepackage{alltt}
-
+\usepackage{color}
 \def\text{\mbox}
-
+\pagestyle{plain}
 %\usepackage{amsmath}
 %\usepackage{amsthm}
 
@@ -39,7 +39,34 @@
 {}
 }
 
-\newenvironment{code}{\begin{alltt}\vspace{-1em}}{\end{alltt}\vspace{-1em}}
+\newenvironment{code}{\begin{alltt}\vspace{-1em}}{\vspace{-1em}\end{alltt}}
+% Caml2Tex
+
+\definecolor{KWLanguage_color}{rgb}{0.6,0,0}
+\definecolor{KWStructure_color}{rgb}{0.8,0.8,0}
+\definecolor{KWModule_color}{rgb}{0.7,0.5,0}
+\definecolor{KWSubprog_color}{rgb}{0.6,0,0.6}
+\definecolor{KWException_color}{rgb}{0.8,0,0}
+\definecolor{Constructor_color}{rgb}{0,0.5,0}
+\definecolor{Comment_color}{rgb}{0.6,0.6,0.6}
+\definecolor{String_color}{rgb}{0.6,0.5,0.5}
+\definecolor{Varfunction_color}{rgb}{0.2,0.2,0.8}
+\definecolor{Constant_color}{rgb}{0.6,0.5,0.5}
+\definecolor{Variable_color}{rgb}{0.2,0.2,0.8}
+
+\newcommand\KWLanguage[1]{\rmfamily{\color{KWLanguage_color}{#1}}}
+\newcommand\KWStructure[1]{\sffamily{\color{KWStructure_color}{#1}}}
+\newcommand\KWModule[1]{\rmfamily{\color{KWModule_color}{#1}}}
+\newcommand\KWSubprog[1]{\rmfamily{\color{KWSubprog_color}{#1}}}
+\newcommand\KWException[1]{\rmfamily{\color{KWException_color}{#1}}}
+\newcommand\Constructor[1]{\textbf{\color{Constructor_color}{#1}}}
+\newcommand\Comment[1]{\rmfamily{\color{Comment_color}{#1}}}
+\newcommand\String[1]{\rmfamily{\color{String_color}{#1}}}
+\newcommand\Varfunction[1]{\sffamily{\color{Varfunction_color}{#1}}}
+\newcommand\AVariable[1]{\textit{\color{Variable_color}{#1}}}
+\newcommand\Constant[1]{\texttt{\color{Constant_color}{#1}}}
+\newcommand\pow{$^{\wedge}$}
+\newcommand\bs{$\backslash$}
 
 \input{typing-impl}
 \input{subtyping-impl}
@@ -50,10 +77,10 @@
 \usepackage{framed}
 %\usepackage{multicol}
 
-\author{Matthieu Sozeau\inst{1}}
+\author{Matthieu Sozeau}
 
 \institute{LRI, Paris Sud XI University\\\email{sozeau@lri.fr}}
-\title{Subset coercions in \Coq}
+\title{Subset coercions in \Coq \\ \small{Draft - \today}}
 \date{\today}
 
 \begin{document}
@@ -63,7 +90,7 @@
   types which can be elaborated into partial \Coq terms. This language permits
   to establish a phase distinction between writing and proving
   algorithms in the \Coq{} environment.  Concretely, this means allowing
-  to write algorithms as easily as in a pratical functionnal programming
+  to write algorithms as easily as in a practical functional programming
   language whilst giving them as rich a specification as desired and
   proving that the code meets the specification using the whole \Coq{}
   proof apparatus. This is achieved by extending conversion to an
@@ -87,7 +114,7 @@ essence. It is however difficult to mix the two methods
 (writing code and proving interactively) using a rich specification. 
 Indeed, when using simple terms and types (\ML{}) or even complex terms and
 types (\Coq{}), we can have decidable type-checking. However, when using
-simple terms to represent complex types, we immediatly get
+simple terms to represent complex types, we immediately get
 undecidability of type-checking, as the terms do not give enough
 information. Consider for example the function \id{head} which returns
 the first element of a list. In \ML{}:
@@ -98,11 +125,11 @@ the first element of a list. In \ML{}:
 This function is partial, its domain is reduced to non-empty lists. In
 \Coq, we would rather write the following:
 \begin{code}
-Definition head (l : list A) : option A := 
-  match l with
-    hd :: tl -> Some hd
-  | [] -> None
-  end.
+  Definition head (l : list A) : option A :=
+    match l with
+      hd :: tl => Some hd
+    | [] => None
+    end.
 \end{code}
 
 The option type is the usual way to encode partiality in
@@ -110,10 +137,10 @@ The option type is the usual way to encode partiality in
 non-empty lists to be more faithful to the original \ML code, using a
 richer specification: 
 \begin{code}
-Definition head (l : list A) : forall p : l <> [] -> A.
+  Definition head (l : list A) : forall p : l <> [] -> A.
 \end{code} 
 Now the definition's body requires some heavy plumbing of the code which is 
-not afordable when programming. We propose a solution to overcome this difficulty, based on the \ps{}
+not affordable when programming. We propose a solution to overcome this difficulty, based on the \ps{}
 \cite{Shankar&Owre:WADT99} technique of \PVS{}
 \cite{PVS-Semantics:TR}. It is a weak, \emph{decidable} type-checking
 procedure along with an elaboration into partial \Coq terms. Using
@@ -126,7 +153,7 @@ procedure along with an elaboration into partial \Coq terms. Using
   end
 \end{code}
 
-The specification shows that we're definining a partial function yet the
+The specification shows that we're defining a partial function yet the
 code remains as simple as the \ML{} definition. This is only possible
 because we leave the proof in the second branch. After type-checking,
 the proof assistant will ask the user to prove that in the context where
@@ -140,17 +167,17 @@ bridging a gap between mathematical convention and type theory.
 
 The \Program{} tactic by C. Parent \cite{conf/mpc/Parent95} had the same
 goal as ours but a slightly different method for achieving it. It was strongly
-linked to the extraction mechanism included in \Coq, both theoreticaly
+linked to the extraction mechanism included in \Coq, both theoretically
 and practically. Sketching the mechanism, she defined a weakened
 extraction operation on \CIC{} terms which could be inverted because it left enough
 information in the extracted term to rebuild a partial proof. The
-mechanism, while general and theoreticaly well thought out, required
+mechanism, while general and theoretically well thought out, required
 some heuristics and did not integrate smoothly with the \Coq{}
-environment. In particular it lacked the pervasivness our method has,
+environment. In particular it lacked the pervasiveness our method has,
 being applicable in a wide variety of situations in the proof assistant
 environment.
 
-Instead of trying to find a general method for synthetising proofs from
+Instead of trying to find a general method for synthetizing proofs from
 programs in the \CICfull, we have integrated a method which permits to
 link strong specifications and purely algorithmical code. This method,
 known as \ps{} in the \PVS{} system has been used with great success and
@@ -161,10 +188,10 @@ justifies the extension in the first place.
 
 The remainder of the article is organized as follows: in section \ref{sec:Russell} we present a
 type system based on \CIC, which integrates subset ``subtyping'', and
-we show how it relates to \CIC{} by means of traductions between
-judgements of the two systems in section \ref{sec:Traduction}. Then, we present a prototype
-implementation with some case studies, and finally we give our
-conclusions on this work and discuss future directions.
+we show how it relates to \CIC{} by means of translations between
+judgments of the two systems in section \ref{sec:Translation}. Then, we present a prototype
+implementation in section \ref{sec:Program}, and finally we give our
+conclusions on this work and discuss future directions in section \ref{sec:Conclusion}.
 
 \section{\Russell{}}
 \label{sec:Russell}
@@ -203,7 +230,7 @@ is correct only after the program is written. Subsets are particularly well-suit
 because they separate the objects we want to manipulate and the
 properties which we use to reason about them.
 
-\begin{figure}
+\begin{figure}[h]
   \begin{center}
     \def\type{\typed}
     \AXC{$`G \type A : \Set$}
@@ -266,13 +293,18 @@ methodology to build certified programs. We capitalize on the \PVS
 success to make \Coq more usable for this kind of tasks, and as we will see,
 it will have other benefits.
 
-\subsection{Typing and conversion}
-% Our presentation of \ps{} differs slightly from the original one
-% essentially because of the proof terms (hence the use of a judgement
-% instead of a function for checking subtyping), but we have also extended
-% it by . 
+\subsection{A weaker type system}
+To formalize this idea in \Coq, we simply weaken the type system so that
+it doesn't require the terms to contain the proof components for objects
+of subset types. This permits to have a simple language for code while
+retaining the richness of \Coq's specification language. Once we have a
+derivation in this new type system, we can translate it to a partial
+\Coq derivation, where the missing parts are represented by
+metavariables. It can then be completed by instantiating these holes
+with actual proofs.
+
 \subsubsection{Type system}
-\begin{figure}[t]
+\begin{figure}[h]
   \begin{center}
     \def\infvspace{0.1in}
     \def\seq{\typed}
@@ -309,7 +341,7 @@ it will have other benefits.
     \Conv\DP
   \end{center}
   \vspace{-2em}
-  \caption{\CIC typing judgement}
+  \caption{\CIC typing judgment}
   \label{fig:cic-decl-rules}
   \vspace{-1em}
 \end{figure}
@@ -339,11 +371,11 @@ with sigma types but without universes.  This restriction may be removed
 in future work, but cause no problem for our main purpose which is
 programming. We omit (co-)inductive constructs here, as they can be
 considered as constants and leave their treatment as future work. The
-judgement $`G \typed t : T$ means $t$ is a well-typed term of type $T$
+judgment $`G \typed t : T$ means $t$ is a well-typed term of type $T$
 in environment $`G$.  In \Russell, the conversion rule is replaced by a
 new subsumption rule \irule{Subsum} (figure
 \vref{fig:typing-decl-rules}) which will implement the subset
-equivalence. The judgement $`G \typed T \subd U : s$ means $T$ is
+equivalence. The judgment $`G \typed T \subd U : s$ means $T$ is
 equivalent to $U$ in environment $`G$, both sorted with $s$.
 Following the presentation as a Pure Type System, the set of sorts
 $\PTSsorts$ is defined as $\setproptype$. As usual, we let $s, s_i$ for
@@ -351,8 +383,8 @@ $i `: `N$ range over sorts. The axioms are $\PTSaxioms = \{ (\Set,
 \Type), (\Prop, \Type) \}$ and the set of rules $\PTSrules$ is defined
 by the functional relation $(s_1, s_2, s_2)$. We allow products $\Pi x :
 A, B$ where $A : \Prop$ and $B : \Set$ but the user is encouraged to
-encode them as $\Pi x : \{ _ : unit `| A \}, B$ products to benefit from
-our languages subtyping mechanism.
+encode them as $\Pi x : \{ \_ : unit `| A \}, B$ products to benefit from
+the subtyping mechanism.
 
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma},
 \irule{Sum-Dep}, \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V :
@@ -370,7 +402,7 @@ programming language.
 Likewise, we need to restrict the system so that it becomes property
 irrelevant for the propositions appearing in subset types. Indeed, in
 \PVS{} you can't manipulate proof terms, so you have no way to create a
-term of type $0 \neq 0$ from the judgment $0 : \mysubset{x}{`N}{P}$, but
+term of type $0 \neq 0$ from the judgment $0 : \mysubset{x}{`N}{x \neq 0}$, but
 in a classical Calculus of Constructions with sigma types or inductive
 types, the subset type is a first class object defined with proper
 introduction and elimination terms (figure \vref{fig:cci-subset}). What
@@ -388,7 +420,7 @@ include our subset equivalence.
 We have renamed the technique from \ps{} to 
 \emph{subset equivalence} because we have a symmetric relation, contrary
 to usual subtyping relations. It also conveys the idea that it can
-include the usual $\beta\pi$-conversion directly in the judgement.
+include the usual $\beta\pi$-conversion directly in the judgment.
 The judgment $`G \typed T \subd{} U : s$ (figure
 \vref{fig:conversion-decl-rules}) reads $T$ is equivalent to $U$ in
 environment $`G$, both being sorted by $s$. 
@@ -400,16 +432,16 @@ environment $`G$, both being sorted by $s$.
 \end{figure}
 
 The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
-judgment. We use a judgemental equality here, which will be refined by
+judgment. We use a judgmental equality here, which will be refined by
 the usual conversion relation later. The \irule{SubSym} and
-\irule{SubTrans} rules ensure that our judgement constructs an \emph{equivalence} and has
+\irule{SubTrans} rules ensure that our judgment constructs an \emph{equivalence} and has
 proper modularity. The next two rules (\irule{SubProd} and
 \irule{SubSigma}) do context closure for dependent
 products and sums. It is remarkable that we use contravariance for
 % \cite{journals/toplas/Castagna95}
 domains in the \irule{SubProd} rule, not restricting to invariance as in
 \PVS. It is accessory here, as we could have used \emph{co}variance and
-still get the same judgements because we have symmetry. However, it will
+still get the same judgments because we have symmetry. However, it will
 become important when we create coercions (see figure
 \vref{fig:coerce-impl-rules-short}).
 
@@ -431,7 +463,7 @@ $\lambda$-cube extended by subtyping or coercive subtyping
 \cite{DBLP:conf/csl/Luo96}, including the Calculus of Constructions, and
 proved such results as SN and SR for them. It requires a very careful
 analysis of the system to avoid cycles in the proof due to the presence
-of dependent types and conversion. However we prefered to adapt the method of
+of dependent types and conversion. However we preferred to adapt the method of
 Robin Adams \cite{adams:PTSEQ} to prove SR, because Gang Chen's method
 seemed very tied to the peculiarities of the system he studied. 
 Strong normalization could also be proved, perhaps more easily,
@@ -484,7 +516,7 @@ rules, integrating the conversion (or subsumption) rule
 (here \irule{Coerce}) to the premises of the other rules.
 %We recall that $`G \type t : s$ is shorthand for $`G \type t : T$ and
 %$T  `= s$ with $s `: \PTSsorts$ in a algorithmic presentation.
-Our algorithmic judgement $`G \typea t : T$
+Our algorithmic judgment $`G \typea t : T$
 (figure \vref{fig:typing-algo-rules})
 reads: $t$ is a well-typed term of type $T$ in environment $`G$.
 We need to introduce the notion of support for subset types in order to
@@ -577,7 +609,7 @@ product type modulo the equivalence.
 
 \end{paragraph}
 \begin{paragraph}{}
-  The next thing to do is to construct a decidable judgement for
+  The next thing to do is to construct a decidable judgment for
   equivalence given two types. We denote it by $`G \typea T
   \suba U : s$ (figure \ref{fig:subtyping-algo-rules}).
   In our case, we have to check that conversion is decidable, which is the
@@ -604,7 +636,7 @@ systems:
   If $`G \typed T \subd U : s$ then $`G \typea T \suba U : s$.
 \end{theorem}
 
-Finaly, we can state the desired property of the algorithmic system:
+Finally, we can state the desired property of the algorithmic system:
 \begin{theorem}[Decidability of typing and equivalence]
   $`A `G~t, `E T, `G \typea t : T$ and $`A `G~T~U~s, `G \typea T \suba U :
   s$ are decidable problems.
@@ -648,7 +680,7 @@ element. Otherwise, we would have used the projection directly in the
 
 
 \section{From \lng{} to \CICq{}}
-\label{sec:Traduction}
+\label{sec:Translation}
 We will now build an interpretation
 $\ip{t}{`G}$ of \Russell terms $t$ in environment $`G$ into \CIC
 terms. We will check at the end that it respects the $()^{\circ}$ operator
@@ -659,7 +691,7 @@ algorithmic skeleton and a rich type written in \Russell. Obviously, we
 cannot infer proof terms where they are needed in \CIC, but we can build
 a \emph{partial} term, leaving typed holes where proofs are
 needed. Hence we add a rule to build existential variables (or
-metavariables) in the target calculus ($\typeq$ denotes the new system's typing judgement):
+metavariables) in the target calculus ($\typeq$ denotes the new system's typing judgment):
 \begin{prooftree}
   \UAX{}
   {$`G \typeq P : \Prop$}
@@ -689,20 +721,20 @@ proposition.
 The derivation of explicit coercions (figure
 \vref{fig:coerce-impl-rules-short}) is based on the
 algorithmic equivalence derivations, hence we can derive a function from
-the judgement which build a coercion given two types (we denote it $\coerce{`G}{T}{U}$). 
+the judgment which build a coercion given two types (we denote it $\coerce{`G}{T}{U}$). 
 The side-conditions of the rules have not changed, so we omit them for
-improved readability. The judgement $\subimpl{`G}{c}{T}{U}$ builds a
+improved readability. The judgment $\subimpl{`G}{c}{T}{U}$ builds a
 coercion $c$ from $T$ to $U$ in context $`G$, that is an object which
-coerces an object of type $\ip{`G}{T}$ to an object of type $\ip{`G}{U}$
+coerces an object of type $\ip{T}{`G}$ to an object of type $\ip{U}{`G}$
 in context $\ipG{`G}$. We use the algorithmic types to drive the
-derivation but the resulting object will be a well-typed $\Coq$ term. We
+derivation but the resulting object will be a well-typed \Coq{} term. We
 could also directly use the interpreted types but that complicates the
 proof. 
 
 \subtis[Coercion derivation]
 
 Coercions are formalized as multi-holes evaluation contexts, with
-$\ctxdot$ the denotation of a hole. We define the instanciation $C[x]$ of a context $C$
+$\ctxdot$ the denotation of a hole. We define the instantiation $C[x]$ of a context $C$
 by a term $x$ as simultaneous substitution of $x$ for every $\ctxdot$ in $C$.
 Hence if $C$ is an evaluation context and $x$ a term, $C[x]$ is a term
 (ie, it cannot contain $\ctxdot$).
@@ -711,7 +743,7 @@ presentations are possible, notably the ``\LMS{}'' style of \cite{longo95logic} 
 was adopted by Gang Chen in his treatment of coercive subtyping for the
 Calculus of Constructions \cite{conf/popl/Chen03}, and the presentation 
 of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
-in defining a judgement $x : A \type y : B$ which reads: $A$ is
+in defining a judgment $x : A \type y : B$ which reads: $A$ is
 coercible to $B$ and the coercion is $\lambda x : A.y$. This
 presentation is very elegant and well suited for checking coherence 
 of coercions, which we don't need here as we can get unicity
@@ -738,10 +770,10 @@ $\ip{V}{`G, x : U}$, so we can apply the second coercion and get an
 object of type $\ip{W}{`G}$. There is a little twist when coercing the
 second component of a dependent sum. Indeed, we must simultaneously
 substitute the first projection of the coerced sum in the second
-coercion which was typed in environment $`G, x : T$ and also instanciate
+coercion which was typed in environment $`G, x : T$ and also instantiate
 the coercion with the second component. Clearly, the $\ctxdot$ of the
-former shouldn't be instanciated with the later, so we must first
-instanciate $c_2$ and then substitute $\pi_1~\ctxdot$ for $x$ 
+former shouldn't be instantiated with the later, so we must first
+instantiate $c_2$ and then substitute $\pi_1~\ctxdot$ for $x$ 
 ($x$ cannot appear in $\pi_2~t$ where $t : \Sigma x : T.V$).
 
 Now for the original part, the \irule{SubSub} rule simply inserts a
@@ -760,7 +792,7 @@ practical words, we can do interpretation of terms simultaneously with
 typing in our implementation, just like for the existing coercion system
 of \Coq. 
 
-\interpfigs[Interpretion of terms]
+\interpfigs[Interpretation of terms]
 
 We describe the case of application here, others are similar. First we
 get the types $F$ and $U$ of the function $f$ and argument $u$ by recursively calling the
@@ -771,19 +803,19 @@ domain. We finally instantiate these coercions by their corresponding
 interpreted objects and return their application.
 
 \subsection{A little more expressiveness}
-One may wonder how can we interpret \Russell terms to a system with only
+One may wonder how can we interpret \Russell terms into a system with only
 $\beta\pi$-equivalence. 
-Indeed, if our algorithmic system has transitivity and symetry of
+Indeed, if our algorithmic system has transitivity and symmetry of
 coercions, we expect that the derived coercions will inherit these
 properties, for example:
-\begin{proposition}[Symetry of coercions]
+\begin{proposition}[Symmetry of coercions]
   If $\subimpl{`G}{c}{T}{U}{s}$ then there exists $c^{-1}$ so that
   $\subimpl{`G}{c^{-1}}{U}{T}{s}$ and $c `o c^{-1} `= c^{-1} `o c `=
   \ctxdot$.
 \end{proposition}
 
 Now take the following example:
-\begin{example}[Symetry for products]
+\begin{example}[Symmetry for products]
   Let $T, U = \Pi x : A.B$. The coercions $c, c^{-1}$ derived by
   the algorithm must have the form $\lambda x :
   \ip{A}{`G}.c_2[\ctxdot~c_1[x]]$, hence we must include the $\eta$
@@ -810,10 +842,9 @@ information on the subject.
 \ccqeqfig[Equational theory of \CICq]
 
 \subsection{Properties}
-The correctness proof of the traduction is very involved, so we will
+The correctness proof of the translation is very involved, so we will
 only sketch it here. A paper version \cite{sozeau:Coq/Russell/report} is
-available (in french) and a mechanically checked proof is in the works.
-
+available (in French) and a mechanically checked proof is currently developed.
 
 We first prove reflexivity, symmetry and transitivity of the coercion
 derivation algorithm, which extends previous proofs for the algorithmic
@@ -821,18 +852,28 @@ system with properties on
 the generated coercions. Then we show substitutivity of the
 interpretation: if $`G, x : U, `D \type t : T$ then $\ip{t[u/x]}{`G,
  `D[u/x]} = \ip{t}{`G, x : U, `D}[\ip{u}{`G}/x]$. We extend the notion
-of coercion to contexts next and show stability of judgements under
+of coercion to contexts next and show stability of judgments under
 context coercion. It is then possible to prove a lemma about commutativity of
-subtitution with the interpretation and coercions. Then we get an
-important corrolary: if $`G \type u : U$, $\subimpl{`G}{c}{U}{V}{s}$ and
+substitutions with the interpretation and coercions. Then we get an
+important corollary: if $`G \type u : U$, $\subimpl{`G}{c}{U}{V}{s}$ and
 $`G, x : V \type T : s$ then $\ip{T[u/x]}{`G} `= \ip{T}{`G, x :
   V}[c[\ip{u}{`G}]/x]$. Essentially, it shows that coercions inserted
 by the interpretation depend only on the context and hence could be
 added later using substitution instead. This allows us to show that
-equivalence is conserved by interpretation and finaly that our
+equivalence is conserved by interpretation and finally that our
 interpretation is correct.
 
+\section{The \Program{} tactic}
+\label{sec:Program}
+This mechanism has been implemented in \Coq and tested on simple
+examples. We actually generate coercions simultaneously with typing 
+in the implementation, which is sound thanks to the previous proofs. Our
+typing is a clone of \Coq's original typing algorithm, so we benefit
+from all the features of \Coq including implicit variables, notations and the existing
+coercion system.
+
 \section{Conclusion}
+\label{sec:Conclusion}
 We have developed a new language for writing programs in the \Coq proof
 assistant which allows the user to specify complex programs while
 keeping the corresponding code simple. It is a first step towards
@@ -840,7 +881,7 @@ interpretation of \ML code into \Coq for building certified
 programs. While the system and its accompanying proofs may seem complex, the
 implementation is short, simple and has been tested with success on
 various examples. This work is also a second proof of the
-meaningfullness of the Predicate Subtyping feature of \PVS{} and may
+meaningfulness of the Predicate Subtyping feature of \PVS{} and may
 help build a common interface for the two provers. 
 
 \subsection{Related work}
@@ -853,11 +894,11 @@ dependent types but is not so much aimed at building certified programs.
 Epigram ought to become a complete programming language with dependent
 types at its heart. Instead of using a phase distinction to separate
 coding and proving, Epigram is based on an interactive, 2-dimensional editing process
-where code and proofs are written incrementaly to get a complete program.
+where code and proofs are written incrementally to get a complete program.
 Using type annotations and with the help of the editor for structuring, 
 they are able to write programs with precise specifications. However it
 is not obvious if it could be made usable by programmers because of the
-paradigm change and scalling issues. DML \cite{Xi98:PhD} is more akin to
+paradigm change and scaling issues. DML \cite{Xi98:PhD} is more akin to
 comparison with our solution. It provides a way to use a restricted set
 of dependent types in \ML programs, carefully chosen so as to keep
 type-checking decidable by addition of an automatic prover. Our method
@@ -873,9 +914,9 @@ practice, is necessary to have a robust system.
 We also hope to extend this mechanism of proof-obligations generation to other
 constructs, notably inductive types. Finally, we intend to use this system as a
 basis for interpretation of complete \ML{} programs in \Coq, using a monadic
-traduction or some kind of effects to reflect imperative constructs.
+translation or some kind of effects to reflect imperative constructs.
 
-\paragraph{Aknowledgments}
+\paragraph{Acknowledgments}
 I'd like to thank Christine Paulin-Mohring for directing this work.
 \bibliography{my,bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}

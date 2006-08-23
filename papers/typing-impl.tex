@@ -421,9 +421,8 @@
     & = & \Sigma x : \ip{T}{`G}.\ip{U}{`G, x : T} \\
     & \\
     \ip{\lambda x : `t.v}{`G} 
-    & = & \letml~`t' = \ip{`t}{`G}~\inml  \\
-    & & \letml~v' = \ip{v}{`G, x : `t}~\inml \\
-    & & (\lambda x : `t'. v') \\
+    & = & \letml~v' = \ip{v}{`G, x : `t}~\inml \\
+    & & (\lambda x : \ip{`t}{`G}. v') \\
     & \\
     \ip{f~u}{`G} 
     & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml  \\
@@ -433,20 +432,17 @@
     & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) \\
     & \\
     \ip{\pair{\Sigma x : T.U}{t}{u}}{`G}
-    & = & \letml~t' = \ip{t}{`G}~\inml \\
-    & & \letml~T' = \typeafn{`G}{t}~\inml \\
+    & = & \letml~T' = \typeafn{`G}{t}~\inml \\
     & & \letml~ct = \coerce{`G}{T'}{T}~\inml \\
     & & \letml~U' = \typeafn{`G}{u}~\inml \\
-    & & \letml~u' = \ip{u}{`G}~\inml  \\
     & & \letml~cu = \coerce{`G}{U'}{U[t/x]}~\inml  \\
-    & & \pair{\ip{\Sigma x : T.U}{`G}}{ct[t']}{cu[u']} \\
+    & & \pair{\ip{\Sigma x : T.U}{`G}}{ct[\ip{t}{`G}]}{cu[\ip{u}{`G}]} \\
     & \\
     \ip{\pi_i~t}{`G} 
-    & = & \letml~t' = \ip{t}{`G}~\inml \hfill i `: \{ 1, 2 \} \\
-    & & \letml~T = \typeafn{`G}{t}~\inml \\
+    & = & \letml~T = \typeafn{`G}{t}~\inml \hfill i `: \{ 1, 2 \} \\
     & & \letml~\Sigma x : V.W = \mualgo{T}~\inml  \\
     & & \letml~c = \coerce{`G}{T}{(\Sigma x : V.W)}~\inml \\
-    & & \pi_i~c[t'] 
+    & & \pi_i~c[\ip{t}{`G}]
   \end{array}\]
   \caption{#1}
   \label{fig:interp}
