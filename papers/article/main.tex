@@ -39,7 +39,7 @@
 {}
 }
 
-\newenvironment{code}{\begin{alltt}\vspace{-1em}}{\vspace{-1em}\end{alltt}}
+\newenvironment{code}{\begin{alltt}\vspace{-1.4em}}{\vspace{-1.4em}\end{alltt}}
 % Caml2Tex
 
 \definecolor{KWLanguage_color}{rgb}{0.6,0,0}
@@ -116,54 +116,64 @@ Indeed, when using simple terms and types (\ML{}) or even complex terms and
 types (\Coq{}), we can have decidable type-checking. However, when using
 simple terms to represent complex types, we immediately get
 undecidability of type-checking, as the terms do not give enough
-information. Consider for example the function \id{head} which returns
-the first element of a list. In \ML{}:
+information. Consider for example the function \id{tail} which returns
+the rest element of a non-empty list. In \ML{}:
 \begin{code}
-  let head = function hd :: tl -> hd | [] -> assert(false)
+  let tail = function hd :: tl -> tl | [] -> assert(false)
 \end{code}
 
 This function is partial, its domain is reduced to non-empty lists. In
 \Coq, we would rather write the following:
 \begin{code}
-  Definition head (l : list A) : option A :=
+  Definition tail (l : list A) : option A :=
     match l with
-      hd :: tl => Some hd
+      hd :: tl => Some tl
     | [] => None
     end.
 \end{code}
 
 The option type is the usual way to encode partiality in
 \Coq. However we would more naturally constrain the argument \id{l} to
-non-empty lists to be more faithful to the original \ML code, using a
-richer specification: 
+non-empty lists to be more faithful to the original \ML code, and also
+attach a property to the result to express more precisely what \id{tail}
+does:
 \begin{code}
-  Definition head (l : list A) : forall p : l <> [] -> A.
-\end{code} 
+  Definition tail (l : list A) : forall p : l <> [] -> 
+  \{ l' : list A | exists a, a :: l' = l \}.
+\end{code}
 Now the definition's body requires some heavy plumbing of the code which is 
 not affordable when programming. We propose a solution to overcome this difficulty, based on the \ps{}
 \cite{Shankar&Owre:WADT99} technique of \PVS{}
 \cite{PVS-Semantics:TR}. It is a weak, \emph{decidable} type-checking
-procedure along with an elaboration into partial \Coq terms. Using
-\Russell, we would write:
+procedure which does not require proofs to be present in the code when
+constructing objects of a subset type. Using \Russell, we would write:
 \begin{code}
-  Definition head \{ l : list A | l <> [] \} : A := 
+  Definition tail \{ l : list A | l <> [] \} : 
+    \{ l' : list A | exists a, a :: l' = l \} := 
   match l with
-    hd :: tl -> hd
-  | [] -> _
+    hd :: tl -> tl
+  | [] -> []
   end
 \end{code}
 
-The specification shows that we're defining a partial function yet the
+The specification shows that we're defining a partial function and
+shows the relation betwenn input and ouput, using a dependent type, yet the
 code remains as simple as the \ML{} definition. This is only possible
-because we leave the proof in the second branch. After type-checking,
-the proof assistant will ask the user to prove that in the context where
-\id{l} is a non-empty list and $l = []$, we can create an object of type
-$A$ (which should be obvious as the context is contradictory).
+because we leave the proofs in both branches. After type-checking,
+there is an automatic elaboration into partial \Coq terms, which collects
+obligations the user has to prove. In our example,
+the proof assistant will ask the user to prove that:
+\begin{enumerate}
+\item The list $tl$ has the property \verb|exists a, a :: tl = hd :: tl|
+  and
+\item In the context where
+  \id{l} is a non-empty list and $l = []$, the list $[]$ has the property
+  \verb|exists a, a :: [] = []| (which should be obvious as the context is contradictory).
+\end{enumerate}
 
 This solution also provides % PVS:Language,
 facilities to express properties with a more mathematical flavor using subsets,
 bridging a gap between mathematical convention and type theory. 
-
 
 The \Program{} tactic by C. Parent \cite{conf/mpc/Parent95} had the same
 goal as ours but a slightly different method for achieving it. It was strongly
@@ -255,10 +265,10 @@ properties which we use to reason about them.
     \UIC{$`G \type \eltpip~t : P[\eltpit~t/x]$}
     \DP
   \end{center}
-  \vspace{-1em}
+  \vspace{-2em}
   \caption{Subset type in \CIC}
   \label{fig:cci-subset}
-  \vspace{-2.5em}
+  \vspace{-1em}
 \end{figure}
 
 \subsection{From \ps{} to subset equivalence}
@@ -322,8 +332,7 @@ with actual proofs.
     
     \vspace{\infvspace}
     \Abs\DP
-
-    \vspace{\infvspace}
+    \quad\hspace{-2.5em}
     \App\DP
 
     \vspace{\infvspace}
@@ -426,9 +435,12 @@ The judgment $`G \typed T \subd{} U : s$ (figure
 environment $`G$, both being sorted by $s$. 
 
 \begin{figure}[h]
+  \vspace{-2em}
   \subtdRules
+  \vspace{-2em}
   \caption{\Russell{} conversion}
   \label{fig:conversion-decl-rules}
+  \vspace{-1em}
 \end{figure}
 
 The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
@@ -563,8 +575,7 @@ product type modulo the equivalence.
 
     \vspace{\infvspace}
     \PiLeftA\DP
-    
-    \vspace{\infvspace}
+    \quad\hspace{-2.5em}
     \PiRightA\DP
 
 %     \vspace{\infvspace}
@@ -637,7 +648,7 @@ systems:
 \end{theorem}
 
 Finally, we can state the desired property of the algorithmic system:
-\begin{theorem}[Decidability of typing and equivalence]
+\begin{theorem}[Decidability of typing]
   $`A `G~t, `E T, `G \typea t : T$ and $`A `G~T~U~s, `G \typea T \suba U :
   s$ are decidable problems.
 \end{theorem}
@@ -692,13 +703,16 @@ cannot infer proof terms where they are needed in \CIC, but we can build
 a \emph{partial} term, leaving typed holes where proofs are
 needed. Hence we add a rule to build existential variables (or
 metavariables) in the target calculus ($\typeq$ denotes the new system's typing judgment):
-\begin{prooftree}
+
+\begin{center}
+  \vspace{-1.7em}
   \UAX{}
   {$`G \typeq P : \Prop$}
   {$`G \typeq ?_{P} : P$}
   {}
-\end{prooftree}
-
+  \DP
+  \vspace{-1.7em}
+\end{center}
 We restrict it to objects of type $\Prop$ because we consider that the
 informative part of the algorithm has been entirely given in the
 original term. 
@@ -731,21 +745,29 @@ derivation but the resulting object will be a well-typed \Coq{} term. We
 could also directly use the interpreted types but that complicates the
 proof. 
 
-\subtis[Coercion derivation]
+\begin{figure}[ht]
+  \vspace{-1em}
+  \subtisc
+  \vspace{-2em}
+  \caption{Coercion derivation}
+  \label{fig:coerce-impl-rules-short}
+  \vspace{-1em}
+\end{figure}
 
 Coercions are formalized as multi-holes evaluation contexts, with
 $\ctxdot$ the denotation of a hole. We define the instantiation $C[x]$ of a context $C$
 by a term $x$ as simultaneous substitution of $x$ for every $\ctxdot$ in $C$.
 Hence if $C$ is an evaluation context and $x$ a term, $C[x]$ is a term
 (ie, it cannot contain $\ctxdot$).
-The holes will denote the object to which the coercion is applied. Other
+The holes will denote the object to which the coercion is applied.
+Other
 presentations are possible, notably the ``\LMS{}'' style of \cite{longo95logic} which
 was adopted by Gang Chen in his treatment of coercive subtyping for the
 Calculus of Constructions \cite{conf/popl/Chen03}, and the presentation 
 of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
 in defining a judgment $x : A \type y : B$ which reads: $A$ is
 coercible to $B$ and the coercion is $\lambda x : A.y$. This
-presentation is very elegant and well suited for checking coherence 
+presentation is very elegant and adapted for checking coherence 
 of coercions, which we don't need here as we can get unicity
 of coercions. Moreover, it did not seem readily usable in
 our setting, where coercions may contain metavariables. Similarly, Amokrane Sa\"ibi defines
@@ -753,7 +775,7 @@ a coercion derivation algorithm which respects some coherence criteria,
 roughly, that type-erased coercions $\beta\eta$-reduce to the
 identity. Again, this wasn't adapted to our setting, so we invented this
 new presentation. 
-
+ 
 As conversion will be preserved by the interpretation $\ip{}{}$,
 the rule \irule{SubConv} derives an empty coercion, as the target system
 will be able to derive itself that $\ip{T}{`G} `= \ip{U}{`G}$.
@@ -792,7 +814,14 @@ practical words, we can do interpretation of terms simultaneously with
 typing in our implementation, just like for the existing coercion system
 of \Coq. 
 
-\interpfigs[Interpretation of terms]
+\begin{figure}[ht]
+  \vspace{-2em}
+  \interparr
+  \vspace{-2em}
+  \caption{Interpretation of terms}
+  \label{fig:interp}
+  \vspace{-1em}
+\end{figure}
 
 We describe the case of application here, others are similar. First we
 get the types $F$ and $U$ of the function $f$ and argument $u$ by recursively calling the
@@ -804,28 +833,15 @@ interpreted objects and return their application.
 
 \subsection{A little more expressiveness}
 One may wonder how can we interpret \Russell terms into a system with only
-$\beta\pi$-equivalence. 
-Indeed, if our algorithmic system has transitivity and symmetry of
-coercions, we expect that the derived coercions will inherit these
-properties, for example:
-\begin{proposition}[Symmetry of coercions]
-  If $\subimpl{`G}{c}{T}{U}{s}$ then there exists $c^{-1}$ so that
-  $\subimpl{`G}{c^{-1}}{U}{T}{s}$ and $c `o c^{-1} `= c^{-1} `o c `=
-  \ctxdot$.
-\end{proposition}
-
-Now take the following example:
-\begin{example}[Symmetry for products]
-  Let $T, U = \Pi x : A.B$. The coercions $c, c^{-1}$ derived by
-  the algorithm must have the form $\lambda x :
-  \ip{A}{`G}.c_2[\ctxdot~c_1[x]]$, hence we must include the $\eta$
-  rule in order to have $c `o c^{-1} `= \ctxdot$.
-\end{example}
+$\beta\pi$-equivalence and still be conservative with respect to \CIC. 
+Indeed if we want the \irule{Conv} rule to be admissible, we must have for example:
+If $\Pi x : A.B \eqbp \Pi x : C.D$ then there exists $c$ such that
+$\subimpl{`G}{c}{\Pi x : A.B}{\Pi x : C.D}{s}$ and $c `= \ctxdot$.
+However, we derive eta-long coercions, so $c$ will be $\lambda x :
+\ip{C}{`G}.x$. 
 
 Similarly, we must add $\eta$ rules for all introduction terms of our
-language if we want to be conservative (the coercion algorithm will
-always derive $\eta$-long normal forms, so we must be able to prove that they
-are equivalent to the empty coercion) and have unicity of
+language if we want to be conservative and have unicity of
 coercions. The later is an important property of our system, as it
 corresponds in practice to the determinism of proof-obligations
 generation. The complete equational theory of \CICq{} is given in figure
@@ -838,8 +854,14 @@ $\sigma$) in the calculus of constructions
 far-reaching consequences on the model of the calculus
 \cite{DBLP:conf/types/MiquelW02}. We direct the reader to these papers for further
 information on the subject.
-
-\ccqeqfig[Equational theory of \CICq]
+\begin{figure}[ht]
+  \vspace{-1em}
+  \ccqeqarr
+  \vspace{-2em}
+  \caption{Equational theory of \CICq}
+  \label{fig:eqccq}
+  \vspace{-1em}
+\end{figure}
 
 \subsection{Properties}
 The correctness proof of the translation is very involved, so we will
@@ -870,7 +892,18 @@ examples. We actually generate coercions simultaneously with typing
 in the implementation, which is sound thanks to the previous proofs. Our
 typing is a clone of \Coq's original typing algorithm, so we benefit
 from all the features of \Coq including implicit variables, notations and the existing
-coercion system.
+coercion system. The type-checker also transforms pattern-matching so
+that an equality between the matched term and the pattern is present in
+each branch typing context and it allows the user to put explicit holes in the term, for example:
+\begin{code}
+  Definition head \{ l : list A | l <> 0 \} : A :=
+    match l with
+    | hd :: tl -> hd
+    | [] -> _
+    end.
+\end{code}
+Here the second branch can't be taken because we would have $l = []$ and
+$l \neq 0$, but we may not have any placeholder element of type $A$.  
 
 \section{Conclusion}
 \label{sec:Conclusion}
@@ -886,7 +919,7 @@ help build a common interface for the two provers.
 
 \subsection{Related work}
 Other efforts to build certified programs using type theory include
-Cayenne \cite{Augustsson99} and Epigram
+Ca\-yenne \cite{Augustsson99} and Epigram
 \cite{DBLP:journals/jfp/McBrideM04}. Cayenne offers dependent
 types and general recursion at the expense of a non-terminating type
 checker, it can be sought of as a testbed for developing languages with

@@ -407,9 +407,7 @@
   \label{fig:interp}
 \end{figure}
 }
-
-\newcommand{\interpfigs}[1][Interprétation dans \CCI{}]{
-\begin{figure}[ht]
+\newcommand{\interparr}{
   \[\begin{array}{lcll}
     \ip{x}{`G} & = & x \\
     \ip{s}{`G} & = & s \hfill s `: \setproptype \\
@@ -419,10 +417,8 @@
     & = & \mysubset{x}{\ip{U}{`G}}{\ip{P}{`G, x : U}} \\
     \ip{\Sigma x : T.U}{`G} 
     & = & \Sigma x : \ip{T}{`G}.\ip{U}{`G, x : T} \\
-    & \\
     \ip{\lambda x : `t.v}{`G} 
-    & = & \letml~v' = \ip{v}{`G, x : `t}~\inml \\
-    & & (\lambda x : \ip{`t}{`G}. v') \\
+    & = & (\lambda x : \ip{`t}{`G}. \ip{v}{`G, x : `t}) \\
     & \\
     \ip{f~u}{`G} 
     & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml  \\
@@ -443,11 +439,25 @@
     & & \letml~\Sigma x : V.W = \mualgo{T}~\inml  \\
     & & \letml~c = \coerce{`G}{T}{(\Sigma x : V.W)}~\inml \\
     & & \pi_i~c[\ip{t}{`G}]
-  \end{array}\]
+  \end{array}\]}
+
+\newcommand{\interpfigs}[1][Interprétation dans \CCI{}]{
+\begin{figure}[ht]
+  \interparr
   \caption{#1}
   \label{fig:interp}
 \end{figure}
 }
+\newcommand{\ccqeqarr}{
+  \[\begin{array}{llcll}
+    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
+    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
+    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & = & e & \sidecond{$x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
+    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \sidecond{$e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \sidecond{$e : \mysubset{x}{E}{P}$} \\
+    (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \sidecond{$t `= t'$}
+  \end{array}\]}
 
 \newcommand{\ccqeqfig}[1][Théorie équationnelle de \CCq{}]{
 \begin{figure}[ht]
