@@ -10,7 +10,7 @@
 
 %\usepackage{qzapfcha}
 %\usepackage{cmbright}
-\usepackage{concmath}
+%\usepackage{concmath}
 \usepackage{ifthen}
 \usepackage{url}
 \usepackage{varioref}
@@ -100,8 +100,9 @@
   translated to the \CICfull (\CIC{}) by means of an interpretation
   which inserts coercions at the appropriate places. These coercions can
   contain existential variables representing the propositional parts of
-  the final term. A prototype implementation of this process has been
-  implemented.}
+  the final term, corresponding to proof obligations (or \PVS{}
+  type-checking conditions). A prototype implementation of this process
+  has been implemented and integrated with the \Coq{} environment.}
 
 \section{Introduction}
 There are many means to program in the \Coq{} environment. One
@@ -114,7 +115,7 @@ essence. It is however difficult to mix the two methods
 (writing code and proving interactively) using a rich specification. 
 Indeed, when using simple terms and types (\ML{}) or even complex terms and
 types (\Coq{}), we can have decidable type-checking. However, when using
-simple terms to represent complex types, we immediately get
+simple terms to represent inhabitants of complex types, we immediately get
 undecidability of type-checking, as the terms do not give enough
 information. Consider for example the function \id{tail} which returns
 the rest element of a non-empty list. In \ML{}:
@@ -125,7 +126,7 @@ the rest element of a non-empty list. In \ML{}:
 This function is partial, its domain is reduced to non-empty lists. In
 \Coq, we would rather write the following:
 \begin{code}
-  Definition tail (l : list A) : option A :=
+  Definition tail (l : list A) : option (list A) :=
     match l with
       hd :: tl => Some tl
     | [] => None
@@ -142,11 +143,13 @@ does:
   \{ l' : list A | exists a, a :: l' = l \}.
 \end{code}
 Now the definition's body requires some heavy plumbing of the code which is 
-not affordable when programming. We propose a solution to overcome this difficulty, based on the \ps{}
+not affordable when programming. Moreover, the user is forced to give a
+proof term when calling the function.
+We propose a solution to overcome these difficulties, based on the \ps{}
 \cite{Shankar&Owre:WADT99} technique of \PVS{}
 \cite{PVS-Semantics:TR}. It is a weak, \emph{decidable} type-checking
 procedure which does not require proofs to be present in the code when
-constructing objects of a subset type. Using \Russell, we would write:
+constructing objects of a subset type. Using our new language \Russell, we would write:
 \begin{code}
   Definition tail \{ l : list A | l <> [] \} : 
     \{ l' : list A | exists a, a :: l' = l \} := 
@@ -164,10 +167,10 @@ there is an automatic elaboration into partial \Coq terms, which collects
 obligations the user has to prove. In our example,
 the proof assistant will ask the user to prove that:
 \begin{enumerate}
-\item The list $tl$ has the property \verb|exists a, a :: tl = hd :: tl|
+\item The list \verb|tl| has the property \verb|exists a, a :: tl = hd :: tl|
   and
 \item In the context where
-  \id{l} is a non-empty list and $l = []$, the list $[]$ has the property
+  \id{l} is a non-empty list and $\texttt{l} = []$, the list $[]$ has the property
   \verb|exists a, a :: [] = []| (which should be obvious as the context is contradictory).
 \end{enumerate}
 
@@ -198,8 +201,9 @@ justifies the extension in the first place.
 
 The remainder of the article is organised as follows: in section \ref{sec:Russell} we present a
 type system based on \CIC, which integrates subset ``subtyping'', and
-we show how it relates to \CIC{} by means of translations between
-judgements of the two systems in section \ref{sec:Translation}. Then, we present a prototype
+prove decidability of type-checking. Then, we show how it relates to
+\CIC{} by means of translations between
+judgements of the two systems in section \ref{sec:Translation}. Next we present a prototype
 implementation in section \ref{sec:Program}, and finally we give our
 conclusions on this work and discuss future directions in section \ref{sec:Conclusion}.
 
@@ -215,13 +219,10 @@ devised a set theory with a restricted comprehension axiom that
 permitted to create subsets only from already defined subsets,
 forbidding the definition of $X$. % \cite{whitehead.russell:principia}. 
 
-The subset equivalence idea is to identify elements of subsets if
-they are built from the same underlying set. That is, we can identify
-elements of $`N$ with elements of any subset $\{ x `: `N `| P \}$.
-However, we should not be able to draw conclusions based on the
-properties attached to an element of a subset. Otherwise it would be
-possible to claim that $0 `: \{ x `: `N `| x \neq 0 \}$ but also that $0
-\neq 0$ which would lead us to inconsistency. 
+In \Coq, the distinction between informative and propositional parts of
+a term is formalized by the \Prop/\Set sorts. In \Russell, we have
+special support for propositions appearing in subset types. By
+delimiting the use of propositions, we can separate code from proof.
 
 Informally, this idea is already present in mathematics. When you have a
 subset $\{ x `: S `| P \}$, you can freely forget about the property $P$
@@ -237,8 +238,8 @@ to apply $f$ to an object $(\elts{2}{p})$ where $p$ is a proof of
 $(P~2)$ (figure \ref{fig:cci-subset} presents the definition of the subset type in \Coq).
 We would like to be able to prove that our usage of partial functions 
 is correct only after the program is written. Subsets are particularly well-suited in this respect
-because they separate the objects we want to manipulate and the
-properties which we use to reason about them.
+because they separate the objects we want to manipulate and their associated
+properties.
 
 \begin{figure}[h]
   \begin{center}
@@ -280,7 +281,7 @@ Concretely, this means that the following rules are derivable in \PVS:
   \UIC{$`G \vdash t : T$}
   \DP
   \AXC{$`G \vdash t : T$}
-  \AXC{$`G \vdash P[t]$}
+  \AXC{$\vdash_{`G} P[t]$}
   \BIC{$`G \vdash t : \{ x : T `| P[x] \}$}
   \DP
 \end{center}
@@ -288,7 +289,7 @@ Concretely, this means that the following rules are derivable in \PVS:
 The first one formalises the fact that an object of a subset based on
 $T$ is an object of type $T$. The second one permits using an object of
 type $T$ as an object of type $\{ x : T `| P[x] \}$, but it generates a
-\emph{type checking condition} $`G \vdash P[t]$ which will need to be
+\emph{type-checking condition} $\vdash_{`G} P[t]$ which will need to be
 discharged later. Effectively, the typing algorithm of \PVS{} collects
 the conditions that must be satisfied for the term to be accepted as a
 valid definition. However, the acceptance criteria can be rather large in
@@ -390,7 +391,7 @@ Following the presentation as a Pure Type System, the set of sorts
 $\PTSsorts$ is defined as $\setproptype$. As usual, we let $s, s_i$ for
 $i `: `N$ range over sorts. The axioms are $\PTSaxioms = \{ (\Set,
 \Type), (\Prop, \Type) \}$ and the set of rules $\PTSrules$ is defined
-by the functional relation $(s_1, s_2, s_2)$. We allow products $\Pi x :
+by the functional relation $`A s_1 s_2, (s_1, s_2, s_2) `: \PTSrules$. We allow products $\Pi x :
 A, B$ where $A : \Prop$ and $B : \Set$ but the user is encouraged to
 encode them as $\Pi x : \{ \_ : unit `| A \}, B$ products to benefit from
 the subtyping mechanism.
@@ -406,21 +407,28 @@ possible pair $U : \Prop, V : \Set$ is forbidden because it corresponds
 to a pair where the last component, which is informative, may depend on
 a particular proof of the proposition $U$. This is quite contrary to the
 mantra ``Computations do not depend on proofs'' which governs our
-programming language.
+programming language. If there is no dependence then $U$ and $V$ can be
+swapped.
 
 Likewise, we need to restrict the system so that it becomes property
 irrelevant for the propositions appearing in subset types. Indeed, in
 \PVS{} you can't manipulate proof terms, so you have no way to create a
-term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq 0}$, but
-in a classical Calculus of Constructions with sigma types or inductive
+term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq
+  0}$, nor can you actually derive the latter, as it won't type-check.
+However, in a classical Calculus of Constructions with sigma types or inductive
 types, the subset type is a first class object defined with proper
-introduction and elimination terms (figure \vref{fig:cci-subset}). What
-we need to do is forbid the use of these terms in \Russell{} terms,
-leaving only the type former (figure \vref{fig:typing-decl-rules}).
+introduction and elimination terms (figure \vref{fig:cci-subset}). These
+are not compatible with our subtyping, so we need to forbid the use of
+these terms in \Russell{} terms, leaving only the type former (figure
+\vref{fig:typing-decl-rules}). With this restriction, when we erase subset types
+from \Russell terms, leaving only the supports, we get a valid
+\CC term, hence $`_$ is not provable in \Russell.
 
 The reductions rules of this system are the standard $\beta$ and $\pi$
 for projections. We denote by $\downarrow{x}$ the complete normal form
-of $x$ and by $\hnf{x}$ it's head normal form.
+of $x$ and by $\hnf{x}$ its head normal form. We use judgemental equality $`G \type T \eqbp U : s$ and the usual untyped
+convertibility $\eqbp$ interchangably (we proved $`G \type T \eqbp U : s
+"<=>" T \eqbp U `^ `G \type T, U : s$).
 
 We now need to change the conversion rule to a stronger one which will
 include our subset equivalence.
@@ -627,12 +635,18 @@ product type modulo the equivalence.
   In our case, we have to check that conversion is decidable, which is the
   case. We also need to eliminate the transitivity and symmetry rules which are not
   syntax-directed. That is the purpose of the following theorem:
-\begin{theorem}[Admissibility of transitivity]
-  If $`G \typea T \suba U : s$ and $`G \typea U \suba V : s$, then $`G \typea T
-  \suba V : s$.
+\begin{theorem}[Admissibility of transitivity and symmetry]
+  \begin{enumerate}
+  \item If $`G \typea T \suba U : s$ and $`G \typea U \suba V : s$, then $`G \typea T
+    \suba V : s$.
+  \item If $`G \typea T \suba U : s$ then $`G \typea U \suba T : s$.
+  \end{enumerate}
 \end{theorem}
 \begin{proof}
-  By induction on the sum of the depths of the two derivations.
+  \begin{enumerate}
+  \item By induction on the sum of the depths of the two derivations.
+  \item Immediate using a thinning lemma.
+  \end{enumerate}
 \end{proof}
 \end{paragraph}
 
@@ -644,7 +658,7 @@ systems:
 \end{theorem}
 
 \begin{theorem}[Completeness]
-  If $`G \typed t : T$ then $`G \typea t : T'$ and $`G \typea T' \suba T : s$.
+  If $`G \typed t : T$ then there exists $T'$, $`G \typea t : T'$ and $`G \typea T' \suba T : s$.
   If $`G \typed T \subd U : s$ then $`G \typea T \suba U : s$.
 \end{theorem}
 
@@ -685,8 +699,11 @@ We can now prove the following:
 
 Practically, this means we can use almost all existing definitions in the
 \Coq environment. This map is involutive and
-the identity on \Russell terms. Indeed, the second projection of a
-subset element can only appear in the second component of a subset
+the identity on \Russell terms as they do not contain the constructor
+$\id{elt}$ or subset projections. Moreover, this erasure function will be
+defined on all \Coq terms elaborated from \Russell.
+Indeed, the second projection of a
+subset element will only appear in the second component of a subset
 element. Otherwise, we would have used the projection directly in the
 \Russell{} term, where it is forbidden.
 
@@ -742,9 +759,11 @@ improved readability. The judgement $\subimpl{`G}{c}{T}{U}$ builds a
 coercion $c$ from $T$ to $U$ in context $`G$, that is an object which
 coerces an object of type $\ip{T}{`G}$ to an object of type $\ip{U}{`G}$
 in context $\ipG{`G}$. We use the algorithmic types to drive the
-derivation but the resulting object will be a well-typed \Coq{} term. We
-could also directly use the interpreted types but that complicates the
-proof. 
+derivation but the resulting object will be a well-typed \Coq{} term
+(lemma \ref{lemma:coercion-correct}). 
+% We
+% could also directly use the interpreted types but that complicates the
+% proof. 
 
 \begin{figure}[ht]
   \vspace{-1em}
@@ -866,8 +885,8 @@ information on the subject.
 
 \subsection{Properties}
 The correctness proof of the translation is very involved, so we will
-only sketch it here. A paper version \cite{sozeau:Coq/Russell/report} is
-available (in French) and a mechanically checked proof is currently developed.
+only sketch it here. A report \cite{sozeau:Coq/Russell/report} is
+available (in French) and a mechanically checked proof is under development.
 
 We first prove reflexivity, symmetry and transitivity of the coercion
 derivation algorithm, which extends previous proofs for the algorithmic
@@ -883,8 +902,13 @@ $`G, x : V \type T : s$ then $\ip{T[u/x]}{`G} `= \ip{T}{`G, x :
   V}[c[\ip{u}{`G}]/x]$. Essentially, it shows that coercions inserted
 by the interpretation depend only on the context and hence could be
 added later using substitution instead. This allows us to show that
-equivalence is conserved by interpretation and finally that our
-interpretation is correct.
+equivalence is conserved by interpretation and the following lemma:
+\begin{lemma}[Coercion derivation correctness]
+  \label{lemma:coercion-correct}
+  If $\subimpl{`G}{c}{T}{U}{s}$ then $\ipG{`G} \typec \lambda x :
+  \ip{T}{`G}.c[x] : \ip{T}{`G} "->" \ip{U}{`G}$.
+\end{lemma}
+ Finally we can show that our interpretation is correct.
 
 \section{Implementation}
 \label{sec:Program}
@@ -904,7 +928,8 @@ each branch typing context and it allows the user to put explicit holes in the t
     end.
 \end{code}
 Here the second branch can't be taken because we would have $l = []$ and
-$l \neq 0$, but we may not have any placeholder element of type $A$.  
+$l \neq 0$, but we may not have any placeholder element of type
+$A$. There is also support for strucural and well-founded \verb|Fixpoint| definitions.
 
 \section{Conclusion}
 \label{sec:Conclusion}

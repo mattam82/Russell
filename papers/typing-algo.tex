@@ -102,12 +102,9 @@
 \newcommand{\typemuaFig}[1][Définition de $\mualgo$]{%
   \begin{figure}[ht]
     \vspace{-1em}
-    \[\begin{array}{lcl}
-      \mualgoprim{\mysubset{x}{U}{P}} & "=>" &
-      \mualgoprim{\downarrow{U}} \\
-      \mualgoprim{x} `| x "/=" \mysubset{x}{U}{P}  & "=>" & x \\
-      \\
-      \mualgo{x} & "=>" & \mualgoprim{\downarrow{x}}
+    \[\begin{array}{lcll}
+      \mualgo{x} & "=>" & \mualgo{U} & \sidecond{$\hnf{x} "=" \mysubset{x}{U}{P}$} \\
+      \mualgo{x} & "=>" & x & \otherwise
     \end{array}\]
     \vspace{-2em}
     \caption{#1}
