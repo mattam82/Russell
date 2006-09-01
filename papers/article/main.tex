@@ -153,7 +153,7 @@ procedure which does not require proofs to be present in the code when
 constructing objects of a subset type. In our new language \Russell, the
 following is a well-typed term:
 \begin{code}
-  Definition tail \{ l : list A | l <> [] \} : 
+  Definition tail ( l : list A | l <> [] ) : 
     \{ l' : list A | exists a, a :: l' = l \} := 
   match l with
     hd :: tl -> tl
@@ -929,7 +929,7 @@ coercion system. The type-checker also transforms pattern-matching so
 that an equality between the matched term and the pattern is present in
 each branch typing context and it allows the user to put explicit holes in the term, for example:
 \begin{code}
-  Program Definition head \{ l : list A | l <> 0 \} : A :=
+  Program Definition head ( l : list A | l <> 0 ) : A :=
     match l with
     | hd :: tl -> hd
     | [] -> _
