@@ -139,17 +139,19 @@ non-empty lists to be more faithful to the original \ML code, and also
 attach a property to the result to express more precisely what \id{tail}
 does:
 \begin{code}
-  Definition tail (l : list A) : forall p : l <> [] -> 
+  Definition tail (l : list A) : (l <> []) -> 
   \{ l' : list A | exists a, a :: l' = l \}.
 \end{code}
 Now the definition's body requires some heavy plumbing of the code which is 
 not affordable when programming. Moreover, the user is forced to give a
-proof term when calling the function.
+proof term justifying that \verb|l <> []| when calling the function.
 We propose a solution to overcome these difficulties, based on the \ps{}
 \cite{Shankar&Owre:WADT99} technique of \PVS{}
-\cite{PVS-Semantics:TR}. It is a weak, \emph{decidable} type-checking
+\cite{PVS-Semantics:TR}. It is separated into two phases. First, we have
+a weak, \emph{decidable} type-checking
 procedure which does not require proofs to be present in the code when
-constructing objects of a subset type. Using our new language \Russell, we would write:
+constructing objects of a subset type. In our new language \Russell, the
+following is a well-typed term:
 \begin{code}
   Definition tail \{ l : list A | l <> [] \} : 
     \{ l' : list A | exists a, a :: l' = l \} := 
@@ -159,8 +161,8 @@ constructing objects of a subset type. Using our new language \Russell, we would
   end
 \end{code}
 
-The specification shows that we're defining a partial function and
-shows the relation between input and output, using a dependent type, yet the
+The specification shows that we are defining a partial function and
+enforces a relation between input and output, using a dependent type, yet the
 code remains as simple as the \ML{} definition. This is only possible
 because we leave the proofs in both branches. After type-checking,
 there is an automatic elaboration into partial \Coq terms, which collects
@@ -220,12 +222,12 @@ permitted to create subsets only from already defined subsets,
 forbidding the definition of $X$. % \cite{whitehead.russell:principia}. 
 
 In \Coq, the distinction between informative and propositional parts of
-a term is formalized by the \Prop/\Set sorts. In \Russell, we have
+a term is formalized by the \Prop/\Set{} sorts. In \Russell, we have
 special support for propositions appearing in subset types. By
 delimiting the use of propositions, we can separate code from proof.
 
-Informally, this idea is already present in mathematics. When you have a
-subset $\{ x `: S `| P \}$, you can freely forget about the property $P$
+Informally, this idea is already present in mathematics. When you have
+an element of subset $\{ x `: S `| P \}$, you can freely forget about the property $P$
 and use any operation which is defined on $S$. Conversely, when you
 want to use an operation defined on a subset, say $f : \{ x : `N `| P \} "->"
 X$, you usually prove \emph{first} that you apply it only to elements 
@@ -246,6 +248,7 @@ properties.
     \def\type{\typed}
     \AXC{$`G \type A : \Set$}
     \AXC{$`G, x : A \type P : \Prop$}
+    \LeftLabel{\irule{Subset}}
     \BIC{$`G \type \mysubset{x}{A}{P} : \Set$}
     \DP
     
@@ -254,21 +257,24 @@ properties.
     \AXC{$`G \type a : A$}
     \AXC{$`G \type p : P[a/x]$}
     \AXC{$`G \type \mysubset{x}{A}{P} : \Set$}
+    \LeftLabel{\irule{Element}}
     \TIC{$`G \type \elt{A}{(\lambda x : A.P)}{a}{p} : \mysubset{x}{A}{P}$}
     \DP
     \vspace{\infvspace}
 
     \AXC{$`G \type t : \mysubset{x}{A}{P}$}
+    \LeftLabel{\irule{Subset-$\eltpit$}}
     \UIC{$`G \type \eltpit~t : A$}
     \DP
     \quad
     \AXC{$`G \type t : \mysubset{x}{A}{P}$}
+    \LeftLabel{\irule{Subset-$\eltpip$}}
     \UIC{$`G \type \eltpip~t : P[\eltpit~t/x]$}
     \DP
   \end{center}
   \vspace{-2em}
   \caption{Subset type in \CIC}
-  \label{fig:cci-subset}
+  \label{fig:cci-subset} 
   \vspace{-1em}
 \end{figure}
 
@@ -382,11 +388,8 @@ in future work, but cause no problem for our main purpose which is
 programming. We omit (co-)inductive constructs here, as they can be
 considered as constants and leave their treatment as future work. The
 judgement $`G \typed t : T$ means $t$ is a well-typed term of type $T$
-in environment $`G$.  In \Russell, the conversion rule is replaced by a
-new subsumption rule \irule{Subsum} (figure
-\vref{fig:typing-decl-rules}) which will implement the subset
-equivalence. The judgement $`G \typed T \subd U : s$ means $T$ is
-equivalent to $U$ in environment $`G$, both sorted with $s$.
+in environment $`G$.  
+
 Following the presentation as a Pure Type System, the set of sorts
 $\PTSsorts$ is defined as $\setproptype$. As usual, we let $s, s_i$ for
 $i `: `N$ range over sorts. The axioms are $\PTSaxioms = \{ (\Set,
@@ -394,7 +397,13 @@ $i `: `N$ range over sorts. The axioms are $\PTSaxioms = \{ (\Set,
 by the functional relation $`A s_1 s_2, (s_1, s_2, s_2) `: \PTSrules$. We allow products $\Pi x :
 A, B$ where $A : \Prop$ and $B : \Set$ but the user is encouraged to
 encode them as $\Pi x : \{ \_ : unit `| A \}, B$ products to benefit from
-the subtyping mechanism.
+the subtyping mechanism which we will define later.
+
+The reductions rules of this system are the standard $\beta$ and $\pi$
+for projections. We denote by $\downarrow{x}$ the complete normal form
+of $x$ and by $\hnf{x}$ its head normal form. We use judgemental equality $`G \type T \eqbp U : s$ and the usual untyped
+convertibility $\eqbp$ interchangably (we proved $`G \type T \eqbp U : s
+"<=>" T \eqbp U `^ `G \type T, U : s$).
 
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma},
 \irule{Sum-Dep}, \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V :
@@ -410,28 +419,27 @@ mantra ``Computations do not depend on proofs'' which governs our
 programming language. If there is no dependence then $U$ and $V$ can be
 swapped.
 
-Likewise, we need to restrict the system so that it becomes property
-irrelevant for the propositions appearing in subset types. Indeed, in
-\PVS{} you can't manipulate proof terms, so you have no way to create a
+In \Russell, the conversion rule is replaced by a
+new subsumption rule \irule{Subsum} (figure
+\vref{fig:typing-decl-rules}) which will implement the subset
+equivalence. The judgement $`G \typed T \subd U : s$ means $T$ is
+equivalent to $U$ in environment $`G$, both sorted with $s$.
+Subset equivalence will automatically insert first projections
+(\irule{Subset-$\eltpit$}, \irule{SubSub}) and
+element introductions (\irule{Element}, \irule{SubProof}), so we do not need
+nor want these typing rules in \Russell. We do not want the second
+projection to appear in \Russell terms either, because it would lead to
+inconsistency. Indeed, in \PVS{} you can't manipulate proof terms, so you have no way to create a
 term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq
   0}$, nor can you actually derive the latter, as it won't type-check.
-However, in a classical Calculus of Constructions with sigma types or inductive
-types, the subset type is a first class object defined with proper
-introduction and elimination terms (figure \vref{fig:cci-subset}). These
-are not compatible with our subtyping, so we need to forbid the use of
-these terms in \Russell{} terms, leaving only the type former (figure
-\vref{fig:typing-decl-rules}). With this restriction, when we erase subset types
-from \Russell terms, leaving only the supports, we get a valid
-\CC term, hence $`_$ is not provable in \Russell.
-
-The reductions rules of this system are the standard $\beta$ and $\pi$
-for projections. We denote by $\downarrow{x}$ the complete normal form
-of $x$ and by $\hnf{x}$ its head normal form. We use judgemental equality $`G \type T \eqbp U : s$ and the usual untyped
-convertibility $\eqbp$ interchangably (we proved $`G \type T \eqbp U : s
-"<=>" T \eqbp U `^ `G \type T, U : s$).
-
-We now need to change the conversion rule to a stronger one which will
-include our subset equivalence.
+If we allowed the second projection in \Russell, that would be doable.
+Hence we leave only the subset type forming rule (figure
+\vref{fig:typing-decl-rules}) in \Russell. With this restrictions, we
+have the following property:
+\begin{proposition}[Subset erasure and consistency]
+  If we erase subset types from \Russell terms, leaving only the supports, we get a valid
+  \CIC term, hence $`_$ is not provable in \Russell.
+\end{proposition}
 
 \subsubsection{Equivalence}
 We have renamed the technique from \ps{} to 
@@ -539,7 +547,7 @@ rules, integrating the conversion (or subsumption) rule
 %$T  `= s$ with $s `: \PTSsorts$ in a algorithmic presentation.
 Our algorithmic judgement $`G \typea t : T$
 (figure \vref{fig:typing-algo-rules})
-reads: $t$ is a well-typed term of type $T$ in environment $`G$.
+reads: $t$ has type $T$ in environment $`G$.
 We need to introduce the notion of support for subset types in order to
 define our algorithmic system. Indeed, when typing an application, 
 we need to ensure that the object we apply can be seen as an object of a
@@ -645,7 +653,7 @@ product type modulo the equivalence.
 \begin{proof}
   \begin{enumerate}
   \item By induction on the sum of the depths of the two derivations.
-  \item Immediate using a thinning lemma.
+  \item By induction, using a thinning lemma.
   \end{enumerate}
 \end{proof}
 \end{paragraph}
@@ -658,7 +666,7 @@ systems:
 \end{theorem}
 
 \begin{theorem}[Completeness]
-  If $`G \typed t : T$ then there exists $T'$, $`G \typea t : T'$ and $`G \typea T' \suba T : s$.
+  If $`G \typed t : T$ then there exists $T', s$ so that $`G \typea t : T'$ and $`G \typea T' \suba T : s$.
   If $`G \typed T \subd U : s$ then $`G \typea T \suba U : s$.
 \end{theorem}
 
@@ -672,7 +680,7 @@ Finally, we can state the desired property of the algorithmic system:
 \end{proof}
 
 We denote by $\typeafn{`G}{t}$ the function which returns the type of
-term $t$ in context $`G$.
+term $t$ in context $`G$ such that $`G \typea t : \typeafn{`G}{t}$.
 
 \subsection{From \CIC to \lng{}}
 We have presented a calculus based on \CIC with a stronger equivalence
@@ -693,7 +701,7 @@ except for the following cases:
 
 We can now prove the following:
 \begin{theorem}[Forgetful map correctness]
-  If $`G \typec t : T$ then $`G^{\circ} \typea t^{\circ} : T^{\circ}$ if $()^{\circ}$ is
+  If $`G \typec t : T$ then $`G^{\circ} \type t^{\circ} : T^{\circ}$ if $()^{\circ}$ is
   defined (ie, does not return terms containing $`_$) on $`G, t$ and $T$.
 \end{theorem}
 
@@ -844,7 +852,7 @@ of \Coq.
 \end{figure}
 
 We describe the case of application here, others are similar. First we
-get the types $F$ and $U$ of the function $f$ and argument $u$ by recursively calling the
+get the \Russell types $F$ and $U$ of the function $f$ and argument $u$ by calling the
 typing function on both terms. Then we must ensure that $F$ can indeed
 be seen as a product using the $\mualgo$ operator. We can then build
 the coercion between $F$ and this product, and between $U$ and its
@@ -869,7 +877,7 @@ generation. The complete equational theory of \CICq{} is given in figure
 sums and subsets ($\rho$) and proof-irrelevance for the second component
 of subset objects.
 Benjamin Werner has studied the addition of proof-irrelevance (rule
-$\sigma$) in the calculus of constructions
+$\sigma$) in the Calculus of Constructions
 \cite{Werner:ProofIrrelevance}. It is not a trivial extension and it has
 far-reaching consequences on the model of the calculus
 \cite{DBLP:conf/types/MiquelW02}. We direct the reader to these papers for further

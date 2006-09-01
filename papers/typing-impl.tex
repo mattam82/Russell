@@ -450,25 +450,25 @@
 }
 \newcommand{\ccqeqarr}{
   \[\begin{array}{llcll}
-    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
-    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
-    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
-    (\eta) & (\lambda x : X.e~x) & = & e & \sidecond{$x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
-    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \sidecond{$e : \Sigma x : X. Y$} \\
-    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \sidecond{$e : \mysubset{x}{E}{P}$} \\
-    (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \sidecond{$t `= t'$}
+    (\beta) & (\lambda x : X.e)~v & `= & e[v/x] & \\
+    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & `= & e_i & \\
+    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & `= & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & `= & e & \sidecond{$x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
+    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & `= & e & \sidecond{$e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & `= & e & \sidecond{$e : \mysubset{x}{E}{P}$} \\
+    (\sigma) & \elt{E}{P}{t}{p} & `= & \elt{E}{P}{t'}{p'} & \sidecond{$t `= t'$}
   \end{array}\]}
 
 \newcommand{\ccqeqfig}[1][Théorie équationnelle de \CCq{}]{
 \begin{figure}[ht]
   \[\begin{array}{llcll}
-    (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
-    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
-    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
-    (\eta) & (\lambda x : X.e~x) & = & e & \sidecond{$x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
-    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \sidecond{$e : \Sigma x : X. Y$} \\
-    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \sidecond{$e : \mysubset{x}{E}{P}$} \\
-    (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \sidecond{$t `= t'$}
+    (\beta) & (\lambda x : X.e)~v & `= & e[v/x] & \\
+    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & `= & e_i & \\
+    (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & `= & e_i & \\
+    (\eta) & (\lambda x : X.e~x) & `= & e & \sidecond{$x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
+    (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & `= & e & \sidecond{$e : \Sigma x : X. Y$} \\
+    & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & `= & e & \sidecond{$e : \mysubset{x}{E}{P}$} \\
+    (\sigma) & \elt{E}{P}{t}{p} & `= & \elt{E}{P}{t'}{p'} & \sidecond{$t `= t'$}
   \end{array}\]
   \caption{#1}
   \label{fig:eqccq}
