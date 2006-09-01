@@ -129,10 +129,9 @@
 \def\Coerce{\Subsum}
 
 \newcommand{\ConvFull}[5]{
-  \TAX{Conv}
-  {$\tgen{#1}{#2}{#3}$}
+  \BAX{Conv}
   {$\tgen{#1}{#4}{#5}$}
-  {$#5 \eqbr #2$}
+  {$#1 \seq #5 \eqbr #2 : #3$}
   {$\tgen{#1}{#4}{#2}$}
   {}
 }

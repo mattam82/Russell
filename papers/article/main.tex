@@ -401,9 +401,8 @@ the subtyping mechanism which we will define later.
 
 The reductions rules of this system are the standard $\beta$ and $\pi$
 for projections. We denote by $\downarrow{x}$ the complete normal form
-of $x$ and by $\hnf{x}$ its head normal form. We use judgemental equality $`G \type T \eqbp U : s$ and the usual untyped
-convertibility $\eqbp$ interchangably (we proved $`G \type T \eqbp U : s
-"<=>" T \eqbp U `^ `G \type T, U : s$).
+of $x$ and by $\hnf{x}$ its head normal form. We use a standard
+judgemental equality $`G \type T \eqbp U : s$.
 
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma},
 \irule{Sum-Dep}, \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V :
@@ -419,27 +418,23 @@ mantra ``Computations do not depend on proofs'' which governs our
 programming language. If there is no dependence then $U$ and $V$ can be
 swapped.
 
-In \Russell, the conversion rule is replaced by a
+In \Russell, the conversion rule \irule{Conv} is replaced by a
 new subsumption rule \irule{Subsum} (figure
 \vref{fig:typing-decl-rules}) which will implement the subset
 equivalence. The judgement $`G \typed T \subd U : s$ means $T$ is
 equivalent to $U$ in environment $`G$, both sorted with $s$.
-Subset equivalence will automatically insert first projections
-(\irule{Subset-$\eltpit$}, \irule{SubSub}) and
-element introductions (\irule{Element}, \irule{SubProof}), so we do not need
-nor want these typing rules in \Russell. We do not want the second
-projection to appear in \Russell terms either, because it would lead to
-inconsistency. Indeed, in \PVS{} you can't manipulate proof terms, so you have no way to create a
-term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq
-  0}$, nor can you actually derive the latter, as it won't type-check.
-If we allowed the second projection in \Russell, that would be doable.
-Hence we leave only the subset type forming rule (figure
-\vref{fig:typing-decl-rules}) in \Russell. With this restrictions, we
-have the following property:
+The essence of our equivalence is to identify subset types if they have
+equivalent supports, hence we have the following property:
 \begin{proposition}[Subset erasure and consistency]
-  If we erase subset types from \Russell terms, leaving only the supports, we get a valid
-  \CIC term, hence $`_$ is not provable in \Russell.
+  If we erase subset types from \Russell terms and rules, leaving only the supports, we get a valid
+  \CIC term and derivation, hence $`_$ is not provable in \Russell.
 \end{proposition}
+\begin{proof}
+  By erasing subsets in \Russell rules, the \irule{Subset} rule becomes
+  admissible and the \irule{Subsum} rule becomes \irule{Conv}. By
+  eliminating the subset type in a term we get a valid \CIC term. Hence
+  to each \Russell derivation corresponds a \CIC derivation.
+\end{proof}
 
 \subsubsection{Equivalence}
 We have renamed the technique from \ps{} to 
@@ -641,7 +636,10 @@ product type modulo the equivalence.
   equivalence given two types. We denote it by $`G \typea T
   \suba U : s$ (figure \ref{fig:subtyping-algo-rules}).
   In our case, we have to check that conversion is decidable, which is the
-  case. We also need to eliminate the transitivity and symmetry rules which are not
+  case as we can replace judgemental equality with the usual untyped
+  convertibility $\eqbp$ (we proved $`G \type T \eqbp U : s
+  "<=>" T \eqbp U `^ `G \type T, U : s$).
+  We also need to eliminate the transitivity and symmetry rules which are not
   syntax-directed. That is the purpose of the following theorem:
 \begin{theorem}[Admissibility of transitivity and symmetry]
   \begin{enumerate}
@@ -714,7 +712,14 @@ Indeed, the second projection of a
 subset element will only appear in the second component of a subset
 element. Otherwise, we would have used the projection directly in the
 \Russell{} term, where it is forbidden.
-
+Indeed, in \PVS{} you can't manipulate proof terms, so you have no way to create a
+term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq
+  0}$, nor can you actually derive the latter, as it won't type-check.
+If we allowed the second projection in \Russell, that would be doable
+and we would have an inconsistency.
+Hence we left only the subset type forming rule (figure
+\vref{fig:typing-decl-rules}) in \Russell, while the introduction and
+first projection of subset elements are internalized by the coercion judgement.
 
 \section{From \lng{} to \CICq{}}
 \label{sec:Translation}
