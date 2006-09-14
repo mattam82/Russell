@@ -5,12 +5,6 @@
 \usepackage{color}
 \def\text{\mbox}
 \pagestyle{plain}
-%\usepackage{amsmath}
-%\usepackage{amsthm}
-
-%\usepackage{qzapfcha}
-%\usepackage{cmbright}
-%\usepackage{concmath}
 \usepackage{ifthen}
 \usepackage{url}
 \usepackage{varioref}
@@ -46,9 +40,6 @@
 
 \def\id#1{\texttt{#1}}
 \def\sidecond{\sideconden}
-
-%\usepackage{framed}
-%\usepackage{multicol}
 
 \author{Matthieu Sozeau}
 
@@ -646,7 +637,7 @@ systems:
 
 Finally, we can state the desired property of the algorithmic system:
 \begin{theorem}[Decidability of typing]
-  $`A `G~t, `E T, `G \typea t : T$ and $`A `G~T~U~s, `G \typea T \suba U :
+  $`G \typea t : T$ and $`G \typea T \suba U :
   s$ are decidable problems.
 \end{theorem}
 \begin{proof}
@@ -743,9 +734,9 @@ proposition.
 The derivation of explicit coercions (figure
 \vref{fig:coerce-impl-rules-short}) is based on the
 algorithmic equivalence derivations, hence we can derive a function from
-the judgement which builds a coercion given two types (we denote it $\coerce{`G}{T}{U}$). 
+the judgement which builds a coercion given two types (denote by $\coerce{`G}{T}{U}$). 
 The side-conditions of the rules have not changed, so we omit them for
-better readability. The judgement $\subimpl{`G}{c}{T}{U}$ builds a
+better readability. The judgement $\subimpl{`G}{c}{T}{U}{s}$ builds a
 coercion $c$ from $T$ to $U$ in context $`G$, that is an object which
 coerces an object of type $\ip{T}{`G}$ to an object of type $\ip{U}{`G}$
 in context $\ipG{`G}$. We use the algorithmic types to drive the
@@ -789,7 +780,7 @@ new presentation.
 As conversion will be preserved by the interpretation $\ip{}{}$,
 the rule \irule{SubConv} derives an empty coercion, as the target system
 will be able to derive itself that $\ip{T}{`G} `= \ip{U}{`G}$.
-Similarly for \irule{SubHnf}, we rely on the target's system conversion
+Similarly for \irule{SubHnf}, we rely on the target system's conversion
 rule so that the coercion $c$ of codomain $\ip{\hnf{U}}{`G}$ can be seen
 as an object of type $\ip{U}{`G}$.
 
@@ -926,7 +917,7 @@ $A$.
 
 It must be stressed that we do not lose any information when
 generating obligations as we have the whole term context at hand,
-avoiding the complicated proof obligation generation of \PVS.
+avoiding the complicated proof obligation generation of \PVS \cite{PVS-Semantics:TR}.
 Here we would have $l : \mysubset{l}{\texttt{list}~A}{l \neq []}, Heql : \eltpit~l =
 []$. We have tactics that clean the goal and context (deconstructing
 subsets and simplifying to present $l : \texttt{list}~A, H : l \neq [], Heql : l = []$
@@ -947,24 +938,24 @@ help build a common interface for the two provers.
 
 \subsection{Related work}
 Other efforts to build certified programs using type theory include
-Ca\-yenne \cite{Augustsson99} and Epigram
-\cite{DBLP:journals/jfp/McBrideM04}. Cayenne offers dependent
+\Cayenne \cite{Augustsson99} and \Epigram
+\cite{DBLP:journals/jfp/McBrideM04}. \Cayenne offers dependent
 types and general recursion at the expense of a non-terminating type
 checker; it can be thought of as a testbed for developing languages with
 dependent types but is not so much aimed at building certified programs.
-Epigram ought to become a complete programming language with dependent
+\Epigram ought to become a complete programming language with dependent
 types at its heart. Instead of using a phase distinction to separate
-coding and proving, Epigram is based on an interactive, 2-dimensional editing process
+coding and proving, \Epigram is based on an interactive, 2-dimensional editing process
 where code and proofs are written incrementally to get a complete program.
 Using type annotations and with the help of the editor for structuring, 
 one is able to write programs with precis e specifications. However it
 is not obvious if it could be made usable by programmers because of the
-paradigm change and scaling issues. DML \cite{Xi98:PhD} is more akin to
+paradigm change and scaling issues. The \DML language \cite{Xi98:PhD} is more akin to
 comparison with our solution. It provides a way to use a restricted set
 of dependent types in \ML programs, carefully chosen so as to keep
 type-checking decidable with the help of an automatic prover. Our method
-subsumes this one as it is perfectly possible to integrate automatic
-proof tools with \Coq to discharge the generated obligations.
+should subsume this one as it is perfectly possible to integrate automatic
+proof tools with \Coq to discharge the generated obligations. 
 
 \subsection{Further work}
 Much has to be done to smoothly integrate \Russell into \Coq. The
@@ -978,7 +969,8 @@ basis for interpretation of complete \ML{} programs in \Coq, using a monadic
 translation or some kind of effects to reflect imperative constructs.
 
 \paragraph{Acknowledgements}
-I'd like to thank Christine Paulin-Mohring for directing this work.
+I would like to thank Christine Paulin-Mohring for directing this work and
+Jean-Christophe Filli\^atre for discussions on previous versions of this paper.
 \bibliography{my,bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
 \bibliographystyle{splncs}
