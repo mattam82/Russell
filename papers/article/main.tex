@@ -4,7 +4,7 @@
 \usepackage{alltt}
 \usepackage{color}
 \def\text{\mbox}
-%\pagestyle{plain}
+\pagestyle{plain}
 %\usepackage{amsmath}
 %\usepackage{amsthm}
 
@@ -40,33 +40,6 @@
 }
 
 \newenvironment{code}{\begin{alltt}}{\end{alltt}}
-% Caml2Tex
-
-\definecolor{KWLanguage_color}{rgb}{0.6,0,0}
-\definecolor{KWStructure_color}{rgb}{0.8,0.8,0}
-\definecolor{KWModule_color}{rgb}{0.7,0.5,0}
-\definecolor{KWSubprog_color}{rgb}{0.6,0,0.6}
-\definecolor{KWException_color}{rgb}{0.8,0,0}
-\definecolor{Constructor_color}{rgb}{0,0.5,0}
-\definecolor{Comment_color}{rgb}{0.6,0.6,0.6}
-\definecolor{String_color}{rgb}{0.6,0.5,0.5}
-\definecolor{Varfunction_color}{rgb}{0.2,0.2,0.8}
-\definecolor{Constant_color}{rgb}{0.6,0.5,0.5}
-\definecolor{Variable_color}{rgb}{0.2,0.2,0.8}
-
-\newcommand\KWLanguage[1]{\rmfamily{\color{KWLanguage_color}{#1}}}
-\newcommand\KWStructure[1]{\sffamily{\color{KWStructure_color}{#1}}}
-\newcommand\KWModule[1]{\rmfamily{\color{KWModule_color}{#1}}}
-\newcommand\KWSubprog[1]{\rmfamily{\color{KWSubprog_color}{#1}}}
-\newcommand\KWException[1]{\rmfamily{\color{KWException_color}{#1}}}
-\newcommand\Constructor[1]{\textbf{\color{Constructor_color}{#1}}}
-\newcommand\Comment[1]{\rmfamily{\color{Comment_color}{#1}}}
-\newcommand\String[1]{\rmfamily{\color{String_color}{#1}}}
-\newcommand\Varfunction[1]{\sffamily{\color{Varfunction_color}{#1}}}
-\newcommand\AVariable[1]{\textit{\color{Variable_color}{#1}}}
-\newcommand\Constant[1]{\texttt{\color{Constant_color}{#1}}}
-\newcommand\pow{$^{\wedge}$}
-\newcommand\bs{$\backslash$}
 
 \input{typing-impl}
 \input{subtyping-impl}
@@ -80,7 +53,7 @@
 \author{Matthieu Sozeau}
 
 \institute{LRI, Paris Sud XI University\\\email{sozeau@lri.fr}}
-\title{Subset coercions in \Coq \\ \small{Draft - \today}}
+\title{Subset coercions in \Coq} % \\ \small{Draft - \today}}
 \date{\today}
 
 \begin{document}
@@ -934,9 +907,12 @@ examples. We actually generate coercions simultaneously with typing
 in the implementation, which is sound thanks to the previous proofs. Our
 typing is a clone of \Coq's original typing algorithm, so we benefit
 from all the features of \Coq including implicit variables, notations and the existing
-coercion system. The type-checker also transforms pattern-matching so
+coercion system. The prototype also contains support for strucural and 
+well-founded \verb|Fixpoint| definitions.
+The type-checker transforms pattern-matching so
 that an equality between the matched term and the pattern is present in
-each branch typing context and it allows the user to put explicit holes in the term, for example:
+the typing context of each branch and it allows the user to put explicit 
+holes in the term, for example:
 \begin{code}
   Program Definition hd ( l : list A | l <> [] ) : A :=
     match l with
@@ -946,7 +922,16 @@ each branch typing context and it allows the user to put explicit holes in the t
 \end{code}
 Here the second branch can't be taken because we would have $l = []$ and
 $l \neq []$, but we may not have any placeholder element of type
-$A$. There is also support for strucural and well-founded \verb|Fixpoint| definitions.
+$A$.
+
+It must be stressed that we do not lose any information when
+generating obligations as we have the whole term context at hand,
+avoiding the complicated proof obligation generation of \PVS.
+Here we would have $l : \mysubset{l}{\texttt{list}~A}{l \neq []}, Heql : \eltpit~l =
+[]$. We have tactics that clean the goal and context (deconstructing
+subsets and simplifying to present $l : \texttt{list}~A, H : l \neq [], Heql : l = []$
+to the user) but it does not match the usability of \PVS yet.
+
 
 \section{Conclusion}
 \label{sec:Conclusion}
@@ -972,7 +957,7 @@ types at its heart. Instead of using a phase distinction to separate
 coding and proving, Epigram is based on an interactive, 2-dimensional editing process
 where code and proofs are written incrementally to get a complete program.
 Using type annotations and with the help of the editor for structuring, 
-one is able to write programs with precise specifications. However it
+one is able to write programs with precis e specifications. However it
 is not obvious if it could be made usable by programmers because of the
 paradigm change and scaling issues. DML \cite{Xi98:PhD} is more akin to
 comparison with our solution. It provides a way to use a restricted set
