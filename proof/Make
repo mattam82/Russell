@@ -10,6 +10,7 @@ InvLiftSubst.v
 Reduction.v
 Conv.v
 Conv_Dec.v
+Hnf.v
 Env.v
 # CCSum
 CCSum/Types.v
@@ -100,3 +101,5 @@ Meta/TPOSR_Russell.v
 Meta/Russell_TPOSR.v
 Meta/Russell_JRussell.v
 Meta/SubjectReduction.v
+# Russell.
+Russell./Types.v
