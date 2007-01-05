@@ -212,7 +212,7 @@ Proof.
   destruct b1 ; try discriminate.
   simpl in H9.
   inversion H9 ; intros ; subst s4.
-  pose (tposr_sort_kinded H11).
+  assert (e0:=tposr_sort_kinded H11).
   exists kind.
   exists (Srt_l s0).
   rewrite e0 in H11.

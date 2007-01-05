@@ -71,8 +71,8 @@ Proof.
   destruct H2.
   injection H2 ; intros ; subst s.
   elim (tposr_not_kind H).
-  pose (coerce_refl_l H2).
-  pose (tposr_sort_kinded t).
+  assert (t:=coerce_refl_l H2).
+  assert (e0:=tposr_sort_kinded t).
   rewrite e0 in t.
   pose (tposr_sort_kinded H).
   rewrite e1 ; auto.
@@ -266,15 +266,15 @@ Proof.
   induction M ; unfold tposr_term ; intros ; destruct_exists.
 
   destruct N ; try (simpl in H1 ; try discriminate) ; intros.
-  pose (tposr_sort H).
-  pose (tposr_sort H0).
+  assert (e:=tposr_sort H).
+  assert (e0:=tposr_sort H0).
   assert(Srt_l s = Srt_l s0).
   inversion H1 ; auto.
   rewrite H2 in H.
   rewrite H2.
   rewrite e0 in H0.
   rewrite e in H.
-  rewrite H2 in H5.
+  rewrite H2 in H.
   exists (Srt_l s0) ; intuition ; auto with coc.
   
   (* Var *)

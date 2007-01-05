@@ -71,8 +71,8 @@ Proof.
   destruct (inv_conv_prod_sort_l H H0 H3).
   destruct (inv_conv_prod_sort_l H1 H2 H5).
   destruct H11 ; destruct H12.
-  pose (unique_sort H13 H8).
-  pose (unique_sort H12 H4).
+  assert (e0:=unique_sort H13 H8).
+  assert (e1:=unique_sort H12 H4).
 
   split.
   exists s.
@@ -205,8 +205,8 @@ Proof.
   destruct H13 ; destruct H14.
   destruct H15 ; destruct H16 ; destruct H17 ; destruct H19.
   destruct H18 ; destruct H21.
-  pose (unique_sort H14 H4).
-  pose (unique_sort H15 H8).
+  assert (e0:=unique_sort H14 H4).
+  assert (e1:=unique_sort H15 H8).
   destruct (sum_sort_prop H22).
   destruct H24.
   destruct (sum_sort_prop H20).
@@ -226,13 +226,13 @@ Proof.
   rewrite H33 in H13 ; rewrite H33 in H15.
   assert(x1 = s).
   rewrite H28 ; auto.
-  rewrite H35 in H17 ; rewrite H35 in H19.
+  rewrite H34 in H17 ; rewrite H34 in H19.
   assert(x2 = s).
   rewrite H25 ; auto.
-  rewrite H36 in H18 ; rewrite H36 in H21.
+  rewrite H35 in H18 ; rewrite H35 in H21.
   assert(x0 = s).
   rewrite H24 ; auto.
-  rewrite H37 in H14 ; rewrite H37 in H16.
+  rewrite H36 in H14 ; rewrite H36 in H16.
 
   rewrite H32.
   split ; auto with coc.
@@ -334,18 +334,18 @@ generalize H H0. clear H H0.
 inversion_clear H1; intros.
 apply inv_typ_abs with e T M (Prod V Ur); intros;
  auto with coc core arith datatypes.
-pose (coerce_sort_r H8).
-pose (unique_sort H2 t).
+assert (t:=coerce_sort_r H8).
+assert (e0:=unique_sort H2 t).
 rewrite <- e0 in H1.
 rewrite <- e0 in H7.
 rewrite <- e0 in H8.
-destruct (inv_sub_prod_l H9); auto with coc core arith datatypes.
+destruct (inv_sub_prod_l H8); auto with coc core arith datatypes.
 apply type_conv with (subst v T0) x; auto with coc core arith datatypes.
 apply substitution with T; auto with coc core arith datatypes.
-pose (coerce_sort_r H10).
-pose (coerce_sort_l H10).
-pose (unique_sort H5 t0).
-pose (unique_sort H3 t1).
+pose (coerce_sort_r H9).
+pose (coerce_sort_l H9).
+assert (e1:=unique_sort H5 t0).
+assert (e2:=unique_sort H3 t1).
 rewrite e2 in H3.
 rewrite e1 in H5.
 apply type_conv with V x0; auto with coc core arith datatypes.
@@ -359,11 +359,11 @@ apply substitution with V; auto with coc core arith datatypes.
 assert(coerce_in_env (T :: e) (V :: e)).
 apply coerce_env_hd with x0 ; auto.
 cut (wf (V :: e)) ; intros.
-apply (typ_conv_env H7 H11 H12).
+apply (typ_conv_env H7 H10 H11).
 apply wf_var with s1 ; auto.
 
-clear H10.
-pose (inv_sub_prod_r H9).
+clear H9.
+pose (inv_sub_prod_r H8).
 apply (substitution_coerce c H).
 
 apply type_app with V; auto with coc core arith datatypes.

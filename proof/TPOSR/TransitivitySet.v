@@ -979,7 +979,7 @@ Proof.
   rewrite <- H3 ; auto.
   rewrite <- H3 ; auto.
   apply (coerces_sort_r d2).
-  rewrite H3 in t7.
+  subst s.
   assumption.
   generalize dependent e.
   rewrite H2.

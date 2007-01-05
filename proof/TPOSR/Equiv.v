@@ -154,8 +154,7 @@ Lemma equiv_sort_trans : forall G A B C s s', equiv_sort G A C s -> equiv_sort G
 Proof.
   unfold equiv_sort.
   intros.
-  pose (tposr_coerce_unique_sort_right H H0).
-  rewrite <- e in H0.
+  rewrite <- (tposr_coerce_unique_sort_right H H0) in H0.
   apply tposr_coerce_trans with C ; auto with coc.
 Qed.
 

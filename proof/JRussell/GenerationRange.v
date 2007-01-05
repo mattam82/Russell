@@ -124,9 +124,10 @@ Proof.
   intros.
   pose (term_type_range_kinded (jeq_type_l H) H0).
   inversion e0.
+  clear e0.
   rewrite H2 in H.
-  pose (sort_of_kinded (jeq_type_l H1)).
-  pose (sort_of_kinded (jeq_type_r H1)).
+  pose (sort_of_kinded (jeq_type_l H)).
+  pose (sort_of_kinded (jeq_type_r H)).
   pose (eq_conv H).
   apply (@conv_dom _ _ c s' i i0 H0).
 Qed.

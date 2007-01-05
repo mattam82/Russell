@@ -113,14 +113,15 @@ Proof.
   rewrite H8 in H.
   rewrite H8 in H0.
   rewrite H8 in H1.
+  clear e0.
   rewrite H8 in H2.
   pose (sort_of_kinded H).
   pose (sort_of_kinded H0).
   pose (sort_of_kinded H1).
-  pose (sort_of_kinded H7).
+  pose (sort_of_kinded H2).
   pose (@conv_dom _ _ (sym_conv _ _ H5) s0 i2 i1).
-  pose (e1 H6).
-  pose (IHcoerce s0 e2).
+  pose (e0 H6).
+  pose (IHcoerce s0 e1).
   apply (@conv_dom _ _  (sym_conv _ _ H3) s0 i0 i) ; auto.
 Qed.
 

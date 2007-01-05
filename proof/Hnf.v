@@ -5,128 +5,156 @@ Require Import Lambda.LiftSubst.
 Require Import Lambda.Reduction.
 Require Import Lambda.Conv.
 Require Import Lambda.Env.
+Require Import Lambda.Conv_Dec.
 
 Set Implicit Arguments.
 
-Implicit Types i k m n : nat.
+(*Implicit Types i k m n : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
-(*Definition head_elim (x : term) :=
-  match x with
-  App _ _ => True
-  | Pi1 _ => True
-  | Pi2 _ => True
-  | _ => False
-  end.
-
-Inductive in_hnf : term -> Prop :=
-  | hnf_beta : forall f, in_hnf f ->
-    (forall T b, f <> Abs T b) -> forall e, in_hnf (App f e)
-  | hnf_pi1 :  forall p, in_hnf p ->
-    (forall T x y, p <> Pair T x y) -> 
-    in_hnf (Pi1 p)
-  | hnf_pi2 :  forall p, in_hnf p ->
-    (forall T x y, p <> Pair T x y) -> 
-    in_hnf (Pi2 p)
-  | hnf_other : forall x, ~ (head_elim x) -> in_hnf x.
-
-Lemma hnf : forall x, exists y, red x y /\ in_hnf y.
-Proof.
-  intros.
-
-  induction x.
-
-  exists (Srt s) ; split ; [auto with coc | eapply hnf_other ; red ; simpl ; intros ; auto].
-
-  exists (Ref n) ; split ; [auto with coc | eapply hnf_other ; red ; simpl ; intros ; auto].
-
-  exists (Abs x1 x2) ; split ; [auto with coc | eapply hnf_other ; red ; simpl ; intros ; auto].
-
-  destruct_exists.
-  destruct x0.
-
-
-Fixpoint redex (x : term) :=
-  match x with
-  App (Abs _ _) _ => True
-  | Pi1 (Pair _ _ _) => True
-  | Pi2 (Pair _ _ _) => True
-  | App x y => redex x 
-  | Pi1 x => redex x
-  | Pi2 x => redex x
-  | _ => False
-  end.
-*)
-
-Definition redn := transp _ red1.
-
 Definition snterm := { x : term | sn x }.
 
-Program Definition redn_sn : snterm -> snterm -> Prop := 
-  fun x y => (transp _ red1) x y.
+Program Definition sn_ord : snterm -> snterm -> Prop := 
+  fun x y => ord_norm x y.
 
-Definition sn_term_sn : forall t : snterm, sn (proj1_sig t).
-Proof.
-  destruct t ; auto.
-Qed.
+Require Import ProofIrrelevance.
 
 Scheme acc_dep := Induction for Acc Sort Prop.
 
-Lemma well_founded_redn_sn : well_founded redn_sn.
+Lemma redn_sn_wf : well_founded sn_ord.
+Proof.
+Admitted.*)
+(*Lemma redn_sn_wf : well_founded redn_sn.
 Proof.
   red in |- *.
-  cut (forall t u : snterm, redn_sn t u -> Acc redn_sn u).
-  intros.
-  apply H with a.
-
-  unfold redn_sn.
-  intros.
   induction a.
   unfold sn in p.
-  
   induction p using acc_dep.
-  pose (H x).
-
-  inversion p.
-
-  simpl ; intros.
-
-  apply Acc_intro.
-  intros.
-  induction y.
-  simpl.
-  simpl in H.
-  
-
-
+  unfold redn_sn.
   apply Acc_intro.
   intros.
   simpl in H0.
-
-Program Fixpoint hnf (x : snterm) { wf x redn_sn } : term :=
+  pose (H _ H0).
+  assert (exist (fun x : term => sn x) (proj1_sig y) (a (proj1_sig y) H0) = y). 
+  destruct y.
+  simpl.
+  rewrite (proof_irrelevance (sn x0) s (a x0 H0)).
+  auto.
+  rewrite <- H1.
+  assumption.
+Qed.
+*)
+(*
+Program Fixpoint hnf (x : snterm) { wf x sn_ord } :  { y : term | red x y } :=
   match x with
   | App x y => 
-    match hnf x with
+    let nf := hnf x in
+    match nf with
     | Abs T v => hnf (subst y v)
     | h => App h y
     end
   | Pi1 x =>
-    match hnf x with
+    let nf := hnf x in
+    match nf with
     | Pair T u v => hnf u
     | h => Pi1 h
     end
   | Pi2 x =>
-    match hnf x with
+    let nf := hnf x in
+    match nf with
     | Pair T u v => hnf u
     | h => Pi2 h
     end
   | x => x
   end.
 
-Obligation 1.
-  simpl ; intros.
+Obligations.
 
+Solve Obligations using simpl ; intros ; rewrite <- Heqx ; auto with coc.
+
+Obligations.
+Obligation 4. 
+simpl ; intros.
+destruct x ; simpl.
+simpl in Heqx.
+assert(subterm x0 x).
+rewrite <- Heqx ; repeat constructor.
+apply subterm_sn with x ; auto.
+Qed.
+
+Obligations.
+
+Obligation 5.
+  simpl ; intros.
+  destruct x ; simpl.
+  simpl in Heqx.
+  unfold sn_ord ; simpl.
+  apply subterm_ord_norm.
+  rewrite <- Heqx ; repeat constructor.
+Qed.
+
+Ltac destruct_call f :=
+  match goal with
+    | H : ?T |- _  =>
+      match T with
+        context [f ?x] => destruct (f x)
+      end
+  end.
+
+
+
+Obligation 6.
+  destruct x ; simpl ; intros ; rewrite <- Heqx ; auto with coc.
+  destruct_call hnf ; simpl in *.
+  apply red_red_app ; auto with coc.
+  rewrite Heqnf ; auto.
+Qed.
+
+Obligation 7.
+  destruct x ; simpl ; intros ; rewrite <- Heqx ; auto with coc.
+  destruct_call hnf ; simpl in * ;
+  apply red_red_app ; auto with coc ;
+  rewrite Heqnf ; auto.
+Qed.
+
+
+Obligation 8.
+  destruct x ; simpl ; intros. 
+  destruct_call hnf ; simpl in *.
+  
+  
+  apply red_red_app ; auto with coc ;
+  rewrite Heqnf ; auto.
+  
+  
+
+
+rewrite Heqx ; auto with coc.
+Qed.
+
+Obligation 3.
+simpl ; intros.
+
+  constructor.
+  auto with coc datatypes.
+auto.
+  apply redn_sn_wf.
+Qed.
+
+Require Import Coq.subtac.Utils.
+
+Obligation 3.
+  simpl ; intros until x.
+  destruct x ; simpl.
+  intros.
+  rewrite <- Heqx.
+  destruct (hnf ((x0 &?))).
+  simpl in HeqHeq_id0.
+  unfold transp ; simpl.
+  
+
+  applt
   unfold well_founded.
   unfold snterm.
   intros.
@@ -222,4 +250,4 @@ Proof.
 
 
 
-
+*)

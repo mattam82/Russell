@@ -262,9 +262,9 @@ Proof.
   pose (H1 := t).
   pose (H2:=inv_conv_prod_sort_l_set t3 t4 c1 t).
   intuition.
-  pose (unique_sort t7 H2).
+  assert (e1:=unique_sort t7 H2).
   rewrite <- e1 in H1.
-  pose (unique_sort H1 t).
+  assert (e2:=unique_sort H1 t).
   generalize dependent A'0.
   rewrite e2.
   intros.
@@ -273,7 +273,7 @@ Proof.
   pose (inv_conv_prod_l _ _ _ _ c1).
   pose(coerces_conv_l).
   rewrite e2 in t7.
-  set (d := coerces_conv_l t10 t t0 (sym_conv _ _ c2) c).
+  set (d := coerces_conv_l t7 t t0 (sym_conv _ _ c2) c).
   apply (IH (depth c2_1 + depth d)) with A1 c2_1 d ; auto with coc.
   simpl.
   rewrite H4 ; simpl.

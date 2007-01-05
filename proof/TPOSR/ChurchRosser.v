@@ -494,12 +494,12 @@ Lemma tposr_coerce_eq_sort_aux : forall e T U s', tposr_coerce e T U s' ->
   forall s s0, T = (Srt_l s) -> U = (Srt_l s0) -> s = s0.
 Proof.
   intros.
-  pose (tposr_coerce_sorts H).
+  assert(a:=tposr_coerce_sorts H).
   destruct (a s).
   rewrite H0 in H2.
   assert(e |-- s ~= s : s').
   rewrite H0 in H.
-  pose (coerce_refl_l H4).
+  pose (coerce_refl_l H).
   auto with coc.
   pose (H2 H4).
   rewrite H1 in t.
@@ -604,10 +604,10 @@ Proof.
   inversion_clear H3.
   intros.
   pose (tposrp_refl_r H6).
-  pose (tposrp_refl_r H4).
+  assert (t0:=tposrp_refl_r H4).
   pose (unique_sort t t0).
   rewrite <- e0 in H4.
-  pose (tposrp_tposr_eq H3).
+  pose (tposrp_tposr_eq H4).
   pose (tposrp_tposr_eq H6).
   pose (tposrp_tposr_eq H7).
   pose (tposrp_tposr_eq H5).
@@ -679,10 +679,10 @@ Proof.
   inversion_clear H3.
   intros.
   pose (tposrp_refl_r H7).
-  pose (tposrp_refl_r H4).
+  assert(t0:=tposrp_refl_r H4).
   pose (unique_sort t t0).
   rewrite <- e0 in H4.
-  pose (tposrp_tposr_eq H3).
+  pose (tposrp_tposr_eq H4).
   pose (tposrp_tposr_eq H7).
   pose (tposrp_tposr_eq H8).
   pose (tposrp_tposr_eq H5).
@@ -698,7 +698,7 @@ Proof.
   assert(tposr (A :: e) b0 b0 (Srt_l d)).
   apply conv_env with (A' :: e) ; auto with coc.
   apply conv_env_hd with c0 ; auto with coc.
-  rewrite (unique_sort t5 H11).
+  rewrite (unique_sort t5 H10).
   assumption.
   apply conv_env_hd with c0 ; auto with coc.
 Qed.
