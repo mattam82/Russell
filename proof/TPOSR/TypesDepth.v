@@ -168,7 +168,7 @@ Coercion tposr_to_tposrd_wf := fun e => fun d : tposr_wf e =>
 
 Hint Resolve tposr_tposrd_type tposr_tposrd_wf : coc.
 
-Mutual Scheme ind_tposrd_wf from tposrd_wf_mutind, wf_tposrd_mutind.
+Combined Scheme ind_tposrd_wf from tposrd_wf_mutind, wf_tposrd_mutind.
 
 Require Import Lambda.TPOSR.LeftReflexivity.
 Require Import Lambda.TPOSR.RightReflexivity.

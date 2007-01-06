@@ -216,5 +216,5 @@ Scheme typ_coerce_jeq_mutind := Induction for typ Sort Prop
 with coerce_typ_jeq_mutind := Induction for coerce Sort Prop
 with jeq_typ_coerce_mutind := Induction for jeq Sort Prop.
 
-Mutual Scheme typ_coerce_jeq_ind from typ_coerce_jeq_mutind, coerce_typ_jeq_mutind, jeq_typ_coerce_mutind.
+Combined Scheme typ_coerce_jeq_ind from typ_coerce_jeq_mutind, coerce_typ_jeq_mutind, jeq_typ_coerce_mutind.
 

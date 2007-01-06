@@ -134,9 +134,9 @@ Scheme typ_coerce_wf_mut := Induction for typ Sort Prop
 with coerce_typ_wf_mut := Induction for coerce Sort Prop
 with wf_typ_coerce_mut := Induction for wf Sort Prop.
 
-Mutual Scheme double_typ_coerce_mut from typ_coerce_mut, coerce_typ_mut.
+Combined Scheme double_typ_coerce_mut from typ_coerce_mut, coerce_typ_mut.
 
-Mutual Scheme double_typ_coerce_wf_mut from typ_coerce_wf_mut, coerce_typ_wf_mut, wf_typ_coerce_mut.
+Combined Scheme double_typ_coerce_wf_mut from typ_coerce_wf_mut, coerce_typ_wf_mut, wf_typ_coerce_mut.
 
 
   

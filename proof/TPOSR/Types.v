@@ -178,15 +178,15 @@ Scheme ind_tposr := Induction for tposr Sort Prop.
 Scheme tposr_wf_mutind := Induction for tposr Sort Prop
 with wf_tposr_mutind :=  Induction for tposr_wf Sort Prop.
 
-Mutual Scheme ind_tposr_wf from tposr_wf_mutind, wf_tposr_mutind.
+Combined Scheme ind_tposr_wf from tposr_wf_mutind, wf_tposr_mutind.
 
 Scheme tposr_mutind := Induction for tposr Sort Prop
 with wf_mutind :=  Induction for tposr_wf Sort Prop
 with eq_mutind :=  Induction for tposr_eq Sort Prop
 with coerce_mutind :=  Induction for tposr_coerce Sort Prop.
 
-Mutual Scheme ind_tposr_wf_eq_coerce from tposr_mutind, wf_mutind, eq_mutind, coerce_mutind.
-Check ind_tposr_wf_eq_coerce.
+Combined Scheme ind_tposr_wf_eq_coerce from tposr_mutind, wf_mutind, eq_mutind, coerce_mutind.
+
 Lemma wf_tposr : forall e M N T, e |-- M -> N : T -> tposr_wf e.
 Proof.
   induction 1 ; simpl ; auto with coc.
