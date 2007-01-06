@@ -1,3 +1,5 @@
+(* -*- coq-prog-args: ("-emacs-U" "-I" "." "-R" "." "Lambda") -*- *)
+
 Require Import Lambda.Utils.
 Require Import Lambda.Tactics.
 Require Import Lambda.Terms.
@@ -9,7 +11,7 @@ Require Import Lambda.Conv_Dec.
 
 Set Implicit Arguments.
 
-(*Implicit Types i k m n : nat.
+Implicit Types i k m n : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
@@ -24,28 +26,17 @@ Scheme acc_dep := Induction for Acc Sort Prop.
 
 Lemma redn_sn_wf : well_founded sn_ord.
 Proof.
-Admitted.*)
-(*Lemma redn_sn_wf : well_founded redn_sn.
-Proof.
   red in |- *.
   induction a.
-  unfold sn in p.
-  induction p using acc_dep.
-  unfold redn_sn.
+  assert (H:=wf_ord_norm x p).
+  unfold sn_ord.
+  induction H.
   apply Acc_intro.
   intros.
-  simpl in H0.
-  pose (H _ H0).
-  assert (exist (fun x : term => sn x) (proj1_sig y) (a (proj1_sig y) H0) = y). 
-  destruct y.
-  simpl.
-  rewrite (proof_irrelevance (sn x0) s (a x0 H0)).
-  auto.
-  rewrite <- H1.
-  assumption.
+  destruct y ; simpl in *.
+  apply (H0 x0 H1 s).
 Qed.
-*)
-(*
+  
 Program Fixpoint hnf (x : snterm) { wf x sn_ord } :  { y : term | red x y } :=
   match x with
   | App x y => 
@@ -66,7 +57,7 @@ Program Fixpoint hnf (x : snterm) { wf x sn_ord } :  { y : term | red x y } :=
     | Pair T u v => hnf u
     | h => Pi2 h
     end
-  | x => x
+  | _ => x
   end.
 
 Obligations.
