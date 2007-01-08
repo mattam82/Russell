@@ -54,7 +54,7 @@ exact commut_red1_subterm.
 
 intros.
 apply wf_subterm.
-Qed.
+Defined.
 
 
   Theorem wf_ord_norm : forall t : term, sn t -> Acc ord_norm t.
@@ -62,7 +62,7 @@ unfold ord_norm in |- *.
 intros.
 apply Acc_clos_trans.
 apply wf_ord_norm1; auto with coc v62.
-Qed.
+Defined.
 
 
 
