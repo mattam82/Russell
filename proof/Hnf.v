@@ -80,7 +80,6 @@ Program Fixpoint hnf (x : snterm) {wf x sn_ord} :  { y : term | red x y } :=
   end.
 
 Solve Obligations using simpl ; intros ; rewrite <- H ; auto with coc.
-Obligations.
 
 Program Lemma sn_proj_subterm_sn : forall x : snterm, forall y : term, y = x -> forall z, subterm z y -> sn z.
 Proof.
@@ -233,6 +232,23 @@ Obligation 20.
   apply redn_sn_wf.  
 Defined.
 
+
+Definition is_elim (x : term) : Prop := 
+  match x with
+    | App x y => True
+    | Pi1 _ => True
+    | Pi2 _ => True
+    | _ => False
+  end.
+
+Program Lemma not_elim_hnf : forall t : snterm, ~(is_elim t) -> (`t) = hnf t.
+Proof.
+  intros.
+  unfold hnf ; rewrite fix_sub_eq_ext.
+  induction t.
+  destruct x ; simpl ; auto ; simpl in H ; elim H ; auto.
+Qed.  
+
 Inductive hnf_graph : term -> term -> Prop :=
 | hnf_srt : forall s, hnf_graph (Srt s) (Srt s)
 | hnf_ref : forall n, hnf_graph (Ref n) (Ref n)
@@ -257,32 +273,7 @@ Inductive hnf_graph : term -> term -> Prop :=
 
 Program Definition hnf' (x : snterm) : term := hnf x.
 
-(*Goal let x := 1 in x = 0.
-Proof.
-  match goal with
-    | |- ?T =>
-      match T with
-        let x? := ?d in ?b => let x := fresh "x" in set (x := d)
-      end
-  end.
-*)
-
-Definition is_elim (x : term) : Prop := 
-  match x with
-    | App x y => True
-    | Pi1 _ => True
-    | Pi2 _ => True
-    | _ => False
-  end.
-
-Program Lemma not_elim_hnf : forall t : snterm, ~(is_elim t) -> (`t) = hnf t.
-Proof.
-  intros.
-  unfold hnf ; rewrite fix_sub_eq_ext.
-  induction t.
-  destruct x ; simpl ; auto ; simpl in H ; elim H ; auto.
-Qed.  
-
+(*
 Program Lemma hnf_graph_hnf : forall t : snterm, forall t' : term, hnf' t = t' -> hnf_graph t t'.
 Proof.
   intros.
@@ -322,46 +313,4 @@ Proof.
   assert(ord_norm (subst x2 x4) (App x1 x2)).
   unfold ord_norm.
   apply t_trans with (App (Abs x3 x4) x2) ; constructor ; right ; unfold transp ; auto with coc.
-  
-  
-  
-  
-  
-  exists (
-  
-  
-  
-
-
-
-Program Definition hnf_prod_t := forall U V, sn (Prod U V) -> hnf (Prod U V) = Prod U V.
-Solve Obligations using simpl ; auto with coc.
-
-Lemma hnf_prod : hnf_prod_t.
-Proof.
-  red ; intros.
-  unfold hnf ; rewrite fix_sub_eq_ext ; simpl.
-  auto with coc subtac.
-Qed.
-
-
-Program Lemma hnf_sum : forall t : snterm, forall U V, Sum U V = t -> hnf' t = t.
-Proof.
-  intros.
-  unfold hnf' ; destruct t ; subtac_simpl.
-  simpl.
-  subst x.
-  unfold hnf ; rewrite fix_sub_eq_ext ; simpl.
-  auto with coc subtac.
-Qed.
-
-Program Lemma hnf_subset : forall t : snterm, forall U V, Subset U V = t -> hnf' t = t.
-Proof.
-  intros.
-  unfold hnf' ; destruct t ; subtac_simpl.
-  simpl.
-  subst x.
-  unfold hnf ; rewrite fix_sub_eq_ext ; simpl.
-  auto with coc subtac.
-Qed.
-
+*)  

@@ -17,6 +17,10 @@ Ltac induction_with_subterm c H :=
   induction H ; subst).
 
 Ltac induction_with_subterms c c' H :=
+  let x := fresh "x" in
+  let y := fresh "y" in
+  let z := fresh "z" in
+  let w := fresh "w" in
   (set(x := c) ; assert(y:x = c) by reflexivity ;
   set(z := c') ; assert(w:z = c') by reflexivity ;
   rewrite <- y in H ; rewrite <- w in H ; 

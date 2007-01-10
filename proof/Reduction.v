@@ -356,6 +356,45 @@ case P; intros; try discriminate.
 inversion_clear H4.
 Qed.
 
+  Lemma red_abs_abs :
+   forall u v t,
+   red (Abs u v) t ->
+   forall P : Prop,
+   (forall a b : term, t = Abs a b -> red u a -> red v b -> P) -> P.
+simple induction 1; intros.
+apply H0 with u v; auto with coc core arith sets.
+
+apply H1; intros.
+inversion_clear H4 in H2.
+inversion H2.
+apply H3 with M' b; auto with coc core arith sets.
+apply trans_red with a; auto with coc core arith sets.
+
+apply H3 with a M'; auto with coc core arith sets.
+apply trans_red with b; auto with coc core arith sets.
+Qed.
+
+
+  Lemma red_pair_pair :
+   forall u v w t,
+   red (Pair u v w) t ->
+   forall P : Prop,
+   (forall a b c : term, t = Pair a b c -> red u a -> red v b -> red w c -> P) -> P.
+simple induction 1; intros.
+apply H0 with u v w; auto with coc core arith sets.
+
+apply H1; intros.
+inversion_clear H4 in H2.
+inversion H2.
+apply H3 with S b c; auto with coc core arith sets.
+apply trans_red with a; auto with coc core arith sets.
+
+apply H3 with a N1 c; auto with coc core arith sets.
+apply trans_red with b; auto with coc core arith sets.
+
+apply H3 with a b N2; auto with coc core arith sets.
+apply trans_red with c; auto with coc core arith sets.
+Qed.
 
   Lemma one_step_conv_exp : forall M N, red1 M N -> conv N M.
 intros.

@@ -385,6 +385,115 @@ red in |- *; red in |- *; intros.
 inversion_clear H1.
 Qed.
 
+  Lemma conv_ref_prod : forall n t u, ~ conv (Ref n) (Prod t u).
+red in |- *; intros.
+elim church_rosser with (Ref n) (Prod t u); auto with coc core arith sets.
+do 2 intro.
+elim red_normal with (Ref n) x; auto with coc core arith sets.
+intro.
+apply red_prod_prod with t u (Ref n); auto with coc core arith sets; intros.
+discriminate H2.
+
+red in |- *; red in |- *; intros.
+inversion_clear H1.
+Qed.
+
+
+  Lemma conv_ref_sum : forall n t u, ~ conv (Ref n) (Sum t u).
+red in |- *; intros.
+elim church_rosser with (Ref n) (Sum t u); auto with coc core arith sets.
+do 2 intro.
+elim red_normal with (Ref n) x; auto with coc core arith sets.
+intro.
+apply red_sum_sum with t u (Ref n); auto with coc core arith sets; intros.
+discriminate H2.
+
+red in |- *; red in |- *; intros.
+inversion_clear H1.
+Qed.
+
+  Lemma conv_ref_subset : forall n t u, ~ conv (Ref n) (Subset t u).
+red in |- *; intros.
+elim church_rosser with (Ref n) (Subset t u); auto with coc core arith sets.
+do 2 intro.
+elim red_normal with (Ref n) x; auto with coc core arith sets.
+intro.
+apply red_subset_subset with t u (Ref n); auto with coc core arith sets; intros.
+discriminate H2.
+
+red in |- *; red in |- *; intros.
+inversion_clear H1.
+Qed.
+
+  Lemma conv_prod_abs : forall U V t u, ~ conv (Prod U V) (Abs t u).
+red in |- *; intros.
+elim church_rosser with (Prod U V) (Abs t u); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_abs_abs with t u P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_prod_prod with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_prod_prod with U V P ; auto with coc core ; intros.
+apply red_abs_abs with t u P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H15 in H3.
+inversion H3.
+
+rewrite <- H15 in H3.
+inversion H3.
+Qed.
+
+  Lemma conv_prod_pair : forall U V t u v, ~ conv (Prod U V) (Pair t u v).
+red in |- *; intros.
+elim church_rosser with (Prod U V) (Pair t u v); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_pair_pair with t u v P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_prod_prod with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_prod_prod with U V P ; auto with coc core ; intros.
+apply red_pair_pair with t u v P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H16 in H3.
+inversion H3.
+
+rewrite <- H16 in H3.
+inversion H3.
+
+rewrite <- H16 in H3.
+inversion H3.
+Qed.
+
   Lemma conv_prod_subset : forall U V t u, ~ conv (Prod U V) (Subset t u).
 red in |- *; intros.
 elim church_rosser with (Prod U V) (Subset t u); auto with coc core arith sets.
@@ -481,6 +590,144 @@ rewrite <- H15 in H3.
 inversion H3.
 
 rewrite <- H15 in H3.
+inversion H3.
+Qed.
+
+  Lemma conv_sum_abs : forall U V t u, ~ conv (Sum U V) (Abs t u).
+red in |- *; intros.
+elim church_rosser with (Sum U V) (Abs t u); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_abs_abs with t u P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_sum_sum with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_sum_sum with U V P ; auto with coc core ; intros.
+apply red_abs_abs with t u P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H15 in H3.
+inversion H3.
+
+rewrite <- H15 in H3.
+inversion H3.
+Qed.
+
+  Lemma conv_sum_pair : forall U V t u v, ~ conv (Sum U V) (Pair t u v).
+red in |- *; intros.
+elim church_rosser with (Sum U V) (Pair t u v); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_pair_pair with t u v P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_sum_sum with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_sum_sum with U V P ; auto with coc core ; intros.
+apply red_pair_pair with t u v P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H16 in H3.
+inversion H3.
+
+rewrite <- H16 in H3.
+inversion H3.
+
+rewrite <- H16 in H3.
+inversion H3.
+Qed.
+
+  Lemma conv_subset_abs : forall U V t u, ~ conv (Subset U V) (Abs t u).
+red in |- *; intros.
+elim church_rosser with (Subset U V) (Abs t u); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_abs_abs with t u P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_subset_subset with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_subset_subset with U V P ; auto with coc core ; intros.
+apply red_abs_abs with t u P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H15 in H3.
+inversion H3.
+
+rewrite <- H15 in H3.
+inversion H3.
+Qed.
+
+  Lemma conv_subset_pair : forall U V t u v, ~ conv (Subset U V) (Pair t u v).
+red in |- *; intros.
+elim church_rosser with (Subset U V) (Pair t u v); auto with coc core arith sets.
+intros.
+
+inversion H0 ; inversion H1.
+rewrite <- H3 in H2 ; discriminate.
+
+apply red_pair_pair with t u v P ; auto with coc core.
+intros.
+rewrite H6 in H4.
+rewrite <- H2 in H4.
+inversion H4.
+
+apply red_subset_subset with U V P ; auto with coc core.
+intros.
+rewrite H6 in H3.
+rewrite <- H5 in H3.
+inversion H3.
+
+apply red_subset_subset with U V P ; auto with coc core ; intros.
+apply red_pair_pair with t u v P0 ; auto with coc core ; intros.
+rewrite H11 in H6.
+rewrite H8 in H3.
+
+inversion H6.
+rewrite <- H16 in H3.
+inversion H3.
+
+rewrite <- H16 in H3.
+inversion H3.
+
+rewrite <- H16 in H3.
 inversion H3.
 Qed.
 
