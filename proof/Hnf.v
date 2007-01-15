@@ -1,4 +1,4 @@
-(* -*- coq-prog-args: ("-emacs-U" "-I" "." "-R" "." "Lambda") -*- *)
+(* -*- coq-prog-args: ("-emacs-U" "-I" "." "-R" "." "Lambda" "-debug") -*- *)
 
 Require Import Lambda.Utils.
 Require Import Lambda.Tactics.
@@ -16,6 +16,7 @@ Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
 Definition snterm := { x : term | sn x }.
+Hint Unfold snterm.
 
 Require Import Coq.subtac.Subtac.
 Require Import Coq.subtac.FunctionalExtensionality.
@@ -36,25 +37,8 @@ Proof.
   apply (H0 x0 H1 s).
 Defined.
 
-(*
-Require Import Recdef.
-
-Function hnf (x : term) { wf ord_norm x } : term :=
-  match x with
-    | App x y => 
-      match x with
-        | Abs T v => hnf (subst y v)
-        | h => App h y
-        end  
-    | _ => x
-  end.
-intros.
-constructor.
-right.
-red.
-auto with coc.
-unfold well_founded ; intros.
-*)
+Ltac hnf_tac := intros ; hnf in * ; try destruct_exists ; simpl in * ; try subst ; auto with coc core datatypes.
+Obligations Tactic := hnf_tac.
 
 Program Fixpoint hnf (x : snterm) {wf x sn_ord} :  { y : term | red x y } :=
   match x with
@@ -79,8 +63,6 @@ Program Fixpoint hnf (x : snterm) {wf x sn_ord} :  { y : term | red x y } :=
     | _ => x
   end.
 
-Solve Obligations using simpl ; intros ; rewrite <- H ; auto with coc.
-
 Program Lemma sn_proj_subterm_sn : forall x : snterm, forall y : term, y = x -> forall z, subterm z y -> sn z.
 Proof.
   intros ; destruct x ; simpl in *.
@@ -88,150 +70,71 @@ Proof.
 Qed.
 
 Solve Obligations using subtac_simpl ;  eapply sn_proj_subterm_sn ; eauto with coc subtac.
+Solve Obligations using hnf_tac ; intros ; do 2 constructor ; auto with coc.
 Require Import ZArith.
-
-Obligation 2.
-  intros.
-  clear hnf.
-  unfold sn_ord ; simpl.
-  constructor.
-  constructor.
-  destruct x ; simpl in * ; auto with coc.
-  rewrite <- H ; auto with coc.
-Qed.
 
 Next Obligation.
   intros.
-  destruct_call hnf.
-  simpl in *.
-  destruct x ; simpl in *.
-  subst x x1.
   apply sn_red_sn with (App x0 y) ; auto with coc.
   apply trans_red_red with (App (Abs T v) y) ; auto with coc.
 Qed.
 
 Next Obligation.
-  intros.
-  unfold sn_ord.
-  destruct x ; simpl in *.
-  destruct_call hnf ; simpl in *.
-  subst x x1.
-  apply red_red1_ord_norm with (App (Abs T v) y) ; auto with coc.
+  simpl ; destruct nf ; simpl in *.
+  subst ; apply red_red1_ord_norm with (App (Abs T v) y) ; auto with coc.
 Qed.
 
 Obligation 5.
   intros.
   destruct_call hnf ; simpl in *.
-  destruct_call hnf ; simpl in *.
-  destruct x ; simpl in *.
+  destruct nf ; simpl in *.
   apply trans_red_red with (subst y v) ; auto.
-  subst x x2.
-  apply trans_red_red with (App (Abs T v) y) ; auto with coc.
+  subst ; apply trans_red_red with (App (Abs T v) y) ; auto with coc.
 Qed.
 
-Obligation 6.
-  intros.
-  destruct x ; destruct_call hnf ; simpl in *.
-  subst x x1.
-  auto with coc.
-Qed.
-
-Obligation 8.
-  intros.
-  unfold sn_ord ; simpl.
-  constructor.
-  constructor.
-  destruct x ; simpl in * ; auto with coc.
-  rewrite <- H ; auto with coc.
-Qed.
-
-Obligation 9 of hnf. 
-  intros.
-  destruct_call hnf.
-  simpl in *.
-  destruct x ; simpl in *.
+Next Obligation.
   clear hnf.
-  subst x x1.
   apply sn_red_sn with (Pi1 x0) ; auto with coc.
   apply trans_red_red with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
 Obligation 10.
   intros.
-  unfold sn_ord.
-  destruct x ; simpl in *.
-  destruct_call hnf ; simpl in *.
-  subst x x1.
-  apply red_red1_ord_norm with (Pi1 (Pair T l r)) ; auto with coc.
+  destruct nf ; simpl in *.
+  subst ; apply red_red1_ord_norm with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
 Obligation 11.
   intros.
   destruct_call hnf ; simpl in *.
-  destruct_call hnf ; simpl in *.
-  destruct x ; simpl in *.
-  subst x x2.
+  destruct nf ; simpl in * ; subst.
   apply trans_red_red with l ; auto.
   apply trans_red_red with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
-Obligation 12.
+Next Obligation.
   intros.
-  destruct x ; destruct_call hnf ; simpl in *.
-  subst x x1.
-  auto with coc.
-Qed.
-
-Obligation 14.
-  intros.
-  unfold sn_ord ; simpl.
-  constructor.
-  constructor.
-  destruct x ; simpl in * ; auto with coc.
-  rewrite <- H ; auto with coc.
-Qed.
-
-Obligation 15 of hnf. 
-  intros.
-  destruct_call hnf.
-  simpl in *.
-  destruct x ; simpl in *.
-  subst x x1.
   apply sn_red_sn with (Pi2 x0) ; auto with coc.
   apply trans_red_red with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
 Obligation 16.
   intros.
-  unfold sn_ord.
-  destruct x ; simpl in *.
-  destruct_call hnf ; simpl in *.
-  subst x x1.
-  apply red_red1_ord_norm with (Pi2 (Pair T l r)) ; auto with coc.
+  destruct nf ; simpl in *.
+  subst ; apply red_red1_ord_norm with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
 Obligation 17.
   intros.
   destruct_call hnf ; simpl in *.
-  destruct_call hnf ; simpl in *.
-  destruct x ; simpl in *.
-  subst x x2.
-  apply trans_red_red with r ; auto.
+  destruct nf ; simpl in *.
+  subst ; apply trans_red_red with r ; auto.
   apply trans_red_red with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
-Obligation 18.
-  intros.
-  destruct x ; destruct_call hnf ; simpl in *.
-  subst x x1.
-  auto with coc.
-Qed.
-
-Obligation 20.
-  intros.
+Next Obligation.
   apply redn_sn_wf.  
 Defined.
-
 
 Definition is_elim (x : term) : Prop := 
   match x with
@@ -241,12 +144,30 @@ Definition is_elim (x : term) : Prop :=
     | _ => False
   end.
 
+
+Ltac abstract_Fix_sub f' :=
+  match goal with
+    [ |- ?T ] => 
+    match T with
+      context [Fix_sub _ _ _ _ ?f _] =>
+      set (f':=f)
+    end
+  end.
+
+Ltac unfold_Fix_sub f :=
+  abstract_Fix_sub f ;
+  rewrite fix_sub_eq_ext ; unfold f at 1.
+
+Ltac unfold_Fix_sub_once f :=
+  unfold_Fix_sub f ; clearbody f.
+
 Program Lemma not_elim_hnf : forall t : snterm, ~(is_elim t) -> (`t) = hnf t.
 Proof.
   intros.
-  unfold hnf ; rewrite fix_sub_eq_ext.
-  induction t.
-  destruct x ; simpl ; auto ; simpl in H ; elim H ; auto.
+  destruct t ; hnf.
+  simpl.
+  unfold hnf at 1.
+  unfold_Fix_sub_once f ; simpl ; destruct x ; simpl ; auto ; simpl in H ; elim H ; auto.
 Qed.  
 
 Inductive hnf_graph : term -> term -> Prop :=
@@ -273,7 +194,6 @@ Inductive hnf_graph : term -> term -> Prop :=
 
 Program Definition hnf' (x : snterm) : term := hnf x.
 
-(*
 Program Lemma hnf_graph_hnf : forall t : snterm, forall t' : term, hnf' t = t' -> hnf_graph t t'.
 Proof.
   intros.
@@ -282,12 +202,14 @@ Proof.
   simpl.
   rewrite <- H.
   clear H.
-  unfold hnf.
-  rewrite fix_sub_eq_ext.
+  unfold hnf at 1.
+  unfold_Fix_sub f.
+
   destruct x ; try (solve [(lazy beta iota delta [proj1_sig] ; lazy zeta iota beta ; try constructor)]).
   
-  lazy beta iota delta [proj1_sig].
-  destruct x1 ; try (solve [(lazy beta iota delta [proj1_sig] ; lazy zeta iota beta ; try constructor)]).
+  destruct x1 ; simpl.
+  unfold_Fix_sub f
+try (solve [simpl ; try constructor]).
   
   
   
