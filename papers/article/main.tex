@@ -460,10 +460,10 @@ analysis of the system to avoid cycles in the proof due to the presence
 of dependent types and conversion. However we preferred to adapt the method of
 Robin Adams \cite{adams:PTSEQ} to prove SR, because Gang Chen's method
 seemed very tied to the peculiarities of the system he studied. 
-Strong normalisation could also be proved, perhaps more easily,
-using the generic proof method developed by Geuvers \cite{geuvers95}, by finding
-a proper interpretation of \Russell terms into the Calculus of
-Constructions.
+% Strong normalisation could also be proved, perhaps more easily,
+% using the generic proof method developed by Geuvers \cite{geuvers95}, by finding
+% a proper interpretation of \Russell terms into the Calculus of
+% Constructions.
 
 So, apart from strong normalisation, we have shown all the usual structural
 and metatheoretic properties of a dependent programming language, like
@@ -900,7 +900,7 @@ Finally we can show that our interpretation is correct (theorem \ref{interp-corr
 \section{Implementation}
 \label{sec:Program}
 This mechanism has been implemented in \Coq and tested on simple
-examples. We actually generate coercions simultaneously with typing 
+examples (some are available on the website). We actually generate coercions simultaneously with typing 
 in the implementation, which is sound thanks to the previous proofs. Our
 typing is a clone of \Coq's original typing algorithm, so we benefit
 from all the features of \Coq including implicit variables, notations and the existing
@@ -914,12 +914,11 @@ holes in the term, for example:
   Program Definition hd ( l : list A | l <> [] ) : A :=
     match l with
     | hd :: tl -> hd
-    | [] -> _
+    | [] -> False_rec A _
     end.
 \end{code}
-Here the second branch can't be taken because we would have $l = []$ and
-$l \neq []$, but we may not have any placeholder element of type
-$A$.
+In the second branch we have $l = []$ and $l \neq []$, hence we can
+prove $`_$ and derive an object of type $A$.
 
 It must be stressed that we do not lose any information when
 generating obligations as we have the whole term context at hand,
@@ -956,12 +955,16 @@ where code and proofs are written incrementally to get a complete program.
 Using type annotations and with the help of the editor for structuring, 
 one is able to write programs with precise specifications. However it
 is not obvious if it could be made usable by programmers because of the
-paradigm change and scaling issues. The \DML language \cite{Xi98:PhD} is more akin to
+paradigm change and scaling issues, time will tell which approach is
+more beneficial for writing and reasonning about dependently typed
+programs. The \DML language \cite{Xi98:PhD} is more akin to
 comparison with our solution. It provides a way to use a restricted set
 of dependent types in \ML programs, carefully chosen so as to keep
 type-checking decidable with the help of an automatic prover. Our method
 should subsume this one as it is perfectly possible to integrate automatic
-proof tools with \Coq to discharge the generated obligations. 
+proof tools with \Coq to discharge the generated obligations. There
+exists many more systems like Xi's Applied Type Systems and Tim Sheard's
+Omega language which explore the design space of dependently typed languages.
 
 \subsection{Further work}
 Much has to be done to smoothly integrate \Russell into \Coq. The
