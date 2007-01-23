@@ -1,0 +1,4 @@
+#!/bin/sh
+params=`./params.sh`
+exec /home/sozeau/coq-svn/bin/coqtop.opt $params "$@"
+
