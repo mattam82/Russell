@@ -1,5 +1,5 @@
-(* -*- coq-prog-args: ("-emacs-U" "-I" "." "-R" "." "Lambda" "-debug") -*- *)
-
+(* -*- coq-prog-name: "./mycoqtop" -*- *)
+(** Head normal form definition. *)  
 Require Import Lambda.Utils.
 Require Import Lambda.Tactics.
 Require Import Lambda.Terms.
@@ -9,22 +9,25 @@ Require Import Lambda.Conv.
 Require Import Lambda.Env.
 Require Import Lambda.Conv_Dec.
 
+Require Import Coq.subtac.Subtac.
+Require Import Coq.subtac.FunctionalExtensionality.
+
 Set Implicit Arguments.
 
 Implicit Types i k m n : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
 
+(** Subset of strongly normalizing terms *)
 Definition snterm := { x : term | sn x }.
 Hint Unfold snterm.
 
-Require Import Coq.subtac.Subtac.
-Require Import Coq.subtac.FunctionalExtensionality.
-
+(** The normalization order restricted to strongly normalizing terms *)
 Program Definition sn_ord : snterm -> snterm -> Prop := 
   fun x y => ord_norm x y.
 
-Lemma redn_sn_wf : well_founded sn_ord.
+(** is well-founded *)
+Lemma sn_ord_wf : well_founded sn_ord.
 Proof.
   red in |- *.
   induction a.
@@ -37,9 +40,11 @@ Proof.
   apply (H0 x0 H1 s).
 Defined.
 
+(** The simplification tactic we use *)
 Ltac hnf_tac := intros ; hnf in * ; try destruct_exists ; simpl in * ; try subst ; auto with coc core datatypes.
 Obligations Tactic := hnf_tac.
 
+(** The definition, just like in ML *)
 Program Fixpoint hnf (x : snterm) {wf x sn_ord} :  { y : term | red x y } :=
   match x with
     | App x y => 
@@ -133,8 +138,10 @@ Obligation 17.
 Qed.
 
 Next Obligation.
-  apply redn_sn_wf.  
+  apply sn_ord_wf.  
 Defined.
+
+(* begin hide *)
 
 Definition is_elim (x : term) : Prop := 
   match x with
@@ -143,7 +150,6 @@ Definition is_elim (x : term) : Prop :=
     | Pi2 _ => True
     | _ => False
   end.
-
 
 Ltac abstract_Fix_sub f' :=
   match goal with
@@ -170,6 +176,7 @@ Proof.
   unfold_Fix_sub_once f ; simpl ; destruct x ; simpl ; auto ; simpl in H ; elim H ; auto.
 Qed.  
 
+(*
 Inductive hnf_graph : term -> term -> Prop :=
 | hnf_srt : forall s, hnf_graph (Srt s) (Srt s)
 | hnf_ref : forall n, hnf_graph (Ref n) (Ref n)
@@ -208,7 +215,7 @@ Proof.
   destruct x ; try (solve [(lazy beta iota delta [proj1_sig] ; lazy zeta iota beta ; try constructor)]).
   
   destruct x1 ; simpl.
-  unfold_Fix_sub f
+  unfold_Fix_sub f.
 try (solve [simpl ; try constructor]).
   
   
@@ -236,3 +243,5 @@ Proof.
   unfold ord_norm.
   apply t_trans with (App (Abs x3 x4) x2) ; constructor ; right ; unfold transp ; auto with coc.
 *)  
+
+(* end hide *)
