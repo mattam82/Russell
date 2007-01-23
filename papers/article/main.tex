@@ -1,10 +1,13 @@
 \documentclass{llncs}
 \usepackage{abbrevs}
-\usepackage{array}
+%\usepackage{array}
 \usepackage{alltt}
-\usepackage{color}
 \def\text{\mbox}
+
+%%%% FixMe: remove 
 \pagestyle{plain}
+
+
 \usepackage{ifthen}
 \usepackage{url}
 \usepackage{varioref}
@@ -73,7 +76,7 @@
 \section{Introduction}
 There are many means to program in the \Coq{} environment \cite{CoqArt}. One
 can write programs as in \ML{} and prove properties about them
-separately, loosing the possibility of using dependent types in
+separately, losing the possibility of using dependent types in
 specifications, or give a rich type expressing them as a goal and use the
 proof tactics to solve it, producing a corresponding program by the
 \CurryHoward isomorphism but having much less control on its algorithmic
@@ -159,7 +162,7 @@ being applicable in a wide variety of situations in the proof assistant
 environment.
 
 
-Instead of trying to find a general method for synthetizing proofs from
+Instead of trying to find a general method for synthesizing proofs from
 programs in the \CICfull, we have integrated a method which permits to
 link strong specifications and purely algorithmical code. This method,
 known as \ps{} in the \PVS{} system, has been used with great success and
@@ -183,13 +186,13 @@ discovered the famous paradox of set theory with the unrestricted
 comprehension axiom. In this theory, it is possible to construct the set
 $X = \{x `| x `; x\}$ whose definition is circular. Clearly, if $X `: X$
 then $X `; X$ and if $X `; X$ then $X `: X$, hence we have an
-inconsistency. \Russell{} was one of the pioneers of type theory when he
+inconsistency. Russell was one of the pioneers of type theory when he
 devised a set theory with a restricted comprehension axiom that
 permitted to create subsets only from already defined subsets,
 forbidding the definition of $X$. % \cite{whitehead.russell:principia}. 
 
 In \Coq, the distinction between informative and propositional parts of
-a term is formalised by the \Prop/\Set{} sorts. In \Russell, we have
+a term is formalised by the \Set{}/\Prop{} sorts. In \Russell, we have
 special support for propositions appearing in subset types. By
 delimiting the use of propositions, we can separate code from proof.
 
@@ -199,12 +202,12 @@ and use any operation which is defined on $S$. Conversely, when you
 want to use an operation defined on a subset, say $f : \{ x : `N `| P \} "->"
 X$, you usually prove \emph{first} that you apply it only to elements 
 having the desired property. For example $(f~2)$ is a correct application
-only if $(P~2)$ is provable.
+only if $(P[2/x])$ is provable.
 In the context of formal development of programs, such a workflow is not
 entirely satisfactory because it forces one to create objects and prove
 properties about them \emph{at the same time}. In \Coq{}, we are forced
-to apply $f$ to an object $(\elt{\nat}{P}{2}{p})$ where $p$ is a proof of
-$(P~2)$ (Figure \ref{fig:cci-subset} presents the definition of the subset type in \Coq).
+to apply $f$ to an object $(\elt{\nat}{\lambda x : \nat. P}{2}{p})$ where $p$ is a proof of
+$(P[2/x])$ (Figure \ref{fig:cci-subset} presents the definition of the subset type in \Coq).
 We would like to be able to prove that our usage of partial functions 
 is correct only after the program is written. Subsets are particularly well-suited in this respect
 because they separate the objects we want to manipulate and their associated
@@ -254,7 +257,7 @@ Concretely, this means that the following rules are derivable in \PVS:
   \UIC{$`G \vdash t : T$}
   \DP
   \AXC{$`G \vdash t : T$}
-  \AXC{$\vdash_{`G} P[t]$}
+  \AXC{$`G \vdash P[t]$}
   \BIC{$`G \vdash t : \{ x : T `| P[x] \}$}
   \DP
 \end{center}
@@ -262,7 +265,7 @@ Concretely, this means that the following rules are derivable in \PVS:
 The first one formalises the fact that an object of a subset based on
 $T$ is an object of type $T$. The second one permits using an object of
 type $T$ as an object of type $\{ x : T `| P[x] \}$, but it generates a
-\emph{type-checking condition} $\vdash_{`G} P[t]$ which will need to be
+\emph{type-checking condition} $`G \vdash P[t]$ which will need to be
 discharged later. Effectively, the typing algorithm of \PVS{} collects
 the conditions that must be satisfied for the term to be accepted as a
 valid definition. However, the acceptance criteria can be rather large in
@@ -362,17 +365,17 @@ $\PTSsorts$ is defined as $\setproptype$. As usual, we let $s, s_i$ for
 $i `: `N$ range over sorts. The axioms are $\PTSaxioms = \{ (\Set,
 \Type), (\Prop, \Type) \}$ and the set of rules $\PTSrules$ is defined
 by the functional relation $`A s_1 s_2, (s_1, s_2, s_2) `: \PTSrules$. We allow products $\Pi x :
-A, B$ where $A : \Prop$ and $B : \Set$ but the user is encouraged to
-encode them as $\Pi x : \{ \_ : unit `| A \}, B$ to benefit from
+A. B$ where $A : \Prop$ and $B : \Set$ but the user is encouraged to
+encode them as $\Pi x : \{ \_ : unit `| A \}. B$ to benefit from
 the subtyping mechanism which we will define later.
 
 The reduction rules of this system are the standard $\beta$ and $\pi$
 for projections. We denote by $\downarrow{x}$ the complete normal form
-of $x$ and by $\hnf{x}$ its head normal form. We use a standard
+of $x$ and by $\hnf{x}$ its weak head normal form. We use a standard
 judgemental equality $`G \type T \eqbp U : s$.
 
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma},
-\irule{Sum-Dep}, \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V :
+\irule{Pair}, \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V :
 \Set$ or $U, V : \Prop$. The first sum represents dependent pairs,
 useful when defining functions returning a tuple, the latter represent
 dependent pairs of propositions, which is most often used as conjunction
@@ -443,9 +446,9 @@ this type. We must check that the property $P$ is well-formed, but
 we do not care about its provability.
 
 \subsubsection{Properties}
-We have proved the metatheory for this system in \Coq{}
-(\url{http://www.lri.fr/~sozeau/research/russell/proof.en.html}).
- We have assumed that it is strongly
+We have proved some of the metatheory for this system in \Coq{}
+\cite{sozeau:Coq/Russell/meta-web}.
+We have assumed that it is strongly
 normalising (SN) but we have proved subject reduction (SR) for it: 
 if $`G \typed t : T$ and $t "->"_{\beta\pi} t'$ then $`G \typed t' :
 T$ (our proof of SR does not depend on SN).
@@ -458,7 +461,7 @@ of dependent types and conversion. However we preferred to adapt the method of
 Robin Adams \cite{adams:PTSEQ} to prove SR, because Gang Chen's method
 seemed very tied to the peculiarities of the system he studied. 
 Strong normalisation could also be proved, perhaps more easily,
-using the generic proof method developed by Geuver \cite{geuvers95}, by finding
+using the generic proof method developed by Geuvers \cite{geuvers95}, by finding
 a proper interpretation of \Russell terms into the Calculus of
 Constructions.
 
@@ -605,8 +608,10 @@ product type modulo the equivalence.
   In our case, we have to check that conversion is decidable, which is the
   case as we can replace judgemental equality with the usual untyped
   convertibility $\eqbp$ (we proved $`G \type T \eqbp U : s
-  "<=>" T \eqbp U `^ `G \type T, U : s$).
-  We also need to eliminate the transitivity and symmetry rules which are not
+  "<=>" T \eqbp U `^ `G \type T, U : s$ in \Coq). 
+  Clearly, we can eliminate symmetry directly, given the fact that
+  conversion is symmetric.
+  We also need to eliminate the transitivity rule which is not
   syntax-directed. That is the purpose of the following theorem:
 \begin{theorem}[Admissibility of transitivity and symmetry]
   \begin{enumerate}
@@ -716,10 +721,10 @@ informative part of the algorithm has been entirely given in the
 original term. 
 
 We are ready to build the interpretation, which should have the following property:
-\begin{proposition}[Interpretation correctness]
+\begin{theorem}[Interpretation correctness]
   \label{interp-correct}
   If $`G \typea t : T$ then $\ipG{`G} \typeq \ip{t}{`G} : \ip{T}{`G}$.
-\end{proposition}
+\end{theorem}
 
 The proof of this proposition is the main technical contribution of this
 paper. It also represented the main difficulty in our work. 
@@ -728,7 +733,7 @@ define the explicit coercion derivation algorithm which will permit to
 put proof obligations in the terms, then we define the
 interpretation of terms which is mutually recursive with the previous
 algorithm. Finally we present a proof sketch of the aforementioned
-proposition.
+theorem.
 
 \subsection{Explicit coercions}
 The derivation of explicit coercions (figure
@@ -769,7 +774,7 @@ of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
 in defining a judgement $x : A \type y : B$ which reads: $A$ is
 coercible to $B$ and the coercion is $\lambda x : A.y$. This
 presentation is very elegant and adapted for checking coherence 
-of coercions, which we do not need here as we can get unicity
+of coercions, which we do not need here as we can get uniqueness
 of coercions. Moreover, it did not seem readily usable in
 our setting, where coercions may contain metavariables. Similarly, Amokrane Sa\"ibi defines
 a coercion derivation algorithm which respects some coherence criteria,
@@ -802,7 +807,8 @@ instantiate $c_2$ and then substitute $\pi_1~\ctxdot$ for $x$
 Now for the original part, the \irule{SubSub} rule simply inserts a
 projection before applying the inductively defined coercion on the
 support of the subset. On the other hand, \irule{SubProof} creates an
-object of a subset using its sole constructor \sref{elt}. The object
+object of a subset using its sole constructor \sref{elt} (with type
+parameters omitted for brevity). The object
 part is given by the coercion to the support of the target subset
 while the proof part is promised using a metavariable of type $\ip{P}{`G, x : U}[c/x]$ which
 we will turn later into a proof obligation. 
@@ -842,7 +848,7 @@ However, we derive eta-long coercions, so $c$ will be $\lambda x :
 \ip{C}{`G}.\ctxdot~x$. 
 
 Similarly, we must add $\eta$ rules for all introduction terms of our
-language if we want to be conservative and have unicity of
+language if we want to be conservative and have uniqueness of
 coercions. The latter is an important property of our system, as it
 corresponds in practice to the determinism of proof-obligations
 generation. The complete equational theory of \CICq{} is given in figure
@@ -889,7 +895,7 @@ equivalence is conserved by interpretation and the following lemma:
   If $\subimpl{`G}{c}{T}{U}{s}$ then $\ipG{`G} \typec \lambda x :
   \ip{T}{`G}.c[x] : \ip{T}{`G} "->" \ip{U}{`G}$.
 \end{lemma}
- Finally we can show that our interpretation is correct (proposition \ref{interp-correct}).
+Finally we can show that our interpretation is correct (theorem \ref{interp-correct}).
 
 \section{Implementation}
 \label{sec:Program}
@@ -948,7 +954,7 @@ types at its heart. Instead of using a phase distinction to separate
 coding and proving, \Epigram is based on an interactive, 2-dimensional editing process
 where code and proofs are written incrementally to get a complete program.
 Using type annotations and with the help of the editor for structuring, 
-one is able to write programs with precis e specifications. However it
+one is able to write programs with precise specifications. However it
 is not obvious if it could be made usable by programmers because of the
 paradigm change and scaling issues. The \DML language \cite{Xi98:PhD} is more akin to
 comparison with our solution. It provides a way to use a restricted set
@@ -985,5 +991,7 @@ cparent,demons,demons2,demons3}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: t
-%%% LaTeX-command: "BIBINPUTS=\"${HOME}/research/demons-biblio:../bib:$BIBINPUTS\" TEXINPUTS=\"..:../style:$TEXINPUTS\" latex"
+%%% LaTeX-command:
+%%% "BIBINPUTS=\"${HOME}/research/demons-biblio:../bib:$BIBINPUTS\"
+%%% TEXINPUTS=\"${HOME}/.latex:..:../style:$TEXINPUTS\" latex"
 %%% End: 

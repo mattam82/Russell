@@ -139,9 +139,7 @@ Qed.
 
 Next Obligation.
   apply sn_ord_wf.  
-Defined.
-
-(* begin hide *)
+Qed.
 
 Definition is_elim (x : term) : Prop := 
   match x with
@@ -243,5 +241,6 @@ Proof.
   unfold ord_norm.
   apply t_trans with (App (Abs x3 x4) x2) ; constructor ; right ; unfold transp ; auto with coc.
 *)  
+
 
 (* end hide *)
