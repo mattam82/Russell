@@ -1,4 +1,6 @@
 #!/bin/sh
+export PATH=/shared/coq-svn/bin:$PATH
 params=`./params.sh`
-exec /home/sozeau/coq-svn/bin/coqtop.opt $params "$@"
+coqtop=`which coqtop.opt`
+exec $coqtop $params "$@"
 

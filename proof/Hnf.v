@@ -45,7 +45,7 @@ Ltac hnf_tac := intros ; hnf in * ; try destruct_exists ; simpl in * ; try subst
 Obligations Tactic := hnf_tac.
 
 (** The definition, just like in ML *)
-Program Fixpoint hnf (x : snterm) {wf x sn_ord} :  { y : term | red x y } :=
+Program Fixpoint hnf (x : snterm) {wf x sn_ord} : { y : term | red x y } :=
   match x with
     | App x y => 
       let nf := hnf x in
@@ -68,13 +68,14 @@ Program Fixpoint hnf (x : snterm) {wf x sn_ord} :  { y : term | red x y } :=
     | _ => x
   end.
 
+(** Solves recursive calls obligation to be a snterm *)
 Program Lemma sn_proj_subterm_sn : forall x : snterm, forall y : term, y = x -> forall z, subterm z y -> sn z.
 Proof.
   intros ; destruct x ; simpl in *.
   subst x ; apply subterm_sn with y ; auto.
 Qed.
-
 Solve Obligations using subtac_simpl ;  eapply sn_proj_subterm_sn ; eauto with coc subtac.
+
 Solve Obligations using hnf_tac ; intros ; do 2 constructor ; auto with coc.
 Require Import ZArith.
 
@@ -89,7 +90,7 @@ Next Obligation.
   subst ; apply red_red1_ord_norm with (App (Abs T v) y) ; auto with coc.
 Qed.
 
-Obligation 5.
+Next Obligation.
   intros.
   destruct_call hnf ; simpl in *.
   destruct nf ; simpl in *.
@@ -141,6 +142,10 @@ Next Obligation.
   apply sn_ord_wf.  
 Qed.
 
+Extraction hnf.
+
+(* begin hide *)
+
 Definition is_elim (x : term) : Prop := 
   match x with
     | App x y => True
@@ -164,7 +169,7 @@ Ltac unfold_Fix_sub f :=
 
 Ltac unfold_Fix_sub_once f :=
   unfold_Fix_sub f ; clearbody f.
-
+(*
 Program Lemma not_elim_hnf : forall t : snterm, ~(is_elim t) -> (`t) = hnf t.
 Proof.
   intros.
@@ -174,7 +179,7 @@ Proof.
   unfold_Fix_sub_once f ; simpl ; destruct x ; simpl ; auto ; simpl in H ; elim H ; auto.
 Qed.  
 
-(*
+
 Inductive hnf_graph : term -> term -> Prop :=
 | hnf_srt : forall s, hnf_graph (Srt s) (Srt s)
 | hnf_ref : forall n, hnf_graph (Ref n) (Ref n)
