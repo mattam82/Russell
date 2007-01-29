@@ -1,5 +1,7 @@
 (* -*- coq-prog-name: "./mycoqtop" -*- *)
-(** Head normal form definition. *)  
+(** Proved program of the month candidate. *)
+(** * Head normal form definition. *)
+(* begin hide *)
 Require Import Lambda.Utils.
 Require Import Lambda.Tactics.
 Require Import Lambda.Terms.
@@ -17,16 +19,17 @@ Set Implicit Arguments.
 Implicit Types i k m n : nat.
 Implicit Type s : sort.
 Implicit Types A B M N T t u v : term.
+(* end hide *)
 
-(** Subset of strongly normalizing terms *)
+(** Subset of strongly normalizing terms. *)
 Definition snterm := { x : term | sn x }.
 Hint Unfold snterm.
 
-(** The normalization order restricted to strongly normalizing terms *)
+(** The normalization order restricted to strongly normalizing terms. *)
 Program Definition sn_ord : snterm -> snterm -> Prop := 
   fun x y => ord_norm x y.
 
-(** is well-founded *)
+(** ... is well-founded. *)
 Lemma sn_ord_wf : well_founded sn_ord.
 Proof.
   red in |- *.
@@ -40,11 +43,13 @@ Proof.
   apply (H0 x0 H1 s).
 Defined.
 
-(** The simplification tactic we use *)
+Hint Resolve sn_ord_wf : coc.
+
+(** The simplification tactic we use. *)
 Ltac hnf_tac := intros ; hnf in * ; try destruct_exists ; simpl in * ; try subst ; auto with coc core datatypes.
 Obligations Tactic := hnf_tac.
 
-(** The definition, just like in ML *)
+(** ** The definition, just like in ML with nested recursive calls. *)
 Program Fixpoint hnf (x : snterm) {wf x sn_ord} : { y : term | red x y } :=
   match x with
     | App x y => 
@@ -68,6 +73,8 @@ Program Fixpoint hnf (x : snterm) {wf x sn_ord} : { y : term | red x y } :=
     | _ => x
   end.
 
+(** ** The obligations. *)
+
 (** Solves recursive calls obligation to be a snterm *)
 Program Lemma sn_proj_subterm_sn : forall x : snterm, forall y : term, y = x -> forall z, subterm z y -> sn z.
 Proof.
@@ -75,8 +82,9 @@ Proof.
   subst x ; apply subterm_sn with y ; auto.
 Qed.
 Solve Obligations using subtac_simpl ;  eapply sn_proj_subterm_sn ; eauto with coc subtac.
-
 Solve Obligations using hnf_tac ; intros ; do 2 constructor ; auto with coc.
+
+(** The rest requires handcare because there are some transitivity arguments *)
 Require Import ZArith.
 
 Next Obligation.
@@ -104,13 +112,13 @@ Next Obligation.
   apply trans_red_red with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
-Obligation 10.
+Next Obligation.
   intros.
   destruct nf ; simpl in *.
   subst ; apply red_red1_ord_norm with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
-Obligation 11.
+Next Obligation.
   intros.
   destruct_call hnf ; simpl in *.
   destruct nf ; simpl in * ; subst.
@@ -124,13 +132,13 @@ Next Obligation.
   apply trans_red_red with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
-Obligation 16.
+Next Obligation.
   intros.
   destruct nf ; simpl in *.
   subst ; apply red_red1_ord_norm with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
-Obligation 17.
+Next Obligation.
   intros.
   destruct_call hnf ; simpl in *.
   destruct nf ; simpl in *.
@@ -138,21 +146,8 @@ Obligation 17.
   apply trans_red_red with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
-Next Obligation.
-  apply sn_ord_wf.  
-Qed.
-
-Extraction hnf.
-
 (* begin hide *)
-
-Definition is_elim (x : term) : Prop := 
-  match x with
-    | App x y => True
-    | Pi1 _ => True
-    | Pi2 _ => True
-    | _ => False
-  end.
+Extraction hnf.
 
 Ltac abstract_Fix_sub f' :=
   match goal with
@@ -169,7 +164,18 @@ Ltac unfold_Fix_sub f :=
 
 Ltac unfold_Fix_sub_once f :=
   unfold_Fix_sub f ; clearbody f.
-(*
+(* end hide *)
+
+(** ** Invariance by hnf *)
+Definition is_elim (x : term) : Prop := 
+  match x with
+    | App _ _ => True
+    | Pi1 _ => True
+    | Pi2 _ => True
+    | _ => False
+  end.
+
+(** This lemma requires one unfolding of hnf. *)
 Program Lemma not_elim_hnf : forall t : snterm, ~(is_elim t) -> (`t) = hnf t.
 Proof.
   intros.
@@ -179,6 +185,7 @@ Proof.
   unfold_Fix_sub_once f ; simpl ; destruct x ; simpl ; auto ; simpl in H ; elim H ; auto.
 Qed.  
 
+(* begin hide *)
 
 Inductive hnf_graph : term -> term -> Prop :=
 | hnf_srt : forall s, hnf_graph (Srt s) (Srt s)
