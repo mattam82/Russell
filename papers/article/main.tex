@@ -55,7 +55,7 @@
 
 \begin{abstract}
   We propose a new language for writing programs with dependent
-  types which can be elaborated into partial \Coq terms. This language permits
+  types on top of the \Coq proof assistant. This language permits
   to establish a phase distinction between writing and proving
   algorithms in the \Coq{} environment.  Concretely, this means allowing
   to write algorithms as easily as in a practical functional programming
@@ -86,29 +86,26 @@ Indeed, when using simple terms and types (\ML{}) or even complex terms and
 types (\Coq{}), we can have decidable type-checking. However, when using
 simple terms to represent inhabitants of complex types, we immediately get
 undecidability of type-checking, as the terms do not give enough
-information. Consider for example the function \id{tl} which returns
+information. Consider for example the function \id{tail} which returns
 the tail of a non-empty list. In \ML{}:
 \begin{code}
-  let tl = function hd :: tl -> tl | [] -> assert(false)
+  let tail = function hd :: tl -> tl | [] -> assert(false)
 \end{code}
 
 This function is partial, its domain is reduced to non-empty lists. In
 \Coq, we would rather write the following:
 \begin{code}
-  Definition tl (l : list A) : option (list A) :=
-    match l with
-      hd :: tl => Some tl
-    | [] => None
-    end.
+  Definition tail (l : list A) : option (list A) :=
+    match l with hd :: tl => Some tl | [] => None end.
 \end{code}
 
 The option type is the usual way to encode partiality in
 \Coq. However we would more naturally constrain the argument \id{l} to
 non-empty lists to be more faithful to the original \ML code, and also
-attach a property to the result to express more precisely what \id{tl}
+attach a property to the result to express more precisely what \id{tail}
 does:
 \begin{code}
-  Definition tl (l : list A) : (l <> []) -> 
+  Definition tail (l : list A) : (l <> []) -> 
   \{ l' : list A | exists a, a :: l' = l \}.
 \end{code}
 Now the definition's body requires some heavy plumbing of the code which is 
@@ -122,12 +119,9 @@ procedure which does not require proofs to be present in the code when
 constructing objects of a subset type. In our new language \Russell, the
 following is a well-typed term:
 \begin{code}
-  Program Definition tl ( l : list A | l <> [] ) : 
+  Program Definition tail ( l : list A | l <> [] ) : 
     \{ l' : list A | exists a, a :: l' = l \} := 
-  match l with
-    hd :: tl -> tl
-  | [] -> []
-  end
+    match l with hd :: tl -> tl | [] -> [] end.
 \end{code}
 
 The specification shows that we are defining a partial function and
@@ -150,7 +144,7 @@ facilities to express properties with a more mathematical flavour using subsets,
 bridging a gap between mathematical convention and type theory. 
 
 The \Program{} tactic by C. Parent \cite{conf/mpc/Parent95} had the same
-goal as ours but a slightly different method for achieving it. It was strongly
+goal as ours but a different method for achieving it. It was strongly
 linked to the extraction mechanism included in \Coq, both theoretically
 and practically. Sketching the mechanism, she defined a weakened
 extraction operation on \CIC{} terms which could be inverted because it left enough
@@ -196,7 +190,7 @@ a term is formalised by the \Set{}/\Prop{} sorts. In \Russell, we have
 special support for propositions appearing in subset types. By
 delimiting the use of propositions, we can separate code from proof.
 
-Informally, this idea is already present in mathematics. When you have
+This idea is already present in mathematics. When you have
 an element of subset $\{ x `: S `| P \}$, you can freely forget about the property $P$
 and use any operation which is defined on $S$. Conversely, when you
 want to use an operation defined on a subset, say $f : \{ x : `N `| P \} "->"
@@ -211,9 +205,11 @@ $(P[2/x])$ (Figure \ref{fig:cci-subset} presents the definition of the subset ty
 We would like to be able to prove that our usage of partial functions 
 is correct only after the program is written. Subsets are particularly well-suited in this respect
 because they separate the objects we want to manipulate and their associated
-properties.
+properties. Similar treatments of subsets as a construct to separate
+informative and propositional parts of an object include the work by
+Nordstr\"om et al. \cite{progmartinlof} and subset types in NuPRL.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \begin{center}
     \def\type{\typed}
     \AXC{$`G \type A : \Set$}
@@ -253,19 +249,19 @@ The \ps{} mechanism \cite{Shankar&Owre:WADT99} %Rushby96:TSE
 is an extension of the \PVS type system which internalises this idea.
 Concretely, this means that the following rules are derivable in \PVS:
 \begin{center}
-  \AXC{$`G \vdash t : \{ x : T `| P[x] \}$}
+  \AXC{$`G \vdash t : \{ x : T `| P \}$}
   \UIC{$`G \vdash t : T$}
   \DP
   \AXC{$`G \vdash t : T$}
-  \AXC{$`G \vdash P[t]$}
-  \BIC{$`G \vdash t : \{ x : T `| P[x] \}$}
+  \AXC{$`G \vdash P[t/x]$}
+  \BIC{$`G \vdash t : \{ x : T `| P \}$}
   \DP
 \end{center}
 
 The first one formalises the fact that an object of a subset based on
 $T$ is an object of type $T$. The second one permits using an object of
-type $T$ as an object of type $\{ x : T `| P[x] \}$, but it generates a
-\emph{type-checking condition} $`G \vdash P[t]$ which will need to be
+type $T$ as an object of type $\{ x : T `| P \}$, but it generates a
+\emph{type-checking condition} $`G \vdash P[t/x]$ which will need to be
 discharged later. Effectively, the typing algorithm of \PVS{} collects
 the conditions that must be satisfied for the term to be accepted as a
 valid definition. However, the acceptance criteria can be rather large in
@@ -291,7 +287,7 @@ metavariables. It can then be completed by instantiating these holes
 with actual proofs.
 
 \subsubsection{Type system}
-\begin{figure}[h]
+\begin{figure}[ht]
   \begin{center}
     \def\infvspace{0.1in}
     \def\seq{\typed}
@@ -366,7 +362,8 @@ $i `: `N$ range over sorts. The axioms are $\PTSaxioms = \{ (\Set,
 \Type), (\Prop, \Type) \}$ and the set of rules $\PTSrules$ is defined
 by the functional relation $`A s_1 s_2, (s_1, s_2, s_2) `: \PTSrules$. We allow products $\Pi x :
 A. B$ where $A : \Prop$ and $B : \Set$ but the user is encouraged to
-encode them as $\Pi x : \{ \_ : unit `| A \}. B$ to benefit from
+encode them as $\Pi x : \{ \_ : unit `| A \}. B$ (with \verb|unit| the
+type containing a single element \verb|tt|) to benefit from
 the subtyping mechanism which we will define later.
 
 The reduction rules of this system are the standard $\beta$ and $\pi$
@@ -377,7 +374,7 @@ judgemental equality $`G \type T \eqbp U : s$.
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma},
 \irule{Pair}, \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V :
 \Set$ or $U, V : \Prop$. The first sum represents dependent pairs,
-useful when defining functions returning a tuple, the latter represent
+useful when defining functions returning a tuple, the latter represents
 dependent pairs of propositions, which is most often used as conjunction
 of propositions. The dependent pair with $U : \Set$ and $V : \Prop$ is
 the subset type which we distinguish (rule \irule{Subset}). The last
@@ -426,9 +423,10 @@ environment $`G$, both being sorted by $s$.
 
 The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
 judgement. We use a judgemental equality here, which will be refined by
-the usual conversion relation later. The \irule{SubSym} and
-\irule{SubTrans} rules ensure that our judgement builds an \emph{equivalence} and has
-proper modularity. The next two rules (\irule{SubProd} and
+the usual conversion relation later. The \irule{SubTrans} rule ensure
+that our judgement builds an \emph{equivalence} and has
+proper modularity. It is trivial to check that we have symmetry given 
+the symmetry of the definitional equality. The next two rules (\irule{SubProd} and
 \irule{SubSigma}) do context closure for dependent
 products and sums. It is remarkable that we use contravariance for
 % \cite{journals/toplas/Castagna95}
@@ -506,8 +504,8 @@ formalisation and the proof fall outside the scope of this paper.
 
 \begin{paragraph}{}
 We use a standard transformation to get an algorithm from our typing
-rules, integrating the conversion (or subsumption) rule
-(here \irule{Coerce}) to the premises of the other rules.
+rules, removing the conversion (or subsumption) rule
+(here \irule{Coerce}) and integrating it to the premises of the other rules.
 %We recall that $`G \type t : s$ is shorthand for $`G \type t : T$ and
 %$T  `= s$ with $s `: \PTSsorts$ in a algorithmic presentation.
 Our algorithmic judgement $`G \typea t : T$
@@ -605,27 +603,34 @@ product type modulo the equivalence.
   The next thing to do is to construct a decidable judgement for
   equivalence given two types. We denote it by $`G \typea T
   \suba U : s$ (figure \ref{fig:subtyping-algo-rules}).
-  In our case, we have to check that conversion is decidable, which is the
-  case as we can replace judgemental equality with the usual untyped
+  In our case, we have to check that definitional equality is decidable, which is the
+  case as we can replace the judgemental equality with the usual untyped
   convertibility $\eqbp$ (we proved $`G \type T \eqbp U : s
-  "<=>" T \eqbp U `^ `G \type T, U : s$ in \Coq). 
-  Clearly, we can eliminate symmetry directly, given the fact that
-  conversion is symmetric.
+  "<=>" T \eqbp U `^ `G \type T, U : s$), which is decidable on well
+  typed terms.
   We also need to eliminate the transitivity rule which is not
   syntax-directed. That is the purpose of the following theorem:
-\begin{theorem}[Admissibility of transitivity and symmetry]
-  \begin{enumerate}
-  \item If $`G \typea T \suba U : s$ and $`G \typea U \suba V : s$, then $`G \typea T
-    \suba V : s$.
-  \item If $`G \typea T \suba U : s$ then $`G \typea U \suba T : s$.
-  \end{enumerate}
+\begin{theorem}[Admissibility of transitivity]
+  If $`G \typea T \suba U : s$ and $`G \typea U \suba V : s$, then $`G \typea T
+  \suba V : s$.
 \end{theorem}
 \begin{proof}
-  \begin{enumerate}
-  \item By induction on the sum of the depths of the two derivations.
-  \item By induction, using a thinning lemma.
-  \end{enumerate}
+  By induction on the sum of the depths of the two derivations.
 \end{proof}
+
+  Finally, we need to restrict the application of the \irule{SubConv}
+  rule when no other rules apply and the two types are in head normal form.
+  We can then prove:
+  \begin{theorem}[Decidability of algorithmic typing]
+    $`E T, `G \typea t : T$, $`G \typea t : T$ and $`G \typea T \suba U :
+    s$ are decidable problems.
+  \end{theorem}
+  \begin{proof}
+    Rules are syntax-directed.
+  \end{proof}
+
+  We denote by $\typeafn{`G}{t}$ the function which returns the type of
+  term $t$ in context $`G$ such that $`G \typea t : \typeafn{`G}{t}$.  
 \end{paragraph}
 
 As usual, we have the following correspondence between the two
@@ -640,17 +645,16 @@ systems:
   If $`G \typed T \subd U : s$ then $`G \typea T \suba U : s$.
 \end{theorem}
 
-Finally, we can state the desired property of the algorithmic system:
-\begin{theorem}[Decidability of typing]
-  $`G \typea t : T$ and $`G \typea T \suba U :
-  s$ are decidable problems.
-\end{theorem}
-\begin{proof}
-  Rules are syntax-directed.
-\end{proof}
+Finally, we can state the desired property of our typing system:
+\begin{corollary}[Decidability of declarative typing]
+  $`G \type t : T$ is decidable.
+\end{corollary}
+% \begin{proof}
+%   By soundness and completness, $`G \type t : T "<=>" `E T', `G \typea t
+%   : T' `^ `G \typea T' \suba T : s$ which is decidable.
+% \end{proof}
 
-We denote by $\typeafn{`G}{t}$ the function which returns the type of
-term $t$ in context $`G$ such that $`G \typea t : \typeafn{`G}{t}$.
+
 
 \subsection{From \CIC to \lng{}}
 We have presented a calculus based on \CIC with a stronger equivalence
@@ -669,10 +673,14 @@ except for the following cases:
   \CCtoRussellforgetFig
 \end{center}
 
+\begin{definition}[Definedness]
+  $()^{\circ}$ is defined on $t$ if $t^{\circ}$ does not contain $`_$.
+\end{definition}
+
 We can now prove the following:
 \begin{theorem}[Forgetful map correctness]
   If $`G \typec t : T$ then $`G^{\circ} \type t^{\circ} : T^{\circ}$ if $()^{\circ}$ is
-  defined (ie, does not return terms containing $`_$) on $`G, t$ and $T$.
+  defined on $`G, t$ and $T$.
 \end{theorem}
 
 Practically, this means we can use almost all existing definitions in the
@@ -683,7 +691,7 @@ defined on all \Coq terms elaborated from \Russell.
 Indeed, the second projection of a
 subset element will only appear in the second component of a subset
 element. Otherwise, we would have used the projection directly in the
-\Russell{} term, where it is forbidden.
+\Russell{} term, where it does not exist.
 Indeed, in \PVS{} you cannot manipulate proof terms, so you have no way to create a
 term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq
   0}$, nor can you actually derive the latter, as it will not type-check.
@@ -744,7 +752,7 @@ The side-conditions of the rules have not changed, so we omit them for
 better readability. The judgement $\subimpl{`G}{c}{T}{U}{s}$ builds a
 coercion $c$ from $T$ to $U$ in context $`G$, that is an object which
 coerces an object of type $\ip{T}{`G}$ to an object of type $\ip{U}{`G}$
-in context $\ipG{`G}$. We use the algorithmic types to drive the
+in context $\ipG{`G}$. We use the \lng{} types to drive the
 derivation but the resulting object will be a well-typed \Coq{} term
 (lemma \ref{lemma:coercion-correct}). 
 % We
@@ -776,7 +784,8 @@ coercible to $B$ and the coercion is $\lambda x : A.y$. This
 presentation is very elegant and adapted for checking coherence 
 of coercions, which we do not need here as we can get uniqueness
 of coercions. Moreover, it did not seem readily usable in
-our setting, where coercions may contain metavariables. Similarly, Amokrane Sa\"ibi defines
+our setting, where coercions may contain metavariables and depend on a
+typing context. Similarly, Amokrane Sa\"ibi defines
 a coercion derivation algorithm which respects some coherence criteria,
 roughly, that type-erased coercions $\beta\eta$-reduce to the
 identity. Again, this was not adapted to our setting, so we invented this
@@ -840,21 +849,32 @@ interpreted objects and return their application.
 
 \subsection{A little more expressiveness}
 One may wonder how can we interpret \Russell terms into a system with only
-$\beta\pi$-equivalence and still be conservative with respect to \CIC. 
-Indeed if we want the \irule{Conv} rule to be admissible, we must have for example:
-If $\Pi x : A.B \eqbp \Pi x : C.D$ then there exists $c$ such that
-$\subimpl{`G}{c}{\Pi x : A.B}{\Pi x : C.D}{s}$ and $c `= \ctxdot$.
-However, we derive eta-long coercions, so $c$ will be $\lambda x :
-\ip{C}{`G}.\ctxdot~x$. 
-
+$\beta\pi$-equivalence and still be a simple extension of \CIC. 
+Indeed, consider the following example. Suppose we have two types $A, B$
+with coercions: $c : A \suba B$ and $d : B \suba A$. Additionally, let
+$P : A "->" Prop$ with introduction terms $p : \Pi x : A, P~x$ and $q :
+\Pi x : B, P~x$. Consider the following well-typed \Russell term in
+context $`G = x : A$: $p~x =_{P~x} q~x$. By interpretation into \CIC, we
+have $\ip{P}{`G} = P$, $\ip{p}{`G} = p$ and $\ip{q}{`G} = \lambda x :
+B. q~d[x] : \Pi x : B, P~d[x]$. Now the interpretation of the equality
+gives:
+$p~x =_{P~x} \ip{q~x}{`G} = (\lambda x : B. q~d[x]) c[x] =
+q~d[c[x]]$. The right hand side has type $P~d[c[x]]$ which must be
+convertible with $P~x$ for the whole term to be well-typed. This
+indicates that coercions must be unique up to eta conversion and eta
+conversion must be included in the definitional equality. For
+example if $A = \Pi x : X.Y$ and $B = \Pi x : X'.Y'$ with $X = X'$ and
+$Y = Y'$, we have $d `o c = \lambda x : X. \ctxdot~x `o \lambda x
+: X'. \ctxdot~x = \lambda x : X. \ctxdot~x$ which must be definitionally
+equal to $\ctxdot$.
 Similarly, we must add $\eta$ rules for all introduction terms of our
-language if we want to be conservative and have uniqueness of
-coercions. The latter is an important property of our system, as it
-corresponds in practice to the determinism of proof-obligations
+language to ensure uniqueness of coercions. It is an important
+property of our system, as it corresponds in practice to the determinism
+of proof-obligations
 generation. The complete equational theory of \CICq{} is given in figure
 \vref{fig:eqccq}. It includes $\eta$, surjective pairing for dependent
 sums and subsets ($\rho$) and proof-irrelevance for the second component
-of subset objects.
+of subset objects ($\tau$).
 Benjamin Werner has studied the addition of proof-irrelevance (rule
 $\sigma$) in the Calculus of Constructions
 \cite{Werner:ProofIrrelevance}. It is not a trivial extension and it has
@@ -900,7 +920,9 @@ Finally we can show that our interpretation is correct (theorem \ref{interp-corr
 \section{Implementation}
 \label{sec:Program}
 This mechanism has been implemented in \Coq and tested on simple
-examples (some are available on the website). We actually generate coercions simultaneously with typing 
+examples (some are available on the author's website, including safe list
+operations and a head normal form definition). We actually generate
+coercions simultaneously with typing 
 in the implementation, which is sound thanks to the previous proofs. Our
 typing is a clone of \Coq's original typing algorithm, so we benefit
 from all the features of \Coq including implicit variables, notations and the existing
@@ -911,14 +933,11 @@ that an equality between the matched term and the pattern is present in
 the typing context of each branch and it allows the user to put explicit 
 holes in the term, for example:
 \begin{code}
-  Program Definition hd ( l : list A | l <> [] ) : A :=
-    match l with
-    | hd :: tl -> hd
-    | [] -> False_rec A _
-    end.
+  Program Definition tail ( l : list A | l <> [] ) : list A :=
+    match l with hd :: tl -> tl | [] -> False_rec (list A) _ end.
 \end{code}
 In the second branch we have $l = []$ and $l \neq []$, hence we can
-prove $`_$ and derive an object of type $A$.
+prove $`_$ and derive an object of type $\texttt{list}~A$.
 
 It must be stressed that we do not lose any information when
 generating obligations as we have the whole term context at hand,
