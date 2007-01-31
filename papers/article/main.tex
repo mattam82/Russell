@@ -2,9 +2,6 @@
 \usepackage{abbrevs}
 \usepackage{alltt}
 \def\text{\mbox}
-
-\def\figureshrink{0em}
-
 \usepackage{ifthen}
 \usepackage{url}
 \usepackage{varioref}
@@ -237,11 +234,9 @@ Nordstr\"om et al. \cite{progmartinlof} and subset types in NuPRL \cite{constabl
     \LeftLabel{\irule{Subset-$\eltpip$}}
     \UIC{$`G \type \eltpip~t : P[\eltpit~t/x]$}
     \DP
-  \end{center}
-  \vspace{\figureshrink}
+  \end{center}  
   \caption{Subset type in \CIC}
-  \label{fig:cci-subset} 
-  \vspace{\figureshrink}
+  \label{fig:cci-subset}   
 \end{figure}
 
 \subsection{From \ps{} to subset equivalence}
@@ -321,13 +316,10 @@ with actual proofs.
 
     \vspace{\infvspace}
     \Conv\DP
-  \end{center}
-  \vspace{\figureshrink}
+  \end{center}  
   \caption{\CIC typing judgement}
-  \label{fig:cic-decl-rules}
-  \vspace{\figureshrink}
+  \label{fig:cic-decl-rules}  
 \end{figure}
-
 
 \begin{figure}[t]
   \begin{center}
@@ -339,14 +331,11 @@ with actual proofs.
        
     \vspace{\infvspace}
     \SubsetR\DP
-  \end{center}
-  \vspace{\figureshrink}
+  \end{center}  
   \caption{\Russell new rules}
-  \label{fig:typing-decl-rules}
-  \vspace{\figureshrink}
+  \label{fig:typing-decl-rules}  
 \end{figure}
 
-%
 \Russell{}'s type system is based on the Calculus of Inductive
 Constructions (figure \vref{fig:cic-decl-rules}) \cite{coquandhuet88},
 with sigma types but without universes.  This restriction may be removed
@@ -413,12 +402,9 @@ The judgement $`G \typed T \subd{} U : s$ (figure
 environment $`G$, both being sorted by $s$. 
 
 \begin{figure}[h]
-  \vspace{\figureshrink}
   \subtdRules
-  \vspace{\figureshrink}
   \caption{\Russell{} conversion}
   \label{fig:conversion-decl-rules}
-  \vspace{\figureshrink}
 \end{figure}
 
 The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
@@ -527,28 +513,9 @@ product type modulo the equivalence.
     \def\sub{\suba}
     \def\fCenter{\typea}
     \begin{center}
-%     \WfEmpty\DP
-    
-%     \vspace{\infvspace}
-%     \WfVar\DP
-    
-%     \vspace{\infvspace}
-%     \Var\DP
-    
-%     \vspace{\infvspace}
-%     \PropSet\DP
-    
-%     \vspace{\infvspace}
-%     \Prod\DP
-
-%     \vspace{\infvspace}
-%     \Abs\DP
 
     \vspace{\infvspace}
     \AppA\DP
-
-%     \vspace{\infvspace}
-%     \SigmaR\DP
     
     \vspace{\infvspace}
     \SumDepA\DP
@@ -557,14 +524,9 @@ product type modulo the equivalence.
     \PiLeftA\DP
     \quad\hspace{-2.5em}
     \PiRightA\DP
-
-%     \vspace{\infvspace}
-%     \SubsetR\DP
-  \end{center}
-  \vspace{\figureshrink}
+  \end{center}  
   \caption{\Russell{} algorithmic typing, new rules}
-  \label{fig:typing-algo-rules}
-%  \vspace{\figureshrink}
+  \label{fig:typing-algo-rules}  
 \end{figure*}
 
 \typemuaFig[$\mualgo$ definition]
@@ -590,11 +552,9 @@ product type modulo the equivalence.
 
     \vspace{\infvspace}
     \SubSubAs\DP
-  \end{center}
-  \vspace{\figureshrink}
+  \end{center}  
   \caption{\Russell{} algorithmic equivalence}
-  \label{fig:subtyping-algo-rules}
-  \vspace{\figureshrink}
+  \label{fig:subtyping-algo-rules}  
 \end{figure*}
 
 
@@ -713,8 +673,7 @@ a \emph{partial} term, leaving typed holes where proofs are
 needed. Hence we add a rule to build existential variables (or
 metavariables) in the target calculus ($\typeq$ denotes the new system's typing judgement):
 
-\begin{center}
-  \vspace{\figureshrink}
+\begin{center}  
   \UAX{}
   {$`G \typeq P : \Prop$}
   {$`G \typeq ?_{P} : P$}
@@ -757,12 +716,9 @@ the function which builds $c$ given $`G$, $T$ and $U$.
 % proof. 
 
 \begin{figure}[ht]
-%  \vspace{\figureshrink}
   \subtisc
-%  \vspace{\figureshrink}
   \caption{Coercion derivation}
   \label{fig:coerce-impl-rules-short}
-%  \vspace{\figureshrink}
 \end{figure}
 
 Coercions are formalised as multi-holes evaluation contexts, with
@@ -826,13 +782,10 @@ recursive traversal of algorithmic typing derivations. In other, more
 practical words, we can do interpretation of terms simultaneously with
 typing in our implementation, just like for the existing coercion system
 of \Coq. 
-\begin{figure}[ht]
-  \vspace{\figureshrink}
-  \interparr
-  \vspace{\figureshrink}
+\begin{figure}[ht]  
+  \interparr  
   \caption{Interpretation of terms}
-  \label{fig:interp}
-  \vspace{\figureshrink}
+  \label{fig:interp}  
 \end{figure}
 We describe the case of application here; others are similar. First we
 get the \Russell types $F$ and $U$ of the function $f$ and argument $u$ by calling the
@@ -878,13 +831,10 @@ $\sigma$) in the Calculus of Constructions
 far-reaching consequences on the model of the calculus
 \cite{DBLP:conf/types/MiquelW02}. We direct the reader to these papers for further
 information on the subject.
-\begin{figure}[ht]
-  \vspace{\figureshrink}
-  \ccqeqarr
-  \vspace{\figureshrink}
+\begin{figure}[ht]  
+  \ccqeqarr 
   \caption{Equational theory of \CICq}
-  \label{fig:eqccq}
-  \vspace{\figureshrink}
+  \label{fig:eqccq}  
 \end{figure}
 
 \subsection{Properties}
