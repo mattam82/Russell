@@ -207,7 +207,7 @@ is correct only after the program is written. Subsets are particularly well-suit
 because they separate the objects we want to manipulate and their associated
 properties. Similar treatments of subsets as a construct to separate
 informative and propositional parts of an object include the work by
-Nordstr\"om et al. \cite{progmartinlof} and subset types in NuPRL.
+Nordstr\"om et al. \cite{progmartinlof} and subset types in NuPRL \cite{constable86nuprl}.
 
 \begin{figure}[ht]
   \begin{center}
@@ -694,8 +694,7 @@ element. Otherwise, we would have used the projection directly in the
 \Russell{} term, where it does not exist.
 Indeed, in \PVS{} you cannot manipulate proof terms, so you have no way to create a
 term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq
-  0}$, nor can you actually derive the latter, as it will not type-check.
-If we allowed the second projection in \Russell, that would be doable
+  0}$. If we allowed the second projection in \Russell, that would be doable
 and we would have an inconsistency.
 Hence we left only the subset type forming rule (figure
 \vref{fig:typing-decl-rules}) in \Russell, while the introduction and
@@ -746,15 +745,14 @@ theorem.
 \subsection{Explicit coercions}
 The derivation of explicit coercions (figure
 \vref{fig:coerce-impl-rules-short}) is based on the
-algorithmic equivalence derivations, hence we can derive a function from
-the judgement which builds a coercion given two types (denote by $\coerce{`G}{T}{U}$). 
+algorithmic equivalence derivations.  
 The side-conditions of the rules have not changed, so we omit them for
 better readability. The judgement $\subimpl{`G}{c}{T}{U}{s}$ builds a
-coercion $c$ from $T$ to $U$ in context $`G$, that is an object which
-coerces an object of type $\ip{T}{`G}$ to an object of type $\ip{U}{`G}$
-in context $\ipG{`G}$. We use the \lng{} types to drive the
-derivation but the resulting object will be a well-typed \Coq{} term
-(lemma \ref{lemma:coercion-correct}). 
+coercion $c$ from $\ip{T}{`G}$ to $\ip{U}{`G}$ in context $\ipG{`G}$.
+We use the \lng{} types to drive the
+derivation but the resulting object $c$ will be a well-typed \Coq{} term
+(lemma \ref{lemma:coercion-correct}). We denote $\coerce{`G}{T}{U}$
+the function which builds $c$ given $`G$, $T$ and $U$.
 % We
 % could also directly use the interpreted types but that complicates the
 % proof. 
@@ -858,11 +856,12 @@ context $`G = x : A$: $p~x =_{P~x} q~x$. By interpretation into \CIC, we
 have $\ip{P}{`G} = P$, $\ip{p}{`G} = p$ and $\ip{q}{`G} = \lambda x :
 B. q~d[x] : \Pi x : B, P~d[x]$. Now the interpretation of the equality
 gives:
-$p~x =_{P~x} \ip{q~x}{`G} = (\lambda x : B. q~d[x]) c[x] =
+$p~x =_{P~x} \ip{q~x}{`G}$ where $\ip{q~x}{`G} `= (\lambda x : B. q~d[x]) c[x] `=
 q~d[c[x]]$. The right hand side has type $P~d[c[x]]$ which must be
 convertible with $P~x$ for the whole term to be well-typed. This
-indicates that coercions must be unique up to eta conversion and eta
-conversion must be included in the definitional equality. For
+indicates that coercions must be unique (so that $d `o c `= id_A `=
+\ctxdot$), which implies that we have to include $\eta$ 
+conversion in the definitional equality. For
 example if $A = \Pi x : X.Y$ and $B = \Pi x : X'.Y'$ with $X = X'$ and
 $Y = Y'$, we have $d `o c = \lambda x : X. \ctxdot~x `o \lambda x
 : X'. \ctxdot~x = \lambda x : X. \ctxdot~x$ which must be definitionally
@@ -874,7 +873,7 @@ of proof-obligations
 generation. The complete equational theory of \CICq{} is given in figure
 \vref{fig:eqccq}. It includes $\eta$, surjective pairing for dependent
 sums and subsets ($\rho$) and proof-irrelevance for the second component
-of subset objects ($\tau$).
+of subset objects ($\tau$) and is sufficient to ensure uniqueness of coercions.
 Benjamin Werner has studied the addition of proof-irrelevance (rule
 $\sigma$) in the Calculus of Constructions
 \cite{Werner:ProofIrrelevance}. It is not a trivial extension and it has
@@ -997,8 +996,9 @@ basis for interpretation of complete \ML{} programs in \Coq, using a monadic
 translation or some kind of effects to reflect imperative constructs.
 
 \paragraph{Acknowledgements}
-I would like to thank Christine Paulin-Mohring for directing this work and
-Jean-Christophe Filli\^atre for discussions on previous versions of this paper.
+We would like to thank Christine Paulin-Mohring for directing this work and
+Jean-Christophe Filli\^atre for discussions on previous versions of this
+paper. We thank the anonymous referees for their insightful comments.
 \bibliography{my,bib-joehurd,barras,pvs-bib,bcp,Luo,biblio-subset,%
 cparent,demons,demons2,demons3}
 \bibliographystyle{splncs}

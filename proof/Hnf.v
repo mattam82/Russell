@@ -46,7 +46,7 @@ Defined.
 Hint Resolve sn_ord_wf : coc.
 
 (** The simplification tactic we use. *)
-Ltac hnf_tac := intros ; hnf in * ; try destruct_exists ; simpl in * ; try subst ; auto with coc core datatypes.
+Ltac hnf_tac := unfold snterm ; intros ; hnf in *; try destruct_exists ; simpl in * ; try subst ; auto with coc core datatypes.
 Obligations Tactic := hnf_tac.
 
 (** ** The definition, just like in ML with nested recursive calls. *)
@@ -82,68 +82,88 @@ Proof.
   subst x ; apply subterm_sn with y ; auto.
 Qed.
 Solve Obligations using subtac_simpl ;  eapply sn_proj_subterm_sn ; eauto with coc subtac.
-Solve Obligations using hnf_tac ; intros ; do 2 constructor ; auto with coc.
+
+Solve Obligations using hnf_tac ; do 2 constructor ; simpl ; subst ; auto with coc.
 
 (** The rest requires handcare because there are some transitivity arguments *)
 Require Import ZArith.
 
 Next Obligation.
-  intros.
+Proof.
+  destruct_call hnf ; subtac_simpl.
   apply sn_red_sn with (App x0 y) ; auto with coc.
   apply trans_red_red with (App (Abs T v) y) ; auto with coc.
 Qed.
 
 Next Obligation.
-  simpl ; destruct nf ; simpl in *.
+  intros.
+  destruct_call hnf ; subtac_simpl.
   subst ; apply red_red1_ord_norm with (App (Abs T v) y) ; auto with coc.
 Qed.
 
 Next Obligation.
   intros.
-  destruct_call hnf ; simpl in *.
-  destruct nf ; simpl in *.
-  apply trans_red_red with (subst y v) ; auto.
+  repeat (destruct_call hnf ; simpl in *).
+  apply trans_red_red with (subst y v) ; auto with coc.
   subst ; apply trans_red_red with (App (Abs T v) y) ; auto with coc.
 Qed.
 
 Next Obligation.
-  clear hnf.
+  intros.
+  destruct_call hnf ; simpl in *.
+  subtac_simpl ; auto with coc.
+Qed.
+
+Next Obligation.
+  intros.
+  destruct_call hnf ; simpl in * ; subtac_simpl.
   apply sn_red_sn with (Pi1 x0) ; auto with coc.
   apply trans_red_red with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
 Next Obligation.
   intros.
-  destruct nf ; simpl in *.
+  destruct_call hnf ; subtac_simpl.
   subst ; apply red_red1_ord_norm with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
 Next Obligation.
   intros.
   destruct_call hnf ; simpl in *.
-  destruct nf ; simpl in * ; subst.
+  destruct_call hnf ; subtac_simpl.
   apply trans_red_red with l ; auto.
   apply trans_red_red with (Pi1 (Pair T l r)) ; auto with coc.
 Qed.
 
 Next Obligation.
   intros.
+  destruct_call hnf ; hnf_tac.
+Qed.
+
+Next Obligation.
+  destruct_call hnf ; hnf_tac.
   apply sn_red_sn with (Pi2 x0) ; auto with coc.
   apply trans_red_red with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
 Next Obligation.
   intros.
-  destruct nf ; simpl in *.
+  destruct_call hnf ; hnf_tac.
   subst ; apply red_red1_ord_norm with (Pi2 (Pair T l r)) ; auto with coc.
 Qed.
 
 Next Obligation.
   intros.
   destruct_call hnf ; simpl in *.
-  destruct nf ; simpl in *.
+  destruct_call hnf ; subtac_simpl.
   subst ; apply trans_red_red with r ; auto.
   apply trans_red_red with (Pi2 (Pair T l r)) ; auto with coc.
+Qed.
+
+Next Obligation.
+  intros.
+  destruct_call hnf ; subtac_simpl.
+  auto with coc.
 Qed.
 
 (* begin hide *)
@@ -210,7 +230,7 @@ Inductive hnf_graph : term -> term -> Prop :=
 | hnf_pi2 : forall p p', hnf_graph p p' -> (forall T l r, p' <> Pair T l r) -> hnf_graph (Pi2 p) (Pi2 p').
 
 Program Definition hnf' (x : snterm) : term := hnf x.
-
+(*
 Program Lemma hnf_graph_hnf : forall t : snterm, forall t' : term, hnf' t = t' -> hnf_graph t t'.
 Proof.
   intros.
@@ -252,7 +272,7 @@ Proof.
   assert(ord_norm (subst x2 x4) (App x1 x2)).
   unfold ord_norm.
   apply t_trans with (App (Abs x3 x4) x2) ; constructor ; right ; unfold transp ; auto with coc.
-*)  
 
 
+*)
 (* end hide *)
