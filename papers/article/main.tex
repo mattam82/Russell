@@ -1,12 +1,9 @@
 \documentclass{llncs}
 \usepackage{abbrevs}
-%\usepackage{array}
 \usepackage{alltt}
 \def\text{\mbox}
 
-%%%% FixMe: remove 
-\pagestyle{plain}
-
+\def\figureshrink{0em}
 
 \usepackage{ifthen}
 \usepackage{url}
@@ -46,7 +43,10 @@
 
 \author{Matthieu Sozeau}
 
-\institute{LRI, Paris Sud XI University\\\email{sozeau@lri.fr}}
+\institute{Universit\'e Paris Sud, CNRS, Laboratoire LRI, UMR 8623,
+  Orsay, F-91405\\
+  INRIA Futurs, ProVal, Parc Orsay Universit\'e, F-91893
+  \\\email{sozeau@lri.fr}}
 \title{Subset coercions in \Coq} % \\ \small{Draft - \today}}
 \date{\today}
 
@@ -238,10 +238,10 @@ Nordstr\"om et al. \cite{progmartinlof} and subset types in NuPRL \cite{constabl
     \UIC{$`G \type \eltpip~t : P[\eltpit~t/x]$}
     \DP
   \end{center}
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{Subset type in \CIC}
   \label{fig:cci-subset} 
-  \vspace{-1em}
+  \vspace{\figureshrink}
 \end{figure}
 
 \subsection{From \ps{} to subset equivalence}
@@ -322,10 +322,10 @@ with actual proofs.
     \vspace{\infvspace}
     \Conv\DP
   \end{center}
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{\CIC typing judgement}
   \label{fig:cic-decl-rules}
-  \vspace{-1em}
+  \vspace{\figureshrink}
 \end{figure}
 
 
@@ -340,10 +340,10 @@ with actual proofs.
     \vspace{\infvspace}
     \SubsetR\DP
   \end{center}
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{\Russell new rules}
   \label{fig:typing-decl-rules}
-  \vspace{-1em}
+  \vspace{\figureshrink}
 \end{figure}
 
 %
@@ -362,14 +362,14 @@ $i `: `N$ range over sorts. The axioms are $\PTSaxioms = \{ (\Set,
 \Type), (\Prop, \Type) \}$ and the set of rules $\PTSrules$ is defined
 by the functional relation $`A s_1 s_2, (s_1, s_2, s_2) `: \PTSrules$. We allow products $\Pi x :
 A. B$ where $A : \Prop$ and $B : \Set$ but the user is encouraged to
-encode them as $\Pi x : \{ \_ : unit `| A \}. B$ (with \verb|unit| the
+encode them as $\Pi x : \{ \_ : \texttt{unit} `| A \}. B$ (with \texttt{unit} the
 type containing a single element \verb|tt|) to benefit from
 the subtyping mechanism which we will define later.
 
 The reduction rules of this system are the standard $\beta$ and $\pi$
-for projections. We denote by $\downarrow{x}$ the complete normal form
-of $x$ and by $\hnf{x}$ its weak head normal form. We use a standard
-judgemental equality $`G \type T \eqbp U : s$.
+for projections. We denote by $\hnf{x}$ the weak head normal form
+of $x$. We use a standard judgemental equality $`G \type T \eqbp U : s$
+meaning $T, U$ are well-typed, convertible terms of sort $s$ in context $`G$.
 
 We allow to form dependent sums $\Sigma x : U.V$ (\irule{Sigma},
 \irule{Pair}, \irule{Pi-1}, \irule{Pi-2} rules) only when $U, V :
@@ -413,17 +413,17 @@ The judgement $`G \typed T \subd{} U : s$ (figure
 environment $`G$, both being sorted by $s$. 
 
 \begin{figure}[h]
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \subtdRules
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{\Russell{} conversion}
   \label{fig:conversion-decl-rules}
-  \vspace{-1em}
+  \vspace{\figureshrink}
 \end{figure}
 
 The rule \irule{SubConv} integrates $\beta\pi$-conversion in the
 judgement. We use a judgemental equality here, which will be refined by
-the usual conversion relation later. The \irule{SubTrans} rule ensure
+the usual conversion relation later. The \irule{SubTrans} rule ensures
 that our judgement builds an \emph{equivalence} and has
 proper modularity. It is trivial to check that we have symmetry given 
 the symmetry of the definitional equality. The next two rules (\irule{SubProd} and
@@ -561,10 +561,10 @@ product type modulo the equivalence.
 %     \vspace{\infvspace}
 %     \SubsetR\DP
   \end{center}
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{\Russell{} algorithmic typing, new rules}
   \label{fig:typing-algo-rules}
-%  \vspace{-1em}
+%  \vspace{\figureshrink}
 \end{figure*}
 
 \typemuaFig[$\mualgo$ definition]
@@ -591,10 +591,10 @@ product type modulo the equivalence.
     \vspace{\infvspace}
     \SubSubAs\DP
   \end{center}
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{\Russell{} algorithmic equivalence}
   \label{fig:subtyping-algo-rules}
-  \vspace{-1em}
+  \vspace{\figureshrink}
 \end{figure*}
 
 
@@ -630,7 +630,8 @@ product type modulo the equivalence.
   \end{proof}
 
   We denote by $\typeafn{`G}{t}$ the function which returns the type of
-  term $t$ in context $`G$ such that $`G \typea t : \typeafn{`G}{t}$.  
+  term $t$ in context $`G$ such that $`G \typea t : \typeafn{`G}{t}$,
+  when it exists.
 \end{paragraph}
 
 As usual, we have the following correspondence between the two
@@ -658,7 +659,7 @@ Finally, we can state the desired property of our typing system:
 
 \subsection{From \CIC to \lng{}}
 We have presented a calculus based on \CIC with a stronger equivalence
-but with restricted typing rules. We will now see how they relate
+but with restricted typing rules. We will now see how \Russell and \CIC relate
 formally.
 We can build a forgetful map from terms of \CIC to \Russell
 (interpreting inductives as constants). It bears
@@ -667,8 +668,8 @@ relation to the $`e$ extraction function defined by Werner in
 contain or manipulate logical information attached to objects of subset
 types, hence we must forget about it when translating.
 
-We define the forgetful map $()^{\circ}$ as an homomorphism on terms
-except for the following cases:
+We define the forgetful map $()^{\circ}$ from \CIC terms to \Russell
+terms plus a distinguished object $`_$ as an homomorphism on terms except for the following cases:
 \begin{center}
   \CCtoRussellforgetFig
 \end{center}
@@ -691,11 +692,9 @@ defined on all \Coq terms elaborated from \Russell.
 Indeed, the second projection of a
 subset element will only appear in the second component of a subset
 element. Otherwise, we would have used the projection directly in the
-\Russell{} term, where it does not exist.
-Indeed, in \PVS{} you cannot manipulate proof terms, so you have no way to create a
-term of type $0 \neq 0$ from the judgement $0 : \mysubset{x}{`N}{x \neq
-  0}$. If we allowed the second projection in \Russell, that would be doable
-and we would have an inconsistency.
+\Russell{} term, where it does not exist. In fact, as we can derive the judgement $0 : \mysubset{x}{`N}{x \neq
+  0}$ in \Russell, allowing the second projection would permit to derive
+$0 \neq 0$, an inconsistency.
 Hence we left only the subset type forming rule (figure
 \vref{fig:typing-decl-rules}) in \Russell, while the introduction and
 first projection of subset elements are internalized by the coercion judgement.
@@ -715,13 +714,13 @@ needed. Hence we add a rule to build existential variables (or
 metavariables) in the target calculus ($\typeq$ denotes the new system's typing judgement):
 
 \begin{center}
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \UAX{}
   {$`G \typeq P : \Prop$}
   {$`G \typeq ?_{P} : P$}
   {}
   \DP
-  \vspace{-1em}
+  \vspace{-0.2em}
 \end{center}
 We restrict it to objects of type $\Prop$ because we consider that the
 informative part of the algorithm has been entirely given in the
@@ -734,7 +733,7 @@ We are ready to build the interpretation, which should have the following proper
 \end{theorem}
 
 The proof of this proposition is the main technical contribution of this
-paper. It also represented the main difficulty in our work. 
+work, it also represented the main difficulty. 
 The remainder of this section is organised as follows: first we 
 define the explicit coercion derivation algorithm which will permit to
 put proof obligations in the terms, then we define the
@@ -758,12 +757,12 @@ the function which builds $c$ given $`G$, $T$ and $U$.
 % proof. 
 
 \begin{figure}[ht]
-  \vspace{-1em}
+%  \vspace{\figureshrink}
   \subtisc
-  \vspace{-1em}
+%  \vspace{\figureshrink}
   \caption{Coercion derivation}
   \label{fig:coerce-impl-rules-short}
-  \vspace{-1em}
+%  \vspace{\figureshrink}
 \end{figure}
 
 Coercions are formalised as multi-holes evaluation contexts, with
@@ -772,23 +771,23 @@ by a term $x$ as simultaneous substitution of $x$ for every $\ctxdot$ in $C$.
 Hence if $C$ is an evaluation context and $x$ a term, $C[x]$ is a term
 (i.e., it cannot contain $\ctxdot$).
 The holes will denote the object to which the coercion is applied.
-Other
-presentations are possible, notably the ``\LMS{}'' style of \cite{longo95logic} which
-was adopted by Gang Chen in his treatment of coercive subtyping for the
-Calculus of Constructions \cite{conf/popl/Chen03}, and the presentation 
-of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
-in defining a judgement $x : A \type y : B$ which reads: $A$ is
-coercible to $B$ and the coercion is $\lambda x : A.y$. This
-presentation is very elegant and adapted for checking coherence 
-of coercions, which we do not need here as we can get uniqueness
-of coercions. Moreover, it did not seem readily usable in
-our setting, where coercions may contain metavariables and depend on a
-typing context. Similarly, Amokrane Sa\"ibi defines
-a coercion derivation algorithm which respects some coherence criteria,
-roughly, that type-erased coercions $\beta\eta$-reduce to the
-identity. Again, this was not adapted to our setting, so we invented this
-new presentation. 
- 
+% Other
+% presentations are possible, notably the ``\LMS{}'' style of \cite{longo95logic} which
+% was adopted by Gang Chen in his treatment of coercive subtyping for the
+% Calculus of Constructions \cite{conf/popl/Chen03}, and the presentation 
+% of Amokrane Sa\"ibi \cite{saibi97inheritance}. The \LMS{} style consists
+% in defining a judgement $x : A \type y : B$ which reads: $A$ is
+% coercible to $B$ and the coercion is $\lambda x : A.y$. This
+% presentation is very elegant and adapted for checking coherence 
+% of coercions, which we do not need here as we can get uniqueness
+% of coercions. Moreover, it did not seem readily usable in
+% our setting, where coercions may contain metavariables and depend on a
+% typing context. Similarly, Amokrane Sa\"ibi defines
+% a coercion derivation algorithm which respects some coherence criteria,
+% roughly, that type-erased coercions $\beta\eta$-reduce to the
+% identity. Again, this was not adapted to our setting, so we invented this
+% new presentation. 
+
 As conversion will be preserved by the interpretation $\ip{}{}$,
 the rule \irule{SubConv} derives an empty coercion, as the target system
 will be able to derive itself that $\ip{T}{`G} `= \ip{U}{`G}$.
@@ -827,16 +826,14 @@ recursive traversal of algorithmic typing derivations. In other, more
 practical words, we can do interpretation of terms simultaneously with
 typing in our implementation, just like for the existing coercion system
 of \Coq. 
-
 \begin{figure}[ht]
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \interparr
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{Interpretation of terms}
   \label{fig:interp}
-  \vspace{-1em}
+  \vspace{\figureshrink}
 \end{figure}
-
 We describe the case of application here; others are similar. First we
 get the \Russell types $F$ and $U$ of the function $f$ and argument $u$ by calling the
 typing function on both terms. Then we must ensure that $F$ can indeed
@@ -844,6 +841,8 @@ be seen as a product using the $\mualgo$ operator. We can build
 the coercion between $F$ and this product and between $U$ and its
 domain. We finally instantiate these coercions by their corresponding
 interpreted objects and return their application.
+Well-typedness of a term in \Russell is a sufficient condition for
+$\ip{t}{}$ to be defined.
 
 \subsection{A little more expressiveness}
 One may wonder how can we interpret \Russell terms into a system with only
@@ -851,13 +850,12 @@ $\beta\pi$-equivalence and still be a simple extension of \CIC.
 Indeed, consider the following example. Suppose we have two types $A, B$
 with coercions: $c : A \suba B$ and $d : B \suba A$. Additionally, let
 $P : A "->" Prop$ with introduction terms $p : \Pi x : A, P~x$ and $q :
-\Pi x : B, P~x$. Consider the following well-typed \Russell term in
-context $`G = x : A$: $p~x =_{P~x} q~x$. By interpretation into \CIC, we
-have $\ip{P}{`G} = P$, $\ip{p}{`G} = p$ and $\ip{q}{`G} = \lambda x :
-B. q~d[x] : \Pi x : B, P~d[x]$. Now the interpretation of the equality
-gives:
-$p~x =_{P~x} \ip{q~x}{`G}$ where $\ip{q~x}{`G} `= (\lambda x : B. q~d[x]) c[x] `=
-q~d[c[x]]$. The right hand side has type $P~d[c[x]]$ which must be
+\Pi x : B, P~x$. Consider the following well-typed \Russell term $p~x
+=_{P~x} q~x$ in context $`G = x : A$. By interpretation into \CIC, we
+have $\ip{P}{`G} = P$, $\ip{p}{`G} = p$ and $\ip{q}{`G} = q : \Pi x : B,
+P~d[x]$. Now the interpretation of the equality gives:
+$p~x =_{P~x} \ip{q~x}{`G}$ where $\ip{q~x}{`G} `= q~c[x]$. 
+The right hand side has type $P~d[c[x]]$ which must be
 convertible with $P~x$ for the whole term to be well-typed. This
 indicates that coercions must be unique (so that $d `o c `= id_A `=
 \ctxdot$), which implies that we have to include $\eta$ 
@@ -881,12 +879,12 @@ far-reaching consequences on the model of the calculus
 \cite{DBLP:conf/types/MiquelW02}. We direct the reader to these papers for further
 information on the subject.
 \begin{figure}[ht]
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \ccqeqarr
-  \vspace{-1em}
+  \vspace{\figureshrink}
   \caption{Equational theory of \CICq}
   \label{fig:eqccq}
-  \vspace{-1em}
+  \vspace{\figureshrink}
 \end{figure}
 
 \subsection{Properties}
@@ -991,9 +989,10 @@ type inference algorithm needs some tuning to become more similar to \ML
 and an integration of proof-irrelevance in the kernel, while rarely needed in
 practice, is necessary to have a robust system.
 We also hope to extend this mechanism of proof-obligations generation to other
-constructs, notably inductive types. Finally, we intend to use this system as a
-basis for interpretation of complete \ML{} programs in \Coq, using a monadic
-translation or some kind of effects to reflect imperative constructs.
+constructs, notably (co-)inductive types. Finally, we intend to use this system as a
+basis for interpretation of more general \ML{} programs in \Coq, using a monadic
+translation or some kind of effects to reflect imperative constructs
+like exceptions and references.
 
 \paragraph{Acknowledgements}
 We would like to thank Christine Paulin-Mohring for directing this work and
