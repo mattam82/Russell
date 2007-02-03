@@ -50,7 +50,7 @@ Ltac hnf_tac := unfold snterm ; intros ; hnf in *; try destruct_exists ; simpl i
 Obligations Tactic := hnf_tac.
 
 (** ** The definition, just like in ML with nested recursive calls. *)
-Program Fixpoint hnf (x : snterm) {wf x sn_ord} : { y : term | red x y } :=
+Program Fixpoint hnf (x : snterm) {wf sn_ord} : { y : term | red x y } :=
   match x with
     | App x y => 
       let nf := hnf x in
@@ -166,8 +166,9 @@ Next Obligation.
   auto with coc.
 Qed.
 
-(* begin hide *)
 Extraction hnf.
+
+(* begin hide *)
 
 Ltac abstract_Fix_sub f' :=
   match goal with
