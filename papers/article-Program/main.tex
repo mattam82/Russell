@@ -1,0 +1,147 @@
+\documentclass[preprint,10pt]{sigplanconf}
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{abbrevs}
+
+% \def\Program{{\sc Program}\xspace}
+% \def\Coq{{\sc Coq}\xspace}
+% \def\Russell{{\sc Russell}\xspace}
+
+\begin{document}
+
+\conferenceinfo{ICFP'07}{1-3 October 2007, Freiburg, Germany.} 
+\copyrightyear{2007}
+%\copyrightdata{[to be supplied]} 
+
+\titlebanner{Draft}        % These are ignored unless
+\preprintfooter{Description of the Program extension of Coq}   % 'preprint' option specified.
+
+\title{\Program{}ming in \Coq}
+%\subtitle{}
+
+\authorinfo{Matthieu Sozeau}
+{Universit\'e Paris Sud, CNRS, Laboratoire LRI, UMR 8623, Orsay, F-91405\\
+INRIA Futurs, ProVal, Parc Orsay Universit\'e, F-91893}
+{sozeau@lri.fr}
+
+\maketitle
+
+\begin{abstract}
+  \Program is an environment for programming with dependent types in the
+  \Coq proof assistant. It provides commands for building programs in a
+  high-level language \Russell and proving their properties using \Coq.
+  Its essential feature is to permit writing
+  apparently partial functionnal programs and providing support for proving their
+  totality. This is accomplished by an ingenuous handling of subset
+  types in \Russell. 
+  This paper gives a walk-through the definition of programs using this
+  method and shows how it solves the problem of partiality
+  satisfactorily for a number of its instances.
+\end{abstract}
+
+%\category{CR-number}{subcategory}{third-level}
+
+% \terms
+% term1, term2
+
+\keywords
+Functionnal Programming, Coq, partiality, subsets, coercions
+
+\section{Introduction}
+Writing programs with rich specifications in Type Theory is a nightmare.
+This stems from the fact that programs need to carry their own
+correctness certificates if given non-trivial types. For example, the
+function of type $\Pi x : X.\{ x' : X | x = x'\}$, which
+computationally behaves like the identity must be written $\lambda x :
+X. (x, refl x)$. When dealing with such simple specifications it may be
+acceptable to write the proof terms directly, but it soon becomes
+intractable. Basically, you don't want to manipulate proof terms by hand
+in you program, even though you assign it a complex type. Another
+problem in regular programming is partiality in the definition domain of
+a function, e.g. for head and tail. You may not try to apply these
+functions to empty lists, otherwise you get an error. Using rich
+specifications you can force the argument to be non-nil but then you
+don't want to manipulate the proof in the definition or at the call
+sites. The \Program method handles this problem by generalizing the use of
+subset types and letting the \Russell type-checker generate proof
+obligations where proof manipulation is inevitable. After obligations
+are proved the system builds a legitimate \Coq term.
+
+The paper is organized as follows: in the next section we introduce the
+\Program environment, its foundations and technical underpinnings. Then
+in section \ref{sec:Practice} we explore how it handles the current (mal)practices of functionnal
+programming from three angles: partial functions and rich specifications
+in subsection \ref{sec:Practice:PartialDomains}, pattern matching
+and rich datatypes in subsection \ref{sec:Practice:Data} and finally
+termination in subsection \ref{sec:Practice:Computations}. Next we will discuss issues of the 
+implementation in section \ref{sec:Implementation} and finally
+conclude in section \ref{sec:Conclusion}.
+
+\section{What is \Program ?}
+\label{sec:Program}
+\subsection{From \PVS to \Russell}
+\label{sec:Program:PVS-Russell}
+Subset typing, PVS success, metatheory of russell
+
+\subsection{From \Russell to \Coq}
+\label{sec:Program:Russell-Coq}
+Elaboration, correctness proof, obligations system, extraction.
+
+\section{(Mal-)Practice}
+\label{sec:Practice}
+Some implicit reasoning in fun prog to formalize.
+``Total functional programming''
+Bridging the gap between fun prog and proof assistants.
+Use examples developped along with Program.
+
+\subsection{Domain partiality \& rich specifications}
+\label{sec:Practice:PartialDomains}
+Restrict the domain, forget about the proof, do not lose it.
+Simple structure, complex type.
+head, tail, tip
+
+\subsection{Pattern matching  \& rich datatypes}
+\label{sec:Practice:Data}
+Prove exhaustiveness, under eqs and ineqs.
+Dependent pattern matching to equational reasonning.
+nth, fingertree, ...
+
+\subsection{Termination \& rich computations}
+\label{sec:Practice:Computations}
+Use measures and well founded orders, pb when reasonning, computing.
+div, hnf?, reduce
+
+\section{Implementation issues}
+\label{sec:Implementation}
+in \Coq, no eta/proof irrelevance. 
+
+
+\subsection{Proof Irrelevance}
+
+\section{Conclusion}
+\label{sec:Conclusion}
+
+% \appendix
+% \section{Appendix Title}
+
+% This is the text of the appendix, if you need one.
+
+\acks
+
+Acknowledgments, if needed.
+
+\begin{thebibliography}{}
+
+\bibitem{smith02}
+Smith, P. Q. reference text
+
+\end{thebibliography}
+
+\end{document}
+1-59593-090-6/05/0007
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% LaTeX-command: "BIBINPUTS=\"bib\" TEXINPUTS=\"style:.:\" latex"
+%%% End: 
