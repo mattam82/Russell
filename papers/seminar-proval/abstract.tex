@@ -1,0 +1,24 @@
+\def\myabstract{
+  There exist different methods for developing certified programs in the \Coq
+  environment. The standard one is to use \Coq's language as a purely
+  functional version of \ML using simple types and prove properties
+  about them in the usual way. Another, lesser known approach, is to use the
+  complete \Coq language to specify and implement programs, making
+  invariants, pre- and post-conditions appear in the types of terms. 
+  This method is generally overlooked because it is
+  difficult to cope with in practice as algorithms and proofs become
+  entangled. \Program tries to solve this problem by reconciling the two
+  approaches. It consists of a
+  language (\Russell) which permits writing purely algorithmical code,
+  a sound translation from \Russell terms to \Coq terms which
+  generates proof obligations and a mechanism for handling these.
+  I will present these three components then delve into an example of
+  using \Program to build a certified implementation of the Finger Tree
+  data structure of Hinze \& Patterson.
+  
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
