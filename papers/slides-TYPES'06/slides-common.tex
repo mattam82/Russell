@@ -21,7 +21,7 @@
 \mode<all>
 {
 \setbeamerfont{block title}{size={}}
-\usefonttheme{professionalfonts}
+\usefonttheme{serif}
 \setbeamercovered{invisible}
 \useoutertheme{default}
 \useinnertheme{rounded}
@@ -30,10 +30,11 @@
 \setbeamertemplate{navigation symbols}{}
 }
 
+\usepackage{concrete}
 \usepackage{concmath}
-\usepackage[T1]{fontenc}
+%\usepackage[T1]{fontenc}
 
-\usepackage{txfonts}
+%\usepackage{txfonts}
 \input{grammar-macros}
 
 \newboolean{defineTheoremEn}
@@ -972,6 +973,6 @@
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "slides"
-%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:../figures:\" ${pdfx}latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:../figures:~/research/publication/styles:\" ${pdfx}latex"
 %%% TeX-PDF-mode: t
 %%% End: 

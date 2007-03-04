@@ -13,6 +13,9 @@
 \usecolortheme{whale}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{mini frames}[box]
+\setbeamertemplate{itemize items}[triangle]
+\setbeamertemplate{enumerate items}[square]
+
 }
 
 \usepackage[latin1]{inputenc}
@@ -21,9 +24,15 @@
 \usepackage{abbrevs}
 \usepackage{subfigure}
 \usepackage{ifthen}
-\usepackage{coqdoc}
+\usepackage{mycoqdoc}
 \usepackage{bussproofs}
 \usepackage{pgf,pgfarrows,pgfnodes}
+
+% macro for typesetting keywords
+\renewcommand{\coqdockw}[1]{\texttt{#1}}
+
+\def\coloneqq{:\mathrel{=}}
+\def\Coloneqq{::\mathrel{=}}
 
 \EnableBpAbbreviations
 \def\fCenter{\vdash}
@@ -56,6 +65,9 @@
 
 \input{typing-impl}
 \input{subtyping-impl}
+
+\newqsymbol{"="}{\triangleq}
+
 % [Short Paper Title] (optional, use only with long paper titles)
 \title{\Program{}ing in \Coq}
 
@@ -118,16 +130,14 @@
   \pgfuseimage{inria-logo}
 \end{frame}
 
-\begin{frame}[plain]
-  \frametitle{The Big Picture}
-  \only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
-\end{frame}
+% \begin{frame}[plain]
+%   \frametitle{The Big Picture}
+%   \only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
+% \end{frame}
+
+\frame{\tableofcontents}
 
 \section{The idea}
-\begin{frame}<beamer>
-  \frametitle{Outline}
-  \tableofcontents
-\end{frame}
 
 \subsection{A simple idea}
 \begin{frame}
@@ -224,15 +234,32 @@
 \end{frame}
 
 \section{Theoretical development}
-\begin{frame}<beamer>
-  \frametitle{Outline}
-  \tableofcontents[currentsection]
-\end{frame}
+\frame{\tableofcontents[currentsection]}
 
 \subsection{\lng{}}
 
+\begin{frame}
+  \frametitle{\lng{} syntax}
+  
+  $\begin{array}{lcl}
+    t & \Coloneqq & x \\
+    & | & \lambda x : t "=>" t \\
+    & | & t~t \\
+    & | & \Pi x : t. t \\
+
+    & | & \pair{\Sigma x : t.t}{`a}{`a} \\
+    & | & \pi_1~`a `| \pi_2~`a \\
+    & | & \Sigma x : t. t \\
+
+    & | & \mysubset{x}{t}{t} \\
+    & | & \Set \\
+    & | & \Prop \\
+    & | & \Type
+  \end{array}$  
+\end{frame}
+
 \begin{frame}[t,label=typingdecl]
-  \frametitle{\lng{}'s typing $\typed$ and coercion $\subd$}
+  \frametitle{\lng{} typing $\typed$ and coercion $\subd$}
   
   Calculus of Constructions - \irule{Conv} +
   \typenvd
@@ -253,10 +280,10 @@
 
     \vspace{0.25cm}
     \only<4-5>{
-      \AXC{$0 : \nat$}
-      \AXC{$\nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
-      \BIC{$0 : \mysubset{x}{\nat}{x \neq 0}$}
-      \only<5>{\UIC{\alert{$? : 0 \neq 0$}}}
+      \AXC{$`G \type 0 : \nat$}
+      \AXC{$`G \type \nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
+      \BIC{$`G \type 0 : \mysubset{x}{\nat}{x \neq 0}$}
+      \only<5>{\UIC{$`G \type \alert{? : 0 \neq 0}$}}
       \DP
     }
     \only<6->{\SubProd\DP}
@@ -279,9 +306,9 @@
   
   \begin{prooftree}
     \TAX{App}
-    {$\tgen{`G}{f}{T} \quad T \suba \Pi x : A.B$}
+    {$\tgen{`G}{f}{T} \quad \subgen{`G}{T}{\Pi x : A.B}{s}$}
     {$\tgen{`G}{e}{E}$}
-    {$E \suba A$}
+    {$\subgen{`G}{E}{A}{s'}$}
     {$\tgen{`G}{(f~e)}{B [ e / x ]}$}
     {}
   \end{prooftree}
@@ -294,10 +321,7 @@
 \newcommand{\blue}[1]{{\color{blue}#1}}
 
 \subsection{Traduction in \Coq{}}
-\begin{frame}<beamer>
-  \frametitle{Outline}
-  \tableofcontents[currentsubsection]
-\end{frame}
+\frame{\tableofcontents[currentsubsection]}
 
 \setboolean{displayLabels}{false}
 \begin{frame}
@@ -358,9 +382,8 @@
       
   \begin{block}{Traduction for coercions}
     \begin{center}
-      If $T \sub U$ then $`G \typec c[\ctxdot] : T \sub U$ which implies
-      $\ipG{`G} \typec \lambda x : \ip{T}{`G}. \blue{c}[x] : \ip{T}{`G} "->"
-      \ip{U}{`G}$.
+      If $\subgen{`G}{T}{U}{s}$ then $`G \typec c[\ctxdot] : T \sub U$ which implies
+      $\ipG{`G}, x : \ip{T}{`G} \typec \blue{c}[x] : \ip{U}{`G}$.
     \end{center}
   \end{block}
   
@@ -379,7 +402,7 @@
         \vspace{0.25cm}
         \uncover<6->{
           {$\subimpl{`G}
-            {\uncover<7->{\blue{\elt{}{}{\ctxdot}
+            {\uncover<7->{\blue{\elt{\_}{\_}{\ctxdot}
                 {\ex{\ip{P}{`G, x : T}[\ctxdot/x]}}}}}
             {T}{\mysubset{x}{T}{P}}$}}
       \end{center}
@@ -389,9 +412,9 @@
       \begin{example}      
         \begin{prooftree}
           \AXC{$`G \typec 0 : \nat$}
-          \AXC{$`G \typec c : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
-          \BIC{$`G \typec (\elt{}{}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
-            = \elt{}{}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
+          \AXC{$`G \typec \elt{\_}{\_}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}} : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
+          \BIC{$`G \typec (\elt{\_}{\_}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
+            = \elt{\_}{\_}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
         \end{prooftree}
       \end{example}}
   }
@@ -428,12 +451,12 @@
 
 
 \begin{frame}
-  \frametitle{Theoretical matters}
+  \frametitle{Theoretical matters \dots}
   
   $\typec$'s equational theory:
   \[\begin{array}{llcll}
     (\beta) & (\lambda x : X.e)~v & `= & e[v/x] & \\
-%    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & `= & e_i & \\
+    (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & `= & e_i & \\
     (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & `= & e_i & \\
     (\eta) & (\lambda x : X.e~x) & `= & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
     (\text{\SP}) % & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & `= & e & \\ % \text{if $e : \Sigma x : X. Y$} \\
@@ -444,6 +467,10 @@
 
   \uncover<2->{$"=>"$ \alert{Proof Irrelevance}}
 
+  \uncover<3->{
+  \begin{block}{\dots have practical effects}
+    Difficulty to reason on code: $f (\elt{T}{P}{x}{p_1}) \not`= f (\elt{T}{P}{x}{p_2})$.
+  \end{block}}
 \end{frame}
 
 \section{\Program}
@@ -470,7 +497,7 @@
   \end{block}
   
   \only<2->{
-    \[\uncover<2-4>{\texttt{Program}~}\Definition~f~:
+    \[\uncover<2-4>{\texttt{Program}~}\texttt{Definition}~f~:
     \uncover<3->{\llbracket} T \uncover<3->{\rrbracket_{`G^{\circ}}} := 
     \uncover<3->{\llbracket} t
     \uncover<3->{\rrbracket_{`G^{\circ}}}\uncover<4->{ + \text{ obligations}}.\]    
@@ -480,6 +507,34 @@
       \end{remark}}}
   
 \end{frame}
+
+\subsection{Hello world}
+\begin{frame}
+  \frametitle{Hello world: Euclidian division}
+
+  \coqdockw{Program Fixpoint} \coqdocid{div} (\coqdocid{a} : \coqdocid{nat}) (\coqdocid{b} : \coqdocid{nat} \coqor  \coqdocid{b} \ensuremath{\not=} 0) \{ \coqdocid{wf} \coqdocid{lt} \} :\coqdoceol
+  \coqdocindent{1.00em}
+  \{ \coqdocid{qr} : \coqdocid{nat} \ensuremath{\times} \coqdocid{nat} \coqor  \coqdockw{let} (\coqdocid{q}, \coqdocid{r}) := \coqdocid{qr} \coqdockw{in} \coqdocid{a} = \coqdocid{b} \ensuremath{\times} \coqdocid{q} + \coqdocid{r} \} :=\coqdoceol
+  \coqdocindent{1.00em}
+  \coqdockw{if} \coqdocid{a} < \coqdocid{b} \coqdockw{then} (\coqdocid{O}, \coqdocid{a})\coqdoceol
+  \coqdocindent{1.00em}
+  \coqdockw{else} \coqdockw{dest} \coqdocid{div} (\coqdocid{a} - \coqdocid{b}) \coqdocid{b} \coqdockw{as} (\coqdocid{q'}, \coqdocid{r}) \coqdockw{in} (\coqdocid{S} \coqdocid{q'}, \coqdocid{r}).\coqdoceol
+
+  \pause
+  \medskip
+  \noindent
+  \coqdockw{Solve} \coqdockw{Obligations} \coqdockw{using} \coqdocid{subtac\_simpl} ; \coqdocid{auto} ; \coqdocid{omega}.\coqdoceol
+
+  \pause
+  \medskip
+  \noindent
+  \coqdockw{Extraction} \coqdocid{div}.\coqdoceol
+  
+  
+
+
+\end{frame}
+
 
 % \subsection{Safe lists}
 % \begin{frame}[t]
@@ -501,6 +556,60 @@
 \subsection{Finger Trees}
 \begin{frame}[t]
   \frametitle{Digits}
+  \scriptsize{
+  \coqdockw{Section} \coqdocid{Digit}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{Variable} \coqdocid{A} : \coqdockw{Type}.\coqdoceol
+
+
+\medskip
+
+\coqdocindent{1.00em}
+\coqdockw{Inductive} \coqdocid{digit} : \coqdockw{Type} := \coqdoceol
+\coqdocindent{1.00em}
+\coqor  \coqdocid{One} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}\coqdoceol
+\coqdocindent{1.00em}
+\coqor  \coqdocid{Two} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}\coqdoceol
+\coqdocindent{1.00em}
+\coqor  \coqdocid{Three} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}\coqdoceol
+\coqdocindent{1.00em}
+\coqor  \coqdocid{Four} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}.\coqdoceol
+
+\medskip
+
+\coqdocindent{1.00em}
+\coqdockw{Definition} \coqdocid{full} \coqdocid{x} := \coqdockw{match} \coqdocid{x} \coqdockw{with} \coqdocid{Four} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{True} \coqor  \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{False}  \coqdockw{end}.\coqdoceol
+% \coqdocindent{1.00em}
+% \coqdockw{Definition} \coqdocid{single} (\coqdocid{x} : \coqdocid{digit}) := \coqdockw{match} \coqdocid{x} \coqdockw{with} \coqdocid{One} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{True} \coqor  \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{False} \coqdockw{end}.\coqdoceol
+\pause
+
+\medskip
+\coqdocindent{1.00em}
+\coqdockw{Program Definition} \coqdocid{add\_digit\_left} (\coqdocid{a} : \coqdocid{A}) (\coqdocid{d} : \coqdocid{digit} \coqor  \ensuremath{\lnot} \coqdocid{full} \coqdocid{d}) : \coqdocid{digit} :=\coqdoceol
+\coqdocindent{2.00em}
+\coqdockw{match} \coqdocid{d} \coqdockw{with}\coqdoceol
+\coqdocindent{3.00em}
+\coqor  \coqdocid{One} \coqdocid{x} \ensuremath{\Rightarrow} \coqdocid{Two} \coqdocid{a} \coqdocid{x}\coqdoceol
+\coqdocindent{3.00em}
+\coqor  \coqdocid{Two} \coqdocid{x} \coqdocid{y} \ensuremath{\Rightarrow} \coqdocid{Three} \coqdocid{a} \coqdocid{x} \coqdocid{y}\coqdoceol
+\coqdocindent{3.00em}
+\coqor  \coqdocid{Three} \coqdocid{x} \coqdocid{y} \coqdocid{z} \ensuremath{\Rightarrow} \coqdocid{Four} \coqdocid{a} \coqdocid{x} \coqdocid{y} \coqdocid{z}\coqdoceol
+\coqdocindent{3.00em}
+\coqor  \coqdocid{Four} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_} \ensuremath{\Rightarrow} !\coqdoceol
+\coqdocindent{2.00em}
+\coqdockw{end}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{Next} \coqdockw{Obligation}.\coqdoceol
+\noindent
+\coqdocindent{2.00em}
+\coqdocid{intros} ; \coqdocid{simpl} \coqdockw{in} \coqdocid{n} ; \coqdocid{auto}.\coqdoceol
+\noindent
+\coqdocindent{1.00em}
+\coqdockw{Qed}.\coqdoceol
+
+}
+
+
 \end{frame}
 
 \begin{frame}[t]
@@ -567,421 +676,40 @@
 
 \end{frame}
 
+\subsection*{}
+\begin{frame}
+  \frametitle{Why eta rules and proof irrelevance ?}
+  
+  Let $A,B : \Type$, $c : A \suba B$, $d : B \suba A$. 
+  \pause
+  
+  Let $P : A "->" Prop$ with $p : \Pi x : A, P~x$ and $q : \Pi x : B,
+  P~x$.
+  
+  \pause
+  Consider: $p~x =_{(P~x)} q~x$ in context $`G "=" x : A$. 
+  
+  By $\ip{\_}{`G}$: $\ip{P}{`G} "=" P$, $\ip{p}{`G} "=" p$ and
+  $\ip{q}{`G} "=" q : \alert{\Pi x : B, P~d[x]}$, \pause 
+  
+  hence: $\ip{p~x =_{(P~x)} q~x}{`G} "=" p~x =_{(P~x)} \alert{q~c[x]}$.
+
+  We have $p~x : P~x$ but $q~c[x] : P~d[c[x]]$, so $x `= d[c[x]]$ is
+  necessary.
+  This means eta rules for all constructs are needed.
+  \pause
+  
+  Now: $c "=" \elt{A}{P}{\cdot}{?_{P[\cdot/x]}} : A \suba
+  \mysubset{x}{A}{P}$ and $d "=" \eltpit{\cdot} : \mysubset{x}{A}{P}
+  \suba A$, so $d[c[x]] "=" x$ but what about $c[d[x]]$ ? 
+  \pause
+
+  $c[d[x]] "=" \elt{A}{P}{(\eltpit~x)}{?_{P[\eltpit x/x]}} \alert{\not`=}
+  x$ except if PI is included in $`=$.
+  
+\end{frame}
 
 \end{document}
-
-
-
-% \begin{frame}[t]
-%   \frametitle{Technically $\ldots$}
-  
-%   \begin{block}{Coercions for \PVS's \ps}
-%     \vspace{0.7em}
-%     \begin{itemize}
-%     \item<1-> A type system based on \CC + $\Sigma$ types
-%       ($\typea, \eqbr$) with a \alert{larger} conversion ($\suba$). 
-%     \item<2-> An interpretation in \CCI ($\typec, `=$) with metavariables.
-%     \item<5-> Needs eta-rules and proof-irrelevance ; $`=$ is really $\eqbpers$.
-%     \item<6-> An improved apparatus for handling \alert{dependent} metavariables in \Coq{} (WIP).
-%     \end{itemize}
-%   \end{block}
-%   \only<1>{
-%     \begin{center}
-%       $\mysubset{x}{A}{P} \eqdef \Sigma x : A.P$ where $A : \Set$ and 
-%       $x : A \typea P : \Prop{}$.
-%       $A \suba \mysubset{x}{A}{P}$ and $\mysubset{x}{A}{P} \suba A$
-%     \end{center}
-%   }
-
-%   \only<3-4>{
-%     Derivation of coercions:
-%     \setboolean{displayLabels}{false}
-%     \begin{center}
-%       \SubSubI\DP
-      
-%       \vspace{\infvspace}
-%       \only<4>{\SubProofI\DP}
-%     \end{center}
-%   }
-  
-%   \only<5>{
-%     \begin{theorem}[Preservation of the equivalence]
-%       If $\talgo{`G}{T, T'}{s}$, $T \eqbr T'$ then 
-%       $\ip{T}{`G} `= \ip{T'}{`G}$.
-%     \end{theorem}
-    
-%     \begin{center}
-%       $(\sigma)\quad\elt{E}{P}{t}{p} = \elt{E}{P}{t'}{p'} \text{ if } t `=
-%       t'$
-%     \end{center}
-%   }
-  
-% \end{frame}
-
-
-%\end{document}
-
-% \begin{frame}
-%   \frametitle{What's missing ?}
-  
-%   A phase distinction between programming and proving, using
-%   \emph{Type Checking Conditions}.
-%   \pause
-%   \begin{block}{Technical requirements}
-%     \begin{itemize}
-%     \item Metavariables ;
-%     \item Proof shell support.
-%     \end{itemize}
-%   \end{block}
-    
-% \end{frame}
-
-% \begin{frame}[t]
-%   \frametitle{Contribution}
-  
-%   An integration of \PVS{} ``Predicate Subtyping'' in \Coq.
-% \end{frame} 
-
-% \subsection{Related work}
-
-% \begin{frame}
-%   \frametitle{Inverting extraction}
-%   \begin{block}{The \Program{} tactic (\name{Catherine Parent}), 94}
-%     \begin{itemize}
-%     \item[{\bf +}] General method for proof synthesis from 
-%       programs ;
-      
-%     \item[{\bf --}] Complex technic, generating relatively complicated
-%       terms and not well integrated with the assistant but completely
-%       coupled with the extraction mechanism.
-      
-%     \item Unmaintained (incompatible with the current extraction mechanism). , \Refine.
-%     \end{itemize}
-%   \end{block}
-% \end{frame}
-
-
-% \begin{frame}[t]
-%   \frametitle{Subtyping \& coercions}
-
-%   \begin{itemize}
-%   \item Zhaohui Luo: ``\emph{coercive subtyping}'', theoretical aspects
-%     (coherence, transitivity of coercions).
-%   \item Gang Chen: subtyping and coercions in dependent type systems
-%     ($\lambda P, \lambda C$)
-%   \item Amokrane Saïbi: coercion system for \Coq, with inheritance.
-%   \end{itemize}
-
-% \end{frame}
-
-% \section{Contribution}
-
-% \subsection{A language for programming in \Coq} 
-% \begin{frame}[t]
-%   \frametitle{Architecture}
-  
-%   \begin{itemize}
-%   \item<1-> Writing programs in a language (\lng{}) with an enriched equivalence;
-%   \item<2-> Interpretation to \CCI, inserting coercions ; 
-%   \item<3-> Proof obligations solving.
-%   \end{itemize}
-
-%   \begin{tabular}{lclcl}
-%     $t : \mysubset{x}{T}{P}$ & \only<1>{$"<=>"$} \only<2->{$"->"$} & $t : T$
-%     & \only<2->{$"~>"$} & \only<2->{$\pi_1~t$ \\
-%       $t : T$ & $"->"$ & $t : \mysubset{x}{T}{P}$ 
-%       & $"~>"$ & $\sref{elt}~{t}~(\alert<3->{? : P[t/x]})$}
-%   \end{tabular}
-    
-% \end{frame}
-
-% \begin{frame}
-%   \frametitle{\lng{} syntax}
-%   \begin{columns}
-%     \begin{column}{0.5\textwidth}
-%       \begin{block}{Termes}
-%         \termgrammar
-%       \end{block}
-%     \end{column}
-%     \begin{column}{0.5\textwidth}
-%       \begin{block}{Types}
-%         \typegrammar
-%       \end{block}
-%     \end{column}
-%   \end{columns}  
-% \end{frame}
-
-
-% \begin{frame}
-%   \frametitle{Some facts}
- 
-%   \begin{itemize}
-%   \item $\eqbr ``(= \subd$.
-%   \item $\subd$ is an equivalence relation.
-%   \item Conservativity over \CCI{}.
-%   \end{itemize}
-
-% \end{frame}
-
-% \typenva
-
-% \begin{frame}[t,label=sysalgo]
-%   \frametitle{Algorithmic system}
-
-%   \begin{itemize}
-%   \item<1-> Restrict coercion rule to application premise.
-%     \hyperlink{typingdecl<3>}{\beamergotobutton{}} ;
-    
-%   \item<2-> Deterministic coercion algorithm (transitivity elimination).
-%     \hyperlink{subtypingdecl<3>}{\beamergotobutton{}} ;
-%   \end{itemize}
-
-%   \only<1>{\TAX{App}
-%     {$`G \seq f : T \quad \mu(T) `= \Pi x : V. W$}
-%     {$`G \seq u : U$}
-%     {$U \subd V $}
-%     {$`G \seq (f u) : W [ u / x ]$}
-%     {}
-%     \DP
-    
-%     \begin{eqnarray*}
-%       \mu~\mysubset{x}{U}{P} & "=>" & \mu~U \\
-%       \mu~x                & "=>" & x
-%     \end{eqnarray*}
-%   }
-  
-%   \only<3>{
-%     \begin{theorem}[Soundness \& Completness]
-%       $`G \typed t : T$ iff there exist $U$ so that $`G \typea t : U$
-%       where $U \suba T$ and $U \suba T$ iff $U \subd T$.
-%     \end{theorem}
-%     \begin{fact}[Décidabilité de $\typea$]
-%       Pour tout $`G$, $t$, $T$, $`G \typea t : T$ est décidable.
-%     \end{fact}
-%   }
-  
-% \end{frame}
-
-% \subsection{Interpretation in \CCI}
-% \typenvi
-% \begin{frame}<beamer>
-%   \frametitle{Plan}
-%   \tableofcontents[currentsection,currentsubsection]
-% \end{frame}
-
-
-% \renewcommand{\subimpl}[4]{#1 \typec {\color{blue}#2} : #3 \sub #4} %{{\color{blue}#3} \sub {\color{blue}#4}}}
-
-% \setboolean{displayLabels}{false}
-% \begin{frame}[t]
-%   \frametitle{Explicit coercions}
-%   % Remettre de la logique, véritable sémantique 
-%   \pause
-%   \begin{center}
-%       \def\fCenter{\subti}          
-%       \SubConvI\DP
-
-%       \vspace{0.25cm}     
-%       \only<3->{
-%         \SubProdI\DP
-        
-%         \vspace{0.25cm}
-%         \SubSigmaI\DP
-%       }
-      
-%       \vspace{0.25cm}
-%       \only<4->{\SubSubI\DP}
-
-%       \vspace{0.25cm}
-%       \only<5->{\UAX{SubProof}
-%       % {$`G, x : U \typec P : \Prop$}
-%       {$\subimpl{`G}{c}{T}{U}$}
-%       {$\subimpl{`G}
-%         {\elt{\ip{U}{`G}}{\ip{\lambda x : U.P}{`G}}{c}{\ex{P}[c/x]}}
-%         {T}{\mysubset{x}{U}{P}}$}
-%       {}\DP
-%       }
-%     \end{center}
-
-%     \only<4>{$0 : \nat$ and $\nat~\sub \mysubset{x}{\nat}{x \neq 0}$
-%       but \[(\lambda t : T. \sref{elt}~(c~t)~(?_{P[c~t/x]}))[0]
-%       \eqbr \sref{elt}~0~?_{\alert{0 \neq 0}}\]}
-
-% \end{frame}
-
-% \setboolean{displayLabels}{true}
-% \renewcommand{\subimpl}[4]{#2 : #3 \sub #4}
-
-% \renewcommand{\timpl}[6]{#1 \typea #2 : #3\only<2->{"~>" #4 \typec #5 : #6}}
-
-% \newcommand{\QAXII}[7]{\AXC{\only<2->{#3}}\noLine\UIC{#2}
-%   \AXC{\only<2->{#5}}\noLine\UIC{#4}
-%   \LeftRuleLabel{#1}\BIC{#6}}
-
-% \begin{frame}[t]
-%   \frametitle{Interpretation of terms $\ip{}{`G}$}
-    
-%   \begin{itemize}
-%   \item Follows algorithmic typing.
-%   \item Straightforward extension to contexts.
-%   \end{itemize}
-  
-%   \only<2->{
-%     \begin{example}[Application]
-%       \setboolean{displayLabels}{false}
-%       \begin{prooftree}
-%         \typenva
-%         \AppA
-%       \end{prooftree}
-      
-%       \typenvi
-%       \[\begin{array}{lcll}
-%         \ip{f~u}{`G} 
-%         & = & \letml~F~=\typeafn{`G}{f}~\andml~U = \typeafn{`G}{u}~\inml & \\
-%         & & \letml~(\Pi x : V.W) = \mualgo{F}~\inml & \\
-%         & & \letml~\pi = \coerce{`G}{F}{(\Pi x : V.W)} & \\
-%         & & \letml~c = \coerce{`G}{U}{V}\inml & \\
-%         & & (\pi[\ip{f}{`G}])~(c[\ip{u}{`G}]) & \\
-%       \end{array}\]    
-%     \end{example}
-%   }
-  
-%   % \item Correspondance code écrit/extrait.
-% \end{frame}
-
-% \begin{frame}[t]
-%   \frametitle{Theoretical properties}
-  
-%   \begin{theorem}[Soundness]
-%     If $`G \typea t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
-%   \end{theorem}
-  
-%   \begin{itemize}
-%   \item<2-> Depart from the coercion inference algorithm.
-%   \item<3-> Requires a larger equational theory.   
-%   \only<3->{
-%     \[\begin{array}{llcll}
-%     (\beta) & (\lambda x : X.e)~v & = & e[v/x] & \\
-%     (\pi_i) & \pi_i~\pair{T}{e_1}{e_2} & = & e_i & \\
-%     (\sigma_i) & \sigma_i~(\elt{E}{P}{e_1}{e_2}) & = & e_i & \\
-%     (\eta) & (\lambda x : X.e~x) & = & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
-%     (\rho) & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & = & e & \text{if $e : \Sigma x : X. Y$} \\
-%     & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & = & e & \text{if $e : \mysubset{x}{E}{P}$} \\
-%     (\sigma) & \elt{E}{P}{t}{p} & = & \elt{E}{P}{t'}{p'} & \text{if $t
-%       `= t'$}
-%   \end{array}\]
-%   }
-% \end{itemize}
-
-% \end{frame}
-
-% \subsection{The prototype}
-
-% \begin{frame}[t]
-%   \frametitle{Implementation}
-  
-%   \begin{block}{Architecture}
-%     Wrap around \Coq{}'s vernacular commands (\texttt{Definition},
-%     \texttt{Fixpoint}, \ldots).
-    
-%     \begin{enumerate}
-%     \item \Coq{} parser ;
-%     \item Typing with coercions ;
-%     \item Interactive proving of obligations.
-%     \end{enumerate}
-%   \end{block}
-
-%   \pause
-%   \begin{block}{Existential variables $?_{`t}$}
-%     \Refine{} \only<3>{$"=>"$ \eterm{}}
-%   \end{block}
-% \end{frame}
-
-% \begin{frame}[t]
-%   \frametitle{Pratical enhancements}
-
-%   \begin{itemize}
-%   \item Pattern-matching and equalities.
-%   \item<2-> Well-founded recursion.
-%   \end{itemize}
-
-%   \only<1>{
-%     \[\matchml~v~\returnml~T~\withml~p_1 "=>" t_1 \cdots{} p_n "=>" t_n \]
-%     \[\begin{array}{lcl}
-%       (\matchml~v~\asml~t' & \returnml & (t' = t "->" T)~\withml \\
-%       p_1 "=>" \funml{}~H & "=>" & t_1 \\
-%       & \vdots{} & \\
-%       p_n "=>" \funml{}~H & "=>" & t_n) \\
-%       (\sref{refl\_equal}~t) & &
-%     \end{array}
-%     \]
-%   }
-
-%   \only<2->{
-%     \[ \Fixpoint~f~(a : nat)~\{ \mlkw{wf}~lt~a \} : \nat := t \]
-%   }
-%   \only<3->{
-%     \[\begin{array}{lcl}
-%       a & : & \nat \\
-%       f & : & \{ x : \nat `| x < a \} "->" \nat \\
-%       \hline
-%       t & : & \nat
-%     \end{array}\]
-%   }
-
-% \end{frame}
-
-% % \begin{frame}
-% %   \frametitle{Example: Definition}
-% %   \small
-% %   \input{subtac-euclid}
-% % \end{frame}
-
-% % \begin{frame}
-% %   \frametitle{Exemple: obligations de preuve}
-% %   \small
-% %   \input{subtac-euclid-tcc}
-% % \end{frame}
-
-% \subsection{Résultats théoriques}
-
-% \begin{frame}
-%   \frametitle{Work in progress ;)}
-%   \begin{itemize}
-%   \item Correction \& complétude entre les différents systèmes.
-%   \item Lemmes classiques sur le sous-typage.
-%   \item Problème de la conversion (revoir Gang Chen).
-%   \end{itemize}
-% \end{frame}
-
-% \begin{frame}
-%   \frametitle{Une preuve intéressante et courte ?}
-% \end{frame}
-
-% \section{Conclusion}
-% \begin{frame}
-%   \frametitle<presentation>{Conclusion}
-
-%   % Keep the summary *very short*.
-%   \begin{itemize}
-%   \item A more \alert{flexible} programming language, conservative over \CCI.
-%   \item Intergration with existing environnment.
-%   \item Formal justification of ``\ps{}''.
-%   \end{itemize}
-  
-%   \pause
-%   % The following outlook is optional.
-%   \vskip0pt plus.5fill
-%   \begin{itemize}
-%   \item[\bf{$"=>"$}] Further work:
-%     \begin{itemize}
-%     \item Extension to other \Coq{} constructs ((co-)inductive types,
-%       universes, \ldots).
-%     \item Integration of proof-irrelevance in \Coq{}.
-%     \end{itemize}
-%   \end{itemize}
-% \end{frame}
-% \end{document}
 
 %%% Local Variables: 
 %%% mode: latex
