@@ -512,6 +512,20 @@
 \begin{frame}
   \frametitle{Hello world: Euclidian division}
 
+  \noindent
+  \coqdockw{Program Definition} \coqdocid{lt\_ge\_dec} (\coqdocid{x}
+  \coqdocid{y} : \coqdocid{nat}) : \coqdoceol
+  \coqdocindent{1.00em}
+  \{ \coqdocid{x} < \coqdocid{y} \} + \{ \coqdocid{x} \ensuremath{\ge} \coqdocid{y}\} :=\coqdoceol
+  \coqdocindent{1.00em}
+  \coqdockw{if} \coqdocid{le\_lt\_dec} \coqdocid{y} \coqdocid{x} \coqdockw{then} \coqdocid{right} \coqdockw{else} \coqdocid{left}.\coqdoceol
+  
+  \medskip\noindent
+  \coqdocid{Extraction} \coqdocid{Inline} \coqdocid{lt\_ge\_dec}.\coqdoceol
+  
+  \medskip\noindent
+  \coqdockw{Notation} " \coqdocid{x} < \coqdocid{y} " := (\coqdocid{lt\_ge\_dec} \coqdocid{x} \coqdocid{y}) : \coqdocid{program\_scope}.\coqdoceol
+  
   \coqdockw{Program Fixpoint} \coqdocid{div} (\coqdocid{a} : \coqdocid{nat}) (\coqdocid{b} : \coqdocid{nat} \coqor  \coqdocid{b} \ensuremath{\not=} 0) \{ \coqdocid{wf} \coqdocid{lt} \} :\coqdoceol
   \coqdocindent{1.00em}
   \{ \coqdocid{qr} : \coqdocid{nat} \ensuremath{\times} \coqdocid{nat} \coqor  \coqdockw{let} (\coqdocid{q}, \coqdocid{r}) := \coqdocid{qr} \coqdockw{in} \coqdocid{a} = \coqdocid{b} \ensuremath{\times} \coqdocid{q} + \coqdocid{r} \} :=\coqdoceol
@@ -683,7 +697,7 @@
   Let $A,B : \Type$, $c : A \suba B$, $d : B \suba A$. 
   \pause
   
-  Let $P : A "->" Prop$ with $p : \Pi x : A, P~x$ and $q : \Pi x : B,
+  Let $P : A "->" \Prop$ with $p : \Pi x : A, P~x$ and $q : \Pi x : B,
   P~x$.
   
   \pause

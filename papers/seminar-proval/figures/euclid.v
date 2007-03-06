@@ -3,14 +3,18 @@ Require Import Wf_nat.
 Require Import Arith.
 Require Import Omega.
 Delimit Scope program_scope with program.
-Definition lt_ge_dec (x y : nat) : { x < y } + { x >= y}. 
-  intros ; pose (le_gt_dec y x).
-  intuition.
-Defined.
+
+Print right.
+
+Notation "'left'" := (left _ _) : program_scope.
+Notation "'right'" := (right _ _) : program_scope.
+Open Scope program_scope.
+
+Program Definition lt_ge_dec (x y : nat) : { x < y } + { x >= y} :=
+  if le_lt_dec y x then right else left.
+
 Extraction Inline lt_ge_dec.
 Notation " x < y " := (lt_ge_dec x y) : program_scope.
-
-Open Scope program_scope.
 
 Program Fixpoint div (a : nat) (b : nat | b <> 0) { wf lt } :
   { qr : nat * nat | let (q, r) := qr in a = b * q + r } :=
