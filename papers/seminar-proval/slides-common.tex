@@ -26,13 +26,12 @@
 \usepackage{ifthen}
 \usepackage{mycoqdoc}
 \usepackage{bussproofs}
-\usepackage{pgf,pgfarrows,pgfnodes}
+\usepackage{pgf}
+
+\def\nat{`N}
 
 % macro for typesetting keywords
 \renewcommand{\coqdockw}[1]{\texttt{#1}}
-
-\def\coloneqq{:\mathrel{=}}
-\def\Coloneqq{::\mathrel{=}}
 
 \EnableBpAbbreviations
 \def\fCenter{\vdash}
@@ -119,6 +118,15 @@
 
 \def\typea{\vdash}
 \def\suba{\rightslice}
+
+\newcommand{\indfig}{
+  \begin{center}
+    \AXC{$`G, {(\tele{x_i : X_i `~ y_i : Y_i})}_{0}^{j-1} \vdash ?_j : x_j :
+      X_j `~ y_j : Y_j \quad `A j `: [0..i]$}
+    \UIC{$`G \vdash c(\tele{?_i}) : I~\tele{x_i} \suba I~\tele{y_i} : s$}
+    \DP    
+  \end{center}
+}   
 
 \begin{document}
 
@@ -242,52 +250,56 @@
   \frametitle{\lng{} syntax}
   
   $\begin{array}{lcl}
-    t & \Coloneqq & x \\
-    & | & \lambda x : t "=>" t \\
-    & | & t~t \\
-    & | & \Pi x : t. t \\
-
-    & | & \pair{\Sigma x : t.t}{`a}{`a} \\
-    & | & \pi_1~`a `| \pi_2~`a \\
-    & | & \Sigma x : t. t \\
-
-    & | & \mysubset{x}{t}{t} \\
+    x & `: & \mathcal{V} \\
+    \\
+    s, t, u, v & \Coloneqq & x \\
     & | & \Set \\
     & | & \Prop \\
-    & | & \Type
+    & | & \Type \\
+\pause
+    & | & \lambda x : s. t \\
+    & | & s~t \\
+    & | & \Pi x : s. t \\
+\pause
+    & | & \pair{\Sigma x : s.t}{u}{v} \\
+    & | & \pi_1~s `| \pi_2~s \\
+    & | & \Sigma x : s. t \\
+\pause
+    & | & \mysubset{x}{s}{t} 
   \end{array}$  
 \end{frame}
 
 \begin{frame}[t,label=typingdecl]
   \frametitle{\lng{} typing $\typed$ and coercion $\subd$}
   
-  Calculus of Constructions - \irule{Conv} +
+  Calculus of Constructions with
   \typenvd
   \setboolean{displayLabels}{false}
   \begin{center}
     \vspace{0.25cm}
-    \Coerce\DP
-    \def\fCenter{\subd}
-    \SubConv\DP
-    \pause
+    \only<1>{\Conv\DP}
+    \only<2->{\Coerce\DP
+      \def\fCenter{\subd}
+      \SubConv\DP}
+    \uncover<3->{
     \vspace{0.5cm}    
     \SubTrans\DP
     
     \vspace{0.25cm}
-    \only<3->{\SubSub\DP
+    \only<4->{\SubSub\DP
       \vspace{0.25cm}
     \SubProof\DP}
 
     \vspace{0.25cm}
-    \only<4-5>{
+    \only<5-6>{
       \AXC{$`G \type 0 : \nat$}
-      \AXC{$`G \type \nat~\sub \mysubset{x}{\nat}{x \neq 0}$}
+      \AXC{$`G \type \nat~\sub \mysubset{x}{\nat}{x \neq 0} : \Set$}
       \BIC{$`G \type 0 : \mysubset{x}{\nat}{x \neq 0}$}
-      \only<5>{\UIC{$`G \type \alert{? : 0 \neq 0}$}}
+      \only<6>{\UIC{$`G \type \alert{? : 0 \neq 0}$}}
       \DP
     }
-    \only<6->{\SubProd\DP}
-%      \SubSigma\DP}
+    \only<7->{\SubProd\DP}}
+  % \SubSigma\DP}
   \end{center}
 
 \end{frame}
@@ -295,14 +307,18 @@
 \begin{frame}
   \frametitle{Results}
 
-  \begin{theorem}[Decidability of type checking]
-    $`G \type t : T$ is decidable.
+  \begin{theorem}[Decidability of type checking and type inference]
+    $`G \type t : T$ is decidable. 
   \end{theorem}  
   
   \uncover<2->{
     \begin{lemma}[Elimination of transitivity]
       If $T \sub U `^ U \sub V$ then $T \sub V$.
-    \end{lemma}}
+    \end{lemma}
+
+  \begin{theorem}[Subject Reduction]
+    If $`G \type t : T$ and $t "->"_{\beta\pi} t'$ then $`G \type t' : T$.
+  \end{theorem}}
   
   \begin{prooftree}
     \TAX{App}
@@ -355,8 +371,9 @@
     
 \end{frame}
 \begin{frame}
-  \frametitle{From \Coq to \lng{}\only<2->{ and back}}
-  \begin{block}{The easy way}
+  \frametitle{From \lng{} to \Coq}
+%   \frametitle{From \Coq to \lng{}\only<2->{ and back}}
+%   \begin{block}{The easy way}
 %     \begin{center}
 %       $\begin{array}{lcl}
 %         (\eltpit~t)^{\circ} & = & t^{\circ} \\
@@ -366,11 +383,16 @@
 %       \end{array}$
 %     \end{center}
 
-    If $`G \typec t : T$ then $`G^{\circ} \typea t^{\circ} : T^{\circ}$ where
-    $()^{\circ}$ eliminates subset types.
+%     If $`G \typec t : T$ then $`G^{\circ} \typea t^{\circ} : T^{\circ}$ if $()^\circ$ is
+%     defined on $`G, t, T$.
+%   \end{block}
+  
+  \begin{block}{The interpretation $\ip{\_}{`G}$ }
+    We build an interpretation from \Russell to \CICq terms, following 
+    the \Russell typing derivation, which puts metavariables where proofs are missing.
   \end{block}
-  \pause
-  \begin{block}{The hard way}
+  
+  \begin{block}{Our goal}
     \begin{center}
       If $`G \type t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
     \end{center}
@@ -378,9 +400,9 @@
 \end{frame}
 
 \begin{frame}[t]
-  \frametitle{Traduction: deriving explicit coercions}
+  \frametitle{Deriving explicit coercions}
       
-  \begin{block}{Traduction for coercions}
+  \begin{block}{Interpretation of coercions}
     \begin{center}
       If $\subgen{`G}{T}{U}{s}$ then $`G \typec c[\ctxdot] : T \sub U$ which implies
       $\ipG{`G}, x : \ip{T}{`G} \typec \blue{c}[x] : \ip{U}{`G}$.
@@ -421,16 +443,16 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Traduction: interpretation of terms $\ip{}{`G}$}
+  \frametitle{Interpretation of terms}
     
   \begin{example}[Application]
     \setboolean{displayLabels}{false}
     \typenva
     \begin{center}
       \TAX{App}
-      {$\tgen{`G}{f}{T} \quad T \suba \Pi x : V. W : s$}
+      {$\tgen{`G}{f}{T} \quad \subgen{`G}{T}{\Pi x : V. W}{s}$}
       {$\tgen{`G}{u}{U}$} % \quad \tgen{#1}{#9, #5}{#7'}$}
-      {$U \suba V$}
+      {$\subgen{`G}{U}{V}{s'}$}
       {$\tgen{`G}{(f~u)}{W[u/x]}$}
       {}
       \DP
@@ -472,6 +494,49 @@
     Difficulty to reason on code: $f (\elt{T}{P}{x}{p_1}) \not`= f (\elt{T}{P}{x}{p_2})$.
   \end{block}}
 \end{frame}
+
+\subsection{Inductive types}
+
+\def\vector#1{\texttt{vector}~#1}
+
+\begin{frame}
+  \frametitle{Pattern-matching}
+
+  \[ \begin{array}{lcl}
+    \matchml~\uncover<2->{\mu{}(}v\uncover<2->{)~\asml~t} & \returnml & \uncover<2->{t = \mu{(v)} "->"} T~\withml \\
+    `| p_1 & "=>" & \uncover<2->{\funml{}~h : p_1 = \mu{(v)} "=>"} t_1 \\
+    & \vdots{} & \\
+    `| p_n & "=>" & \uncover<2->{\funml{}~h : p_n = \mu{(v)} "=>"} t_n \\
+    \enml & & \\
+    \uncover<2->{(\sref{refl\_equal}~\mu{(v)})} & &
+  \end{array}\]
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Coercing Dependent Inductives}
+
+  \begin{block}{A natural extension: Reindexing}
+    Let $I~\tele{x}$ be an inductive type with \emph{real} arguments
+    $\tele{x}$.
+    We can coerce any object of this type to an object of
+    $I~\tele{y}$ provided $\tele{x} ~= \tele{y}$.
+  \end{block}
+  
+  \cover<1->{
+  \indfig}
+  \pause
+
+  \begin{center}
+    \begin{prooftree}
+      \AXC{$`G \typec v : \vector{(m + 0)}$}
+      \AXC{$`G \typec \vector{(m + 0)} \suba \vector{m} : \Set$}
+      \BIC{$`G \typec v : \vector{m}$}
+    \end{prooftree}
+  \end{center}
+\end{frame}
+
+
 
 \section{\Program}
 \begin{frame}<beamer>
@@ -516,7 +581,7 @@
   \coqdockw{Program Definition} \coqdocid{lt\_ge\_dec} (\coqdocid{x}
   \coqdocid{y} : \coqdocid{nat}) : \coqdoceol
   \coqdocindent{1.00em}
-  \{ \coqdocid{x} < \coqdocid{y} \} + \{ \coqdocid{x} \ensuremath{\ge} \coqdocid{y}\} :=\coqdoceol
+  \{ \coqdocid{x} < \coqdocid{y} \} + \{ \coqdocid{x} \ensuremath{\geq} \coqdocid{y}\} :=\coqdoceol
   \coqdocindent{1.00em}
   \coqdockw{if} \coqdocid{le\_lt\_dec} \coqdocid{y} \coqdocid{x} \coqdockw{then} \coqdocid{right} \coqdockw{else} \coqdocid{left}.\coqdoceol
   
@@ -581,13 +646,13 @@
 \coqdocindent{1.00em}
 \coqdockw{Inductive} \coqdocid{digit} : \coqdockw{Type} := \coqdoceol
 \coqdocindent{1.00em}
-\coqor  \coqdocid{One} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}\coqdoceol
+\coqor  \coqdocid{One} : \coqdocid{A} \ensuremath{\to} \coqdocid{digit}\coqdoceol
 \coqdocindent{1.00em}
-\coqor  \coqdocid{Two} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}\coqdoceol
+\coqor  \coqdocid{Two} : \coqdocid{A} \ensuremath{\to} \coqdocid{A} \ensuremath{\to} \coqdocid{digit}\coqdoceol
 \coqdocindent{1.00em}
-\coqor  \coqdocid{Three} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}\coqdoceol
+\coqor  \coqdocid{Three} : \coqdocid{A} \ensuremath{\to} \coqdocid{A} \ensuremath{\to} \coqdocid{A} \ensuremath{\to} \coqdocid{digit}\coqdoceol
 \coqdocindent{1.00em}
-\coqor  \coqdocid{Four} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{digit}.\coqdoceol
+\coqor  \coqdocid{Four} : \coqdocid{A} \ensuremath{\to} \coqdocid{A} \ensuremath{\to} \coqdocid{A} \ensuremath{\to} \coqdocid{A} \ensuremath{\to} \coqdocid{digit}.\coqdoceol
 
 \medskip
 
@@ -728,6 +793,6 @@
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "slides"
-%%% LaTeX-command: "x=pdf; TEXINPUTS=\"..:../style:../figures:~/research/publication/styles:\" ${pdfx}latex"
+%%% LaTeX-command: "x=pdf; TEXINPUTS=\"~/research/publication/styles:..:../style:../figures:\" ${pdfx}latex"
 %%% TeX-PDF-mode: t
 %%% End: 
