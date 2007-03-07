@@ -2,23 +2,15 @@ Require Import Coq.subtac.Utils.
 Require Import Wf_nat.
 Require Import Arith.
 Require Import Omega.
-Delimit Scope program_scope with program.
 
-Print right.
-
-Notation "'left'" := (left _ _) : program_scope.
-Notation "'right'" := (right _ _) : program_scope.
 Open Scope program_scope.
 
-Program Definition lt_ge_dec (x y : nat) : { x < y } + { x >= y} :=
+Program Definition less_than (x y : nat) : { x < y } + { x >= y} :=
   if le_lt_dec y x then right else left.
 
-Extraction Inline lt_ge_dec.
-Notation " x < y " := (lt_ge_dec x y) : program_scope.
-
 Program Fixpoint div (a : nat) (b : nat | b <> 0) { wf lt } :
-  { qr : nat * nat | let (q, r) := qr in a = b * q + r } :=
-  if a < b then (O, a)
+  { qr : nat * nat | let (q, r) := qr in a = b * q + r /\ r < b } :=
+  if less_than a b then (O, a)
   else dest div (a - b) b as (q', r) in (S q', r).
 
 Solve Obligations using subtac_simpl ; auto ; omega.
@@ -32,4 +24,50 @@ Proof.
   omega.
 Qed.
 
-Extraction div.
+Extraction Inline less_than.
+Recursive Extraction div.
+
+Program Definition divides (x : nat) (y : nat | y <> 0) := dest div x y as (q, r) in r = 0.
+
+Lemma mult_n_m_0 : forall n m, mult n m = 0 ->  n = 0 \/ m = 0.
+Proof.
+  destruct n ; destruct m ; simpl in * ; intuition.
+  discriminate.
+Qed.
+
+Program Definition divides_mult_stmt :=
+  forall (r : nat) (p : nat | p <> 0) (q : nat | q <> 0),
+  divides r (p * q) -> divides r p.
+
+Next Obligation.
+Proof.
+  intros.
+  red ; intros.
+  pose (mult_n_m_0 _ _ H) ; intuition.
+Qed.
+
+Lemma euclidian_decomp_unicity : forall c p c' r q, c > 0 -> c' > 0 ->
+  c * p + r = c * c' * q -> r < c -> r = 0.
+Proof.
+  intros.
+  destruct r ; auto.
+
+Admitted.
+
+Program Lemma divides_mult : divides_mult_stmt.
+Proof.
+  red ; intros.
+  unfold divides in *.
+  subtac_simpl.
+  destruct_call div.
+  subtac_simpl.
+  destruct_call div.
+  destruct x1 ; destruct x2.
+  simpl in *.
+  subst.
+  intuition.
+  subst r.
+  replace (x0 * x * n1 + 0) with (x0 * x * n1) in H1 ; try omega.
+  apply (euclidian_decomp_unicity x0 n3 x n4 n1) ; try omega.
+Qed.
+  
