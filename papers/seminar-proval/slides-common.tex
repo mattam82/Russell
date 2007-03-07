@@ -311,7 +311,7 @@
 \end{frame}
 
 \section{Theoretical development}
-\frame{\tableofcontents[currentsection]}
+\frame<beamer>{\tableofcontents[currentsection]}
 
 \subsection{\lng{}}
 
@@ -414,13 +414,13 @@
 \newcommand{\blue}[1]{{\color{blue}#1}}
 
 \subsection{Interpretation in \Coq{}}
-\frame{\tableofcontents[currentsubsection]}
+\frame<beamer>{\tableofcontents[currentsubsection]}
 
 \setboolean{displayLabels}{false}
 \begin{frame}
-  \frametitle{The target system}
+  \frametitle{From \lng{} to \Coq}
   
-  \begin{block}{\CIC{} with metavariables}
+  \begin{block}{The target system : \CIC{} with metavariables}
     \begin{center}
       \BAX{}{$`G \typec t : T$}
       {$`G \typec p : P[t/x]$}
@@ -445,28 +445,10 @@
       {}\DP
     \end{center}
   \end{block}
-    
-\end{frame}
-\begin{frame}
-  \frametitle{From \lng{} to \Coq}
-%   \frametitle{From \Coq to \lng{}\only<2->{ and back}}
-%   \begin{block}{The easy way}
-%     \begin{center}
-%       $\begin{array}{lcl}
-%         (\eltpit~t)^{\circ} & = & t^{\circ} \\
-%         (\elt{T}{P}{t}{p})^{\circ} & = & t^{\circ} \\
-%         (\eltpip~t)^{\circ} & = & `_ \\
-%         (?_P)^{\circ} & = & `_
-%       \end{array}$
-%     \end{center}
 
-%     If $`G \typec t : T$ then $`G^{\circ} \typea t^{\circ} : T^{\circ}$ if $()^\circ$ is
-%     defined on $`G, t, T$.
-%   \end{block}
-  
   We build an interpretation $\ip{\_}{`G}$ from \Russell to \CICq
   terms.
-  
+  \pause  
   \begin{block}{Our goal}
     \begin{center}
       If $`G \type t : T$ then $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$.
@@ -510,8 +492,9 @@
         \begin{prooftree}
           \AXC{$`G \typec 0 : \nat$}
           \AXC{$`G \typec \elt{\_}{\_}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}} : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
-          \BIC{$`G \typec (\elt{\_}{\_}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}})[0]
-            = \elt{\_}{\_}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
+          \BIC{$`G \typec %(\elt{\_}{\_}{\ctxdot}{?_{(x \neq
+                          %0)[\ctxdot/x]}})[0] =
+            \elt{\_}{\_}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
         \end{prooftree}
       \end{example}}
   }
@@ -611,10 +594,7 @@
 \end{frame}
 
 \section{\Program}
-\begin{frame}<beamer>
-  \frametitle{Outline}
-  \tableofcontents[currentsection]
-\end{frame}
+\frame<beamer>{\tableofcontents[currentsection]}
 
 \subsection{Architecture}
 \begin{frame}[t]
@@ -651,12 +631,13 @@
 \begin{frame}
   \frametitle{Hello world: Euclidian division}
 
-  {\huge DEMO}
-
+  \begin{center}
+    \centering{\Huge DEMO}
+  \end{center}
 \end{frame}
 
 \subsection{Extensions}
-\frame{\tableofcontents[currentsubsection]}
+\frame<beamer>{\tableofcontents[currentsubsection]}
 
 
 \begin{frame}
@@ -692,16 +673,20 @@
   \end{block}
   
   \begin{block}{Bang}
-    Let $! "=" (\texttt{False\_rect}~\_~\_)$ where $\texttt{False\_rect} : `A
+    $! "=" (\texttt{False\_rect}~\_~\_)$ where $\texttt{False\_rect} : `A
     A : \Type, \texttt{False} "->" A$. It corresponds to \ML's
-    \texttt{assert(false)}, e.g: $\matchml~0~\withml~0 "=>" 0 `| n "=>"
-    !~\enml$.
+    \texttt{assert(false)}.
   \end{block}
-  \pause
-  \begin{block}{Destruction}
-    Let $\destml~t~\asml~p~\inml~e "=" \matchml~t~\asml~p "=>" e~\enml$.
-    $p$ can be an arbitrary pattern.
-  \end{block}
+  
+  \begin{example}
+    $\matchml~0~\withml~0 "=>" 0 `| n "=>" !~\enml$
+  \end{example}
+  
+%   \pause
+%   \begin{block}{Destruction}
+%     Let $\destml~t~\asml~p~\inml~e "=" \matchml~t~\asml~p "=>" e~\enml$.
+%     $p$ can be an arbitrary pattern.
+%   \end{block}
   
 
 \end{frame}
@@ -740,7 +725,7 @@
 % \end{frame}
 
 \subsection{Finger Trees}
-\frame{\tableofcontents[currentsubsection]}
+\frame<beamer>{\tableofcontents[currentsubsection]}
 \begin{frame}[t]
   \frametitle{Digits}
   \scriptsize{
@@ -954,7 +939,7 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
       Certified implementation of sequences built on top of Finger Trees.
     \item $\sim$ 1200 lines of specification, $\sim$ 1400 of proof, mostly unchanged
       code.
-    \item Extracts to \Haskell and \ML (limited use of modules).
+    \item Extracts to \Haskell and \ML (uses dependent records).
     \end{itemize}
   \end{block}
   \pause
@@ -979,7 +964,7 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
     \item A more \alert{flexible} programming language, (almost) \alert{conservative} over
       \CIC, \alert{integrated} with the existing environment and a
       formal \alert{justification} of ``\ps{}''.
-    \item A tool to make programming in \Coq using the \alert{full} language
+    \item A tool to make \alert{programming} in \Coq using the \alert{full} language
       possible, which can \alert{effectively} be used for non-trivial
       developments.
     \end{itemize}
