@@ -147,10 +147,10 @@
   \pgfuseimage{inria-logo}
 \end{frame}
 
-% \begin{frame}[plain]
-%   \frametitle{The Big Picture}
-%   \only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
-% \end{frame}
+\begin{frame}[plain]
+  \frametitle{The Big Picture}
+  \only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
+\end{frame}
 
 \frame{\tableofcontents}
 
@@ -404,10 +404,8 @@
 %     defined on $`G, t, T$.
 %   \end{block}
   
-  \begin{block}{The interpretation $\ip{\_}{`G}$ }
-    We build an interpretation from \Russell to \CICq terms, following 
-    the \Russell typing derivation, which puts metavariables where proofs are missing.
-  \end{block}
+  We build an interpretation $\ip{\_}{`G}$ from \Russell to \CICq
+  terms.
   
   \begin{block}{Our goal}
     \begin{center}
@@ -742,8 +740,25 @@
 \end{frame}
 
 \begin{frame}[t]
-  \frametitle{Nodes}
+  \frametitle{Monoids \& Nodes}
 \scriptsize{
+\coqdocindent{1.00em}
+\coqdockw{Variable} \coqdocid{v} : \coqdockw{Type}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{Variable} \coqdocid{mono} : \coqdocid{monoid} \coqdocid{v}.\coqdoceol
+\medskip
+\coqdocindent{1.00em}
+\coqdockw{Notation} "'$\varepsilon$'" := \coqdocid{mempty} \coqdocid{mono}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{Infix} "$\cdot$" := \coqdocid{mappend} \coqdocid{mono} (\coqdocid{right} \coqdocid{associativity}, \coqdocid{at} \coqdocid{level} 20).\coqdoceol
+\medskip
+\coqdocindent{1.00em}
+\coqdockw{Program Definition} \coqdocid{listMonoid} (\coqdocid{A} :
+\coqdockw{Type}) := \coqdoceol
+\coqdocindent{2.00em}
+@\coqdocid{mkMonoid} (\coqdocid{list} \coqdocid{A}) \coqdocid{nil} (@\coqdocid{app} \coqdocid{A}) \coqdocid{\_} \coqdocid{\_} \coqdocid{\_}.\coqdoceol
+\medskip
+\pause
 \coqdocindent{1.00em}
 \coqdockw{Section} \coqdocid{Nodes}.\coqdoceol
 \coqdocindent{2.00em}
@@ -785,22 +800,21 @@ $\coqdoublebar$).\coqdoceol
 \coqdocindent{1.00em}
 \coqdockw{Inductive} \coqdocid{fingertree} (\coqdocid{A} : \coqdockw{Type}) (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v}) : \coqdocid{v} \ensuremath{\to} \coqdockw{Type} $\coloneqq$\coqdoceol
 \coqdocindent{1.00em}
-\coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{measure} $\varepsilon$\coqdoceol
+\coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{measure} \alert{$\varepsilon$}\coqdoceol
 \coqdocindent{1.00em}
-\coqor  \coqdocid{Single} : \ensuremath{\forall} \coqdocid{x} : \coqdocid{A}, \coqdocid{fingertree} \coqdocid{measure} (\coqdocid{measure} \coqdocid{x})\coqdoceol
+\coqor  \coqdocid{Single} : \ensuremath{\forall} \coqdocid{x} : \coqdocid{A}, \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{x}})\coqdoceol
 \coqdocindent{1.00em}
-\coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) (\coqdocid{m} : \coqdocid{v})\coqdoceol
+\coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) (\coqdocid{m} : \coqdocid{v}),\coqdoceol
 \coqdocindent{2.00em}
-(\coqdocid{x} : @\coqdocid{fingertree} (\coqdocid{node} \coqdocid{measure}) \coqdocid{nodeMeasure} \coqdocid{m})\coqdoceol
+@\coqdocid{fingertree} (\alert{\coqdocid{node} \coqdocid{measure}})
+\coqdocid{nodeMeasure} \coqdocid{m} \ensuremath{\rightarrow} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
 \coqdocindent{2.00em}
-(\coqdocid{r} : \coqdocid{digit} \coqdocid{A}), \coqdoceol
-\coqdocindent{2.00em}
-\coqdocid{fingertree} \coqdocid{measure} (\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l} $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{r}).\coqdoceol
+\coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l} $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{r}}).\coqdoceol
 
 \pause
 \medskip
 \coqdocindent{2.00em}
-\coqdockw{Program Fixpoint} \coqdocid{add\_left} \coqdocid{A} (\coqdocid{measure} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{v}) (\coqdocid{a} : \coqdocid{A}) (\coqdocid{s} : \coqdocid{v})\coqdoceol
+\coqdockw{Program Fixpoint} \coqdocid{add\_left} \coqdocid{A} (\coqdocid{measure} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{v}) (\alert{\coqdocid{a}} : \coqdocid{A}) (\alert{\coqdocid{s}} : \coqdocid{v})\coqdoceol
 \coqdocindent{3.00em}
 (\coqdocid{t} : \coqdocid{fingertree} \coqdocid{measure} \coqdocid{s})
 \{\coqdocid{struct} \coqdocid{t}\} : \coqdoceol
@@ -821,7 +835,7 @@ $\coqdoublebar$).\coqdoceol
 \coqdocindent{7.00em}
 \coqdocid{Deep} (\coqdocid{Two} \coqdocid{a} \coqdocid{b}) \coqdocid{sub} \coqdocid{sf}\coqdoceol
 \coqdocindent{6.00em}
-\coqor  \coqdocid{x} \ensuremath{\Rightarrow} \coqdocid{Deep} (\coqdocid{add\_digit\_left} \coqdocid{a} \coqdocid{pr}) \coqdocid{t'} \coqdocid{sf}\coqdoceol
+\coqor  \coqdocid{x} \ensuremath{\Rightarrow} \coqdocid{Deep} (\alert{\coqdocid{add\_digit\_left} \coqdocid{a} \coqdocid{pr}}) \coqdocid{t'} \coqdocid{sf}\coqdoceol
 \coqdocindent{5.00em}
 \coqdockw{end}\coqdoceol
 \coqdocindent{3.00em}
@@ -846,6 +860,7 @@ $\coqdoublebar$).\coqdoceol
     \coqdocid{ys}).\coqdoceol
   \end{block}
   
+  \pause
   \begin{block}{Splitting nodes}
 
   \scriptsize{\coqdocindent{1.00em}
@@ -885,10 +900,9 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
   \pause
   \begin{block}{Conclusions}
     \begin{itemize}
-    \item \Program scales pretty well ;
-    \item \Coq would benefit from more language technology, e.g:
-      overloading ;
-    \item Subset types are a very natural device ;
+    \item \Program scales ;
+    \item Need more language technology, e.g: overloading ;
+    \item Subset types arise naturally ;
     \item Dependent types are a powerfull specification tool ;
     \item $"=>"$ Difficulties with reasonning and computing.
     \end{itemize}   
@@ -912,14 +926,71 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
   \end{block}
   
   \begin{block}{Future work}
-    Reasonning support through tactics, enriched reduction with proof-irrelevance.
+    Reasonning support through tactics, implementation of
+    proof-irrelevance in \Coq's kernel.
   \end{block}
   
-  \url{http://www.lri.fr/~sozeau/research/russell.en.html}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The End}
+  \centering{
+    \begin{center}
+      \url{http://www.lri.fr/~sozeau/research/russell.en.html}
+    \end{center} 
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Euclidian division from the standard library}  
+\scriptsize{\coqdocindent{0.50em}
+\coqdockw{Inductive} \coqdocid{diveucl} \coqdocid{a} \coqdocid{b} : \coqdockw{Set} :=\coqdoceol
+\coqdocindent{1.50em}
+\coqdocid{divex} : \ensuremath{\forall} \coqdocid{q} \coqdocid{r}, \coqdocid{b} > \coqdocid{r} \ensuremath{\rightarrow} \coqdocid{a} = \coqdocid{q} \ensuremath{\times} \coqdocid{b} + \coqdocid{r} \ensuremath{\rightarrow} \coqdocid{diveucl} \coqdocid{a} \coqdocid{b}.\coqdoceol
+
+
+\medskip
+\coqdocindent{0.50em}
+\coqdockw{Lemma} \coqdocid{eucl\_dev} : \ensuremath{\forall} \coqdocid{n}, \coqdocid{n} > 0 \ensuremath{\rightarrow} \ensuremath{\forall} \coqdocid{m}:\coqdocid{nat}, \coqdocid{diveucl} \coqdocid{m} \coqdocid{n}.\coqdoceol
+\noindent
+\coqdocindent{0.50em}
+\coqdockw{Proof}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intros} \coqdocid{b} \coqdocid{H} \coqdocid{a}; \coqdocid{pattern} \coqdocid{a} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{apply} \coqdocid{gt\_wf\_rec}; \coqdocid{intros} \coqdocid{n} \coqdocid{H0}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} (\coqdocid{le\_gt\_dec} \coqdocid{b} \coqdocid{n}).\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intro} \coqdocid{lebn}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} (\coqdocid{H0} (\coqdocid{n} - \coqdocid{b})); \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intros} \coqdocid{q} \coqdocid{r} \coqdocid{g} \coqdocid{e}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{apply} \coqdocid{divex} \coqdockw{with} (\coqdocid{S} \coqdocid{q}) \coqdocid{r}; \coqdocid{simpl} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} \coqdocid{plus\_assoc}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} \coqdocid{e}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intros} \coqdocid{gtbn}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{apply} \coqdocid{divex} \coqdockw{with} 0 \coqdocid{n}; \coqdocid{simpl} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{0.50em}
+\coqdockw{Qed}.\coqdoceol}
 
 \end{frame}
 
-\subsection*{}
 \begin{frame}
   \frametitle{Why eta rules and proof irrelevance ?}
   
@@ -951,6 +1022,8 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
   x$ except if PI is included in $`=$.
   
 \end{frame}
+
+
 
 \begin{frame}
   \frametitle{Dependent Inductive coercion rule}

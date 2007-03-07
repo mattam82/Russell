@@ -1,9 +1,9 @@
 #!/bin/sh
 COQDOC=coqdoc
 DIR=.
-COQDOCOPTS="--body-only -g --latex -d ${DIR}"
+COQDOCOPTS="--body-only --latex -d ${DIR}"
 
-SOURCES="euclid.v"
+SOURCES="euclid.v euclid_std.v"
 
 for src in ${SOURCES}
   do
@@ -11,4 +11,5 @@ for src in ${SOURCES}
   sed -e "s/|/\\\coqor /g" -i ${DIR}/${src/.v/.tex}
   sed -e "s/Coq\(.\\|,\\| \)/\\\Coq\1/g" -i ${DIR}/${src/.v/.tex}
   sed -e "s/Russell/\\\Russell/g" -i ${DIR}/${src/.v/.tex}
+  rm coqdoc.sty
 done

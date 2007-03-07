@@ -3,10 +3,8 @@ Require Import Wf_nat.
 Require Import Arith.
 Require Import Omega.
 
-Open Scope program_scope.
-
 Program Definition less_than (x y : nat) : { x < y } + { x >= y} :=
-  if le_lt_dec y x then right else left.
+  if le_lt_dec y x then right _ _ else left _ _.
 
 Program Fixpoint div (a : nat) (b : nat | b <> 0) { wf lt } :
   { qr : nat * nat | let (q, r) := qr in a = b * q + r /\ r < b } :=
