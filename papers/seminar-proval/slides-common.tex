@@ -104,12 +104,17 @@
 
 \def\imgheight{7.5cm}
 
-
-\pgfdeclareimage[height=\imgheight]{bigpic1}{bigpic1}
-\pgfdeclareimage[height=\imgheight]{bigpic2}{bigpic2}
-\pgfdeclareimage[height=\imgheight]{bigpic3}{bigpic3}
-\pgfdeclareimage[height=\imgheight]{bigpic4}{bigpic4}
-\pgfdeclareimage[height=\imgheight]{bigpic5}{bigpic5}
+\pgfdeclareimage[height=\imgheight]{term}{figures/bigpicterm}
+\pgfdeclareimage[height=\imgheight]{simple}{figures/bigpicsimple}
+\pgfdeclareimage[height=\imgheight]{simplecoq}{figures/bigpicsimplecoq}
+\pgfdeclareimage[height=\imgheight]{depone}{figures/bigpicdepone}
+\pgfdeclareimage[height=\imgheight]{deponeobl}{figures/bigpicdeponeobl}
+\pgfdeclareimage[height=\imgheight]{deponecoq}{figures/bigpicdeponecoq}
+\pgfdeclareimage[height=\imgheight]{deponeextr}{figures/bigpicdeponeextr}
+% \pgfdeclareimage[height=\imgheight]{dep}{figures/bigpicdep}
+% \pgfdeclareimage[height=\imgheight]{depobl}{figures/bigpicobl}
+% \pgfdeclareimage[height=\imgheight]{depoblterm}{figures/bigpicoblterm}
+\pgfdeclareimage[height=\imgheight]{depextr}{figures/bigpicextr}
 
 \pgfdeclareimage[height=3cm]{lambda-cube}{../figures/lambda-cube}
 
@@ -137,6 +142,57 @@
   \end{center}
 }   
 
+\def\coqeuclid{
+\coqdocindent{0.50em}
+\coqdockw{Inductive} \coqdocid{diveucl} \coqdocid{a} \coqdocid{b} : \coqdockw{Set} :=\coqdoceol
+\coqdocindent{1.50em}
+\coqdocid{divex} : \alert{\ensuremath{\forall} \coqdocid{q} \coqdocid{r},
+\coqdocid{b} > \coqdocid{r} \ensuremath{\rightarrow} \coqdocid{a} =
+\coqdocid{q} \ensuremath{\times} \coqdocid{b} + \coqdocid{r}}
+\ensuremath{\rightarrow} \coqdocid{diveucl} \coqdocid{a}
+\coqdocid{b}.\coqdoceol
+
+\medskip
+\coqdocindent{0.50em}
+\coqdockw{Lemma} \coqdocid{eucl\_dev} : \ensuremath{\forall} \coqdocid{n}, \coqdocid{n} > 0 \ensuremath{\rightarrow} \ensuremath{\forall} \coqdocid{m}:\coqdocid{nat}, \coqdocid{diveucl} \coqdocid{m} \coqdocid{n}.\coqdoceol
+\noindent
+\coqdocindent{0.50em}
+\coqdockw{Proof}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intros} \coqdocid{b} \coqdocid{H} \coqdocid{a}; \coqdocid{pattern} \coqdocid{a} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{apply} \coqdocid{gt\_wf\_rec}; \coqdocid{intros} \coqdocid{n} \coqdocid{H0}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} (\coqdocid{le\_gt\_dec} \coqdocid{b} \coqdocid{n}).\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intro} \coqdocid{lebn}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} (\coqdocid{H0} (\coqdocid{n} - \coqdocid{b})); \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intros} \coqdocid{q} \coqdocid{r} \coqdocid{g} \coqdocid{e}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{apply} \coqdocid{divex} \coqdockw{with} (\coqdocid{S} \coqdocid{q}) \coqdocid{r}; \coqdocid{simpl} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} \coqdocid{plus\_assoc}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{elim} \coqdocid{e}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{intros} \coqdocid{gtbn}.\coqdoceol
+\noindent
+\coqdocindent{1.50em}
+\coqdocid{apply} \coqdocid{divex} \coqdockw{with} 0 \coqdocid{n}; \coqdocid{simpl} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
+\noindent
+\coqdocindent{0.50em}
+\coqdockw{Qed}.\coqdoceol
+}
+
 \begin{document}
 
 \begin{frame}[plain]
@@ -149,7 +205,11 @@
 
 \begin{frame}[plain]
   \frametitle{The Big Picture}
-  \only<1>{\pgfuseimage{bigpic1}}\only<2>{\pgfuseimage{bigpic2}}\only<3>{\pgfuseimage{bigpic3}}\only<4>{\pgfuseimage{bigpic4}}\only<5>{\pgfuseimage{bigpic5}}
+  \only<1>{\pgfuseimage{term}}%
+  \only<2>{\pgfuseimage{simple}}%
+  \only<3>{\pgfuseimage{simplecoq}}\only<4>{\pgfuseimage{depone}}\only<5>{\pgfuseimage{deponeobl}}\only<6>{\pgfuseimage{deponecoq}}\only<7>{\pgfuseimage{deponeextr}}%
+  \only<8>{\coqeuclid{}}%
+  \only<9>{\pgfuseimage{depextr}}
 \end{frame}
 
 \frame{\tableofcontents}
@@ -891,7 +951,7 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
   \begin{block}{The development}
     \begin{itemize}
     \item Certified implementation of Finger Trees. 
-      Elegant certified implementation of sequences built on top of Finger Trees.
+      Certified implementation of sequences built on top of Finger Trees.
     \item $\sim$ 1200 lines of specification, $\sim$ 1400 of proof, mostly unchanged
       code.
     \item Extracts to \Haskell and \ML (limited use of modules).
@@ -904,7 +964,7 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
     \item Need more language technology, e.g: overloading ;
     \item Subset types arise naturally ;
     \item Dependent types are a powerfull specification tool ;
-    \item $"=>"$ Difficulties with reasonning and computing.
+    \item Some difficulties with reasonning and computing.
     \end{itemize}   
   \end{block}
   
@@ -939,56 +999,6 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
       \url{http://www.lri.fr/~sozeau/research/russell.en.html}
     \end{center} 
   }
-\end{frame}
-
-\begin{frame}
-  \frametitle{Euclidian division from the standard library}  
-\scriptsize{\coqdocindent{0.50em}
-\coqdockw{Inductive} \coqdocid{diveucl} \coqdocid{a} \coqdocid{b} : \coqdockw{Set} :=\coqdoceol
-\coqdocindent{1.50em}
-\coqdocid{divex} : \ensuremath{\forall} \coqdocid{q} \coqdocid{r}, \coqdocid{b} > \coqdocid{r} \ensuremath{\rightarrow} \coqdocid{a} = \coqdocid{q} \ensuremath{\times} \coqdocid{b} + \coqdocid{r} \ensuremath{\rightarrow} \coqdocid{diveucl} \coqdocid{a} \coqdocid{b}.\coqdoceol
-
-
-\medskip
-\coqdocindent{0.50em}
-\coqdockw{Lemma} \coqdocid{eucl\_dev} : \ensuremath{\forall} \coqdocid{n}, \coqdocid{n} > 0 \ensuremath{\rightarrow} \ensuremath{\forall} \coqdocid{m}:\coqdocid{nat}, \coqdocid{diveucl} \coqdocid{m} \coqdocid{n}.\coqdoceol
-\noindent
-\coqdocindent{0.50em}
-\coqdockw{Proof}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{intros} \coqdocid{b} \coqdocid{H} \coqdocid{a}; \coqdocid{pattern} \coqdocid{a} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{apply} \coqdocid{gt\_wf\_rec}; \coqdocid{intros} \coqdocid{n} \coqdocid{H0}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{elim} (\coqdocid{le\_gt\_dec} \coqdocid{b} \coqdocid{n}).\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{intro} \coqdocid{lebn}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{elim} (\coqdocid{H0} (\coqdocid{n} - \coqdocid{b})); \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{intros} \coqdocid{q} \coqdocid{r} \coqdocid{g} \coqdocid{e}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{apply} \coqdocid{divex} \coqdockw{with} (\coqdocid{S} \coqdocid{q}) \coqdocid{r}; \coqdocid{simpl} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{elim} \coqdocid{plus\_assoc}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{elim} \coqdocid{e}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{intros} \coqdocid{gtbn}.\coqdoceol
-\noindent
-\coqdocindent{1.50em}
-\coqdocid{apply} \coqdocid{divex} \coqdockw{with} 0 \coqdocid{n}; \coqdocid{simpl} \coqdockw{in} \ensuremath{\vdash} \ensuremath{\times}; \coqdocid{auto} \coqdockw{with} \coqdocid{arith}.\coqdoceol
-\noindent
-\coqdocindent{0.50em}
-\coqdockw{Qed}.\coqdoceol}
-
 \end{frame}
 
 \begin{frame}
