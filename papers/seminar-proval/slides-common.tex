@@ -1032,7 +1032,7 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
 \begin{frame}
   \frametitle{Instanciation: sequences}
   \begin{block}{The monoid and measure: executable semantics}
-    \small{\coqdockw{Definition} \coqdocid{below} \coqdocid{i} := \{ \coqdocid{x} : \coqdocid{nat} | \coqdocid{x} $<$ \coqdocid{i} \}.\coqdoceol
+    \scriptsize{\coqdockw{Definition} \coqdocid{below} \coqdocid{i} := \{ \coqdocid{x} : \coqdocid{nat} | \coqdocid{x} $<$ \coqdocid{i} \}.\coqdoceol
     \coqdockw{Definition} \coqdocid{v} := \{ \coqdocid{i} : \coqdocid{nat} \& (\coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) \}.\coqdoceol
     \coqdockw{Program Definition} $\varepsilon$ : \coqdocid{v} := 0 $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} !).\coqdoceol
     \coqdockw{Program Definition} \coqdocid{append} (\coqdocid{xs} \coqdocid{ys} : \coqdocid{v}) : \coqdocid{v} := \coqdoceol
@@ -1052,16 +1052,16 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
   \end{block}
 
   \begin{block}{Specialization}
-    \small{\coqdockw{Definition} \coqdocid{seq} (\coqdocid{x} : \coqdocid{v}) := \coqdocid{fingertree} \coqdocid{seqMonoid} \coqdocid{measure} \coqdocid{x}.\coqdoceol
-    \coqdockw{Program Fixpoint} \coqdocid{make} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{v} : \coqdocid{A}) \{ \coqdocid{struct} \coqdocid{i} \} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{v})) := \coqdoceol
+    \scriptsize{\coqdockw{Definition} \coqdocid{seq} (\coqdocid{x} : \coqdocid{v}) := \coqdocid{fingertree} \coqdocid{seqMonoid} \coqdocid{measure} \coqdocid{x}.\coqdoceol
+    \coqdockw{Program Fixpoint} \coqdocid{make} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{v} : \coqdocid{A}) \{ \coqdocid{struct} \coqdocid{i} \} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{v})). \coqdoceol
     \coqdockw{Program Definition} \coqdocid{set} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) \coqdoceol
     \coqdocindent{1.00em}
     (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) (\coqdocid{value} : \coqdocid{A}) \coqdoceol
     \coqdocindent{1.00em}
-    :  \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{idx} : \coqdocid{below} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if} \coqdocid{eq\_nat\_dec} \coqdocid{idx} \coqdocid{j} \coqdockw{then} \coqdocid{value} \coqdockw{else} \coqdocid{m} \coqdocid{idx})) := \coqdoceol
+    :  \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{idx} : \coqdocid{below} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if} \coqdocid{eq\_nat\_dec} \coqdocid{idx} \coqdocid{j} \coqdockw{then} \coqdocid{value} \coqdockw{else} \coqdocid{m} \coqdocid{idx})).\coqdoceol
     \coqdockw{Program Definition} \coqdocid{get} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) \coqdoceol
     \coqdocindent{1.00em}
-    (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) : \{ \coqdocid{value} : \coqdocid{A} | \coqdocid{m} \coqdocid{j} = \coqdocid{value} \} :=\coqdoceol}
+    (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) : \{ \coqdocid{value} : \coqdocid{A} | \coqdocid{m} \coqdocid{j} = \coqdocid{value} \}.\coqdoceol}
   \end{block}
 \end{frame}
 
