@@ -199,7 +199,9 @@
   \titlepage
   \vfill\hfill
   \pgfuseimage{ups-logo}
+  ~
   \pgfuseimage{lri-logo}
+  ~
   \pgfuseimage{inria-logo}
 \end{frame}
 
@@ -905,28 +907,7 @@ $\coqdoublebar$).\coqdoceol
     \coqdocid{ys}).\coqdoceol
   \end{block}
   
-  \pause
-  \begin{block}{Splitting nodes}
-
-  \scriptsize{\coqdocindent{1.00em}
-\coqdockw{Program Definition} \coqdocid{splitNode} (\coqdocid{p} : \coqdocid{v} \ensuremath{\to} \coqdocid{bool}) (\coqdocid{i} : \coqdocid{v}) (\coqdocid{n} : \coqdocid{node} \coqdocid{measure}) : \coqdoceol
-\coqdocindent{1.00em}
-\{ \coqdocid{s} : \coqdocid{split} (\coqdockw{fun} \coqdocid{A} \ensuremath{\Rightarrow} \coqdocid{option} (\coqdocid{digit} \coqdocid{A})) \coqdocid{A} \coqor  \coqdockw{let} (\coqdocid{l}, \coqdocid{x}, \coqdocid{r}) $\coloneqq$ \coqdocid{s} \coqdockw{in}\coqdoceol
-\coqdocindent{2.00em}
-\coqdockw{let} \coqdocid{ls} $\coloneqq$ \coqdocid{option\_digit\_measure} \coqdocid{measure} \coqdocid{l} \coqdockw{in}\coqdoceol
-\coqdocindent{2.00em}
-\coqdockw{let} \coqdocid{rs} $\coloneqq$ \coqdocid{option\_digit\_measure} \coqdocid{measure} \coqdocid{r} \coqdockw{in}\coqdoceol
-\coqdocindent{2.00em}
-\coqdocid{node\_measure} \coqdocid{n} = \coqdocid{ls} $\cdot$ $\coqdoublebar$ \coqdocid{x} $\coqdoublebar$ $\cdot$ \coqdocid{rs} \ensuremath{\land}\coqdoceol
-\coqdocindent{2.00em}
-\coqdocid{node\_to\_list} \coqdocid{n} = \coqdocid{option\_digit\_to\_list} \coqdocid{l} $\app$ [x] $\app$ \coqdocid{option\_digit\_to\_list} \coqdocid{r} \ensuremath{\land}\coqdoceol
-\coqdocindent{2.00em}
-(\coqdocid{l} = \coqdocid{None} \ensuremath{\lor} \coqdocid{p} (\coqdocid{i} $\cdot$ \coqdocid{ls}) = \coqdocid{false}) \ensuremath{\land}\coqdoceol
-\coqdocindent{2.00em}
-(\coqdocid{r} = \coqdocid{None} \ensuremath{\lor} \coqdocid{p}
-(\coqdocid{i} $\cdot$ \coqdocid{ls} $\cdot$ $\coqdoublebar$ \coqdocid{x}
-$\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
-\end{block}
+  Splitting, views can be defined in a similar way.
 
 \end{frame}
 
@@ -1023,6 +1004,65 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
 \begin{frame}
   \frametitle{Dependent Inductive coercion rule}
   \indfig
+\end{frame}
+
+\begin{frame}
+  \frametitle{Splitting nodes}
+  
+  \scriptsize{\coqdocindent{1.00em}
+\coqdockw{Program Definition} \coqdocid{splitNode} (\coqdocid{p} : \coqdocid{v} \ensuremath{\to} \coqdocid{bool}) (\coqdocid{i} : \coqdocid{v}) (\coqdocid{n} : \coqdocid{node} \coqdocid{measure}) : \coqdoceol
+\coqdocindent{1.00em}
+\{ \coqdocid{s} : \coqdocid{split} (\coqdockw{fun} \coqdocid{A} \ensuremath{\Rightarrow} \coqdocid{option} (\coqdocid{digit} \coqdocid{A})) \coqdocid{A} \coqor  \coqdockw{let} (\coqdocid{l}, \coqdocid{x}, \coqdocid{r}) $\coloneqq$ \coqdocid{s} \coqdockw{in}\coqdoceol
+\coqdocindent{2.00em}
+\coqdockw{let} \coqdocid{ls} $\coloneqq$ \coqdocid{option\_digit\_measure} \coqdocid{measure} \coqdocid{l} \coqdockw{in}\coqdoceol
+\coqdocindent{2.00em}
+\coqdockw{let} \coqdocid{rs} $\coloneqq$ \coqdocid{option\_digit\_measure} \coqdocid{measure} \coqdocid{r} \coqdockw{in}\coqdoceol
+\coqdocindent{2.00em}
+\coqdocid{node\_measure} \coqdocid{n} = \coqdocid{ls} $\cdot$ $\coqdoublebar$ \coqdocid{x} $\coqdoublebar$ $\cdot$ \coqdocid{rs} \ensuremath{\land}\coqdoceol
+\coqdocindent{2.00em}
+\coqdocid{node\_to\_list} \coqdocid{n} = \coqdocid{option\_digit\_to\_list} \coqdocid{l} $\app$ [x] $\app$ \coqdocid{option\_digit\_to\_list} \coqdocid{r} \ensuremath{\land}\coqdoceol
+\coqdocindent{2.00em}
+(\coqdocid{l} = \coqdocid{None} \ensuremath{\lor} \coqdocid{p} (\coqdocid{i} $\cdot$ \coqdocid{ls}) = \coqdocid{false}) \ensuremath{\land}\coqdoceol
+\coqdocindent{2.00em}
+(\coqdocid{r} = \coqdocid{None} \ensuremath{\lor} \coqdocid{p}
+(\coqdocid{i} $\cdot$ \coqdocid{ls} $\cdot$ $\coqdoublebar$ \coqdocid{x}
+$\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Instanciation: sequences}
+  \begin{block}{The monoid and measure: executable semantics}
+    \small{\coqdockw{Definition} \coqdocid{below} \coqdocid{i} := \{ \coqdocid{x} : \coqdocid{nat} | \coqdocid{x} $<$ \coqdocid{i} \}.\coqdoceol
+    \coqdockw{Definition} \coqdocid{v} := \{ \coqdocid{i} : \coqdocid{nat} \& (\coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) \}.\coqdoceol
+    \coqdockw{Program Definition} $\varepsilon$ : \coqdocid{v} := 0 $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} !).\coqdoceol
+    \coqdockw{Program Definition} \coqdocid{append} (\coqdocid{xs} \coqdocid{ys} : \coqdocid{v}) : \coqdocid{v} := \coqdoceol
+    \coqdocindent{1.00em}
+    \coqdockw{let} (\coqdocid{n}, \coqdocid{fx}) := \coqdocid{xs} \coqdockw{in}
+    \coqdockw{let} (\coqdocid{m}, \coqdocid{fy}) := \coqdocid{ys} \coqdockw{in}\coqdoceol
+    \coqdocindent{2.00em}
+    (\coqdocid{n} + \coqdocid{m}) $\Yleft$ \coqdoceol
+    \coqdocindent{3.00em}
+    (\coqdockw{fun} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if}
+    \coqdocid{lt\_ge\_dec} \coqdocid{i} \coqdocid{n} \coqdockw{then}
+    \coqdocid{fx} \coqdocid{i} \coqdockw{else} \coqdocid{fy}
+    (\coqdocid{i} - \coqdocid{n})).\coqdoceol
+    \coqdockw{Program Definition} \coqdocid{seqMonoid} := @\coqdocid{mkMonoid} \coqdocid{v} $\varepsilon$ \coqdocid{append} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_}.\coqdoceol
+    \coqdockw{Program Definition} \coqdocid{measure} (\coqdocid{x} : \coqdocid{A}) : \coqdocid{v} := 1 $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{x}).\coqdoceol
+  }
+  \end{block}
+
+  \begin{block}{Specialization}
+    \small{\coqdockw{Definition} \coqdocid{seq} (\coqdocid{x} : \coqdocid{v}) := \coqdocid{fingertree} \coqdocid{seqMonoid} \coqdocid{measure} \coqdocid{x}.\coqdoceol
+    \coqdockw{Program Fixpoint} \coqdocid{make} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{v} : \coqdocid{A}) \{ \coqdocid{struct} \coqdocid{i} \} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{v})) := \coqdoceol
+    \coqdockw{Program Definition} \coqdocid{set} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) \coqdoceol
+    \coqdocindent{1.00em}
+    (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) (\coqdocid{value} : \coqdocid{A}) \coqdoceol
+    \coqdocindent{1.00em}
+    :  \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{idx} : \coqdocid{below} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if} \coqdocid{eq\_nat\_dec} \coqdocid{idx} \coqdocid{j} \coqdockw{then} \coqdocid{value} \coqdockw{else} \coqdocid{m} \coqdocid{idx})) := \coqdoceol
+    \coqdockw{Program Definition} \coqdocid{get} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) \coqdoceol
+    \coqdocindent{1.00em}
+    (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) : \{ \coqdocid{value} : \coqdocid{A} | \coqdocid{m} \coqdocid{j} = \coqdocid{value} \} :=\coqdoceol}
+  \end{block}
 \end{frame}
 
 \end{document}
