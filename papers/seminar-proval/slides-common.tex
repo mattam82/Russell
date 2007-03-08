@@ -147,14 +147,14 @@
 \coqdockw{Inductive} \coqdocid{diveucl} \coqdocid{a} \coqdocid{b} : \coqdockw{Set} :=\coqdoceol
 \coqdocindent{1.50em}
 \coqdocid{divex} : \alert{\ensuremath{\forall} \coqdocid{q} \coqdocid{r},
-\coqdocid{b} > \coqdocid{r} \ensuremath{\rightarrow} \coqdocid{a} =
+\coqdocid{b} > \coqdocid{r} \ensuremath{\to} \coqdocid{a} =
 \coqdocid{q} \ensuremath{\times} \coqdocid{b} + \coqdocid{r}}
-\ensuremath{\rightarrow} \coqdocid{diveucl} \coqdocid{a}
+\ensuremath{\to} \coqdocid{diveucl} \coqdocid{a}
 \coqdocid{b}.\coqdoceol
 
 \medskip
 \coqdocindent{0.50em}
-\coqdockw{Lemma} \coqdocid{eucl\_dev} : \ensuremath{\forall} \coqdocid{n}, \coqdocid{n} > 0 \ensuremath{\rightarrow} \ensuremath{\forall} \coqdocid{m}:\coqdocid{nat}, \coqdocid{diveucl} \coqdocid{m} \coqdocid{n}.\coqdoceol
+\coqdockw{Lemma} \coqdocid{eucl\_dev} : \ensuremath{\forall} \coqdocid{n}, \coqdocid{n} > 0 \ensuremath{\to} \ensuremath{\forall} \coqdocid{m}:\coqdocid{nat}, \coqdocid{diveucl} \coqdocid{m} \coqdocid{n}.\coqdoceol
 \noindent
 \coqdocindent{0.50em}
 \coqdockw{Proof}.\coqdoceol
@@ -295,7 +295,7 @@
     \TAX{}{$`G \typea t : T$}
     {$`G, x : T \type P : \Prop$}
     {\uncover<3>{$`G \type p : P[t/x]$}}
-    {$`G \type \uncover<2->{(}t\uncover<2->{, }\only<2>{?}\only<3>{p}\uncover<2->{)} : \mysubset{x}{T}{P}$}
+    {$`G \type \uncover<2->{(}t\uncover<2->{, }\uncover<2->{{\only<2>{?}\only<3>{p}})} : \mysubset{x}{T}{P}$}
     {\uncover<2>{$`G \type ? : P[t/x]$}}\DP
   \end{center}
   
@@ -852,14 +852,14 @@ $\coqdoublebar$).\coqdoceol
 \coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) (\coqdocid{m} : \coqdocid{v}),\coqdoceol
 \coqdocindent{2.00em}
 @\coqdocid{fingertree} (\alert{\coqdocid{node} \coqdocid{measure}})
-\coqdocid{nodeMeasure} \coqdocid{m} \ensuremath{\rightarrow} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
+\coqdocid{nodeMeasure} \coqdocid{m} \ensuremath{\to} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
 \coqdocindent{2.00em}
 \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l} $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{r}}).\coqdoceol
 
 \pause
 \medskip
 \coqdocindent{2.00em}
-\coqdockw{Program Fixpoint} \coqdocid{add\_left} \coqdocid{A} (\coqdocid{measure} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{v}) (\alert{\coqdocid{a}} : \coqdocid{A}) (\alert{\coqdocid{s}} : \coqdocid{v})\coqdoceol
+\coqdockw{Program Fixpoint} \coqdocid{add\_left} \coqdocid{A} (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v}) (\alert{\coqdocid{a}} : \coqdocid{A}) (\alert{\coqdocid{s}} : \coqdocid{v})\coqdoceol
 \coqdocindent{3.00em}
 (\coqdocid{t} : \coqdocid{fingertree} \coqdocid{measure} \coqdocid{s})
 \{\coqdocid{struct} \coqdocid{t}\} : \coqdoceol
@@ -895,7 +895,7 @@ $\coqdoublebar$).\coqdoceol
 
   \begin{block}{Two hundred lines, one hundred obligations concatenation}
     \coqdocindent{1.00em}
-    \coqdockw{Definition} \coqdocid{app} (\coqdocid{A} : \coqdockw{Type}) (\coqdocid{measure} : \coqdocid{A} \ensuremath{\rightarrow} \coqdocid{v}) \coqdoceol
+    \coqdockw{Definition} \coqdocid{app} (\coqdocid{A} : \coqdockw{Type}) (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v}) \coqdoceol
     \coqdocindent{2.00em}
     (\coqdocid{xs} : \coqdocid{v}) (\coqdocid{x} : \coqdocid{fingertree} \coqdocid{measure} \coqdocid{xs})\coqdoceol
     \coqdocindent{2.00em}
@@ -909,7 +909,7 @@ $\coqdoublebar$).\coqdoceol
   \begin{block}{Splitting nodes}
 
   \scriptsize{\coqdocindent{1.00em}
-\coqdockw{Program Definition} \coqdocid{splitNode} (\coqdocid{p} : \coqdocid{v} \ensuremath{\rightarrow} \coqdocid{bool}) (\coqdocid{i} : \coqdocid{v}) (\coqdocid{n} : \coqdocid{node} \coqdocid{measure}) : \coqdoceol
+\coqdockw{Program Definition} \coqdocid{splitNode} (\coqdocid{p} : \coqdocid{v} \ensuremath{\to} \coqdocid{bool}) (\coqdocid{i} : \coqdocid{v}) (\coqdocid{n} : \coqdocid{node} \coqdocid{measure}) : \coqdoceol
 \coqdocindent{1.00em}
 \{ \coqdocid{s} : \coqdocid{split} (\coqdockw{fun} \coqdocid{A} \ensuremath{\Rightarrow} \coqdocid{option} (\coqdocid{digit} \coqdocid{A})) \coqdocid{A} \coqor  \coqdockw{let} (\coqdocid{l}, \coqdocid{x}, \coqdocid{r}) $\coloneqq$ \coqdocid{s} \coqdockw{in}\coqdoceol
 \coqdocindent{2.00em}
