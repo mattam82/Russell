@@ -2,16 +2,28 @@ Require Import Coq.subtac.Utils.
 Require Import Wf_nat.
 Require Import Arith.
 Require Import Omega.
+Set Implicit Arguments.
+Set Strict Implicit.
 
-Program Definition less_than (x y : nat) : { x < y } + { x >= y} :=
+Print right.
+
+Program Definition less_than (x y : nat) : 
+  { x < y } + { x >= y} :=
   if le_lt_dec y x then right _ _ else left _ _.
 
-Program Fixpoint div (a : nat) (b : nat | b <> 0) { wf lt } :
-  { qr : nat * nat | let (q, r) := qr in a = b * q + r /\ r < b } :=
-  if less_than a b then (O, a)
-  else dest div (a - b) b as (q', r) in (S q', r).
+Notation "{ ( x , y )  :  A  |  P }" := 
+  (sig (fun t:A => let (x,y) := t in P))
+  (x ident, y ident) : type_scope.
 
-Solve Obligations using subtac_simpl ; auto ; omega.
+Program Fixpoint div (a : nat) (b : nat | b <> 0)
+  { wf lt } :
+  { (q, r) : nat * nat | a = b * q + r /\ r < b } :=
+  if less_than a b then
+    (O, a)
+  else
+    dest div (a - b) b as (q', r) in (S q', r).
+
+Solve Obligations using subtac_simpl ; auto with *.
 
 Next Obligation.
 Proof.
@@ -22,10 +34,14 @@ Proof.
   omega.
 Qed.
 
+Print div.
+
 Extraction Inline less_than.
 Recursive Extraction div.
 
-Program Definition divides (x : nat) (y : nat | y <> 0) := dest div x y as (q, r) in r = 0.
+Program Definition divides
+  (x : nat) (y : nat | y <> 0) := 
+  dest div x y as (q, r) in r = 0.
 
 Lemma mult_n_m_0 : forall n m, mult n m = 0 ->  n = 0 \/ m = 0.
 Proof.
@@ -44,28 +60,21 @@ Proof.
   pose (mult_n_m_0 _ _ H) ; intuition.
 Qed.
 
-Lemma euclidian_decomp_unicity : forall c p c' r q, c > 0 -> c' > 0 ->
-  c * p + r = c * c' * q -> r < c -> r = 0.
-Proof.
-  intros.
-  destruct r ; auto.
+Axiom euclidian_decomp_unicity : 
+  forall c p c' r q, c > 0 -> c' > 0 ->
+  c * p + r = c * c' * q -> r < c -> 
+  r = 0.
 
-Admitted.
-
-Program Lemma divides_mult : divides_mult_stmt.
+Lemma divides_mult : divides_mult_stmt.
 Proof.
   red ; intros.
-  unfold divides in *.
-  subtac_simpl.
-  destruct_call div.
-  subtac_simpl.
-  destruct_call div.
+  unfold divides in * ; subtac_simpl ;
+    repeat destruct_call div ; simpl in *.
   destruct x1 ; destruct x2.
-  simpl in *.
   subst.
   intuition.
   subst r.
   replace (x0 * x * n1 + 0) with (x0 * x * n1) in H1 ; try omega.
-  apply (euclidian_decomp_unicity x0 n3 x n4 n1) ; try omega.
+  apply (@euclidian_decomp_unicity x0 n3 x n4 n1) ; try omega.
 Qed.
-  
+
