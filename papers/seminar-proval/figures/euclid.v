@@ -5,8 +5,8 @@ Require Import Omega.
 Set Implicit Arguments.
 Set Strict Implicit.
 
-Print right.
-
+Check right.
+Check le_lt_dec.
 Program Definition less_than (x y : nat) : 
   { x < y } + { x >= y} :=
   if le_lt_dec y x then right _ _ else left _ _.
@@ -15,6 +15,9 @@ Notation "{ ( x , y )  :  A  |  P }" :=
   (sig (fun t:A => let (x,y) := t in P))
   (x ident, y ident) : type_scope.
 
+Obligations Tactic := idtac. 
+
+
 Program Fixpoint div (a : nat) (b : nat | b <> 0)
   { wf lt } :
   { (q, r) : nat * nat | a = b * q + r /\ r < b } :=
@@ -22,6 +25,13 @@ Program Fixpoint div (a : nat) (b : nat | b <> 0)
     (O, a)
   else
     dest div (a - b) b as (q', r) in (S q', r).
+
+Obligation 4.
+  intros.
+  apply lt_wf.
+Defined.
+
+Obligations Tactic := subtac_simpl.
 
 Solve Obligations using subtac_simpl ; auto with *.
 
@@ -33,6 +43,12 @@ Proof.
     auto with arith.
   omega.
 Qed.
+
+Obligations Tactic := subtac_simpl ; auto with *.
+
+Program Definition test : nat := fst (div 450 9).
+
+Eval lazy beta delta iota zeta in test.
 
 Print div.
 
