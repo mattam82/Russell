@@ -21,23 +21,17 @@
 \usepackage[latin1]{inputenc}
 \usepackage{xspace} % To get the right spacings in front of : and so on
 \usepackage[english]{babel}
-\usepackage{abbrevs}
 \usepackage{subfigure}
-\usepackage{ifthen}
-\usepackage{mycoqdoc}
 \usepackage{bussproofs}
 \usepackage{pgf}
 \usepackage{colortbl}
 \usepackage{xcolor}
+\usepackage{abbrevs}
+\usepackage{coq}
+\usepackage{lambda}
 
 \def\shaded#1{{\color{black!50}#1}}
-
-\def\nat{`N}
-\def\app{\mathbin{+\!\!\!+}}
-
-% macro for typesetting keywords
-\renewcommand{\coqdockw}[1]{\texttt{#1}}
-
+ 
 \EnableBpAbbreviations
 \def\fCenter{\vdash}
 \def\seq{\fCenter}
@@ -47,10 +41,6 @@
   pdfauthor = Matthieu Sozeau,
   pdfsubject = Theoretical Computer Science
  } 
-
-\def\destml{\mlkw{dest}}
-\newcommand{\eqrec}[6]{\texttt{eq\_rec}~#1~#2~#3~#4~#5~#6}
-\newcommand{\eqrect}[6]{\texttt{eq\_rect}~#1~#2~#3~#4~#5~#6}
 
 \input{grammar-macros}
 
@@ -73,8 +63,6 @@
 \input{typing-impl}
 \input{subtyping-impl}
 
-\newqsymbol{"="}{\triangleq}
-
 % [Short Paper Title] (optional, use only with long paper titles)
 \title{\Program{}ing in \Coq}
 
@@ -82,18 +70,13 @@
 {{\sc Matthieu Sozeau} \\ under the direction of {\sc Christine Paulin-Mohring}}
 
 
-\def\LRI{\name{LRI}}
-\def\INRIAFuturs{\name{INRIA Futurs}}
-\def\Proval{\name{ProVal}}
-\def\Logical{\name{LogiCal}}
-
 \institute[]
 {
-  \LRI{}, Univ. Paris-Sud - \Demons{} Team \& \INRIAFuturs{} - \Proval{} Project
+  \LRI{}, Univ. Paris-Sud - \Demons{} Team \& \INRIAFuturs{} - \ProVal{} Project
 }
 
 \date % (optional, should be abbreviation of conference name)
-{\Demons-\Proval-\Logical seminar \\
+{\Demons-\ProVal-\LogiCal seminar \\
 9 march 2007}
 
 \subject{Theoretical Computer Science}
@@ -116,19 +99,8 @@
 % \pgfdeclareimage[height=\imgheight]{depoblterm}{figures/bigpicoblterm}
 \pgfdeclareimage[height=\imgheight]{depextr}{figures/bigpicextr}
 
-\pgfdeclareimage[height=3cm]{lambda-cube}{../figures/lambda-cube}
+\pgfdeclareimage[interpolate=true,height=5cm]{fingertree}{figures/FingerTree-ex}
 
-\pgfdeclareimage[interpolate=true,height=8cm]{subtac-syntax}{capturesyntax}
-\pgfdeclareimage[interpolate=true,height=8cm]{myhd-proof}{capturemyhd-proof}
-\pgfdeclareimage[interpolate=true,height=8cm]{myhd-extract}{capturemyhd-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytail-extract}{capturemytail-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytest-good}{capturemytest-ok}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytest-good-extract}{capturemytest-ok-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{mytest-bad}{capturemytest-bad}
-
-\pgfdeclareimage[interpolate=true,height=8cm]{append-proof}{captureappend-proof}
-\pgfdeclareimage[interpolate=true,height=8cm]{append-extract}{captureappend-extract}
-\pgfdeclareimage[interpolate=true,height=8cm]{append-app}{captureappend-app}
 
 \def\typea{\vdash}
 \def\suba{\rightslice}
@@ -205,14 +177,14 @@
   \pgfuseimage{inria-logo}
 \end{frame}
 
-\begin{frame}[plain]
-  \frametitle{The Big Picture}
-  \only<1>{\pgfuseimage{term}}%
-  \only<2>{\pgfuseimage{simple}}%
-  \only<3>{\pgfuseimage{simplecoq}}\only<4>{\pgfuseimage{depone}}\only<5>{\pgfuseimage{deponeobl}}\only<6>{\pgfuseimage{deponecoq}}\only<7>{\pgfuseimage{deponeextr}}%
-  \only<8>{\coqeuclid{}}%
-  \only<9>{\pgfuseimage{depextr}}
-\end{frame}
+% \begin{frame}[plain]
+%   \frametitle{The Big Picture}
+%   \only<1>{\pgfuseimage{term}}%
+%   \only<2>{\pgfuseimage{simple}}%
+%   \only<3>{\pgfuseimage{simplecoq}}\only<4>{\pgfuseimage{depone}}\only<5>{\pgfuseimage{deponeobl}}\only<6>{\pgfuseimage{deponecoq}}\only<7>{\pgfuseimage{deponeextr}}%
+%   \only<8>{\coqeuclid{}}%
+%   \only<9>{\pgfuseimage{depextr}}
+% \end{frame}
 
 \frame{\tableofcontents}
 
@@ -282,7 +254,7 @@
   \frametitle{\ldots to Subset coercions}
   
   \begin{enumerate}
-  \item<1-> A property-irrelevant language (\lng{}) with \alert{decidable} typing ;
+  \item<1-> A property-irrelevant language (\Russell{}) with \alert{decidable} typing ;
   \item<2-> A total traduction to \Coq{} terms with holes ;
   \item<3-> A mechanism to turn the holes into proof obligations and
     manage them.
@@ -315,10 +287,10 @@
 \section{Theoretical development}
 \frame<beamer>{\tableofcontents[currentsection]}
 
-\subsection{\lng{}}
+\subsection{\Russell{}}
 
 \begin{frame}
-  \frametitle{\lng{} syntax}
+  \frametitle{\Russell{} syntax}
   
   $\begin{array}{lcl}
     x & `: & \mathcal{V} \\
@@ -341,7 +313,7 @@
 \end{frame}
 
 \begin{frame}[t,label=typingdecl]
-  \frametitle{\lng{} typing $\typed$ and coercion $\subd$}
+  \frametitle{\Russell{} typing $\typed$ and coercion $\subd$}
   
   Calculus of Constructions with
   \typenvd
@@ -371,9 +343,9 @@
 
     \vspace{0.25cm}
     \only<5-6>{
-      \AXC{$`G \type 0 : \nat$}
-      \AXC{$`G \type \nat~\sub \mysubset{x}{\nat}{x \neq 0} : \Set$}
-      \BIC{$`G \type 0 : \mysubset{x}{\nat}{x \neq 0}$}
+      \AXC{$`G \type 0 : `N$}
+      \AXC{$`G \type `N~\sub \mysubset{x}{`N}{x \neq 0} : \Set$}
+      \BIC{$`G \type 0 : \mysubset{x}{`N}{x \neq 0}$}
       \only<6>{\UIC{$`G \type \alert{? : 0 \neq 0}$}}
       \DP
     }
@@ -420,7 +392,7 @@
 
 \setboolean{displayLabels}{false}
 \begin{frame}
-  \frametitle{From \lng{} to \Coq}
+  \frametitle{From \Russell{} to \Coq}
   
   \begin{block}{The target system : \CIC{} with metavariables}
     \begin{center}
@@ -492,11 +464,11 @@
     \uncover<8->{
       \begin{example}      
         \begin{prooftree}
-          \AXC{$`G \typec 0 : \nat$}
-          \AXC{$`G \typec \elt{\_}{\_}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}} : \nat \sub \mysubset{x}{\nat}{x \neq 0}$}
+          \AXC{$`G \typec 0 : `N$}
+          \AXC{$`G \typec \elt{\_}{\_}{\ctxdot}{?_{(x \neq 0)[\ctxdot/x]}} : `N \sub \mysubset{x}{`N}{x \neq 0}$}
           \BIC{$`G \typec %(\elt{\_}{\_}{\ctxdot}{?_{(x \neq
                           %0)[\ctxdot/x]}})[0] =
-            \elt{\_}{\_}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{\nat}{x \neq 0}$}
+            \elt{\_}{\_}{0}{?_{\alert{0 \neq 0}}} : \mysubset{x}{`N}{x \neq 0}$}
         \end{prooftree}
       \end{example}}
   }
@@ -557,16 +529,17 @@
 \end{frame}
 
 \subsection{Inductive types}
-\def\vector#1{\texttt{vec}~#1}
+\def\vector#1{\coqid{vec}~#1}
+\def\vnil{\coqid{vnil}}
+\def\vcons{\coqid{vcons}}
 
 \begin{frame}
   \frametitle{Inductive types}
   
-  \begin{block}{A natural extension: Reindexing}
-    Let $I~\tele{x}$ be an inductive type with \emph{real} arguments
-    $\tele{x}$.
-    We can coerce any object of this type to an object of
-    $I~\tele{y}$ provided $\tele{x} = \tele{y}$.
+  \begin{block}{Different representations}
+    $\vector{n} "=" \mysubset{x}{\coqid{list}~A}{\coqid{length}~x = n}$ or
+    $\vector{n} "=" \coqid{vnil} : \vector{0} `| \coqid{vcons} : A "->" `A n, \vector{n}
+    "->" \vector{(S~n)}$ ?
   \end{block}
   
   \pause
@@ -579,13 +552,21 @@
   \end{center}
 
   \pause
+  \begin{block}{A natural extension: Reindexing}
+    Let $I~\tele{x}$ be an inductive type with \emph{real} arguments
+    $\tele{x}$.
+    We can coerce any object of this type to an object of
+    $I~\tele{y}$ provided $\tele{x} = \tele{y}$.
+  \end{block}
+  
+  \pause
   \small{
     \begin{center}
       \begin{prooftree}
         \AXC{$\dots$}
-        \AXC{$`G \typec ?_{m+0=m} : m + 0 = m$}
-        \UIC{$`G \typec \eqrec{`N}{(m+0)}{\vector{}}{\ctxdot}{m}{?_{m+0 = m}} : \vector{(m + 0)} \suba \vector{m}$}
-        \BIC{$`G \typec \eqrec{`N}{(m+0)}{\vector{}}{v}{m}{?_{m+0 = m}} : \vector{m}$}
+        \AXC{$`G \typec ?_{x=y} : x = y$}
+        \UIC{$`G \typec \eqrec{`N}{x}{\vector{}}{\ctxdot}{y}{?_{x = y}} : \vector{x} \suba \vector{y}$}
+        \BIC{$`G \typec \eqrec{`N}{x}{\vector{}}{v}{y}{?_{x = y}} : \vector{y}$}
       \end{prooftree}
       
       $\texttt{eq\_rec} : `A (A : \Set) (x : A) (P : A "->" \Set),
@@ -641,52 +622,61 @@
 \subsection{Extensions}
 \frame<beamer>{\tableofcontents[currentsubsection]}
 
-
-\begin{frame}
+\begin{frame}[t]
   \frametitle{Pattern-matching revisited}
-
-  From patterns to equations:
-  \[ \begin{array}{lcl}
-    \matchml~\uncover<2->{\nu{}(}e\uncover<2->{)~\asml~t} & \returnml & \uncover<2->{t = \nu{(e)} "->"} T~\withml \\
-    `| p_1 & "=>" & \uncover<2->{\funml{}~H : p_1 = \nu{(e)} "=>"} t_1 \\
-    & \vdots{} & \\
-    `| p_n & "=>" & \uncover<2->{\funml{}~H : p_n = \nu{(e)} "=>"} t_n \\
-    \enml & & \\
-    \uncover<2->{(\sref{refl\_equal}~\nu{(e)})} & &
-  \end{array}\]
-
-  where $\nu(e)$ coerces $e$ to an inductive object.
-  \uncover<3->{
-  \begin{block}{Further refinements}
-    \begin{itemize}
-    \item Generalized to dependent inductive types ;
-    \item Each branch typed only once ;
-    \item Add inequalities for intersecting patterns.
-    \end{itemize}
-  \end{block}}
   
+  Put \alert{logic} into the terms.
+
+  \uncover<3->{
+    \begin{block}{Further refinements}
+      \begin{itemize}
+      \item<3-> Each branch typed only once ;
+      \item<4-> Add inequalities for intersecting patterns ;
+      \item<5-> Generalized to dependent inductive types.
+      \end{itemize}
+    \end{block}}
+  
+  \only<1-4>{
+  Let $e : \mysubset{x}{`N}{P}$:
+  \[ \begin{array}{ll}
+    \matchml~\uncover<2->{\eltpit(}e\uncover<2->{)~\asml~t~} & \returnml~\uncover<2->{t = \eltpit{(e)} "->"} T~\withml \\
+    `| S~(S~n) "=>" & \uncover<2->{\funml{}~H : S~(S~n) = \eltpit{(e)} "=>"} t_1 \\
+    `| \only<3>{S~}n "=>" & \uncover<2->{\funml{}~(H : \only<3>{S~}n =
+      \eltpit{(e)})}
+    \only<4->{\alert<4>{(\_ : `A n', n "/=" S~(S~n'))}}
+    "=>" t_2 \\\only<3>{`| 0 "=>" & \uncover<2->{\funml{}~H : 0 = \eltpit{(e)} "=>"} t_2 \\}
+    \enml & \uncover<2->{(\sref{refl\_equal}~\eltpit{(e)})}
+  \end{array}\]}
+
+  \only<5->{
+    Let $e : \vector{n}$:
+    \[ \begin{array}{l}
+      \matchml~e~\uncover<6->{\asml~t~\inml~\vector{n'}}~\returnml~\uncover<6->{n' = n "->" t "~=" e "->"} T~\withml \\
+      `| \vnil "=>" \uncover<6->{\funml{}~(H : 0 = n) (Hv : \vnil "~=" e) "=>"} t_1 \\
+      `| \vcons~x~n'~v' "=>" \uncover<6->{\funml{}~(H : S~n' = n) (Hv :
+        \vcons~x~n'~v' "~=" e) "=>"} t_2 \\%
+    \enml \uncover<6->{(\coqid{refl\_equal}~n) (\coqid{JMeq\_refl}~e)}
+  \end{array}\]}
+
 \end{frame}
 
 \begin{frame}
   \frametitle{Sugar}
 
   \begin{block}{Obligations}
-    Unresolved implicits ($\_$) are turned into obligations.
+    Unresolved implicits ($\_$) are turned into obligations, \`a la \alert{\texttt{refine}}.
   \end{block}
   
   \begin{block}{Bang}
-    $! "=" (\texttt{False\_rect}~\_~\_)$ where $\texttt{False\_rect} : `A
-    A : \Type, \texttt{False} "->" A$. It corresponds to \ML's
+    $! "=" (\texttt{False\_rect}~\_~\_)$ where {\small $\texttt{False\_rect} : `A
+    A : \Type, \texttt{False} "->" A$}. It corresponds to \ML's
     \texttt{assert(false)}.
   \end{block}
   
-  \begin{example}
-    $\matchml~0~\withml~0 "=>" 0 `| n "=>" !~\enml$
-  \end{example}
-  
-%   \pause
+  \[\matchml~0~\withml~0 "=>" 0 `| n "=>" !~\enml\]
+  % \pause
 %   \begin{block}{Destruction}
-%     Let $\destml~t~\asml~p~\inml~e "=" \matchml~t~\asml~p "=>" e~\enml$.
+%     Let $\destml~t~\asml~p~\inml~e "=" \matchml~t~\withml~p "=>" e~\enml$.
 %     $p$ can be an arbitrary pattern.
 %   \end{block}
   
@@ -697,14 +687,14 @@
   \frametitle{Recursion}
 
   Support for well-founded recursion (and measures).
-  \[ \texttt{Program}~\Fixpoint~f~(a : nat)~\{ \mlkw{wf}~lt~a \} : \nat := b \]
+  \[ \texttt{Program}~\Fixpoint~f~(a : `N)~\{ \mlkw{wf} < a \} : `N := b. \]
   
   \uncover<2->{
     \[\begin{array}{lcl}
-      a & : & \nat \\
-      f & : & \{ x : \nat `| x < a \} "->" \nat \\
+      a & : & `N \\
+      f & : & \{ x : `N `| x < a \} "->" `N \\
       \hline
-      b & : & \nat
+      b & : & `N
     \end{array}\]
   }
 \end{frame}
@@ -728,6 +718,24 @@
 
 \subsection{Finger Trees}
 \frame<beamer>{\tableofcontents[currentsubsection]}
+
+\begin{frame}
+  \frametitle{A quick tour of Finger Trees}
+  
+  \begin{itemize}
+  \item A simple general purpose data structure (Hinze \& Paterson, 2006) ;
+  \item Purely functional, nested datatype ;
+  \item General purpose, parameterized data structure (gives sequences,
+    priority queues, search trees...) ;
+  \item Efficient deque operations (amortized constant time) and
+    concatenation and splitting (logarithmic in smallest argument's
+    size).
+  \item Simple implementation compared to Kaplan \& Tarjan's
+    catenable dequeues, efficient in practice.
+  \end{itemize}
+  
+\end{frame}
+
 \begin{frame}[t]
   \frametitle{Digits}
   \scriptsize{
@@ -801,9 +809,9 @@
 \medskip
 \coqdocindent{1.00em}
 \coqdockw{Program Definition} \coqdocid{listMonoid} (\coqdocid{A} :
-\coqdockw{Type}) := \coqdoceol
+\coqdockw{Type}) : \coqdocid{monoid} (\coqdocid{list} \coqdocid{A}) := \coqdoceol
 \coqdocindent{2.00em}
-@\coqdocid{mkMonoid} (\coqdocid{list} \coqdocid{A}) \coqdocid{nil} (@\coqdocid{app} \coqdocid{A}) \coqdocid{\_} \coqdocid{\_} \coqdocid{\_}.\coqdoceol
+\coqdocid{mkMonoid} \coqdocid{nil} \coqdocid{app} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_}.\coqdoceol
 \medskip
 \pause
 \coqdocindent{1.00em}
@@ -842,54 +850,62 @@ $\coqdoublebar$).\coqdoceol
 \begin{frame}[t]
   \frametitle{Dependent Finger Trees}
   \scriptsize{
+  \coqdocindent{1.00em}
+  \coqdockw{Inductive} \coqdocid{fingertree} (\coqdocid{A} : \coqdockw{Type}) (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v}) : \coqdocid{v} \ensuremath{\to} \coqdockw{Type} $\coloneqq$\coqdoceol
+  \coqdocindent{1.00em}
+  \coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{measure} \alert{$\varepsilon$}\coqdoceol
+  \coqdocindent{1.00em}
+  \coqor  \coqdocid{Single} : \ensuremath{\forall} \coqdocid{x} : \coqdocid{A}, \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{x}})\coqdoceol
+  \coqdocindent{1.00em}
+  \coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) (\coqdocid{m} : \coqdocid{v}),\coqdoceol
+  \coqdocindent{2.00em}
+  \coqdocid{fingertree} (\alert{\coqdocid{node} \coqdocid{measure}})
+  (\coqdocid{node\_measure} \coqdocid{A} \coqdocid{measure}) \coqdocid{m} \ensuremath{\to} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
+  \coqdocindent{2.00em}
+  \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l} $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{r}}).\coqdoceol}
 
-\medskip
-\coqdocindent{1.00em}
-\coqdockw{Inductive} \coqdocid{fingertree} (\coqdocid{A} : \coqdockw{Type}) (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v}) : \coqdocid{v} \ensuremath{\to} \coqdockw{Type} $\coloneqq$\coqdoceol
-\coqdocindent{1.00em}
-\coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{measure} \alert{$\varepsilon$}\coqdoceol
-\coqdocindent{1.00em}
-\coqor  \coqdocid{Single} : \ensuremath{\forall} \coqdocid{x} : \coqdocid{A}, \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{x}})\coqdoceol
-\coqdocindent{1.00em}
-\coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) (\coqdocid{m} : \coqdocid{v}),\coqdoceol
-\coqdocindent{2.00em}
-@\coqdocid{fingertree} (\alert{\coqdocid{node} \coqdocid{measure}})
-\coqdocid{nodeMeasure} \coqdocid{m} \ensuremath{\to} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
-\coqdocindent{2.00em}
-\coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l} $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{r}}).\coqdoceol
+  \begin{center}
+    \pgfuseimage{fingertree}
+  \end{center}
+\end{frame}
 
-\pause
-\medskip
-\coqdocindent{2.00em}
-\coqdockw{Program Fixpoint} \coqdocid{add\_left} \coqdocid{A} (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v}) (\alert{\coqdocid{a}} : \coqdocid{A}) (\alert{\coqdocid{s}} : \coqdocid{v})\coqdoceol
-\coqdocindent{3.00em}
-(\coqdocid{t} : \coqdocid{fingertree} \coqdocid{measure} \coqdocid{s})
-\{\coqdocid{struct} \coqdocid{t}\} : \coqdoceol
-\coqdocindent{3.00em}
-\coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{a} $\cdot$ \coqdocid{s}}) $\coloneqq$\coqdoceol
-\coqdocindent{3.00em}
-\coqdockw{match} \coqdocid{t} \coqdockw{with}\coqdoceol
-\coqdocindent{4.00em}
-\coqor  \coqdocid{Empty} \ensuremath{\Rightarrow} \coqdocid{Single} \coqdocid{a}\coqdoceol
-\coqdocindent{4.00em}
-\coqor  \coqdocid{Single} \coqdocid{b} \ensuremath{\Rightarrow} \coqdocid{Deep} (\coqdocid{One} \coqdocid{a}) \coqdocid{Empty} (\coqdocid{One} \coqdocid{b})\coqdoceol
-\coqdocindent{4.00em}
-\coqor  \coqdocid{Deep} \coqdocid{pr} \coqdocid{st'} \coqdocid{t'} \coqdocid{sf} \ensuremath{\Rightarrow} \coqdoceol
-\coqdocindent{5.00em}
-\coqdockw{match} \coqdocid{pr} \coqdockw{with}\coqdoceol
-\coqdocindent{6.00em}
-\coqor  \coqdocid{Four} \coqdocid{b} \coqdocid{c} \coqdocid{d} \coqdocid{e} \ensuremath{\Rightarrow} \coqdockw{let} \coqdocid{sub} $\coloneqq$ \coqdocid{add\_left} (\coqdocid{node3} \coqdocid{measure} \coqdocid{c} \coqdocid{d} \coqdocid{e}) \coqdocid{t'} \coqdockw{in}\coqdoceol
-\coqdocindent{7.00em}
-\coqdocid{Deep} (\coqdocid{Two} \coqdocid{a} \coqdocid{b}) \coqdocid{sub} \coqdocid{sf}\coqdoceol
-\coqdocindent{6.00em}
-\coqor  \coqdocid{x} \ensuremath{\Rightarrow} \coqdocid{Deep} (\alert{\coqdocid{add\_digit\_left} \coqdocid{a} \coqdocid{pr}}) \coqdocid{t'} \coqdocid{sf}\coqdoceol
-\coqdocindent{5.00em}
-\coqdockw{end}\coqdoceol
-\coqdocindent{3.00em}
-\coqdockw{end}.\coqdoceol
+\begin{frame}[t]
+  \frametitle{Adding to the left}
 
-}
-
+  \medskip
+  \coqdockw{Program Fixpoint} \coqdocid{add\_left} \coqdocid{A}
+  (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v})
+  \coqdoceol
+  \coqdocindent{1.00em}
+  (\alert{\coqdocid{a}} : \coqdocid{A}) (\alert{\coqdocid{s}} : \coqdocid{v})
+  (\coqdocid{t} : \coqdocid{fingertree} \coqdocid{measure} \coqdocid{s})
+  \{\coqdocid{struct} \coqdocid{t}\} : \coqdoceol
+  \coqdocindent{1.00em}
+  \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{a} $\cdot$ \coqdocid{s}}) $\coloneqq$\coqdoceol
+  \coqdocindent{1.00em}
+  \coqdockw{match} \coqdocid{t} \coqdockw{with}\coqdoceol
+  \coqdocindent{2.00em}
+  \coqor  \coqdocid{Empty} \ensuremath{\Rightarrow} \coqdocid{Single} \coqdocid{a}\coqdoceol
+  \coqdocindent{2.00em}
+  \coqor  \coqdocid{Single} \coqdocid{b} \ensuremath{\Rightarrow} \coqdocid{Deep} (\coqdocid{One} \coqdocid{a}) \coqdocid{Empty} (\coqdocid{One} \coqdocid{b})\coqdoceol
+  \coqdocindent{2.00em}
+  \coqor  \coqdocid{Deep} \coqdocid{pr} \coqdocid{st'} \coqdocid{t'} \coqdocid{sf} \ensuremath{\Rightarrow} \coqdoceol
+  \coqdocindent{3.00em}
+  \coqdockw{match} \coqdocid{pr} \coqdockw{with}\coqdoceol
+  \coqdocindent{4.00em}
+  \coqor  \coqdocid{Four} \coqdocid{b} \coqdocid{c} \coqdocid{d}
+  \coqdocid{e} \ensuremath{\Rightarrow}\coqdoceol
+  \coqdocindent{5.00em}
+  \coqdockw{let} \coqdocid{sub} $\coloneqq$ \coqdocid{add\_left} (\alert{\coqdocid{node3} \coqdocid{measure} \coqdocid{c} \coqdocid{d} \coqdocid{e}}) \coqdocid{t'} \coqdockw{in}\coqdoceol
+  \coqdocindent{6.00em}
+  \coqdocid{Deep} (\coqdocid{Two} \coqdocid{a} \coqdocid{b}) \coqdocid{sub} \coqdocid{sf}\coqdoceol
+  \coqdocindent{4.00em}
+  \coqor  \coqdocid{x} \ensuremath{\Rightarrow} \coqdocid{Deep} (\alert{\coqdocid{add\_digit\_left} \coqdocid{a} \coqdocid{pr}}) \coqdocid{t'} \coqdocid{sf}\coqdoceol
+  \coqdocindent{3.00em}
+  \coqdockw{end}\coqdoceol
+  \coqdocindent{1.00em}
+  \coqdockw{end}.\coqdoceol
+  
 \end{frame}
 
 \begin{frame}
