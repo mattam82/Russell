@@ -99,7 +99,7 @@
 % \pgfdeclareimage[height=\imgheight]{depoblterm}{figures/bigpicoblterm}
 \pgfdeclareimage[height=\imgheight]{depextr}{figures/bigpicextr}
 
-\pgfdeclareimage[interpolate=true,height=5cm]{fingertree}{figures/FingerTree-ex}
+\pgfdeclareimage[height=4cm]{fingertree}{figures/FingerTree-ex}
 
 
 \def\typea{\vdash}
@@ -255,7 +255,7 @@
   
   \begin{enumerate}
   \item<1-> A property-irrelevant language (\Russell{}) with \alert{decidable} typing ;
-  \item<2-> A total traduction to \Coq{} terms with holes ;
+  \item<2-> A total interpretation to \Coq{} terms with holes ;
   \item<3-> A mechanism to turn the holes into proof obligations and
     manage them.
   \end{enumerate}
@@ -612,7 +612,7 @@
 
 \subsection{Hello world}
 \begin{frame}
-  \frametitle{Hello world: Euclidian division}
+  \frametitle{Hello world: Euclidean division}
 
   \begin{center}
     \centering{\Huge DEMO}
@@ -849,24 +849,26 @@ $\coqdoublebar$).\coqdoceol
 
 \begin{frame}[t]
   \frametitle{Dependent Finger Trees}
-  \scriptsize{
+  \small{
+  \coqdockw{Inductive} \coqdocid{fingertree} (\coqdocid{A} : \coqdockw{Type}) \only<2->{(\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v})} : \only<2->{\alert{\coqdocid{v}} \ensuremath{\to}} \coqdockw{Type} $\coloneqq$\coqdoceol
+  \coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{A} \only<2->{\coqdocid{measure} \alert{$\varepsilon$}}\coqdoceol
+  \coqor  \coqdocid{Single} : \ensuremath{\forall} \coqdocid{x} :
+  \coqdocid{A}, \coqdocid{fingertree} \coqdocid{A} \only<2->{\coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{x}})}\coqdoceol
+  \coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) \only<2->{(\alert{\coqdocid{m} : \coqdocid{v}})},\coqdoceol
   \coqdocindent{1.00em}
-  \coqdockw{Inductive} \coqdocid{fingertree} (\coqdocid{A} : \coqdockw{Type}) (\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v}) : \coqdocid{v} \ensuremath{\to} \coqdockw{Type} $\coloneqq$\coqdoceol
+  \coqdocid{fingertree} (\alert<1>{\coqdocid{node} \coqdocid{A}} \only<2->{ \coqdocid{measure}})
+  \only<2->{(\alert<2->{\coqdocid{node\_measure} \coqdocid{A} \coqdocid{measure}}) \alert<2->{\coqdocid{m}}} \ensuremath{\to} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
   \coqdocindent{1.00em}
-  \coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{measure} \alert{$\varepsilon$}\coqdoceol
-  \coqdocindent{1.00em}
-  \coqor  \coqdocid{Single} : \ensuremath{\forall} \coqdocid{x} : \coqdocid{A}, \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{x}})\coqdoceol
-  \coqdocindent{1.00em}
-  \coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) (\coqdocid{m} : \coqdocid{v}),\coqdoceol
-  \coqdocindent{2.00em}
-  \coqdocid{fingertree} (\alert{\coqdocid{node} \coqdocid{measure}})
-  (\coqdocid{node\_measure} \coqdocid{A} \coqdocid{measure}) \coqdocid{m} \ensuremath{\to} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
-  \coqdocindent{2.00em}
-  \coqdocid{fingertree} \coqdocid{measure} (\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l} $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{r}}).\coqdoceol}
+  \coqdocid{fingertree} \coqdocid{A} \only<2->{\coqdocid{measure}
+    (\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l}
+      $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure}
+      \coqdocid{measure} \coqdocid{r}})}.
+  \coqdoceol}
 
+  \only<1>{
   \begin{center}
     \pgfuseimage{fingertree}
-  \end{center}
+  \end{center}}
 \end{frame}
 
 \begin{frame}[t]
@@ -936,17 +938,17 @@ $\coqdoublebar$).\coqdoceol
       Certified implementation of sequences built on top of Finger Trees.
     \item $\sim$ 1200 lines of specification, $\sim$ 1400 of proof, mostly unchanged
       code.
-    \item Extracts to \Haskell and \ML (uses dependent records).
+    \item Extracts to \Haskell and \Ocaml (with magic).
     \end{itemize}
   \end{block}
   \pause
   \begin{block}{Conclusions}
     \begin{itemize}
-    \item \Program scales ;
-    \item Need more language technology, e.g: overloading ;
-    \item Subset types arise naturally ;
-    \item Dependent types are a powerfull specification tool ;
-    \item Some difficulties with reasonning and computing.
+    \item[+] \Program scales ;
+    \item[+] Subset types arise naturally ;
+    \item[+] Dependent types are a powerful specification tool ;      
+    \item[--] Need more language technology, e.g: overloading ;
+    \item[--] Some difficulties with reasoning and computing.
     \end{itemize}   
   \end{block}
   
@@ -968,7 +970,7 @@ $\coqdoublebar$).\coqdoceol
   \end{block}
   
   \begin{block}{Future work}
-    Reasonning support through tactics, implementation of
+    Reasoning support through tactics, implementation of
     proof-irrelevance in \Coq's kernel.
   \end{block}
   
@@ -1046,7 +1048,7 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Instanciation: sequences}
+  \frametitle{Instantiation: sequences}
   \begin{block}{The monoid and measure: executable semantics}
     \scriptsize{\coqdockw{Definition} \coqdocid{below} \coqdocid{i} := \{ \coqdocid{x} : \coqdocid{nat} | \coqdocid{x} $<$ \coqdocid{i} \}.\coqdoceol
     \coqdockw{Definition} \coqdocid{v} := \{ \coqdocid{i} : \coqdocid{nat} \& (\coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) \}.\coqdoceol
