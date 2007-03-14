@@ -529,7 +529,7 @@
 \end{frame}
 
 \subsection{Inductive types}
-\def\vector#1{\coqid{vec}~#1}
+\def\vector#1{\coqid{vector}~#1}
 \def\vnil{\coqid{vnil}}
 \def\vcons{\coqid{vcons}}
 
@@ -545,14 +545,14 @@
   \pause
   \begin{center}
     \begin{prooftree}
-      \AXC{$`G \type v : \vector{(m + 0)}$}
-      \AXC{$`G \type \vector{(m + 0)} \suba \vector{m} : \Set$}
-      \BIC{$`G \type v : \vector{m}$}
+      \AXC{$`G \type v : \vector{x}$}
+      \AXC{$`G \type \vector{x} \suba \vector{y} : \Set$}
+      \BIC{$`G \type v : \vector{y}$}
     \end{prooftree}
   \end{center}
 
   \pause
-  \begin{block}{A natural extension: Reindexing}
+  \begin{block}{A natural extension: reindexing}
     Let $I~\tele{x}$ be an inductive type with \emph{real} arguments
     $\tele{x}$.
     We can coerce any object of this type to an object of
@@ -595,6 +595,7 @@
       $\ipG{`G} \typec \ip{t}{`G} : \ip{T}{`G}$ ;
     \item<4-> Interactive proving of obligations ;
     \item<5-> Final definition.
+    \item[]<6-> \alert{Restriction} We assume $`G \typecci \ip{T}{`G} : s$. % $`G^{\circ} = `G$      
     \end{enumerate}
   \end{block}
   
@@ -602,11 +603,7 @@
     \[\uncover<2-4>{\texttt{Program}~}\texttt{Definition}~f~:
     \uncover<3->{\llbracket} T \uncover<3->{\rrbracket_{`G}} := 
     \uncover<3->{\llbracket} t
-    \uncover<3->{\rrbracket_{`G}}\uncover<4->{ + \text{ obligations}}.\]    
-    \uncover<6->{
-      \begin{remark}[Restriction]
-        We assume $`G \typecci \ip{T}{`G} : s$. % $`G^{\circ} = `G$ and
-      \end{remark}}}
+    \uncover<3->{\rrbracket_{`G}}\uncover<4->{ + \text{ obligations}}.\]}
   
 \end{frame}
 
@@ -644,17 +641,18 @@
     `| \only<3>{S~}n "=>" & \uncover<2->{\funml{}~(H : \only<3>{S~}n =
       \eltpit{(e)})}
     \only<4->{\alert<4>{(\_ : `A n', n "/=" S~(S~n'))}}
-    "=>" t_2 \\\only<3>{`| 0 "=>" & \uncover<2->{\funml{}~H : 0 = \eltpit{(e)} "=>"} t_2 \\}
+    "=>" t_2 \\
+    \only<3>{\!\!`| 0 "=>" & \uncover<2->{\funml{}~H : 0 = \eltpit{(e)} "=>"} t_2 \\}
     \enml & \uncover<2->{(\sref{refl\_equal}~\eltpit{(e)})}
   \end{array}\]}
 
   \only<5->{
     Let $e : \vector{n}$:
     \[ \begin{array}{l}
-      \matchml~e~\uncover<6->{\asml~t~\inml~\vector{n'}}~\returnml~\uncover<6->{n' = n "->" t "~=" e "->"} T~\withml \\
-      `| \vnil "=>" \uncover<6->{\funml{}~(H : 0 = n) (Hv : \vnil "~=" e) "=>"} t_1 \\
-      `| \vcons~x~n'~v' "=>" \uncover<6->{\funml{}~(H : S~n' = n) (Hv :
-        \vcons~x~n'~v' "~=" e) "=>"} t_2 \\%
+      \matchml~e~\uncover<6->{\asml~t~\inml~\vector{n'}}~\returnml~\uncover<6->{\alert{n' = n} "->" t \alert{"~="} e "->"} T~\withml \\
+      `| \vnil "=>" \uncover<6->{\funml{}~(H : \alert{0 = n}) (Hv : \vnil \alert{"~="} e) "=>"} t_1 \\
+      `| \vcons~x~n'~v' "=>" \uncover<6->{\funml{}~(H : \alert{S~n' = n}) (Hv :
+        \vcons~x~n'~v' \alert{"~="} e) "=>"} t_2 \\%
     \enml \uncover<6->{(\coqid{refl\_equal}~n) (\coqid{JMeq\_refl}~e)}
   \end{array}\]}
 
