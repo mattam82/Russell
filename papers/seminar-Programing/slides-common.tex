@@ -619,32 +619,51 @@
     \begin{block}{Further refinements}
       \begin{itemize}
       \item<3-> Each branch typed only once ;
-      \item<4-> Add inequalities for intersecting patterns ;
-      \item<5-> Generalized to dependent inductive types.
+      \item<5-> Add inequalities for intersecting patterns ;
+      \item<6-> Generalized to dependent inductive types.
       \end{itemize}
     \end{block}}
   
-  \only<1-4>{
-  Let $e : \mysubset{x}{`N}{P}$:
-  \[ \begin{array}{ll}
-    \matchml~\uncover<2->{\eltpit(}e\uncover<2->{)~\asml~t~} & \returnml~\uncover<2->{t = \eltpit{(e)} "->"} T~\withml \\
-    `| S~(S~n) "=>" & \uncover<2->{\funml{}~H : S~(S~n) = \eltpit{(e)} "=>"} t_1 \\
-    `| \only<3>{S~}n "=>" & \uncover<2->{\funml{}~(H : \only<3>{S~}n =
-      \eltpit{(e)})}
-    \only<4->{\alert<4>{(\_ : `A n', n "/=" S~(S~n'))}}
-    "=>" t_2 \\
-    \only<3>{\!\!`| 0 "=>" & \uncover<2->{\funml{}~H : 0 = \eltpit{(e)} "=>"} t_2 \\}
-    \enml & \uncover<2->{(\sref{refl\_equal}~\eltpit{(e)})}
-  \end{array}\]}
+  \only<1-5>{
+    Let $e : `N$:
+    \only<1-2>{\[ \begin{array}{ll}
+        \matchml~e\uncover<2->{~\asml~t~} & \returnml~\uncover<2->{t = e "->"} T~\withml \\
+        `| S~n "=>" & \uncover<2->{\funml{}~(H : S~n = e) "=>"} t_1 \\
+        `| 0 "=>" & \uncover<2->{\funml{}~(H : 0 = e) "=>"} t_2 \\
+        \enml & \uncover<2->{(\sref{refl\_equal}~e)}
+      \end{array}\]}
+    \only<3-5>{
+      \[ \begin{array}{ll}
+        \matchml~e~\asml~t & \returnml~t = e "->" T~\withml \\
+        `| S~(S~n) "=>" & \funml{}~(H : S~(S~n) = e) "=>" t_1 \\
+        `| \only<4>{S~0}\only<3,5>{n} "=>" & \funml{}~(H : \only<4>{S~0}\only<3,5>{n} = e)
+        "=>" \only<5->{\letml~H' : \alert<5>{`A n', n "/="
+            S~(S~n')}}~\inml~t_2 \\
+        \only<4>{\!\!`| 0 "=>" & \funml{}~(H : 0 = e) "=>" t_2 \\}
+        \enml & (\sref{refl\_equal}~e)
+      \end{array}\]}
+  }
+    % \only<1-4>{
+%   Let $e : \mysubset{x}{`N}{P}$:
+%   \[ \begin{array}{ll}
+%     \matchml~\uncover<2->{\eltpit(}e\uncover<2->{)~\asml~t~} & \returnml~\uncover<2->{t = \eltpit{(e)} "->"} T~\withml \\
+%     `| S~(S~n) "=>" & \uncover<2->{\funml{}~H : S~(S~n) = \eltpit{(e)} "=>"} t_1 \\
+%     `| \only<3>{S~}n "=>" & \uncover<2->{\funml{}~(H : \only<3>{S~}n =
+%       \eltpit{(e)})}
+%     \only<4->{\alert<4>{(\_ : `A n', n "/=" S~(S~n'))}}
+%     "=>" t_2 \\
+%     \only<3>{\!\!`| 0 "=>" & \uncover<2->{\funml{}~H : 0 = \eltpit{(e)} "=>"} t_2 \\}
+%     \enml & \uncover<2->{(\sref{refl\_equal}~\eltpit{(e)})}
+%   \end{array}\]}
 
-  \only<5->{
+  \only<6->{
     Let $e : \vector{n}$:
     \[ \begin{array}{l}
-      \matchml~e~\uncover<6->{\asml~t~\inml~\vector{n'}}~\returnml~\uncover<6->{\alert{n' = n} "->" t \alert{"~="} e "->"} T~\withml \\
-      `| \vnil "=>" \uncover<6->{\funml{}~(H : \alert{0 = n}) (Hv : \vnil \alert{"~="} e) "=>"} t_1 \\
-      `| \vcons~x~n'~v' "=>" \uncover<6->{\funml{}~(H : \alert{S~n' = n}) (Hv :
+      \matchml~e~\uncover<7->{\asml~t~\inml~\vector{n'}}~\returnml~\uncover<7->{\alert{n' = n} "->" t \alert{"~="} e "->"} T~\withml \\
+      `| \vnil "=>" \uncover<7->{\funml{}~(H : \alert{0 = n}) (Hv : \vnil \alert{"~="} e) "=>"} t_1 \\
+      `| \vcons~x~n'~v' "=>" \uncover<7->{\funml{}~(H : \alert{S~n' = n}) (Hv :
         \vcons~x~n'~v' \alert{"~="} e) "=>"} t_2 \\%
-    \enml \uncover<6->{(\coqid{refl\_equal}~n) (\coqid{JMeq\_refl}~e)}
+    \enml \uncover<7->{(\coqid{refl\_equal}~n) (\coqid{JMeq\_refl}~e)}
   \end{array}\]}
 
 \end{frame}
