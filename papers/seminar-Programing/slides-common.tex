@@ -28,8 +28,8 @@
 \usepackage{xcolor}
 \usepackage{abbrevs}
 \usepackage{coq}
-\usepackage{lambda}
 
+\def\PI{\name{PI}}
 \def\shaded#1{{\color{black!50}#1}}
  
 \EnableBpAbbreviations
@@ -69,6 +69,7 @@
 \author[Matthieu Sozeau]
 {{\sc Matthieu Sozeau} \\ under the direction of {\sc Christine Paulin-Mohring}}
 
+\def\Gallium{\name{Gallium}}
 
 \institute[]
 {
@@ -76,8 +77,11 @@
 }
 
 \date % (optional, should be abbreviation of conference name)
-{\Demons-\ProVal-\LogiCal seminar \\
-9 march 2007}
+{\Gallium seminar \\
+16 march 2007}
+% \date % (optional, should be abbreviation of conference name)
+% {\Demons-\ProVal-\LogiCal seminar \\
+% 9 march 2007}
 
 \subject{Theoretical Computer Science}
 
@@ -100,6 +104,7 @@
 \pgfdeclareimage[height=\imgheight]{depextr}{figures/bigpicextr}
 
 \pgfdeclareimage[height=4cm]{fingertree}{figures/FingerTree-ex}
+\pgfdeclareimage[interpolate=true,height=8cm]{fingertree-big}{figures/FingerTree-ex}
 
 
 \def\typea{\vdash}
@@ -324,32 +329,32 @@
     \only<2->{\Coerce\DP
       \def\fCenter{\subd}
       \SubConv\DP}
-    \uncover<3->{
-    \vspace{0.5cm}    
-    \SubTrans\DP
-    
+    \uncover<3->{    
     \vspace{0.25cm}
-    \only<4->{\BAX{SubSub}
-      {$`G \type U \sub V : \Set$}
-      {$`G, x : U \type P : \Prop$}
-      {$`G \type \mysubset{x}{U}{P} \sub V : \Set$}
-      {}\DP
-      \vspace{0.25cm}
-      \BAX{SubProof}
-      {$`G \type U \sub V : \Set$}
-      {\alert{$`G, x : V \type P : \Prop$}}
-      {$`G \type U \sub \mysubset{x}{V}{P} : \Set$}
-      {}\DP}
-
+    \BAX{SubSub}
+    {$`G \type U \sub V : \Set$}
+    {$`G, x : U \type P : \Prop$}
+    {$`G \type \mysubset{x}{U}{P} \sub V : \Set$}
+    {}\DP
     \vspace{0.25cm}
-    \only<5-6>{
+    \BAX{SubProof}
+    {$`G \type U \sub V : \Set$}
+    {\alert{$`G, x : V \type P : \Prop$}}
+    {$`G \type U \sub \mysubset{x}{V}{P} : \Set$}
+    {}\DP}
+  
+    \vspace{0.25cm}
+    \only<4-5>{
       \AXC{$`G \type 0 : `N$}
       \AXC{$`G \type `N~\sub \mysubset{x}{`N}{x \neq 0} : \Set$}
       \BIC{$`G \type 0 : \mysubset{x}{`N}{x \neq 0}$}
-      \only<6>{\UIC{$`G \type \alert{? : 0 \neq 0}$}}
+      \only<5>{\UIC{$`G \type \alert{? : 0 \neq 0}$}}
       \DP
     }
-    \only<7->{\SubProd\DP}}
+    \only<6->{\SubProd\DP
+      
+      \vspace{0.25cm}
+      \SubSigma\DP}
   % \SubSigma\DP}
   \end{center}
 
@@ -363,8 +368,9 @@
   \end{theorem}  
   
   \uncover<2->{
-    \begin{lemma}[Elimination of transitivity]
-      If $T \sub U `^ U \sub V$ then $T \sub V$.
+    \begin{lemma}[Admissibility of transitivity]
+      If $`G \type T \sub U : s `^ `G \type U \sub V : s$ then $`G \type
+      T \sub V : s$.
     \end{lemma}
 
   \begin{theorem}[Subject Reduction]
@@ -516,7 +522,7 @@
     (\eta) & (\lambda x : X.e~x) & `= & e & \text{if $x `; FV(e)$} \\ % et $e : \Pi x : X.Y$} \\
     (\text{\SP}) % & \pair{\Sigma x : X.Y}{\pi_1~e}{\pi_2~e} & `= & e & \\ % \text{if $e : \Sigma x : X. Y$} \\
     & \elt{E}{P}{(\eltpit~e)}{(\eltpip~e)} & `= & e & \\%\text{if $e : \mysubset{x}{E}{P}$} \\
-    \uncover<2->{\alert{(\sigma)} & \elt{E}{P}{t}{p} & `= & \elt{E}{P}{t'}{p'} & \text{if $t
+    \uncover<2->{(\alert{\PI}) & \elt{E}{P}{t}{p} & `= & \elt{E}{P}{t'}{p'} & \text{if $t
         `= t'$}}
   \end{array}\]
 
@@ -559,21 +565,6 @@
     $I~\tele{y}$ provided $\tele{x} = \tele{y}$.
   \end{block}
   
-  \pause
-  \small{
-    \begin{center}
-      \begin{prooftree}
-        \AXC{$\dots$}
-        \AXC{$`G \typec ?_{x=y} : x = y$}
-        \UIC{$`G \typec \eqrec{`N}{x}{\vector{}}{\ctxdot}{y}{?_{x = y}} : \vector{x} \suba \vector{y}$}
-        \BIC{$`G \typec \eqrec{`N}{x}{\vector{}}{v}{y}{?_{x = y}} : \vector{y}$}
-      \end{prooftree}
-      
-      $\texttt{eq\_rec} : `A (A : \Set) (x : A) (P : A "->" \Set),
-      P~x "->" `A y, x = y "->" P~y$
-    \end{center}
-  }
-
 \end{frame}
 
 \section{\Program}
@@ -714,9 +705,10 @@
 %   \end{center}
 % \end{frame}
 
-\subsection{Finger Trees}
-\frame<beamer>{\tableofcontents[currentsubsection]}
+\section{Finger Trees}
+\frame<beamer>{\tableofcontents[currentsection]}
 
+\subsection*{Finger Trees}
 \begin{frame}
   \frametitle{A quick tour of Finger Trees}
   
@@ -732,6 +724,11 @@
     catenable dequeues, efficient in practice.
   \end{itemize}
   
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Big Finger Tree Picture}
+  \pgfuseimage{fingertree-big}
 \end{frame}
 
 \begin{frame}[t]
@@ -848,25 +845,42 @@ $\coqdoublebar$).\coqdoceol
 \begin{frame}[t]
   \frametitle{Dependent Finger Trees}
   \small{
-  \coqdockw{Inductive} \coqdocid{fingertree} (\coqdocid{A} : \coqdockw{Type}) \only<2->{(\coqdocid{measure} : \coqdocid{A} \ensuremath{\to} \coqdocid{v})} : \only<2->{\alert{\coqdocid{v}} \ensuremath{\to}} \coqdockw{Type} $\coloneqq$\coqdoceol
-  \coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{A} \only<2->{\coqdocid{measure} \alert{$\varepsilon$}}\coqdoceol
+  \coqdockw{Inductive} \coqdocid{fingertree} (\coqdocid{A} :
+  \coqdockw{Type}) \only<2->{(\alert<2>{\coqdocid{measure} :
+      \coqdocid{A} \ensuremath{\to} \coqdocid{v}})} : \only<3->{\alert{\coqdocid{v}} \ensuremath{\to} }\coqdockw{Type} $\coloneqq$\coqdoceol
+  \coqor  \coqdocid{Empty} : \coqdocid{fingertree} \coqdocid{A}
+  \only<2->{\alert<2>{\coqdocid{measure}}\only<3->{ \alert{$\varepsilon$}}}\coqdoceol
   \coqor  \coqdocid{Single} : \ensuremath{\forall} \coqdocid{x} :
-  \coqdocid{A}, \coqdocid{fingertree} \coqdocid{A} \only<2->{\coqdocid{measure} (\alert{\coqdocid{measure} \coqdocid{x}})}\coqdoceol
-  \coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} : \coqdocid{digit} \coqdocid{A}) \only<2->{(\alert{\coqdocid{m} : \coqdocid{v}})},\coqdoceol
+  \coqdocid{A}, \coqdocid{fingertree} \coqdocid{A} \only<2->{\alert<2>{\coqdocid{measure}}\only<3->{ (\alert{\coqdocid{measure} \coqdocid{x}})}}\coqdoceol
+  \coqor  \coqdocid{Deep} : \ensuremath{\forall} (\coqdocid{l} :
+  \coqdocid{digit} \coqdocid{A})\only<3->{ (\alert{\coqdocid{m} : \coqdocid{v}})},\coqdoceol
   \coqdocindent{1.00em}
-  \coqdocid{fingertree} (\alert<1>{\coqdocid{node} \coqdocid{A}} \only<2->{ \coqdocid{measure}})
-  \only<2->{(\alert<2->{\coqdocid{node\_measure} \coqdocid{A} \coqdocid{measure}}) \alert<2->{\coqdocid{m}}} \ensuremath{\to} \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
+  \coqdocid{fingertree} (\alert<1>{\coqdocid{node} \coqdocid{A}}\only<2->{ \alert<2>{\coqdocid{measure}}})
+  \only<2->{(\alert<2>{\coqdocid{node\_measure} \coqdocid{A}
+      \coqdocid{measure}})\only<3->{\alert<3->{ \coqdocid{m}}}}
+  \ensuremath{\to}\coqdoceol \coqdocindent{1.00em}
+  \ensuremath{\forall} \coqdocid{r} : \coqdocid{digit} \coqdocid{A}, \coqdoceol
   \coqdocindent{1.00em}
-  \coqdocid{fingertree} \coqdocid{A} \only<2->{\coqdocid{measure}
-    (\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l}
-      $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure}
-      \coqdocid{measure} \coqdocid{r}})}.
+  \coqdocid{fingertree} \coqdocid{A}\only<2->{
+    \alert<2>{\coqdocid{measure}}\only<3->{\coqdoceol\coqdocindent{3.00em}(\alert{\coqdocid{digit\_measure} \coqdocid{measure} \coqdocid{l}
+        $\cdot$ \coqdocid{m} $\cdot$ \coqdocid{digit\_measure}
+        \coqdocid{measure} \coqdocid{r}})}}.
   \coqdoceol}
 
   \only<1>{
   \begin{center}
     \pgfuseimage{fingertree}
   \end{center}}
+
+  \only<2>{
+    \begin{center}
+      \small{\coqdocid{node\_measure} \coqdocid{A}
+      (\coqdocid{measure} : \coqdocid{A} \ensuremath{\rightarrow}
+      \coqdocid{v})  : \coqdocid{node A measure}
+      \ensuremath{\rightarrow} \coqdocid{v}}
+    \end{center}
+  }
+  
 \end{frame}
 
 \begin{frame}[t]
@@ -891,6 +905,7 @@ $\coqdoublebar$).\coqdoceol
   \coqdocindent{2.00em}
   \coqor  \coqdocid{Deep} \coqdocid{pr} \coqdocid{st'} \coqdocid{t'} \coqdocid{sf} \ensuremath{\Rightarrow} \coqdoceol
   \coqdocindent{3.00em}
+  \only<1>{$\cdots$}\only<2->{
   \coqdockw{match} \coqdocid{pr} \coqdockw{with}\coqdoceol
   \coqdocindent{4.00em}
   \coqor  \coqdocid{Four} \coqdocid{b} \coqdocid{c} \coqdocid{d}
@@ -902,7 +917,7 @@ $\coqdoublebar$).\coqdoceol
   \coqdocindent{4.00em}
   \coqor  \coqdocid{x} \ensuremath{\Rightarrow} \coqdocid{Deep} (\alert{\coqdocid{add\_digit\_left} \coqdocid{a} \coqdocid{pr}}) \coqdocid{t'} \coqdocid{sf}\coqdoceol
   \coqdocindent{3.00em}
-  \coqdockw{end}\coqdoceol
+  \coqdockw{end}}\coqdoceol
   \coqdocindent{1.00em}
   \coqdockw{end}.\coqdoceol
   
@@ -1020,6 +1035,20 @@ $\coqdoublebar$).\coqdoceol
 \begin{frame}
   \frametitle{Dependent Inductive coercion rule}
   \indfig
+
+  \small{
+    \begin{center}
+      \begin{prooftree}
+        \AXC{$\dots$}
+        \AXC{$`G \typec ?_{x=y} : x = y$}
+        \UIC{$`G \typec \eqrec{`N}{x}{\vector{}}{\ctxdot}{y}{?_{x = y}} : \vector{x} \suba \vector{y}$}
+        \BIC{$`G \typec \eqrec{`N}{x}{\vector{}}{v}{y}{?_{x = y}} : \vector{y}$}
+      \end{prooftree}
+      
+      $\texttt{eq\_rec} : `A (A : \Set) (x : A) (P : A "->" \Set),
+      P~x "->" `A y, x = y "->" P~y$
+    \end{center}
+  }
 \end{frame}
 
 \begin{frame}
@@ -1047,38 +1076,55 @@ $\coqdoublebar$) = \coqdocid{true})\} $\coloneqq$ $\ldots$}
 
 \begin{frame}
   \frametitle{Instantiation: sequences}
-  \begin{block}{The monoid and measure: executable semantics}
-    \scriptsize{\coqdockw{Definition} \coqdocid{below} \coqdocid{i} := \{ \coqdocid{x} : \coqdocid{nat} | \coqdocid{x} $<$ \coqdocid{i} \}.\coqdoceol
-    \coqdockw{Definition} \coqdocid{v} := \{ \coqdocid{i} : \coqdocid{nat} \& (\coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) \}.\coqdoceol
-    \coqdockw{Program Definition} $\varepsilon$ : \coqdocid{v} := 0 $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} !).\coqdoceol
-    \coqdockw{Program Definition} \coqdocid{append} (\coqdocid{xs} \coqdocid{ys} : \coqdocid{v}) : \coqdocid{v} := \coqdoceol
-    \coqdocindent{1.00em}
-    \coqdockw{let} (\coqdocid{n}, \coqdocid{fx}) := \coqdocid{xs} \coqdockw{in}
-    \coqdockw{let} (\coqdocid{m}, \coqdocid{fy}) := \coqdocid{ys} \coqdockw{in}\coqdoceol
-    \coqdocindent{2.00em}
-    (\coqdocid{n} + \coqdocid{m}) $\Yleft$ \coqdoceol
-    \coqdocindent{3.00em}
-    (\coqdockw{fun} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if}
-    \coqdocid{lt\_ge\_dec} \coqdocid{i} \coqdocid{n} \coqdockw{then}
-    \coqdocid{fx} \coqdocid{i} \coqdockw{else} \coqdocid{fy}
-    (\coqdocid{i} - \coqdocid{n})).\coqdoceol
-    \coqdockw{Program Definition} \coqdocid{seqMonoid} := @\coqdocid{mkMonoid} \coqdocid{v} $\varepsilon$ \coqdocid{append} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_}.\coqdoceol
-    \coqdockw{Program Definition} \coqdocid{measure} (\coqdocid{x} : \coqdocid{A}) : \coqdocid{v} := 1 $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{x}).\coqdoceol
-  }
-  \end{block}
+  \framesubtitle{The monoid and measure: executable semantics}
 
-  \begin{block}{Specialization}
-    \scriptsize{\coqdockw{Definition} \coqdocid{seq} (\coqdocid{x} : \coqdocid{v}) := \coqdocid{fingertree} \coqdocid{seqMonoid} \coqdocid{measure} \coqdocid{x}.\coqdoceol
-    \coqdockw{Program Fixpoint} \coqdocid{make} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{v} : \coqdocid{A}) \{ \coqdocid{struct} \coqdocid{i} \} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{v})). \coqdoceol
-    \coqdockw{Program Definition} \coqdocid{set} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) \coqdoceol
-    \coqdocindent{1.00em}
-    (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) (\coqdocid{value} : \coqdocid{A}) \coqdoceol
-    \coqdocindent{1.00em}
-    :  \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{idx} : \coqdocid{below} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if} \coqdocid{eq\_nat\_dec} \coqdocid{idx} \coqdocid{j} \coqdockw{then} \coqdocid{value} \coqdockw{else} \coqdocid{m} \coqdocid{idx})).\coqdoceol
-    \coqdockw{Program Definition} \coqdocid{get} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\rightarrow} \coqdocid{A}) (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) \coqdoceol
-    \coqdocindent{1.00em}
-    (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) : \{ \coqdocid{value} : \coqdocid{A} | \coqdocid{m} \coqdocid{j} = \coqdocid{value} \}.\coqdoceol}
-  \end{block}
+  \coqdockw{Definition} \coqdocid{below} \coqdocid{i} := \{ \coqdocid{x} : \coqdocid{nat} | \coqdocid{x} $<$ \coqdocid{i} \}.\coqdoceol
+  \medskip
+  \coqdockw{Definition} \coqdocid{v} := \{ \coqdocid{i} : \coqdocid{nat} \& (\coqdocid{below} \coqdocid{i} \ensuremath{\to} \coqdocid{A}) \}.\coqdoceol
+  \medskip
+  \pause
+  \coqdockw{Program Definition} $\varepsilon$ : \coqdocid{v} := 0 $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} !).\coqdoceol
+  \coqdockw{Program Definition} \coqdocid{append} (\coqdocid{xs} \coqdocid{ys} : \coqdocid{v}) : \coqdocid{v} := \coqdoceol
+  \coqdocindent{1.00em}
+  \coqdockw{let} (\coqdocid{n}, \coqdocid{fx}) := \coqdocid{xs} \coqdockw{in}
+  \coqdockw{let} (\coqdocid{m}, \coqdocid{fy}) := \coqdocid{ys} \coqdockw{in}\coqdoceol
+  \coqdocindent{2.00em}
+  (\coqdocid{n} + \coqdocid{m}) $\Yleft$ \coqdoceol
+  \coqdocindent{3.00em}
+  (\coqdockw{fun} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if}
+  \coqdocid{lt\_ge\_dec} \coqdocid{i} \coqdocid{n} \coqdockw{then}
+  \coqdocid{fx} \coqdocid{i} \coqdockw{else} \coqdocid{fy}
+  (\coqdocid{i} - \coqdocid{n})).\coqdoceol
+  \medskip
+  \coqdockw{Program Definition} \coqdocid{seqMonoid} := @\coqdocid{mkMonoid} \coqdocid{v} $\varepsilon$ \coqdocid{append} \coqdocid{\_} \coqdocid{\_} \coqdocid{\_}.\coqdoceol
+  \pause
+  \medskip
+  \coqdockw{Program Definition} \coqdocid{measure} (\coqdocid{x} : \coqdocid{A}) : \coqdocid{v} := 1 $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{x}).\coqdoceol  
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Instantiation: sequences}
+  \framesubtitle{The sequence and its operations}
+    
+  \coqdockw{Definition} \coqdocid{seq} (\coqdocid{x} : \coqdocid{v}) := \coqdocid{fingertree} \coqdocid{seqMonoid} \coqdocid{measure} \coqdocid{x}.\coqdoceol
+  \medskip
+  \coqdockw{Program Fixpoint} \coqdocid{make} (\coqdocid{i} :
+  \coqdocid{nat}) (\coqdocid{v} : \coqdocid{A}) \{ \coqdocid{struct}
+  \coqdocid{i} \} : \coqdoceol \coqdocindent{1.00em} \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{\_} \ensuremath{\Rightarrow} \coqdocid{v})). \coqdoceol
+  \medskip
+  \pause
+  \coqdockw{Program Definition} \coqdocid{get} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\to} \coqdocid{A}) \coqdoceol
+  \coqdocindent{1.00em}
+  (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) : \{ \coqdocid{value} : \coqdocid{A} | \coqdocid{m} \coqdocid{j} = \coqdocid{value} \}.\coqdoceol
+  \medskip
+  \pause
+  \coqdockw{Program Definition} \coqdocid{set} (\coqdocid{i} : \coqdocid{nat}) (\coqdocid{m} : \coqdocid{below} \coqdocid{i} \ensuremath{\to} \coqdocid{A})  \coqdoceol
+  \coqdocindent{1.00em}
+  (\coqdocid{x} : \coqdocid{seq} (\coqdocid{i} $\Yleft$ \coqdocid{m})) (\coqdocid{j} : \coqdocid{below} \coqdocid{i}) (\coqdocid{value} : \coqdocid{A}) \coqdoceol
+  \coqdocindent{1.00em}
+  :  \coqdocid{seq} (\coqdocid{i} $\Yleft$ (\coqdockw{fun} \coqdocid{idx} : \coqdocid{below} \coqdocid{i} \ensuremath{\Rightarrow} \coqdockw{if} \coqdocid{eq\_nat\_dec} \coqdocid{idx} \coqdocid{j} \coqdockw{then} \coqdocid{value} \coqdockw{else} \coqdocid{m} \coqdocid{idx})).\coqdoceol
+  
 \end{frame}
 
 \end{document}
