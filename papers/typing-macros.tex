@@ -138,8 +138,6 @@
 \def\SigmaTeqRule{Sigma-$`=$}
 \def\SubsetTeqRule{Subset-$`=$}
 
-\newcommand{\ifstreq}[4]{\ifthenelse{\equal{#1}{#2}}{#3}{#4}}
-
 \def\inductionon#1{
   \ifstreq{#1}{typing-decl}{Par induction sur la dérivation de typage.}
   {\ifstreq{#1}{typing-algo}{Par induction sur la dérivation de
