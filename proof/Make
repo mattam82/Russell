@@ -10,7 +10,6 @@ InvLiftSubst.v
 Reduction.v
 Conv.v
 Conv_Dec.v
-Hnf.v
 Env.v
 # CCSum
 CCSum/Types.v
