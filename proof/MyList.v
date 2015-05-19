@@ -1,6 +1,7 @@
 Require Import Le.
 Require Import Gt.
 Require Export List.
+Global Set Asymmetric Patterns.
 
 Section Listes.
 

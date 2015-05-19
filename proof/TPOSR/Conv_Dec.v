@@ -326,7 +326,7 @@ Qed.
   Lemma eqlterm : forall u v : lterm, {u = v} + {u <> v}.
 Proof.
 decide equality.
-decide equality s s0.
+decide equality.
 apply eq_nat_dec.
 Qed.
 

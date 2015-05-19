@@ -1,0 +1,6 @@
+*.aux
+*.d
+*.cm*
+*.vo
+.coq-native
+proof/Makefile

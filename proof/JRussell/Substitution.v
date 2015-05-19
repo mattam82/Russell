@@ -1,3 +1,4 @@
+Require Import Omega.
 Require Import Lambda.Terms.
 Require Import Lambda.Reduction.
 Require Import Lambda.LiftSubst.

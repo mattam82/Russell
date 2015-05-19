@@ -505,11 +505,11 @@ Proof.
   
   induction IHtyp2.
   unfold sum_sort in H1.
-  inversion H2.
-  intuition ; try rewrite H4 in H5 ; try rewrite H4 in H1 ; try discriminate.
+  inversion H2. subst s2.
+  intuition try discriminate.
   right ; exists kind.
   pose (typ_wf H).
-  induction H1 ; intuition ; try discriminate ; rewrite H5 ; auto with coc.
+  induction H1 ; intuition; subst ; try discriminate; auto with coc.
   
   induction IHtyp ; try discriminate.
   induction H0.

@@ -51,3 +51,5 @@ Proof.
   pose (jeq_type_r j).
   apply (type_jrussell_to_russell _ _ _ t1).
 Qed.
+
+Print Assumptions russell_subject_reduction.
