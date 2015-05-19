@@ -4,3 +4,6 @@
 *.vo
 .coq-native
 proof/Makefile
+/theories/Makefile
+/theories/Makefile.bak
+/theories/globals.dump
