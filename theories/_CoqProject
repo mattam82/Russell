@@ -35,7 +35,6 @@ Russell/Injectivity.v
 Russell/Depth.v
 Russell/Narrowing.v
 Russell/Transitivity.v
-Russell/Inversion.v
 Russell/SubjectReduction.v
 Russell/Unicity.v
 # JRussell
