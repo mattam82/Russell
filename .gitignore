@@ -7,3 +7,4 @@ proof/Makefile
 /theories/Makefile
 /theories/Makefile.bak
 /theories/globals.dump
+/Makefile
